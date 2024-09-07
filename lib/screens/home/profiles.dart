@@ -24,7 +24,7 @@ class _ProfileListState extends State<ProfileList> {
       context,
       MaterialPageRoute(builder: (context) => const ProfileScreen()),
     ).then((res) {
-      if (res['ok'] == true) {
+      if (res != null && res['ok'] == true) {
         setState(() {
           _loadProfiles();
         });

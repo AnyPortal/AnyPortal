@@ -190,7 +190,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
           ),
-          child: const Text('save and update'),
+          child: const Text('Save and update'),
         ),
       ),
     ];
@@ -198,7 +198,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         // Use the selected tab's label for the AppBar title
-        title: const Text("edit profile"),
+        title: const Text("Edit profile"),
         backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
       ),
       body: Padding(
