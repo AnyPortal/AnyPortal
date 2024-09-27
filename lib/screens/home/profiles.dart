@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:fv2ray/utils/db.dart';
 import 'package:intl/intl.dart';
 
-import '../profile.dart';
+import '../../utils/prefs.dart';
+import 'profiles/edit.dart';
 
 class ProfileList extends StatefulWidget {
   const ProfileList({
@@ -16,9 +17,12 @@ class ProfileList extends StatefulWidget {
 
 enum ProfileAction {
   delete,
+  edit,
 }
 
 class _ProfileListState extends State<ProfileList> {
+  int? _selectedProfileId = prefs.getInt('app.selectedProfileId');
+
   void _addProfile() {
     Navigator.push(
       context,
@@ -69,6 +73,8 @@ class _ProfileListState extends State<ProfileList> {
         await (db.delete(db.profiles)..where((t) => t.id.equals(profile.id)))
             .go();
         _loadProfiles();
+      case ProfileAction.edit:
+        _editProfile(profile);
     }
   }
 
@@ -79,26 +85,39 @@ class _ProfileListState extends State<ProfileList> {
         scrollDirection: Axis.vertical,
         padding: const EdgeInsets.all(8.0),
         child: Wrap(
-          children: _profiles.map((profile) {
-            final lastUpdated = DateFormat().format(profile.lastUpdated);
-            return Card(
-              margin: const EdgeInsets.all(8.0),
-              child: ListTile(
-                title: Text(profile.name.toString()),
-                subtitle: Text('last updated: $lastUpdated'),
-                trailing: PopupMenuButton<ProfileAction>(
-                  onSelected: (value) => handleProfileAction(profile, value),
-                  itemBuilder: (context) => ProfileAction.values
-                      .map((action) => PopupMenuItem(
-                            value: action,
-                            child: Text(action.name),
-                          ))
-                      .toList(),
-                ),
-                onTap: () => {_editProfile(profile)},
-              ),
-            );
-          }).toList(),
+          children: _profiles.map<Widget>((profile) {
+                final lastUpdated = DateFormat().format(profile.lastUpdated);
+                return RadioListTile(
+                  value: profile.id,
+                  groupValue: _selectedProfileId,
+                  onChanged: (value) {
+                    prefs.setInt('app.selectedProfileId', value!);
+                    setState(() {
+                      _selectedProfileId = value;
+                    });
+                  },
+                  // title:  ListTile(
+                  title: Text(profile.name.toString()),
+                  subtitle: Text('last updated: $lastUpdated'),
+                  secondary: PopupMenuButton<ProfileAction>(
+                    onSelected: (value) => handleProfileAction(profile, value),
+                    itemBuilder: (context) => ProfileAction.values
+                        .map((action) => PopupMenuItem(
+                              value: action,
+                              child: Text(action.name),
+                            ))
+                        .toList(),
+                  ),
+                  // ),
+                );
+              }).toList() +
+              [
+                Container(
+                  constraints: const BoxConstraints(
+                    minHeight: 72,
+                  ),
+                )
+              ],
         ),
       ),
       floatingActionButton: FloatingActionButton(

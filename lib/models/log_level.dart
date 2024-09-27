@@ -3,4 +3,5 @@ enum LogLevel{
   info,
   warning,
   error,
+  none,
 }

@@ -1,3 +1,9 @@
 [submodule "third_party/v2ray-core"]
 	path = third_party/v2ray-core
 	url = git@github.com:v2fly/v2ray-core.git
+[submodule "third_party/hev-socks5-tunnel"]
+	path = third_party/hev-socks5-tunnel
+	url = git@github.com:heiher/hev-socks5-tunnel.git
+[submodule "third_party/libv2raymobile"]
+	path = third_party/libv2raymobile
+	url = git@github.com:fv2ray/libv2raymobile

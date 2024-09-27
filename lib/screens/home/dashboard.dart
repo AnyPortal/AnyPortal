@@ -1,17 +1,22 @@
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import 'package:fv2ray/widgets/direct_speed.dart';
-import 'package:fv2ray/widgets/proxy_speed.dart';
-import 'package:fv2ray/widgets/speed_chart.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fv2ray/screens/home/dashboard/direct_speed.dart';
+import 'package:fv2ray/screens/home/dashboard/proxy_speed.dart';
+import 'package:fv2ray/screens/home/dashboard/speed_chart.dart';
+import 'package:smooth_highlight/smooth_highlight.dart';
 
 import '../../utils/db.dart';
-import '../../widgets/perf_stats.dart';
+import '../../utils/prefs.dart';
+import 'dashboard/perf_stats.dart';
 import '../../widgets/ray_toggle.dart';
-import '../../widgets/traffic_stats.dart';
+import 'dashboard/traffic_stats.dart';
 
+// ignore: must_be_immutable
 class Dashboard extends StatefulWidget {
-  const Dashboard({
+  Function setSelectedIndex;
+  Dashboard({
     super.key,
+    required this.setSelectedIndex,
   });
 
   @override
@@ -20,17 +25,27 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   List<Profile> _profiles = [];
-
-  late SharedPreferences _prefs;
   Profile? _selectedProfile;
 
+  bool _highlightSelectProfile = false;
+
+  void setHighlightSelectProfile() async {
+    for (var i = 0; i < 2; ++i) {
+      if (context.mounted) {
+        setState(() {
+          _highlightSelectProfile = true;
+        });
+        await Future.delayed(const Duration(milliseconds: 1500));
+      }
+    }
+  }
+
   Future<void> _loadSettings() async {
-    _prefs = await SharedPreferences.getInstance();
-    final selectedProfileId = _prefs.getInt('selectedProfileId');
+    final selectedProfileId = prefs.getInt('app.selectedProfileId');
     if (selectedProfileId != null) {
       final selectedProfile = await (db.select(db.profiles)
             ..where((p) => p.id.equals(selectedProfileId)))
-          .getSingle();
+          .getSingleOrNull();
       setState(() {
         _selectedProfile = selectedProfile;
       });
@@ -38,7 +53,13 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<void> _loadProfiles() async {
-    final profiles = await db.select(db.profiles).get();
+    final profiles = await (db.select(db.profiles)
+          ..orderBy([
+            (u) => OrderingTerm(
+                  expression: u.name,
+                )
+          ]))
+        .get();
     setState(() {
       _profiles = profiles;
     });
@@ -58,6 +79,35 @@ class _DashboardState extends State<Dashboard> {
           scrollDirection: Axis.vertical,
           padding: const EdgeInsets.all(8.0),
           child: Wrap(children: [
+            Card(
+                margin: const EdgeInsets.all(8.0),
+                child: SmoothHighlight(
+                    enabled: _highlightSelectProfile,
+                    color: Colors.grey,
+                    child: ListTile(
+                      title: const Text(
+                        'Selected Profile',
+                      ),
+                      subtitle: Text(_selectedProfile == null
+                          ? ""
+                          : _selectedProfile!.name),
+                      trailing: const Icon(Icons.more_vert),
+                      onTap: () {
+                        _profiles.isNotEmpty
+                            ? widget.setSelectedIndex(2)
+                            : () {
+                                const snackBar = SnackBar(
+                                  content:
+                                      Text("No profile yet, create one first"),
+                                );
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackBar);
+                                }
+                                widget.setSelectedIndex(2);
+                              }();
+                      },
+                    ))),
             Card(
                 margin: const EdgeInsets.all(8.0),
                 child: ListTile(
@@ -131,45 +181,24 @@ class _DashboardState extends State<Dashboard> {
                       subtitle: const PerfStats(),
                     )),
               ),
-              Expanded(
+              const Expanded(
                 child: Card(
-                    margin: const EdgeInsets.all(8.0),
+                    margin: EdgeInsets.all(8.0),
                     child: ListTile(
-                      title: Text(
-                        'Traffic',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                      subtitle: const TrafficStats(),
+                      title: Text('Traffic'),
+                      subtitle: TrafficStats(),
                     )),
               ),
             ]),
-            Card(
-              margin: const EdgeInsets.all(8.0),
-              child: ListTile(
-                title: Text(
-                  'Profiles',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                subtitle: Wrap(
-                  children: _profiles.map((profile) {
-                    return RadioListTile<int>(
-                      title: Text(profile.name.toString()),
-                      value: profile.id,
-                      groupValue:
-                          _selectedProfile == null ? -1 : _selectedProfile!.id,
-                      onChanged: (int? profileId) {
-                        _prefs.setInt('selectedProfileId', profileId!);
-                        setState(() {
-                          _selectedProfile = profile;
-                        });
-                      },
-                    );
-                  }).toList(),
-                ),
+            Container(
+              constraints: const BoxConstraints(
+                minHeight: 72,
               ),
-            ),
+            )
           ]),
         ),
-        floatingActionButton: const RayToggle());
+        floatingActionButton: RayToggle(
+          setHighlightSelectProfile: setHighlightSelectProfile,
+        ));
   }
 }

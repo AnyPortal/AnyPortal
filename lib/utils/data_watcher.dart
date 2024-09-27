@@ -46,6 +46,7 @@ class DataWatcher with ChangeNotifier {
   SysStatsResponse? sysStats;
 
   int index = 0;
+  bool on = false;
 
   void init(){
     for (var t in TrafficStatType.values) {
@@ -68,7 +69,13 @@ class DataWatcher with ChangeNotifier {
   loadCfg(Map<String, dynamic> cfg) {
     init();
 
-    final outboundList = cfg["outbounds"];
+    if (!cfg.containsKey("outbounds")){
+      return;
+    }
+    final List outboundList = cfg["outbounds"];
+    if (outboundList.isEmpty){
+      return;
+    }
     outboundProtocol = {
       for (var map in outboundList) map['tag']: map['protocol']
     };
@@ -111,7 +118,6 @@ class DataWatcher with ChangeNotifier {
         trafficQs[t]!.removeAt(0);
       }
     }
-    notifyListeners();
   }
 
   Timer? timer;
@@ -119,24 +125,27 @@ class DataWatcher with ChangeNotifier {
 
   start() async {
     final prefs = await SharedPreferences.getInstance();
-    final apiPort = prefs.getInt('apiPort') ?? 15490;
+    final apiPort = prefs.getInt('inject.api.port') ?? 15490;
     final v2ApiServer = V2ApiServer("localhost", apiPort);
     timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       try {
-        final stats = await v2ApiServer.queryStats();
         sysStats = await v2ApiServer.getSysStats();
+        final stats = await v2ApiServer.queryStats();
         // log("${stats}");
         processStats(stats);
         // log("${dataWatcher.trafficStatCur}");
         // ignore: empty_catches
       } catch (e) {
-        log("$e");
+        log("data_watcher.start: $e");
       }
+      notifyListeners();
     });
+    on = true;
   }
 
   stop() {
     if (timer != null) timer!.cancel();
+    on = false;
   }
 }
 

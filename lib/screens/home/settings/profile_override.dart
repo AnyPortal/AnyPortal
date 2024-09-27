@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../models/log_level.dart';
+import '../../../models/send_through_binding_stratagy.dart';
+import '../../../utils/prefs.dart';
+import '../../../widgets/popup/radio_list_selection.dart';
+import '../../../widgets/popup/text_input.dart';
 
 class ProfileOverrideScreen extends StatefulWidget {
   const ProfileOverrideScreen({
@@ -13,96 +16,233 @@ class ProfileOverrideScreen extends StatefulWidget {
 }
 
 class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
-  bool _injectApi = true;
-  int _apiPort = 15490;
-  bool _injectLog = true;
-  LogLevel _logLevel = LogLevel.warning;
-  late SharedPreferences _prefs;
+  bool _injectApi = prefs.getBool('inject.api')!;
+  int _apiPort = prefs.getInt('inject.api.port')!;
 
-  Future<void> _loadSettings() async {
-    _prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _injectApi = _prefs.getBool('injectApi') ?? _injectApi;
-      _apiPort = _prefs.getInt('apiPort') ?? _apiPort;
-      _injectLog = _prefs.getBool('injectLog') ?? _injectLog;
-      _logLevel =
-          LogLevel.values[_prefs.getInt('logLevel') ?? LogLevel.warning.index];
-    });
-  }
+  bool _injectLog = prefs.getBool('inject.log')!;
+  LogLevel _logLevel = LogLevel.values[prefs.getInt('inject.log.level')!];
 
-  @override
-  void initState() {
-    super.initState();
-    _loadSettings();
-  }
+  bool _injectSocks = prefs.getBool('inject.socks')!;
+  int _socksPort = prefs.getInt('inject.socks.port')!;
 
-  void _updateApiPort(String value) {
-    int apiPort = 15490;
-    try {
-      apiPort = int.parse(value);
-      // ignore: empty_catches
-    } catch (e) {}
-    _prefs.setInt('apiPort', apiPort);
-  }
-
-  void _updateInjectLog(bool value) {
-    _prefs.setBool('injectLog', value);
-    setState(() {
-      _injectLog = value;
-    });
-  }
-
-  void _updateInjectApi(bool value) {
-    _prefs.setBool('injectApi', value);
-    setState(() {
-      _injectApi = value;
-    });
-  }
+  bool _injectSendThrough = prefs.getBool('inject.sendThrough')!;
+  String _bindingIp = prefs.getString('inject.sendThrough.bindingIp')!;
+  String _bindingInterface =
+      prefs.getString('inject.sendThrough.bindingInterface')!;
+  SendThroughBindingStratagy _sendThroughBindingStratagy =
+      SendThroughBindingStratagy
+          .values[prefs.getInt('inject.sendThrough.bindingStratagy')!];
 
   @override
   Widget build(BuildContext context) {
     final fields = [
-      Card(
-        child: ListTile(
-          title: const Text("Api config override"),
-          subtitle: TextField(
-            controller: TextEditingController()..text = _apiPort.toString(),
-            onChanged: _updateApiPort,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              labelText: 'Port',
-            ),
-          ),
-          trailing: Switch(
-            value: _injectApi,
-            onChanged: _updateInjectApi,
-          ),
-          isThreeLine: true,
+      Container(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        child: Text(
+          "Api config",
+          style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
       ),
-      Card(
-        child: ListTile(
-          title: const Text("Log config override"),
-          subtitle: DropdownButtonFormField<LogLevel>(
-            decoration: const InputDecoration(
-              labelText: 'type',
-            ),
-            items: LogLevel.values.map((LogLevel t) {
-              return DropdownMenuItem<LogLevel>(value: t, child: Text(t.name));
-            }).toList(),
-            onChanged: (value) {
-              _prefs.setInt('logLevel', value!.index);
-            },
-            value: _logLevel,
-          ),
-          trailing: Switch(
-            value: _injectLog,
-            onChanged: _updateInjectLog,
-          ),
-          isThreeLine: true,
+      ListTile(
+        title: const Text("Inject api"),
+        subtitle: const Text("Necessary for dashboard infomation"),
+        trailing: Switch(
+          value: _injectApi,
+          onChanged: (bool value) {
+            prefs.setBool('inject.api', value);
+            setState(() {
+              _injectApi = value;
+            });
+          },
         ),
       ),
-      
+      ListTile(
+        title: const Text('Port'),
+        subtitle: Text(_apiPort.toString()),
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (context) => TextInputPopup(
+                title: 'Api port',
+                initialValue: _apiPort.toString(),
+                onSaved: (String value) {
+                  final apiPort = int.parse(value);
+                  setState(() {
+                    _apiPort = apiPort;
+                  });
+                  prefs.setInt('inject.api.port', apiPort);
+                }),
+          );
+        },
+        enabled: _injectApi,
+      ),
+      const Divider(),
+      Container(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        child: Text(
+          "Log config",
+          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+        ),
+      ),
+      ListTile(
+        title: const Text("Inject Log"),
+        subtitle: const Text("Override log config"),
+        trailing: Switch(
+          value: _injectLog,
+          onChanged: (bool value) {
+            prefs.setBool('inject.log', value);
+            setState(() {
+              _injectLog = value;
+            });
+          },
+        ),
+      ),
+      ListTile(
+        enabled: _injectLog,
+        title: const Text('Log Level'),
+        subtitle: Text(_logLevel.name),
+        onTap: () {
+          showDialog(
+              context: context,
+              builder: (context) => RadioListSelectionPopup<LogLevel>(
+                    title: 'Log Level',
+                    items: LogLevel.values,
+                    initialValue: _logLevel,
+                    onSaved: (value) {
+                      prefs.setInt('inject.log.level', value.index);
+                      setState(() {
+                        _logLevel = value;
+                      });
+                    },
+                    itemToString: (e) => e.name,
+                  ));
+        },
+      ),
+      const Divider(),
+      Container(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        child: Text(
+          "Inbound config: socks",
+          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+        ),
+      ),
+      ListTile(
+        title: const Text("Inject socks inbound"),
+        subtitle: const Text(
+            "inject a socks inbound"),
+        trailing: Switch(
+          value: _injectSocks,
+          onChanged: (value) {
+            prefs.setBool('inject.socks', value);
+            setState(() {
+              _injectSocks = value;
+            });
+          },
+        ),
+      ),
+      ListTile(
+        title: const Text('Port'),
+        subtitle: Text(_socksPort.toString()),
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (context) => TextInputPopup(
+                title: 'Socks port',
+                initialValue: _socksPort.toString(),
+                onSaved: (String value) {
+                  final socksPort = int.parse(value);
+                  prefs.setInt('inject.socks.port', socksPort);
+                  setState(() {
+                    _socksPort = socksPort;
+                  });
+                }),
+          );
+        },
+        enabled: _injectSocks,
+      ),
+      const Divider(),
+      Container(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        child: Text(
+          "Outbound config: sendThrough",
+          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+        ),
+      ),
+      ListTile(
+        title: const Text("Inject sendThrough"),
+        subtitle: const Text(
+            "Bind all outbounds to ip address, useful when using with some Tun tools"),
+        trailing: Switch(
+          value: _injectSendThrough,
+          onChanged: (bool value) {
+            prefs.setBool('inject.sendThrough', value);
+            setState(() {
+              _injectSendThrough = value;
+            });
+          },
+        ),
+      ),
+      ListTile(
+        enabled: _injectSendThrough,
+        title: const Text('SendThrough ip binding stratagy'),
+        subtitle: Text(_sendThroughBindingStratagy.name),
+        onTap: () {
+          showDialog(
+              context: context,
+              builder: (context) =>
+                  RadioListSelectionPopup<SendThroughBindingStratagy>(
+                    title: 'SendThrough binding stratagy',
+                    items: SendThroughBindingStratagy.values,
+                    initialValue: _sendThroughBindingStratagy,
+                    onSaved: (value) {
+                      prefs.setInt(
+                          'inject.sendThrough.bindingStratagy', value.index);
+                      setState(() {
+                        _sendThroughBindingStratagy = value;
+                      });
+                    },
+                    itemToString: (e) => e.name,
+                  ));
+        },
+      ),
+      ListTile(
+        enabled: _injectSendThrough,
+        title: const Text("Binding interface"),
+        subtitle: Text(_bindingInterface),
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (context) => TextInputPopup(
+                title: 'Binding interface',
+                initialValue: _bindingInterface,
+                onSaved: (String value) {
+                  prefs.setString('inject.sendThrough.bindingInterface', value);
+                  setState(() {
+                    _bindingInterface = value;
+                  });
+                }),
+          );
+        },
+      ),
+      ListTile(
+        enabled: _injectSendThrough,
+        title: const Text('Binding constant ip'),
+        subtitle: Text(_bindingIp),
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (context) => TextInputPopup(
+                title: 'Binding constant ip',
+                initialValue: _bindingIp,
+                onSaved: (value) {
+                  prefs.setString('inject.sendThrough.bindingIp', value);
+                  setState(() {
+                    _bindingIp = value;
+                  });
+                }),
+          );
+        },
+      ),
     ];
 
     return Scaffold(
@@ -111,14 +251,11 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
         title: const Text("Profile override"),
         backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          child: ListView.separated(
-            itemCount: fields.length,
-            itemBuilder: (context, index) => fields[index],
-            separatorBuilder: (context, index) => const SizedBox(height: 16),
-          ),
+      body: Form(
+        child: ListView.builder(
+          itemCount: fields.length,
+          itemBuilder: (context, index) => fields[index],
+          // separatorBuilder: (context, index) => const SizedBox(height: 16),
         ),
       ),
     );
