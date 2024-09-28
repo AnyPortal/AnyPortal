@@ -5,7 +5,44 @@
 - Free/Flutter v2ray GUI for Windows, macOS, Linux, Android, (iOS currently blocked).
 - Typically used in combination with a v2ray-core (or xray-core and alike)
 
-Platform releases coming soon.
+## Download latest release
+
+<div align=left>
+<table>
+  <thead align=left>
+    <tr>
+      <th>OS</th>
+      <th>Download</th>
+    </tr>
+  </thead>
+  <tbody align=left>
+    <td>Android</td>
+      <td>
+        <a href="https://github.com/fv2ray/fv2ray/releases/latest/download/fv2ray-android-api28.apk"><img src="https://img.shields.io/badge/APK-api28-044d29.svg?logo=android"></a><br>
+        <a href="https://github.com/fv2ray/fv2ray/releases/latest/download/fv2ray-android-apilatest.apk"><img src="https://img.shields.io/badge/APK-apilatest-168039.svg?logo=android"></a><br>
+      </td>
+    </tr>
+    <tr>
+      <td>Windows</td>
+      <td>
+        <a href="https://github.com/fv2ray/fv2ray/releases/latest/download/fv2ray-windows.zip"><img src="https://img.shields.io/badge/Portable-x64-0078d7.svg?logo=windows"></a><br>
+      </td>
+    </tr>
+    <tr>
+      <td>macOS</td>
+      <td>
+        <a href="https://github.com/fv2ray/fv2ray/releases/latest/download/fv2ray-macos.dmg"><img src="https://img.shields.io/badge/DMG-Universal-ea005e.svg?logo=apple"></a><br>
+      </td>
+    </tr>
+    <tr>
+      <td>Linux</td>
+      <td>
+        <a href="https://github.com/fv2ray/fv2ray/releases/latest/download/fv2ray-linux.zip"><img src="https://img.shields.io/badge/Portable-x64-f84e29.svg?logo=linux"> </a><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
 > [!WARNING]
 > This project is currently in its early alpha stage and may exhibit instability during execution. User preferences may not be retained in the final release, and the API is subject to change without prior notice. Please use this software at your own risk. 
@@ -31,10 +68,10 @@ Platform releases coming soon.
 
 ## Todo
 
-|        | Windows | Linux | macOS | Android | iOS |
+|        | Windows | Linux | macOS | Android | iOS |
 | ------ | ------- | ----- | ----- | ------- | --- |
-| fv2ray | ✅       | ✅     | ✅     | ✅       | ❌   |
-| tun    | 🔜       | 🔜     | 🔜     | ✅       | ❌   |
+| fv2ray | ✅       | ✅     | ✅     | ✅       | ❌   |
+| tun    | 🔜       | 🔜     | 🔜     | ✅       | ❌   |
 
 - 💤 Not Planned: No plans for implementation or discontinued
 - 🔜 Planned: Planned for future development
@@ -51,14 +88,12 @@ Platform releases coming soon.
 - [ ] core auto update
 - [ ] auto core version
 - [ ] auto connect last session
-- [ ] platform releases
 - [ ] license
 - [ ] profiles: group
 - [ ] profiles: group bulk action
 - [ ] profiles: subscription
 - [ ] profile: tcping
 - [ ] profile: remote auto update
-- [ ] multi lang support
 - [ ] Android custom core restart prompt
 - [ ] better log and hints
 - [ ] document
