@@ -1,6 +1,6 @@
 # fv2ray
 
-<img src="assets/image/README/dashboard_screen.png" data-canonical-src="https://gyazo.com/eb5c5741b6a9a16c692170a41a49c858.png" height="400" /> <img src="assets/image/README/profiles_screen.png" data-canonical-src="https://gyazo.com/eb5c5741b6a9a16c692170a41a49c858.png" height="400" /> <img src="assets/image/README/settings_screen.png" data-canonical-src="https://gyazo.com/eb5c5741b6a9a16c692170a41a49c858.png" height="400" /> <img src="assets/image/README/profile_override_screen.png" data-canonical-src="https://gyazo.com/eb5c5741b6a9a16c692170a41a49c858.png" height="400" />
+<img src="assets/image/README/dashboard_screen.gif" height="400" /> <img src="assets/image/README/profiles_screen.png" height="400" /> <img src="assets/image/README/settings_screen.png" height="400" /> <img src="assets/image/README/profile_override_screen.png" height="400" />
 
 - Free/Flutter v2ray GUI for Windows, macOS, Linux, Android, (iOS currently blocked).
 - Typically used in combination with a v2ray-core (or xray-core and alike)
