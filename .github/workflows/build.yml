@@ -1,12 +1,14 @@
 name: Flutter CI
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
+  # pull_request:
+  #   branches:
+  #     - main
+  workflow_dispatch
+
 
 jobs:
   # Build for Linux
@@ -14,122 +16,304 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout source code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
 
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: 'stable'
+        flutter-version: 3.24.3
 
     - name: Install dependencies
       run: flutter pub get
+
+    - name: Install Protoc
+      uses: arduino/setup-protoc@v3
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: bash scripts/prepare.sh linux
+      run: bash scripts/prepare.sh linux
 
     - name: Build Linux
       run: flutter build linux
 
     - name: Upload Linux artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: linux-build
-        path: build/linux/
+        name: fv2ray-linux
+        path: build/linux/x64/release/bundle
 
   # Build for Windows
   windows:
     runs-on: windows-latest
     steps:
     - name: Checkout source code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
 
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: 'stable'
+        flutter-version: 3.24.3
 
-    - name: Install dependencies
+    - name: Install dependencie
       run: flutter pub get
+
+    - name: Install Protoc
+      uses: arduino/setup-protoc@v3
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: bash scripts/prepare.sh windows
+      run: bash scripts/prepare.sh windows
 
     - name: Build Windows
       run: flutter build windows
 
     - name: Upload Windows artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: windows-build
-        path: build/windows/
+        name: fv2ray-windows
+        path: build/windows/x64/runner/Release
 
   # Build for macOS
   macos:
     runs-on: macos-latest
     steps:
     - name: Checkout source code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
 
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: 'stable'
+        flutter-version: 3.24.3
 
     - name: Install dependencies
       run: flutter pub get
 
+    - name: Install Protoc
+      uses: arduino/setup-protoc@v3
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: bash scripts/prepare.sh macos
+      run: bash scripts/prepare.sh macos
+
     - name: Build macOS
       run: flutter build macos
 
+    - name: Create the DMG file
+      run: |
+        hdiutil create -format UDZO -srcfolder build/macos/Build/Products/Release/fv2ray.app build/macos/Build/Products/Release/fv2ray-macos.dmg
+
     - name: Upload macOS artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: macos-build
-        path: build/macos/
+        name: fv2ray-macos
+        path: build/macos/Build/Products/Release/fv2ray-macos.dmg
 
   # Build for Android
   android:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout source code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
 
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: 'stable'
+        flutter-version: 3.24.3
 
     - name: Install dependencies
       run: flutter pub get
 
-    - name: Build Android APK
-      run: flutter build apk --release
+    - name: Set up Go
+      uses: actions/setup-go@v5
+
+    - name: Install Protoc
+      uses: arduino/setup-protoc@v3
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: bash scripts/prepare.sh android
+      run: bash scripts/prepare.sh android
+
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: zulu
+        java-version: 17
+
+    - name: Build Android APK api28
+      run: flutter build apk --release --flavor api28
 
     - name: Upload Android APK
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: android-apk
-        path: build/app/outputs/flutter-apk/app-release.apk
+        name: fv2ray-android-api28
+        path: |
+          build/app/outputs/flutter-apk/app-api28-release.apk
 
-  # Build for iOS (requires macOS)
-  ios:
-    runs-on: macos-latest
+    - name: Build Android APK apilatest
+      run: flutter build apk --release --flavor apilatest
+
+    - name: Upload Android APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: fv2ray-android-apilatest
+        path: |
+          build/app/outputs/flutter-apk/app-apilatest-release.apk
+
+  # # Build for iOS (requires macOS)
+  # ios:
+  #   runs-on: macos-latest
+  #   steps:
+  #   - name: Checkout source code
+  #     uses: actions/checkout@v4
+  #     with:
+  #       submodules: 'recursive'
+
+  #   - name: Set up Flutter
+  #     uses: subosito/flutter-action@v2
+  #     with:
+  #       flutter-version: 3.24.3
+
+  #   - name: Install dependencies
+  #     run: flutter pub get
+
+  #   - name: Set up Go
+  #     uses: actions/setup-go@v5
+
+  #   - name: Install Protoc
+  #     uses: arduino/setup-protoc@v3
+  #     with:
+  #       repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+  #   - name: bash scripts/prepare.sh ios
+  #     run: bash scripts/prepare.sh ios
+
+  #   - name: Install CocoaPods dependencies
+  #     run: |
+  #       cd ios
+  #       pod install
+
+  #   - name: Build iOS
+  #     run: flutter build ios --no-codesign
+
+  #   - name: Upload iOS artifacts
+  #     uses: actions/upload-artifact@v4
+  #     with:
+  #       name: ios-build
+  #       path: build/ios/
+
+  # Release Job
+  release:
+    runs-on: ubuntu-latest
+    needs: [linux, windows, macos, android]
     steps:
-    - name: Checkout source code
-      uses: actions/checkout@v3
-
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v2
+    - name: Download Linux artifacts
+      uses: actions/download-artifact@v4
       with:
-        flutter-version: 'stable'
+        name: fv2ray-linux
+        path: fv2ray-linux
 
-    - name: Install dependencies
-      run: flutter pub get
-
-    - name: Install CocoaPods dependencies
-      run: |
-        cd ios
-        pod install
-
-    - name: Build iOS
-      run: flutter build ios --no-codesign
-
-    - name: Upload iOS artifacts
-      uses: actions/upload-artifact@v3
+    - name: Download Windows artifacts
+      uses: actions/download-artifact@v4
       with:
-        name: ios-build
-        path: build/ios/
+        name: fv2ray-windows
+        path: fv2ray-windows
+
+    - name: Download macOS artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: fv2ray-macos
+        path: fv2ray-macos
+
+    - name: Download Android APK api28 artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: fv2ray-android-api28
+        path: fv2ray-android-api28
+
+    - name: Download Android APK apilatest artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: fv2ray-android-apilatest
+        path: fv2ray-android-apilatest
+    
+    - run: ls -R
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref_name }}
+        release_name: Release ${{ github.ref_name }}
+        body: "Automated release of fv2ray."
+        draft: true
+        prerelease: true
+
+    - name: zip linux
+      run: zip -r fv2ray-linux.zip fv2ray-linux
+
+    - name: Upload Linux artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: fv2ray-linux.zip
+        asset_name: fv2ray-linux.zip
+        asset_content_type: application/zip
+
+    - name: zip windows
+      run: zip -r fv2ray-windows.zip fv2ray-windows
+
+    - name: Upload Windows artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: fv2ray-windows.zip
+        asset_name: fv2ray-windows.zip
+        asset_content_type: application/zip
+
+    - name: Upload macOS artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: fv2ray-macos/fv2ray-macos.dmg
+        asset_name: fv2ray-macos.dmg
+        asset_content_type: application/x-apple-diskimage
+
+    - name: Upload Android APK api28
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: fv2ray-android-api28/app-api28-release.apk
+        asset_name: fv2ray-android-api28.apk
+        asset_content_type: application/vnd.android.package-archive
+
+    - name: Upload Android APK apilatest
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: fv2ray-android-apilatest/app-apilatest-release.apk
+        asset_name: fv2ray-android-apilatest.apk
+        asset_content_type: application/vnd.android.package-archive

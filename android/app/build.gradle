@@ -43,7 +43,7 @@ android {
 
     flavorDimensions "target"
     productFlavors {
-        apiLatest {
+        apilatest {
             dimension "target"
             targetSdk = flutter.targetSdkVersion
         }
