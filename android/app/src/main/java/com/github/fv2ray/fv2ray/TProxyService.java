@@ -23,7 +23,7 @@ import libv2raymobile.Libv2raymobile;
 public class TProxyService extends VpnService {
     public static native void TProxyStartService(String config_path, int fd);
     public static native void TProxyStopService();
-    // public static native long[] TProxyGetStats();
+    public static native long[] TProxyGetStats();
 
     public static final String ACTION_CONNECT = "com.github.fv2ray.fv2ray.CONNECT";
     public static final String ACTION_DISCONNECT = "com.github.fv2ray.fv2ray.DISCONNECT";
