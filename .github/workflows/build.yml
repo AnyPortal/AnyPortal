@@ -151,6 +151,12 @@ jobs:
         distribution: zulu
         java-version: 17
 
+    - name: Decode android/app/keystore.jks
+      run: echo "${{ secrets.KEYSTORE_JKS_PROD }}" | base64 --decode > android/app/keystore.jks
+
+    - name: Decode android/key.properties
+      run: echo "${{ secrets.KEY_PROPERTIES_PROD }}" | base64 --decode > android/key.properties
+
     - name: Build Android APK api28
       run: flutter build apk --release --flavor api28
 
