@@ -47,9 +47,10 @@ class PrefsManager {
   }
 
   Map<String, dynamic> defaults = {
-    // app.selectedProfileId,
-    // core.path,
-    // core.assetPath,
+    // 'core.path',
+    // 'core.assetPath',
+    'app.connectAtLaunch': true,
+    'app.selectedProfileId': 1,
     'core.useEmbedded': Platform.isAndroid || Platform.isIOS,
     'inject.api': true,
     'inject.api.port': 15490,

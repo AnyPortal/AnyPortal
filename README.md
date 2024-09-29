@@ -87,7 +87,6 @@
 - [ ] assets auto update
 - [ ] core auto update
 - [ ] auto core version
-- [ ] auto connect last session
 - [ ] license
 - [ ] profiles: group
 - [ ] profiles: group bulk action

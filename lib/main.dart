@@ -3,6 +3,7 @@ import 'dart:io';
 // import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:fv2ray/utils/core_manager.dart';
 
 import 'screens/home.dart';
 import 'screens/home/settings/tun.dart';
@@ -25,6 +26,17 @@ void main() async {
   } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     initSystemTray();
     initLaunchAtStartup();
+  }
+
+  final coreManManager = CoreManManager();
+  await coreManManager.init();
+
+  if (prefs.getBool('app.connectAtLaunch')!) {
+    try {
+      if (!await coreMan.on()) {
+        await coreMan.start();
+      }
+    } on Exception catch (_) {}
   }
 
   runApp(const Fv2ray());

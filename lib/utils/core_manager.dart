@@ -156,6 +156,7 @@ class CoreManagerExec extends CoreManager {
 }
 
 class CoreManagerMC extends CoreManager {
+
   static const platform = MethodChannel('com.github.fv2ray.fv2ray');
 
   @override
@@ -177,5 +178,24 @@ class CoreManagerMC extends CoreManager {
   }
 }
 
-final coreMan =
-    Platform.isAndroid || Platform.isIOS ? CoreManagerMC() : CoreManagerExec();
+class CoreManManager {
+  static final CoreManManager _instance = CoreManManager._internal();
+  final Completer<void> _completer = Completer<void>();
+  late CoreManager _coreMan;
+  // Private constructor
+  CoreManManager._internal();
+
+  // Singleton accessor
+  factory CoreManManager() {
+    return _instance;
+  }
+
+  // Async initializer (call once at app startup)
+  Future<void> init() async {
+    _coreMan =
+        Platform.isAndroid || Platform.isIOS ? CoreManagerMC() : CoreManagerExec();
+    _completer.complete(); // Signal that initialization is complete
+  }
+}
+
+final coreMan = CoreManManager()._coreMan;
