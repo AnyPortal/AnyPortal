@@ -117,8 +117,8 @@ jobs:
         name: fv2ray-macos
         path: build/macos/Build/Products/Release/fv2ray-macos.dmg
 
-  # Build for Android
-  android:
+  # Build for Android api28
+  android-api28:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout source code
@@ -164,8 +164,47 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: fv2ray-android-api28
-        path: |
-          build/app/outputs/flutter-apk/app-api28-release.apk
+        path: build/app/outputs/flutter-apk/app-api28-release.apk
+
+  # Build for Android apilatest
+  android-apilatest:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: 3.24.3
+
+    - name: Install dependencies
+      run: flutter pub get
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+
+    - name: Install Protoc
+      uses: arduino/setup-protoc@v3
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: bash scripts/prepare.sh android
+      run: bash scripts/prepare.sh android
+
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: zulu
+        java-version: 17
+
+    - name: Decode android/app/keystore.jks
+      run: echo "${{ secrets.KEYSTORE_JKS_PROD }}" | base64 --decode > android/app/keystore.jks
+
+    - name: Decode android/key.properties
+      run: echo "${{ secrets.KEY_PROPERTIES_PROD }}" | base64 --decode > android/key.properties
 
     - name: Build Android APK apilatest
       run: flutter build apk --release --flavor apilatest
@@ -174,8 +213,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: fv2ray-android-apilatest
-        path: |
-          build/app/outputs/flutter-apk/app-apilatest-release.apk
+        path: build/app/outputs/flutter-apk/app-apilatest-release.apk
 
   # # Build for iOS (requires macOS)
   # ios:
@@ -222,7 +260,7 @@ jobs:
   # Release Job
   release:
     runs-on: ubuntu-latest
-    needs: [linux, windows, macos, android]
+    needs: [linux, windows, macos, android-api28, android-apilatest]
     steps:
     - name: Download Linux artifacts
       uses: actions/download-artifact@v4
