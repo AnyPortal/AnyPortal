@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:tray_manager/tray_manager.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'home/logs.dart';
 import 'home/dashboard.dart';
@@ -36,7 +38,7 @@ class ScreenNav {
   ScreenNav(this.widget, this.title, this.icon);
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WindowListener, TrayListener  {
   int _selectedIndex = 0;
   String _pathLog = "";
 
@@ -48,6 +50,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    trayManager.addListener(this);
+    windowManager.addListener(this);
     super.initState();
     getApplicationDocumentsDirectory().then((folder) {
       setState(() {
@@ -55,6 +59,13 @@ class _HomePageState extends State<HomePage> {
             File(p.join(folder.path, 'fv2ray', 'core.log')).absolute.path;
       });
     });
+  }
+
+  @override
+  void dispose() {
+    trayManager.removeListener(this);
+    windowManager.removeListener(this);
+    super.dispose();
   }
 
   @override
@@ -151,5 +162,40 @@ class _HomePageState extends State<HomePage> {
 
     // Switch between portrait and landscape layouts
     return isLandscape ? landscapeLayout : portraitLayout;
+  }
+
+  // @override
+  // void onWindowEvent(String eventName) {
+  //   log('[WindowManager] onWindowEvent: $eventName');
+  // }
+
+  @override
+  void onWindowMinimize() async {
+    windowManager.setSkipTaskbar(true);
+  }
+
+  @override
+  void onTrayIconMouseDown() async {
+    windowManager.show();
+    windowManager.setSkipTaskbar(false);
+  }
+
+  @override
+  void onTrayIconRightMouseDown() {
+    trayManager.popUpContextMenu();
+  }
+
+  @override
+  void onTrayMenuItemClick(MenuItem menuItem) {
+    if (menuItem.key == 'exit') {
+      // SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+      exit(0);
+    }
+  }
+
+  @override
+  void onWindowFocus() {
+    // Make sure to call once.
+    setState(() {});
   }
 }
