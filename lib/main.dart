@@ -13,7 +13,7 @@ import 'utils/launch_at_startup.dart';
 import 'utils/prefs.dart';
 import 'utils/tray.dart';
 
-void main() async {
+void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final dbManager = DatabaseManager();
@@ -46,8 +46,10 @@ void main() async {
     skipTaskbar: false,
   );
   await windowManager.waitUntilReadyToShow(windowOptions, () async {
-    await windowManager.show();
-    await windowManager.focus();
+    if (!args.contains("--minimized")){
+      await windowManager.show();
+      await windowManager.focus();
+    }
   });
 
   runApp(const Fv2ray());

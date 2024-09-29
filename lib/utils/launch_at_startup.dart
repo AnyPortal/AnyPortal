@@ -11,5 +11,8 @@ initLaunchAtStartup() async {
     appPath: Platform.resolvedExecutable,
     // Set packageName parameter to support MSIX.
     packageName: 'fv2ray',
+    args: [
+      "--minimized",
+    ]
   );
 }
