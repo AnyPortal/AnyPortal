@@ -19,7 +19,6 @@ class _GeneralScreenState extends State<GeneralScreen> {
   bool _connectAtLaunch = prefs.getBool('app.connectAtLaunch')!;
 
   @override
-  @override
   void initState() {
     super.initState();
     _loadLaunchAtStartup();
@@ -49,7 +48,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
       if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
         ListTile(
           title: const Text("Auto launch"),
-          subtitle: const Text("Auto launch at login"),
+          subtitle: const Text("Auto launch (minimized to tray) at login"),
           trailing: Switch(
             value: _launchAtStartup,
             onChanged: (value) async {

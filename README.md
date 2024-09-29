@@ -40,16 +40,25 @@
         <a href="https://github.com/fv2ray/fv2ray/releases/latest/download/fv2ray-linux.zip"><img src="https://img.shields.io/badge/Portable-x64-f84e29.svg?logo=linux"> </a><br>
       </td>
     </tr>
+    <tr>
+      <td>iOS</td>
+      <td>
+        currently blocked<br>
+      </td>
+    </tr>
   </tbody>
 </table>
 </div>
 
 > [!WARNING]
 > This project is currently in its early alpha stage and may exhibit instability during execution. User preferences may not be retained in the final release, and the API is subject to change without prior notice. Please use this software at your own risk. 
+> 
 > 2024-09-27
 
 > [!IMPORTANT]
 > iOS development is currently blocked. iOS app using Network Extension requires a paid Apple Developer Program membership ($99/year) to debug even on our own devices, which is not available for the developers right now.
+>
+> 2024-09-27
 
 ## Technical details for power users
 
@@ -83,7 +92,6 @@
 - ✅ Working: Completed and functioning as expected
 - ❌ Not Working: Known issues, broken or currently non-functional
 
-- [ ] assets build
 - [ ] assets auto update
 - [ ] core auto update
 - [ ] auto core version
