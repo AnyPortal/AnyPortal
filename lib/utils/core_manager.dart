@@ -22,6 +22,11 @@ class NoSelectedProfileException implements Exception {
   NoSelectedProfileException(this.cause);
 }
 
+class InvalidSelectedProfileException implements Exception {
+  String cause;
+  InvalidSelectedProfileException(this.cause);
+}
+
 abstract class CoreManager {
   // bool _on = false;
   bool? _justOn;
@@ -49,7 +54,7 @@ abstract class CoreManager {
   void _stop();
 
   late int? _selectedProfileId;
-  late Profile? _selectedProfile;
+  late ProfileData? _selectedProfile;
   late bool _useEmbedded;
   late String? _corePath;
   late String? _assetPath;
@@ -64,17 +69,17 @@ abstract class CoreManager {
     if (_selectedProfileId == null) {
       throw NoSelectedProfileException("Please select a profile first.");
     }
-    _selectedProfile = await (db.select(db.profiles)
+    _selectedProfile = await (db.select(db.profile)
           ..where((p) => p.id.equals(_selectedProfileId!)))
         .getSingleOrNull();
     if (_selectedProfile == null) {
-      throw NoSelectedProfileException("Please select a profile first.");
+      throw InvalidSelectedProfileException("Please select a profile first.");
     }
 
     // gen config.json
     folder = await getApplicationDocumentsDirectory();
     final config = File(p.join(folder.path, 'fv2ray', 'config.gen.json'));
-    rawCfg = jsonDecode(_selectedProfile!.json) as Map<String, dynamic>;
+    rawCfg = jsonDecode(_selectedProfile!.coreCfg) as Map<String, dynamic>;
     final cfg = await getInjectedConfig(rawCfg);
     await config.writeAsString(jsonEncode(cfg));
 

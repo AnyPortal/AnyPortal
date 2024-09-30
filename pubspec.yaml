@@ -55,6 +55,8 @@ dependencies:
   window_manager: ^0.4.2
   tray_manager: ^0.2.4
   url_launcher: ^6.3.0
+  json_annotation: ^4.9.0
+  flutter_fancy_tree_view: ^1.6.0
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +71,7 @@ dev_dependencies:
   drift_dev: ^2.20.1
   build_runner: ^2.4.12
   flutter_launcher_icons: ^0.14.0
+  json_serializable: ^6.8.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -85,25 +85,25 @@
 - 💤 Not Planned: No plans for implementation or discontinued
 - 🔜 Planned: Planned for future development
 - 🚧 In Progress: Partially implemented, but not fully functional yet
+- ✅ Working: Completed and functioning as expected
+- ❌ Not Working: Known issues, broken or currently non-functional
 <!-- - 🛠 Under Development: Actively being worked on -->
 <!-- - 🧪 Experimental: Under experimental implementation or testing -->
 <!-- - ⏳ Awaiting Review: Needs testing or review -->
 <!-- - 📝 Documenting: In the process of being documented -->
-- ✅ Working: Completed and functioning as expected
-- ❌ Not Working: Known issues, broken or currently non-functional
 
 - [ ] assets auto update
 - [ ] core auto update
 - [ ] auto core version
 - [ ] license
-- [ ] profiles: group
 - [ ] profiles: group bulk action
-- [ ] profiles: subscription
 - [ ] profile: tcping
 - [ ] profile: remote auto update
 - [ ] Android custom core restart prompt
 - [ ] better log and hints
 - [ ] document
+  - [ ] remote profile
+  - [ ] subscription
 
 ## License
 

@@ -4,8 +4,10 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:drift/drift.dart' as drift;
 
 import '../models/profile.dart';
+import '../models/profile_group.dart';
 
 part 'db.g.dart';
 
@@ -27,6 +29,18 @@ class DatabaseManager {
     final dbFolder = await getApplicationDocumentsDirectory();
     final file = File(p.join(dbFolder.path, 'fv2ray', 'db.sqlite'));
     _db = LazyDatabase(() async => NativeDatabase(file));
+
+    final db = Database(_db);
+
+    await db.into(db.profileGroup).insertOnConflictUpdate(
+      ProfileGroupCompanion(
+        id: const drift.Value(1),
+        name: const drift.Value(""),
+        lastUpdated: drift.Value(DateTime.now()),
+        type: const drift.Value(ProfileGroupType.local)
+      )
+    );
+
     _completer.complete(); // Signal that initialization is complete
   }
 
@@ -41,7 +55,7 @@ class DatabaseManager {
 
 // Drift database definition
 @DriftDatabase(tables: [
-  Profiles, ProfileLocals, ProfileRemotes
+  Profile, ProfileLocal, ProfileRemote, ProfileGroup, ProfileGroupLocal, ProfileGroupRemote
 ])
 class Database extends _$Database {
   Database(super.e);

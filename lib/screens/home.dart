@@ -138,11 +138,6 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener  
 
     // Layout for portrait mode with bottom navigation bar
     Widget portraitLayout = Scaffold(
-        appBar: AppBar(
-          // Use the selected tab's label for the AppBar title
-          title: Text(screens[_selectedIndex].title),
-          backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-        ),
         body: Center(
           child: screens.elementAt(_selectedIndex).widget,
         ),

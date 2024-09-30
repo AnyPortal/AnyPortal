@@ -4,6 +4,7 @@ import 'package:fv2ray/screens/home/dashboard/direct_speed.dart';
 import 'package:fv2ray/screens/home/dashboard/proxy_speed.dart';
 import 'package:fv2ray/screens/home/dashboard/speed_chart.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../utils/db.dart';
 import '../../utils/prefs.dart';
@@ -24,8 +25,8 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  List<Profile> _profiles = [];
-  Profile? _selectedProfile;
+  List<ProfileData> _profiles = [];
+  ProfileData? _selectedProfile;
 
   bool _highlightSelectProfile = false;
 
@@ -43,7 +44,7 @@ class _DashboardState extends State<Dashboard> {
   Future<void> _loadSettings() async {
     final selectedProfileId = prefs.getInt('app.selectedProfileId');
     if (selectedProfileId != null) {
-      final selectedProfile = await (db.select(db.profiles)
+      final selectedProfile = await (db.select(db.profile)
             ..where((p) => p.id.equals(selectedProfileId)))
           .getSingleOrNull();
       setState(() {
@@ -53,7 +54,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<void> _loadProfiles() async {
-    final profiles = await (db.select(db.profiles)
+    final profiles = await (db.select(db.profile)
           ..orderBy([
             (u) => OrderingTerm(
                   expression: u.name,
@@ -75,6 +76,10 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          title: Text(AppLocalizations.of(context)!.dashboard),
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+        ),
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           padding: const EdgeInsets.all(8.0),

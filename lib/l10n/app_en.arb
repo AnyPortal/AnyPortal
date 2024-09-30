@@ -2,5 +2,7 @@
   "dashboard": "Dashboard",
   "logs": "Logs",
   "profiles": "Profiles",
-  "settings": "Settings"
+  "settings": "Settings",
+  "addProfile": "Add profile",
+  "addProfileGroup": "Add profile group"
 }

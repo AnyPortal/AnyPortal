@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fv2ray/screens/home/settings/tun.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'settings/about.dart';
 import 'settings/core.dart';
@@ -21,6 +22,10 @@ class _SettingListState extends State<SettingList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.settings),
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+      ),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Wrap(children: [
