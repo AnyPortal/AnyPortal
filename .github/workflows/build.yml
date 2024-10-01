@@ -302,7 +302,7 @@ jobs:
       with:
         tag_name: ${{ github.ref_name }}
         release_name: Release ${{ github.ref_name }}
-        body: "Automated release of fv2ray."
+        body: ""
         draft: true
         prerelease: true
 
