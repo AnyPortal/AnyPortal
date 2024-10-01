@@ -30,6 +30,18 @@ void main(List<String> args) async {
   } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     initSystemTray();
     initLaunchAtStartup();
+
+    await windowManager.ensureInitialized();
+
+    WindowOptions windowOptions = const WindowOptions(
+      skipTaskbar: false,
+    );
+    await windowManager.waitUntilReadyToShow(windowOptions, () async {
+      if (!args.contains("--minimized")) {
+        await windowManager.show();
+        await windowManager.focus();
+      }
+    });
   }
 
   if (prefs.getBool('app.connectAtLaunch')!) {
@@ -39,18 +51,6 @@ void main(List<String> args) async {
       }
     } on Exception catch (_) {}
   }
-
-  await windowManager.ensureInitialized();
-
-  WindowOptions windowOptions = const WindowOptions(
-    skipTaskbar: false,
-  );
-  await windowManager.waitUntilReadyToShow(windowOptions, () async {
-    if (!args.contains("--minimized")){
-      await windowManager.show();
-      await windowManager.focus();
-    }
-  });
 
   runApp(const Fv2ray());
 }

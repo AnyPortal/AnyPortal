@@ -160,17 +160,18 @@ class _ProfileListState extends State<ProfileList> {
     }
 
     _root.clear();
-    _root.addAll(_profileGroups.entries.map((entry) {
-      final profileGroupId = entry.key;
-      final profiles = _groupedProfiles[profileGroupId];
 
-      return TreeNode(
-        data: profileGroupId,
-        key: "$profileGroupId",
-      )..addAll(profiles!.map((profile) {
-          return TreeNode(data: profile, key: "${profile.id}");
-        }).toList());
-    }).toList());
+    for (var profileGroupId in _profileGroups.keys) {
+      final profiles = _groupedProfiles[profileGroupId];
+      if (profiles != null) {
+        _root.add(TreeNode(
+          data: profileGroupId,
+          key: "$profileGroupId",
+        )..addAll(profiles.map((profile) {
+            return TreeNode(data: profile, key: "${profile.id}");
+          }).toList()));
+      }
+    }
 
     if (profiles.isEmpty) {
       setHighlightProfilesPopupMenuButton();
@@ -269,7 +270,7 @@ class _ProfileListState extends State<ProfileList> {
                 //   if (true) controller.expandAllChildren(_root);
                 // },
                 builder: (context, node) {
-                  if (node.isLeaf) {
+                  if (node.level == 2) {
                     final profile = node.data as ProfileData;
                     return RadioListTile(
                         value: profile.id,
