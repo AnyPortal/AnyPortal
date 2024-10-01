@@ -2,8 +2,11 @@ import 'dart:io';
 
 // import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:fv2ray/utils/core_manager.dart';
+import 'package:system_theme/system_theme.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'screens/home.dart';
@@ -28,11 +31,12 @@ void main(List<String> args) async {
   if (Platform.isAndroid || Platform.isIOS) {
     await tProxyConfInit();
   } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    initSystemTray();
+    // auto launch at login
     initLaunchAtStartup();
 
+    // minimize to tray
+    initSystemTray();
     await windowManager.ensureInitialized();
-
     WindowOptions windowOptions = const WindowOptions(
       skipTaskbar: false,
     );
@@ -42,12 +46,25 @@ void main(List<String> args) async {
         await windowManager.focus();
       }
     });
+
+    // transparent background
+    await Window.initialize();
+    var dispatcher = SchedulerBinding.instance.platformDispatcher;
+    await Window.setEffect(
+      effect: WindowEffect.mica,
+      dark: dispatcher.platformBrightness == Brightness.dark,
+    );
   }
 
+  // theme color
+  SystemTheme.fallbackColor = const Color.fromARGB(82, 0, 140, 255);
+  await SystemTheme.accentColor.load();
+
+  // connect at launch
   if (prefs.getBool('app.connectAtLaunch')!) {
     try {
       if (!await coreMan.on()) {
-        await coreMan.start();
+        coreMan.start();
       }
     } on Exception catch (_) {}
   }
@@ -61,32 +78,74 @@ class Fv2ray extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    ThemeData getPlatformThemeData() {
+      if (Platform.isWindows || Platform.isMacOS) {
+        return ThemeData(
+          colorSchemeSeed: SystemTheme.accentColor.accent,
+          useMaterial3: true,
+          scaffoldBackgroundColor: Colors.transparent,
+          cardTheme: const CardTheme(
+            color: Color.fromARGB(240, 255, 255, 255),
+            shadowColor: Color.fromARGB(172, 0, 0, 0),
+          ),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.transparent,
+          ),
+          navigationBarTheme: const NavigationBarThemeData(
+            backgroundColor: Colors.transparent,
+            indicatorColor: Color.fromARGB(240, 255, 255, 255),
+          ),
+          pageTransitionsTheme: const PageTransitionsTheme(builders: {
+            TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.linux: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+          }),
+        );
+      } else {
+        return ThemeData(
+          colorSchemeSeed: SystemTheme.accentColor.accent,
+          useMaterial3: true,
+        );
+      }
+    }
+
+    ThemeData getPlatformDarkThemeData() {
+      if (Platform.isWindows || Platform.isMacOS) {
+        return ThemeData(
+          brightness: Brightness.dark,
+          colorSchemeSeed: SystemTheme.accentColor.accent,
+          useMaterial3: true,
+          scaffoldBackgroundColor: Colors.transparent,
+          cardTheme: const CardTheme(
+            color: Color.fromARGB(16, 255, 255, 255),
+            shadowColor: Color.fromARGB(64, 0, 0, 0),
+          ),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.transparent,
+          ),
+          navigationBarTheme: const NavigationBarThemeData(
+            backgroundColor: Colors.transparent,
+            indicatorColor: Color.fromARGB(16, 255, 255, 255),
+          ),
+          pageTransitionsTheme: const PageTransitionsTheme(builders: {
+            TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.linux: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+          }),
+        );
+      } else {
+        return ThemeData(
+          brightness: Brightness.dark,
+          colorSchemeSeed: SystemTheme.accentColor.accent,
+          useMaterial3: true,
+        );
+      }
+    }
+
     return MaterialApp(
       title: 'Fv2ray',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        colorSchemeSeed: const Color.fromARGB(82, 0, 140, 255),
-        useMaterial3: true,
-      ),
+      theme: getPlatformThemeData(),
+      darkTheme: getPlatformDarkThemeData(),
       home: const HomePage(title: 'Flutter Demo Home Page'),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,

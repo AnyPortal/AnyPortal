@@ -252,8 +252,7 @@ class _ProfileListState extends State<ProfileList> {
                   onSelected: (value) => handleProfilesAction(value),
                 )),
           ]),
-          backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-        ),
+                  ),
         body: Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
             child: CustomScrollView(slivers: [

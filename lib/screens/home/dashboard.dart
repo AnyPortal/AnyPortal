@@ -78,8 +78,7 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.dashboard),
-          backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-        ),
+                  ),
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           padding: const EdgeInsets.all(8.0),

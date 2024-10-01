@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -38,7 +40,7 @@ class ScreenNav {
   ScreenNav(this.widget, this.title, this.icon);
 }
 
-class _HomePageState extends State<HomePage> with WindowListener, TrayListener  {
+class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
   int _selectedIndex = 0;
   String _pathLog = "";
 
@@ -101,25 +103,31 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener  
         body: Row(
       children: [
         // Custom Drawer in landscape mode
-        Container(
+        SizedBox(
             width: 250,
-            color: Theme.of(context).colorScheme.surfaceContainer,
             child: ListView(
                 padding: const EdgeInsets.all(12),
                 children: (screens.asMap().entries.map<Widget>((entry) {
                   final index = entry.key;
                   final screen = entry.value;
                   return Card(
+                      // color: _selectedIndex == index
+                      //     ? Theme.of(context).colorScheme.surfaceContainerLowest
+                      //     : Theme.of(context).colorScheme.surfaceContainer,
+                      // shadowColor: _selectedIndex == index
+                      //     ? Theme.of(context).colorScheme.shadow
+                      //     : Colors.transparent,
                       color: _selectedIndex == index
-                          ? Theme.of(context).colorScheme.surfaceContainerLowest
-                          : Theme.of(context).colorScheme.surfaceContainer,
+                          ? Theme.of(context).cardTheme.color
+                          : Colors.transparent,
                       shadowColor: _selectedIndex == index
-                          ? Theme.of(context).colorScheme.shadow
+                          ? Theme.of(context).cardTheme.shadowColor
                           : Colors.transparent,
                       child: ListTile(
                         leading: screen.icon,
                         title: Text(screen.title),
                         selected: _selectedIndex == index,
+                        selectedColor: Theme.of(context).textTheme.titleMedium!.color,
                         onTap: () {
                           setState(() {
                             _selectedIndex = index;
@@ -192,5 +200,16 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener  
   void onWindowFocus() {
     // Make sure to call once.
     setState(() {});
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    var dispatcher = SchedulerBinding.instance.platformDispatcher;
+    Window.setEffect(
+      effect: WindowEffect.mica,
+      dark: dispatcher.platformBrightness == Brightness.dark,
+    );
   }
 }

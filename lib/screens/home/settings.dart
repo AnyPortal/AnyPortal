@@ -24,8 +24,7 @@ class _SettingListState extends State<SettingList> {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.settings),
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-      ),
+              ),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Wrap(children: [

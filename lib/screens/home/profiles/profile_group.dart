@@ -249,8 +249,7 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
       appBar: AppBar(
         // Use the selected tab's label for the AppBar title
         title: const Text("Edit Profile Group"),
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-      ),
+              ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(

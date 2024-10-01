@@ -17,8 +17,7 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
       appBar: AppBar(
         // Use the selected tab's label for the AppBar title
         title: const Text("Installed apps"),
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-      ),
+              ),
       body: const InstalledAppList(),
     );
   }

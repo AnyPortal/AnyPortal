@@ -224,8 +224,7 @@ class _CoreScreenState extends State<CoreScreen> {
       appBar: AppBar(
         // Use the selected tab's label for the AppBar title
         title: const Text("Core settings"),
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-      ),
+              ),
       body: ListView.builder(
         itemCount: fields.length,
         itemBuilder: (context, index) => fields[index],

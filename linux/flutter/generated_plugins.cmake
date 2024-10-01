@@ -3,8 +3,10 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  flutter_acrylic
   screen_retriever
   sqlite3_flutter_libs
+  system_theme
   tray_manager
   url_launcher_linux
   window_manager

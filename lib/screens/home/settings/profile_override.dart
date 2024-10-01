@@ -249,8 +249,7 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
       appBar: AppBar(
         // Use the selected tab's label for the AppBar title
         title: const Text("Profile override"),
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-      ),
+              ),
       body: Form(
         child: ListView.builder(
           itemCount: fields.length,
