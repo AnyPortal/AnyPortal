@@ -1,9 +1,9 @@
+import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:fv2ray/models/profile_group.dart';
 import 'package:fv2ray/screens/home/profiles/profile_group.dart';
 import 'package:fv2ray/utils/db.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
@@ -56,6 +56,8 @@ class _ProfileListState extends State<ProfileList> {
           _highlightProfilesPopupMenuButton = true;
         });
         await Future.delayed(const Duration(milliseconds: 1500));
+      } else {
+        return;
       }
     }
   }
@@ -127,6 +129,8 @@ class _ProfileListState extends State<ProfileList> {
   Map<int, List<ProfileData>> _groupedProfiles = {};
   Map<int, ProfileGroupData> _profileGroups = {};
 
+  final TreeNode _root = TreeNode.root();
+
   Future<void> _loadProfiles() async {
     final profiles = await (db.select(db.profile)
           ..orderBy([
@@ -155,10 +159,18 @@ class _ProfileListState extends State<ProfileList> {
       _profileGroups[profileGroup.id] = profileGroup;
     }
 
-    setState(() {
-      _groupedProfiles = _groupedProfiles;
-      _profileGroups = _profileGroups;
-    });
+    _root.clear();
+    _root.addAll(_profileGroups.entries.map((entry) {
+      final profileGroupId = entry.key;
+      final profiles = _groupedProfiles[profileGroupId];
+
+      return TreeNode(
+        data: profileGroupId,
+        key: "$profileGroupId",
+      )..addAll(profiles!.map((profile) {
+          return TreeNode(data: profile, key: "${profile.id}");
+        }).toList());
+    }).toList());
 
     if (profiles.isEmpty) {
       setHighlightProfilesPopupMenuButton();
@@ -223,94 +235,88 @@ class _ProfileListState extends State<ProfileList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(children: [
-          Expanded(child: Text(AppLocalizations.of(context)!.profiles)),
-          SmoothHighlight(
-              enabled: _highlightProfilesPopupMenuButton,
-              color: Colors.grey,
-              child: PopupMenuButton(
-                itemBuilder: (context) => ProfilesAction.values
-                    .map((action) => PopupMenuItem(
-                          value: action,
-                          child: Text(action.toShortString(context)),
-                        ))
-                    .toList(),
-                onSelected: (value) => handleProfilesAction(value),
-              )),
-        ]),
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-      ),
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Wrap(
-          children: _groupedProfiles.entries
-                  .map((entry) {
-                    final profileGroupId = entry.key;
-                    final profiles = entry.value;
+        appBar: AppBar(
+          title: Row(children: [
+            Expanded(child: Text(AppLocalizations.of(context)!.profiles)),
+            SmoothHighlight(
+                enabled: _highlightProfilesPopupMenuButton,
+                color: Colors.grey,
+                child: PopupMenuButton(
+                  itemBuilder: (context) => ProfilesAction.values
+                      .map((action) => PopupMenuItem(
+                            value: action,
+                            child: Text(action.toShortString(context)),
+                          ))
+                      .toList(),
+                  onSelected: (value) => handleProfilesAction(value),
+                )),
+          ]),
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+        ),
+        body: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
+            child: CustomScrollView(slivers: [
+              SliverTreeView.simple(
+                tree: _root,
+                showRootNode: false,
+                expansionIndicatorBuilder: (context, node) =>
+                    ChevronIndicator.rightDown(
+                  alignment: Alignment.centerLeft,
+                  tree: node,
+                ),
+                indentation: const Indentation(style: IndentStyle.squareJoint),
+                // onTreeReady: (controller) {
+                //   if (true) controller.expandAllChildren(_root);
+                // },
+                builder: (context, node) {
+                  if (node.isLeaf) {
+                    final profile = node.data as ProfileData;
+                    return RadioListTile(
+                        value: profile.id,
+                        groupValue: _selectedProfileId,
+                        onChanged: (value) {
+                          prefs.setInt('app.selectedProfileId', value!);
+                          setState(() {
+                            _selectedProfileId = value;
+                          });
+                        },
+                        title: Text(profile.name.toString()),
+                        subtitle: Text('last updated: ${profile.lastUpdated}'),
+                        secondary: PopupMenuButton<ProfileAction>(
+                          onSelected: (value) =>
+                              handleProfileAction(profile, value),
+                          itemBuilder: (context) => ProfileAction.values
+                              .map((action) => PopupMenuItem(
+                                    value: action,
+                                    child: Text(action.name),
+                                  ))
+                              .toList(),
+                        ));
+                  } else {
+                    final profileGroupId = node.data as int;
                     final profileGroupTitle =
                         getProfileGroupTitle(_profileGroups[profileGroupId]!);
                     final profileGroupSubTitle = getProfileGroupSubTitle(
                         _profileGroups[profileGroupId]!);
-
-                    return [
-                          ListTile(
-                            title: Text(profileGroupTitle),
-                            subtitle: Text(profileGroupSubTitle),
-                            trailing: PopupMenuButton<ProfileGroupAction>(
-                              onSelected: (value) => handleProfileGroupAction(
-                                  profileGroupId, value),
-                              itemBuilder: (context) =>
-                                  ProfileGroupAction.values
-                                      .map((action) => PopupMenuItem(
-                                            value: action,
-                                            child: Text(action.name),
-                                          ))
-                                      .toList(),
-                            ),
-                          ) as Widget,
-                        ] +
-                        profiles.map<Widget>((profile) {
-                          final lastUpdated =
-                              DateFormat().format(profile.lastUpdated);
-                          return RadioListTile(
-                            value: profile.id,
-                            groupValue: _selectedProfileId,
-                            onChanged: (value) {
-                              prefs.setInt('app.selectedProfileId', value!);
-                              setState(() {
-                                _selectedProfileId = value;
-                              });
-                            },
-                            // title:  ListTile(
-                            title: Text(profile.name.toString()),
-                            subtitle: Text('last updated: $lastUpdated'),
-                            secondary: PopupMenuButton<ProfileAction>(
-                              onSelected: (value) =>
-                                  handleProfileAction(profile, value),
-                              itemBuilder: (context) => ProfileAction.values
-                                  .map((action) => PopupMenuItem(
-                                        value: action,
-                                        child: Text(action.name),
-                                      ))
-                                  .toList(),
-                            ),
-                            // ),
-                          );
-                        }).toList();
-                  })
-                  .toList()
-                  .expand((x) => x)
-                  .toList() +
-              [
-                Container(
-                  constraints: const BoxConstraints(
-                    minHeight: 72,
-                  ),
-                )
-              ],
-        ),
-      ),
-    );
+                    return ListTile(
+                      title: Text(profileGroupTitle),
+                      subtitle: Text(profileGroupSubTitle),
+                      // leading: node.isExpanded ? Icon(Icons.folder_open) : Icon(Icons.folder),
+                      leading: const Icon(null),
+                      trailing: PopupMenuButton<ProfileGroupAction>(
+                        onSelected: (value) =>
+                            handleProfileGroupAction(profileGroupId, value),
+                        itemBuilder: (context) => ProfileGroupAction.values
+                            .map((action) => PopupMenuItem(
+                                  value: action,
+                                  child: Text(action.name),
+                                ))
+                            .toList(),
+                      ),
+                    );
+                  }
+                },
+              ),
+            ])));
   }
 }

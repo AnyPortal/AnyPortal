@@ -30,6 +30,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.11.3"
+  animated_tree_view:
+    dependency: "direct main"
+    description:
+      name: animated_tree_view
+      sha256: ed982be7fa2cf51b62bb76e95b6a0f423cde12f1da8745a1da938e82a7baacf2
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.0"
   archive:
     dependency: transitive
     description:
@@ -222,6 +230,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.6"
+  diffutil_dart:
+    dependency: transitive
+    description:
+      name: diffutil_dart
+      sha256: "5e74883aedf87f3b703cb85e815bdc1ed9208b33501556e4a8a5572af9845c81"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.1"
   drift:
     dependency: "direct main"
     description:
@@ -778,6 +794,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.1.9"
+  scroll_to_index:
+    dependency: transitive
+    description:
+      name: scroll_to_index
+      sha256: b707546e7500d9f070d63e5acf74fd437ec7eeeb68d3412ef7b0afada0b4f176
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.1"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -895,6 +919,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.10.0"
+  sprintf:
+    dependency: transitive
+    description:
+      name: sprintf
+      sha256: "1fc9ffe69d4df602376b52949af107d8f5703b77cda567c4d7d86a0693120f23"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.0.0"
   sqlite3:
     dependency: transitive
     description:
@@ -1055,6 +1087,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.2"
+  uuid:
+    dependency: transitive
+    description:
+      name: uuid
+      sha256: a5be9ef6618a7ac1e964353ef476418026db906c4facdedaa299b7a2e71690ff
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.5.1"
   vector_math:
     dependency: transitive
     description:
