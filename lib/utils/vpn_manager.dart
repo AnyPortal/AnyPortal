@@ -28,12 +28,20 @@ class InvalidSelectedProfileException implements Exception {
   InvalidSelectedProfileException(this.cause);
 }
 
+class IsActiveRecord {
+  bool isActive;
+  DateTime datetime;
+  String source;
+
+  IsActiveRecord(this.isActive, this.datetime, this.source);
+}
+
 abstract class VPNManager with ChangeNotifier {
   bool isToggling = false;
-  bool isActive = false;
+  IsActiveRecord isActiveRecord = IsActiveRecord(false, DateTime.now(), "init");
   bool isExpectingActive = false;
 
-  Future<bool> _getIsActive();
+  Future<IsActiveRecord> _getIsActiveRecord();
   Future<void> _start();
   Future<void> _stop();
 
@@ -44,27 +52,29 @@ abstract class VPNManager with ChangeNotifier {
     }
   }
 
-  Future<bool> updateIsActive() async {
-    final newIsActive = await _getIsActive();
-    if (isActive != newIsActive) {
-      isActive = newIsActive;
-      notifyListeners();
-    }
-    return isActive;
+  Future<IsActiveRecord> updateIsActiveRecord() async {
+    _setIsActive(await _getIsActiveRecord());
+    return isActiveRecord;
   }
 
-  void _setIsActive(bool val) {
-    if (isActive != val) {
-      isActive = val;
-      notifyListeners();
+  void _setIsActive(IsActiveRecord r) {
+    if (r.datetime.isBefore(isActiveRecord.datetime)) {
+      return;
     }
+    if (r.isActive == isActiveRecord.isActive) {
+      isActiveRecord = r;
+      return;
+    }
+    isActiveRecord = r;
+    notifyListeners();
+    return;
   }
 
   Future<void> start() async {
     if (isToggling) return;
     _setIsToggling(true);
     isExpectingActive = true;
-    if (await updateIsActive()) {
+    if ((await updateIsActiveRecord()).isActive) {
       return;
     }
     await init();
@@ -79,7 +89,7 @@ abstract class VPNManager with ChangeNotifier {
     if (isToggling) return;
     _setIsToggling(true);
     isExpectingActive = false;
-    if (!await updateIsActive()) {
+    if (!(await updateIsActiveRecord()).isActive) {
       return;
     }
     await _stop();
@@ -142,13 +152,14 @@ class VPNManagerExec extends VPNManager {
   int? pid;
 
   @override
-  Future<bool> _getIsActive() async {
+  Future<IsActiveRecord> _getIsActiveRecord() async {
+    final now = DateTime.now();
     if (process != null) {
-      return true;
+      return IsActiveRecord(true, now, "process");
     } else {
       final port = prefs.getInt('inject.api.port') ?? 15490;
       pid = await getPidOfPort(port);
-      return pid != null;
+      return IsActiveRecord(pid != null, now, "port");
     }
   }
 
@@ -156,7 +167,7 @@ class VPNManagerExec extends VPNManager {
   _start() async {
     process = await Process.start(_corePath!, _coreArgList,
         environment: _environment);
-    await updateIsActive();
+    await updateIsActiveRecord();
     _setIsToggling(false);
     return;
   }
@@ -166,17 +177,17 @@ class VPNManagerExec extends VPNManager {
     if (process != null) {
       process!.kill();
       process = null;
-      await updateIsActive();
+      await updateIsActiveRecord();
       _setIsToggling(false);
       return;
     }
     if (pid != null) {
       Process.killPid(pid!);
-      await updateIsActive();
+      await updateIsActiveRecord();
       _setIsToggling(false);
       return;
     }
-    await updateIsActive();
+    await updateIsActiveRecord();
     _setIsToggling(false);
     return;
   }
@@ -204,31 +215,37 @@ class VPNManagerMC extends VPNManager {
   }
 
   Future<void> _methodCallHandler(MethodCall call) async {
+    log("_methodCallHandler: ${call.method}");
     if (call.method == 'onVPNConnected' || call.method == 'onVPNDisconnected') {
       final newIsActive = call.method == 'onVPNConnected';
-      _setIsActive(newIsActive);
-      if (newIsActive == isExpectingActive){
-        _setIsToggling(false);
-      }
+      _setIsActive(IsActiveRecord(newIsActive, DateTime.now(), call.method));
+      // if (newIsActive == isExpectingActive){
+      // log("_setIsToggling: false");
+      _setIsToggling(false);
+      // }
     } else if (call.method == 'onTileToggled') {
       isExpectingActive = call.arguments as bool;
-      _setIsToggling(true);
+      // log("isExpectingActive: ${call.arguments}");
+      /// cannot promise onTileToggled reach before onVPNConnected/onVPNDisconnected
+      // _setIsToggling(true);
     }
   }
 
   @override
-  Future<bool> _getIsActive() async {
-    return await platform.invokeMethod('isTProxyServiceRunning');
+  Future<IsActiveRecord> _getIsActiveRecord() async {
+    final now = DateTime.now();
+    final newIsActive = await platform.invokeMethod('isTProxyRunning');
+    return IsActiveRecord(newIsActive, now, "isTProxyRunning");
   }
 
   @override
   _start() async {
-    await platform.invokeMethod('startTProxyService');
+    await platform.invokeMethod('startTProxy');
   }
 
   @override
   _stop() async {
-    await platform.invokeMethod('stopTProxyService');
+    await platform.invokeMethod('stopTProxy');
   }
 }
 

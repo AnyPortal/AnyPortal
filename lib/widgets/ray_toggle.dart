@@ -1,4 +1,5 @@
 import 'dart:async';
+// import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:fv2ray/utils/core_data_notifier.dart';
@@ -23,7 +24,7 @@ class RayToggleState extends State<RayToggle> {
   Timer? timer;
 
   Future<void> syncCoreDataNotifier() async {
-    final coreIsActive = await vPNMan.updateIsActive();
+    final coreIsActive = (await vPNMan.updateIsActiveRecord()).isActive;
     if (coreIsActive && !coreDataNotifier.on) {
       try {
         await vPNMan.init();
@@ -49,7 +50,7 @@ class RayToggleState extends State<RayToggle> {
   }
 
   void _toggle() async {
-    final isActive = await vPNMan.updateIsActive();
+    final isActive = (await vPNMan.updateIsActiveRecord()).isActive;
 
     Exception? err;
     try {
@@ -98,12 +99,18 @@ class RayToggleState extends State<RayToggle> {
         listenable: vPNMan,
         builder: (BuildContext context, Widget? child) {
           syncCoreDataNotifier();
+          // log("vPNMan: ${vPNMan.isActiveRecord.datetime} ${vPNMan.isActiveRecord.isActive} ${vPNMan.isActiveRecord.source}");
+          // log("isToggling: ${vPNMan.isToggling}");
           return FloatingActionButton(
               onPressed: vPNMan.isToggling ? null : _toggle,
-              tooltip: vPNMan.isActive ? 'disconnect' : 'connect',
+              tooltip:
+                  vPNMan.isActiveRecord.isActive ? 'disconnect' : 'connect',
               child: vPNMan.isToggling
-                  ? const CircularProgressIndicator()
-                  : vPNMan.isActive
+                  ? Transform.scale(
+                      scale: 0.5,
+                      child: const CircularProgressIndicator(),
+                    )
+                  : vPNMan.isActiveRecord.isActive
                       ? const Icon(Icons.stop)
                       : const Icon(Icons.play_arrow));
         });

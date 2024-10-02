@@ -1,8 +1,11 @@
 package com.github.fv2ray.fv2ray;
 
-import android.app.ActivityManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.os.IBinder;
 import android.os.Build;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
@@ -11,69 +14,111 @@ public class TProxyTileService extends TileService {
     public static final String ACTION_TILE_TOGGLED = "com.github.fv2ray.fv2ray.TILE_TOGGLED";
     public static final String EXTRA_IS_ACTIVE = "is_active";
 
-    @Override
-    public void onStartListening() {
-        Tile tile = getQsTile();
 
-        // Get selected profile from shared preferences
-        SharedPreferences prefs = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE);
 
-        String selectedProfileName = prefs.getString("flutter.app.selectedProfileName", "");
+    /// bind TProxyService
+    private TProxyService tProxyService;
+    private boolean bound = false;
 
-        // Update tile subtitle with the selected profile
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            tile.setSubtitle(selectedProfileName);
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            TProxyService.LocalBinder binder = (TProxyService.LocalBinder) service;
+            tProxyService = binder.getService();
+            bound = true;
+            updateTileState();
         }
 
-        // Check if the service is running and update the tile state
-        if (isServiceRunning()) {
-            tile.setState(Tile.STATE_ACTIVE);
-        } else {
-            tile.setState(Tile.STATE_INACTIVE);
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            bound = false;
+        }
+    };
+
+    private void bindTProxyService() {
+        if (!bound) {
+            Intent intent = new Intent(this, TProxyService.class);
+            bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        }
+    }
+
+
+    
+
+    @Override
+    public void onTileAdded() {
+        bindTProxyService();
+    }
+
+    @Override
+    public void onStartListening() {
+        bindTProxyService();
+
+        Tile tile = getQsTile();
+        if (tile == null){
+            return;
+        }
+        
+        // Update tile subtitle with the selected profile
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Get selected profile from shared preferences
+            SharedPreferences prefs = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE);
+            String selectedProfileName = prefs.getString("flutter.app.selectedProfileName", "");
+            tile.setSubtitle(selectedProfileName);
         }
 
         tile.setLabel("fv2ray");
         tile.updateTile();
     }
 
-    @Override
     public void onClick() {
-        Tile tile = getQsTile();
-
-        // Toggle the state based on the current state
-        if (tile.getState() == Tile.STATE_INACTIVE) {
-            // Start TProxyService
-            Intent intent = new Intent(this, TProxyService.class);
-            intent.setAction(TProxyService.ACTION_CONNECT);
-            startService(intent);
-
-            // Set the tile to active
-            tile.setState(Tile.STATE_ACTIVE);
-        } else {
-            // Stop TProxyService
-            Intent intent = new Intent(this, TProxyService.class);
-            intent.setAction(TProxyService.ACTION_DISCONNECT);
-            startService(intent);
-
-            // Set the tile to inactive
-            tile.setState(Tile.STATE_INACTIVE);
+        if (tProxyService == null) {
+            return;
         }
 
-        // Send broadcast to notify MainActivity
-        Intent broadcastIntent = new Intent(ACTION_TILE_TOGGLED);
-        broadcastIntent.putExtra(EXTRA_IS_ACTIVE, !isServiceRunning());
-        sendBroadcast(broadcastIntent);
+        Tile tile = getQsTile();
+        if (tile == null){
+            return;
+        }
 
-        tile.updateTile();
+        tile.setState(Tile.STATE_UNAVAILABLE);
+
+        if (tile.getState() == Tile.STATE_ACTIVE) {
+            notifyMainActivity(false);
+            stopTProxy();
+        } else {
+            notifyMainActivity(true);
+            startTProxy();
+        }
+
+        updateTileState();
     }
 
-    private boolean isServiceRunning() {
-        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (TProxyService.class.getName().equals(service.service.getClassName())) {
-                return true;
-            }
+    private void startTProxy() {
+        if (tProxyService != null) {
+            tProxyService.startTProxy();
         }
-        return false;
+    }
+
+    private void stopTProxy() {
+        if (tProxyService != null) {
+            tProxyService.stopTProxy();
+        }
+    }
+
+    public void notifyMainActivity(boolean isExpectingActive) {
+        // Send broadcast to notify MainActivity
+        Intent broadcastIntent = new Intent(ACTION_TILE_TOGGLED);
+        broadcastIntent.putExtra(EXTRA_IS_ACTIVE, isExpectingActive);
+        sendBroadcast(broadcastIntent);
+    }
+
+    private void updateTileState() {
+        Tile tile = getQsTile();
+        if (tile != null && tProxyService != null) {
+            boolean isActive = tProxyService.getIsActive();
+            tile.setState(isActive ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
+            tile.updateTile();
+        }
     }
 }

@@ -7,28 +7,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import android.os.Binder;
+import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.content.Intent;
 import android.net.VpnService;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.SharedPreferences;
 
+import androidx.annotation.Nullable;
+
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 
-import libv2raymobile.CoreManager;
 import libv2raymobile.Libv2raymobile;
 
 public class TProxyService extends VpnService {
     public static native void TProxyStartService(String config_path, int fd);
     public static native void TProxyStopService();
     public static native long[] TProxyGetStats();
-
-    public static final String ACTION_CONNECT = "com.github.fv2ray.fv2ray.CONNECT";
-    public static final String ACTION_CONNECTED = "com.github.fv2ray.fv2ray.CONNECTED";
-    public static final String ACTION_DISCONNECT = "com.github.fv2ray.fv2ray.DISCONNECT";
-    public static final String ACTION_DISCONNECTED = "com.github.fv2ray.fv2ray.DISCONNECTED";
 
     static {
         System.loadLibrary("hev-socks5-tunnel");
@@ -37,45 +34,69 @@ public class TProxyService extends VpnService {
     private ParcelFileDescriptor tunFd = null;
     private java.lang.Process coreProcess = null;
     private libv2raymobile.CoreManager coreManager = null;
+    private boolean isActive = false;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // android.os.Debug.waitForDebugger();  // this line is key
-        if (intent != null && ACTION_DISCONNECT.equals(intent.getAction())) {
-            stopService();
-            return START_NOT_STICKY;
-        }
-        startService();
+        // android.os.Debug.waitForDebugger();
+
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        stopService();
+        stopTProxy();
     }
 
     @Override
     public void onRevoke() {
-        stopService();
         super.onRevoke();
+        stopTProxy();
     }
+    
 
-    public static byte[] readFileToBytes(String filePath) throws IOException {
-        File file = new File(filePath);
-        byte[] fileBytes = new byte[(int) file.length()];
-        
-        try (FileInputStream fis = new FileInputStream(file)) {
-            int bytesRead = fis.read(fileBytes);
-            if (bytesRead != fileBytes.length) {
-                throw new IOException("Could not completely read file " + filePath);
-            }
+    
+    /// bind MainActivity
+    private final IBinder binder = new LocalBinder();
+    public class LocalBinder extends Binder {
+        public TProxyService getService() {
+            return TProxyService.this;
         }
-
-        return fileBytes;
     }
 
-    public void startService() {
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return binder;
+    }
+
+    /// Interface for MainActivity to receive status updates
+    public interface StatusUpdateListener {
+        void onStatusUpdate(boolean isActive);
+    }
+
+    private StatusUpdateListener statusListener;
+    /// Set listener for MainActivity to receive updates
+    public void setStatusUpdateListener(StatusUpdateListener listener) {
+        this.statusListener = listener;
+    }
+
+    public boolean getIsActive() {
+        return isActive;
+    }
+
+    /// Notify MainActivity of VPN status updates
+    private void notifyMainActivity() {
+        if (statusListener != null) {
+            statusListener.onStatusUpdate(isActive);
+        }
+    }
+
+
+
+    /// 
+    public void startTProxy() {
         if (coreManager != null || coreProcess != null){
             return;
         }
@@ -83,7 +104,7 @@ public class TProxyService extends VpnService {
 
         /* asset location */
         String assetPath = prefs.getString("flutter.core.assetPath", "");
-        if (assetPath == ""){
+        if (assetPath.isEmpty()){
             File assetFolder = new File(getFilesDir().getParent(), "app_flutter/fv2ray/asset");
             assetPath = assetFolder.getAbsolutePath();
         }
@@ -183,17 +204,19 @@ public class TProxyService extends VpnService {
         File tproxy_file = new File(getFilesDir().getParent(), "app_flutter/fv2ray/tproxy.yaml");
         TProxyStartService(tproxy_file.getAbsolutePath(), tunFd.getFd());
 
-        sendBroadcast(new Intent(ACTION_CONNECTED));
+        isActive = true;
+        notifyMainActivity();
     }
 
-    public void stopService() {
+    public void stopTProxy() {
         if (coreProcess != null){
             coreProcess.destroy();
             coreProcess = null;
         }
-        if (coreManager != null)
+        if (coreManager != null){
             coreManager.stop();
             coreManager = null;
+        }
         if (tunFd != null){
             stopForeground(true);
 
@@ -208,7 +231,7 @@ public class TProxyService extends VpnService {
             tunFd = null;
         }
 
-        sendBroadcast(new Intent(ACTION_DISCONNECTED));
-        System.exit(0);
+        isActive = false;
+        notifyMainActivity();
     }
 }

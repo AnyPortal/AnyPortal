@@ -25,14 +25,14 @@ import Flutter
         let channel = FlutterMethodChannel(name: "com.github.fv2ray.fv2ray", binaryMessenger: controller.binaryMessenger)
         
         channel.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-            if call.method == "startTProxyService" {
-                self.startTProxyService()
+            if call.method == "startTProxy" {
+                self.startTProxy()
                 result(nil)
-            } else if call.method == "stopTProxyService" {
-                self.stopTProxyService()
+            } else if call.method == "stopTProxy" {
+                self.stopTProxy()
                 result(nil)
-            } else if call.method == "isTProxyServiceRunning" {
-                let isRunning = self.isTProxyServiceRunning()
+            } else if call.method == "isTProxyRunning" {
+                let isRunning = self.isTProxyRunning()
                 result(isRunning)
             } else {
                 result(FlutterMethodNotImplemented)
@@ -41,24 +41,24 @@ import Flutter
     }
 
     // Start the TProxyService (equivalent to startService() in Java)
-    private func startTProxyService() {
+    private func startTProxy() {
         tProxyService?.startService()
     }
 
     // Stop the TProxyService (equivalent to stopService() in Java)
-    private func stopTProxyService() {
+    private func stopTProxy() {
         tProxyService?.stopService()
     }
     
-    var _isTProxyServiceRunning: Bool = false
+    var _isTProxyRunning: Bool = false
     
-    private func updateIsTProxyServiceRunning(value: Bool) {
-        _isTProxyServiceRunning = value
+    private func updateisTProxyRunning(value: Bool) {
+        _isTProxyRunning = value
     }
 
     // Check if the TProxyService is running
-    private func isTProxyServiceRunning() -> Bool {
-        tProxyService?.isServiceRunning(completion: updateIsTProxyServiceRunning)
-        return _isTProxyServiceRunning
+    private func isTProxyRunning() -> Bool {
+        tProxyService?.isServiceRunning(completion: updateisTProxyRunning)
+        return _isTProxyRunning
     }
 }

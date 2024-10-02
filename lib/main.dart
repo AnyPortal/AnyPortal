@@ -66,7 +66,7 @@ void main(List<String> args) async {
   // connect at launch
   if (prefs.getBool('app.connectAtLaunch')!) {
     try {
-      if (!await vPNMan.updateIsActive()) {
+      if (!(await vPNMan.updateIsActiveRecord()).isActive) {
         await vPNMan.start();
       }
     } catch (_) {}
