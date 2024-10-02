@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:fv2ray/utils/data_watcher.dart';
+import 'package:fv2ray/utils/core_data_notifier.dart';
 
 import '../screens/home/settings/core.dart';
-import '../utils/core_manager.dart';
+import '../utils/vpn_manager.dart';
 
 // ignore: must_be_immutable
 class RayToggle extends StatefulWidget {
@@ -20,43 +20,43 @@ class RayToggle extends StatefulWidget {
 
 class RayToggleState extends State<RayToggle> {
   StreamSubscription<String>? _stdoutSubscription;
-  bool on = false;
   Timer? timer;
 
-  void syncDataWatcher() async {
-    final coreOn = await coreMan.on();
-    if (coreOn && !dataWatcher.on) {
+  Future<void> syncCoreDataNotifier() async {
+    final coreIsActive = await vPNMan.updateIsActive();
+    if (coreIsActive && !coreDataNotifier.on) {
       try {
-        await coreMan.init();
-        dataWatcher.loadCfg(coreMan.rawCfg);
-        dataWatcher.start();
+        await vPNMan.init();
+        coreDataNotifier.loadCfg(vPNMan.rawCfg);
+        // should do atomic check
+        if (!coreDataNotifier.on) coreDataNotifier.start();
       } catch (e) {
         final snackBar = SnackBar(
-          content: Text("syncDataWatcher: $e"),
+          content: Text("syncCoreDataNotifier: $e"),
         );
         if (mounted) ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
-    } else if (!coreOn && dataWatcher.on) {
-      dataWatcher.stop();
+    } else if (!coreIsActive && coreDataNotifier.on) {
+      // should do atomic check
+      coreDataNotifier.stop();
     }
-    setState(() {
-      on = coreOn;
-    });
   }
 
   @override
   void initState() {
     super.initState();
-    syncDataWatcher();
+    syncCoreDataNotifier();
   }
 
   void _toggle() async {
+    final isActive = await vPNMan.updateIsActive();
+
     Exception? err;
     try {
-      if (await coreMan.on()) {
-        await coreMan.stop();
+      if (isActive) {
+        await vPNMan.stop();
       } else {
-        await coreMan.start();
+        await vPNMan.start();
       }
     } on NoCorePathException catch (_) {
       if (mounted) {
@@ -83,7 +83,7 @@ class RayToggleState extends State<RayToggle> {
       }
     }
 
-    syncDataWatcher();
+    syncCoreDataNotifier();
   }
 
   @override
@@ -94,9 +94,18 @@ class RayToggleState extends State<RayToggle> {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
-        onPressed: _toggle,
-        tooltip: on ? 'disconnect' : 'connect',
-        child: on ? const Icon(Icons.stop) : const Icon(Icons.play_arrow));
+    return ListenableBuilder(
+        listenable: vPNMan,
+        builder: (BuildContext context, Widget? child) {
+          syncCoreDataNotifier();
+          return FloatingActionButton(
+              onPressed: vPNMan.isToggling ? null : _toggle,
+              tooltip: vPNMan.isActive ? 'disconnect' : 'connect',
+              child: vPNMan.isToggling
+                  ? const CircularProgressIndicator()
+                  : vPNMan.isActive
+                      ? const Icon(Icons.stop)
+                      : const Icon(Icons.play_arrow));
+        });
   }
 }

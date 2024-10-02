@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fv2ray/utils/data_watcher.dart';
+import 'package:fv2ray/utils/core_data_notifier.dart';
 
 import '../../../utils/format_byte.dart';
 
@@ -35,7 +35,7 @@ class _DirectSpeedsState extends State<DirectSpeeds> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: dataWatcher,
+      listenable: coreDataNotifier,
       builder: (BuildContext context, Widget? child) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -44,12 +44,12 @@ class _DirectSpeedsState extends State<DirectSpeeds> {
             keyValueRow(
               "↑",
               "${formatBytes(
-                  dataWatcher.trafficStatCur[TrafficStatType.directUp]!)}ps",
+                  coreDataNotifier.trafficStatCur[TrafficStatType.directUp]!)}ps",
             ),
             keyValueRow(
               "↓",
               "${formatBytes(
-                  dataWatcher.trafficStatCur[TrafficStatType.directDn]!)}ps",
+                  coreDataNotifier.trafficStatCur[TrafficStatType.directDn]!)}ps",
             ),
 
           ],

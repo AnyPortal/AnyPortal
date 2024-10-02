@@ -1,8 +1,10 @@
 package com.github.fv2ray.fv2ray;
 
 import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.VpnService;
 import android.os.Bundle;
 import android.os.FileObserver;
@@ -21,6 +23,8 @@ import java.io.File;
 
 public class MainActivity extends FlutterActivity {
     private static final String CHANNEL = "com.github.fv2ray.fv2ray";
+    
+    private BroadcastReceiver broadcastReceiver;
 
     @Override
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
@@ -45,6 +49,9 @@ public class MainActivity extends FlutterActivity {
 
         // Copy geoip.dat and geosite.dat to the documents directory if needed
         AssetUtils.copyAssetsIfNeeded(this);
+        
+        // listen for broadcast
+        registerBroadcastReceiver();
 	}
 
     private FileObserver fileObserver;
@@ -84,6 +91,7 @@ public class MainActivity extends FlutterActivity {
             result.notImplemented();
         }
     }
+    
 
     private void startTProxyService() {
         Intent intent = new Intent(this, TProxyService.class);
@@ -126,5 +134,34 @@ public class MainActivity extends FlutterActivity {
         if (fileObserver != null) {
             fileObserver.stopWatching();
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Unregister the BroadcastReceiver
+        unregisterReceiver(broadcastReceiver);
+    }
+
+    private void registerBroadcastReceiver() {
+        MethodChannel methodChannel = new MethodChannel(getFlutterEngine().getDartExecutor().getBinaryMessenger(), CHANNEL);
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (TProxyTileService.ACTION_TILE_TOGGLED.equals(action)) {
+                    boolean isActive = intent.getBooleanExtra(TProxyTileService.EXTRA_IS_ACTIVE, false);
+                    methodChannel.invokeMethod("onTileToggled", isActive);
+                } else if (TProxyService.ACTION_CONNECTED.equals(action)) {
+                    methodChannel.invokeMethod("onVPNConnected", null);
+                } else if (TProxyService.ACTION_DISCONNECTED.equals(action)) {
+                    methodChannel.invokeMethod("onVPNDisconnected", null);
+                }
+            }
+        };
+
+        registerReceiver(broadcastReceiver, new IntentFilter(TProxyTileService.ACTION_TILE_TOGGLED));
+        registerReceiver(broadcastReceiver, new IntentFilter(TProxyService.ACTION_CONNECTED));
+        registerReceiver(broadcastReceiver, new IntentFilter(TProxyService.ACTION_DISCONNECTED));
     }
 }

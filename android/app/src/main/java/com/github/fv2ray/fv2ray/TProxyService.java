@@ -26,7 +26,9 @@ public class TProxyService extends VpnService {
     public static native long[] TProxyGetStats();
 
     public static final String ACTION_CONNECT = "com.github.fv2ray.fv2ray.CONNECT";
+    public static final String ACTION_CONNECTED = "com.github.fv2ray.fv2ray.CONNECTED";
     public static final String ACTION_DISCONNECT = "com.github.fv2ray.fv2ray.DISCONNECT";
+    public static final String ACTION_DISCONNECTED = "com.github.fv2ray.fv2ray.DISCONNECTED";
 
     static {
         System.loadLibrary("hev-socks5-tunnel");
@@ -49,8 +51,8 @@ public class TProxyService extends VpnService {
 
     @Override
     public void onDestroy() {
-        stopService();
         super.onDestroy();
+        stopService();
     }
 
     @Override
@@ -180,6 +182,8 @@ public class TProxyService extends VpnService {
         /* TProxy */
         File tproxy_file = new File(getFilesDir().getParent(), "app_flutter/fv2ray/tproxy.yaml");
         TProxyStartService(tproxy_file.getAbsolutePath(), tunFd.getFd());
+
+        sendBroadcast(new Intent(ACTION_CONNECTED));
     }
 
     public void stopService() {
@@ -204,6 +208,7 @@ public class TProxyService extends VpnService {
             tunFd = null;
         }
 
+        sendBroadcast(new Intent(ACTION_DISCONNECTED));
         System.exit(0);
     }
 }

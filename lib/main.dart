@@ -1,3 +1,4 @@
+// import 'dart:developer';
 import 'dart:io';
 
 // import 'package:flutter/cupertino.dart';
@@ -5,12 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:fv2ray/utils/core_manager.dart';
+import 'package:fv2ray/utils/vpn_manager.dart';
 import 'package:system_theme/system_theme.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'screens/home.dart';
 import 'screens/home/settings/tun.dart';
+import 'utils/core_data_notifier.dart';
 import 'utils/db.dart';
 import 'utils/launch_at_startup.dart';
 import 'utils/prefs.dart';
@@ -19,14 +21,10 @@ import 'utils/tray.dart';
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final dbManager = DatabaseManager();
-  await dbManager.init(); // Initialize the database
-
-  final prefsManager = PrefsManager();
-  await prefsManager.init();
-
-  final coreManManager = CoreManManager();
-  await coreManManager.init();
+  await DatabaseManager().init();
+  await PrefsManager().init();
+  await VPNManManager().init();
+  await CoreDataNotifierManager().init();
 
   if (Platform.isAndroid || Platform.isIOS) {
     await tProxyConfInit();
@@ -63,10 +61,10 @@ void main(List<String> args) async {
   // connect at launch
   if (prefs.getBool('app.connectAtLaunch')!) {
     try {
-      if (!await coreMan.on()) {
-        coreMan.start();
+      if (!await vPNMan.updateIsActive()) {
+        await vPNMan.start();
       }
-    } on Exception catch (_) {}
+    } catch (_) {}
   }
 
   runApp(const Fv2ray());
