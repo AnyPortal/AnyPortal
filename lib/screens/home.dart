@@ -9,6 +9,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
+import '../utils/prefs.dart';
 import 'home/logs.dart';
 import 'home/dashboard.dart';
 import 'home/profiles.dart';
@@ -200,6 +201,23 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
   void onWindowFocus() {
     // Make sure to call once.
     setState(() {});
+  }
+
+  @override
+  void onWindowResized() async {
+    final size = await windowManager.getSize();
+    prefs.setDouble("app.window.size.width", size.width);
+    prefs.setDouble("app.window.size.height", size.height);
+  }
+
+  @override
+  void onWindowMaximize() async {
+    prefs.setBool("app.window.isMaximized", true);
+  }
+
+  @override
+  void onWindowUnmaximize() async {
+    prefs.setBool("app.window.isMaximized", false);
   }
 
   @override

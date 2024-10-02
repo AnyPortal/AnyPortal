@@ -35,13 +35,18 @@ void main(List<String> args) async {
     // minimize to tray
     initSystemTray();
     await windowManager.ensureInitialized();
-    WindowOptions windowOptions = const WindowOptions(
+    final width = prefs.getDouble("app.window.size.width");
+    final height = prefs.getDouble("app.window.size.height");
+    final isMaximized = prefs.getBool("app.window.isMaximized");
+    WindowOptions windowOptions = WindowOptions(
+      size: Size(width!, height!),
       skipTaskbar: false,
     );
     await windowManager.waitUntilReadyToShow(windowOptions, () async {
       if (!args.contains("--minimized")) {
         await windowManager.show();
         await windowManager.focus();
+        if (isMaximized!) await windowManager.maximize();
       }
     });
 
