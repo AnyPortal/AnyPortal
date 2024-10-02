@@ -276,6 +276,7 @@ class _ProfileListState extends State<ProfileList> {
                         groupValue: _selectedProfileId,
                         onChanged: (value) {
                           prefs.setInt('app.selectedProfileId', value!);
+                          prefs.setString('app.selectedProfileName', profile.name);
                           setState(() {
                             _selectedProfileId = value;
                           });
