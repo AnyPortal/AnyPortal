@@ -229,13 +229,5 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
       effect: WindowEffect.mica,
       dark: dispatcher.platformBrightness == Brightness.dark,
     );
-
-    if (Platform.isMacOS){
-      if (dispatcher.platformBrightness == Brightness.dark) {
-        trayManager.setIcon('assets/icon/icon_k.png');
-      } else {
-        trayManager.setIcon('assets/icon/icon_w.png');
-      }
-    }
   }
 }

@@ -8,12 +8,7 @@ Future<void> initSystemTray() async {
   if (Platform.isWindows) {
     await trayManager.setIcon('windows/runner/resources/app_icon.ico');
   } else if (Platform.isMacOS) {
-    var dispatcher = SchedulerBinding.instance.platformDispatcher;
-    if (dispatcher.platformBrightness == Brightness.dark) {
-      await trayManager.setIcon('assets/icon/icon_k.png');
-    } else {
-      await trayManager.setIcon('assets/icon/icon_w.png');
-    }
+    await trayManager.setIcon('assets/icon/icon_w.png');
   } else {
     await trayManager.setIcon('assets/icon/icon.png');
   }
