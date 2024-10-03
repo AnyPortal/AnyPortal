@@ -18,6 +18,7 @@ class TunScreen extends StatefulWidget {
 }
 
 class _TunScreenState extends State<TunScreen> {
+  bool _tun = prefs.getBool('tun')!;
   bool _perAppProxy = prefs.getBool('tun.perAppProxy')!;
   String _socksAddress = prefs.getString('tun.socks.address')!;
   int _socksPort = prefs.getInt('tun.socks.port')!;
@@ -33,12 +34,7 @@ class _TunScreenState extends State<TunScreen> {
     super.initState();
   }
 
-  void _updatePerAppProxy(bool value) {
-    prefs.setBool('tun.perAppProxy', value);
-    setState(() {
-      _perAppProxy = value;
-    });
-  }
+  void _updatePerAppProxy(bool value) {}
 
   void _editApplist() {
     Navigator.push(
@@ -54,8 +50,8 @@ class _TunScreenState extends State<TunScreen> {
         _socksUserName == "" ? "" : "username: $_socksUserName";
     final passwordLine =
         _socksPassword == "" ? "" : "password: $_socksPassword";
-        
-    if(!file.existsSync()){
+
+    if (!file.existsSync()) {
       file.create();
     }
 
@@ -78,18 +74,37 @@ misc:
   Widget build(BuildContext context) {
     final fields = [
       ListTile(
-        title: Text("Per-app proxy",
-            style: Theme.of(context).textTheme.headlineSmall),
+        title: const Text("Enable tun"),
+        subtitle: const Text("Enable tun so v2ray works like a VPN"),
         trailing: Switch(
-          value: _perAppProxy,
-          onChanged: _updatePerAppProxy,
+          value: _tun,
+          onChanged: (value) {
+            prefs.setBool('tun', value);
+            setState(() {
+              _tun = value;
+            });
+          },
         ),
       ),
       ListTile(
+        enabled: _tun,
+        title: const Text("Per-app proxy"),
+        subtitle: const Text("All apps are proxied if disabled"),
+        trailing: Switch(
+          value: _perAppProxy,
+          onChanged: (value) {
+            prefs.setBool('tun.perAppProxy', value);
+            setState(() {
+              _perAppProxy = value;
+            });
+          },
+        ),
+      ),
+      ListTile(
+        enabled: _tun && _perAppProxy,
         title: const Text("White list"),
         subtitle: const Text("Only apps in white list will be proxied"),
         onTap: _editApplist,
-        enabled: _perAppProxy,
       ),
       const Divider(),
       Container(
@@ -250,7 +265,7 @@ misc:
         appBar: AppBar(
           // Use the selected tab's label for the AppBar title
           title: const Text("Tun settings"),
-                  ),
+        ),
         body: ListView.builder(
           itemCount: fields.length,
           itemBuilder: (context, index) => fields[index],
@@ -264,7 +279,7 @@ misc:
 tProxyConfInit() async {
   final folder = await getApplicationDocumentsDirectory();
   final file = File(p.join(folder.path, 'fv2ray', 'tproxy.yaml'));
-  if (!file.existsSync()){
+  if (!file.existsSync()) {
     _TunScreenState().writeTProxyConf();
   }
 }

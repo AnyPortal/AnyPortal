@@ -92,18 +92,7 @@
 <!-- - ⏳ Awaiting Review: Needs testing or review -->
 <!-- - 📝 Documenting: In the process of being documented -->
 
-- [ ] assets auto update
-- [ ] core auto update
-- [ ] auto core version
-- [ ] license
-- [ ] profiles: group bulk action
-- [ ] profile: tcping
-- [ ] profile: remote auto update
-- [ ] Android custom core restart prompt
-- [ ] better log and hints
-- [ ] document
-  - [ ] remote profile
-  - [ ] subscription
+See planning [here](https://github.com/users/fv2ray/projects/1/views/1). 
 
 ## License
 

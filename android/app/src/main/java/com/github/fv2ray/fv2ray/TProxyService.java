@@ -31,16 +31,16 @@ public class TProxyService extends VpnService {
         System.loadLibrary("hev-socks5-tunnel");
     }
 
-    private ParcelFileDescriptor tunFd = null;
-    private java.lang.Process coreProcess = null;
-    private libv2raymobile.CoreManager coreManager = null;
-    private boolean isActive = false;
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // android.os.Debug.waitForDebugger();
-
         return START_STICKY;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        prefs = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE);
     }
 
     @Override
@@ -95,44 +95,36 @@ public class TProxyService extends VpnService {
 
 
 
-    /// 
+    /// vpn
+    private ParcelFileDescriptor tunFd = null;
+    private java.lang.Process coreProcess = null;
+    private libv2raymobile.CoreManager coreManager = null;
+    private boolean isActive = false;
+    private SharedPreferences prefs;
+
     public void startTProxy() {
-        if (coreManager != null || coreProcess != null){
-            return;
-        }
-        SharedPreferences prefs = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE);
+        startCore();
 
-        /* asset location */
-        String assetPath = prefs.getString("flutter.core.assetPath", "");
-        if (assetPath.isEmpty()){
-            File assetFolder = new File(getFilesDir().getParent(), "app_flutter/fv2ray/asset");
-            assetPath = assetFolder.getAbsolutePath();
-        }
-        File config_file = new File(getFilesDir().getParent(), "app_flutter/fv2ray/config.gen.json");
-        
-        /* core */
-        boolean useEmbedded = prefs.getBoolean("flutter.core.useEmbedded", true);
-        if (useEmbedded){
-            coreManager = new libv2raymobile.CoreManager();
-            Libv2raymobile.setEnv("v2ray.location.asset", assetPath);
-            Libv2raymobile.setEnv("xray.location.asset", assetPath);
-            coreManager.runConfig(config_file.getAbsolutePath());
-        } else {
-            String corePath = prefs.getString("flutter.core.path", "");
-            String[] args = {corePath, "run", "-c", config_file.getAbsolutePath()};
-            ProcessBuilder processBuilder = new ProcessBuilder(args);
-            Map<String, String> env = processBuilder.environment();
-            env.put("v2ray.location.asset", assetPath);
-            env.put("xray.location.asset", assetPath);
-            try {
-                coreProcess = processBuilder.start();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return;
-            }
+        if (prefs.getBoolean("flutter.tun", true)){
+            startTun();
         }
 
-        /* VPN */
+        isActive = true;
+        notifyMainActivity();
+    }
+
+    public void stopTProxy() {
+        stopCore();
+
+        if (prefs.getBoolean("flutter.tun", true)){
+            stopTun();
+        }
+
+        isActive = false;
+        notifyMainActivity();
+    }
+
+    private void startTun() {
         if (tunFd != null)
           return;
 
@@ -199,24 +191,12 @@ public class TProxyService extends VpnService {
             return;
         }
 
-
         /* TProxy */
         File tproxy_file = new File(getFilesDir().getParent(), "app_flutter/fv2ray/tproxy.yaml");
         TProxyStartService(tproxy_file.getAbsolutePath(), tunFd.getFd());
-
-        isActive = true;
-        notifyMainActivity();
     }
 
-    public void stopTProxy() {
-        if (coreProcess != null){
-            coreProcess.destroy();
-            coreProcess = null;
-        }
-        if (coreManager != null){
-            coreManager.stop();
-            coreManager = null;
-        }
+    private void stopTun(){
         if (tunFd != null){
             stopForeground(true);
 
@@ -230,8 +210,52 @@ public class TProxyService extends VpnService {
             }
             tunFd = null;
         }
+    }
 
-        isActive = false;
-        notifyMainActivity();
+    private void startCore(){
+        if (coreManager != null || coreProcess != null){
+            return;
+        }
+
+        /* asset location */
+        String assetPath = prefs.getString("flutter.core.assetPath", "");
+        if (assetPath.isEmpty()){
+            File assetFolder = new File(getFilesDir().getParent(), "app_flutter/fv2ray/asset");
+            assetPath = assetFolder.getAbsolutePath();
+        }
+        File config_file = new File(getFilesDir().getParent(), "app_flutter/fv2ray/config.gen.json");
+        
+        /* core */
+        boolean useEmbedded = prefs.getBoolean("flutter.core.useEmbedded", true);
+        if (useEmbedded){
+            coreManager = new libv2raymobile.CoreManager();
+            Libv2raymobile.setEnv("v2ray.location.asset", assetPath);
+            Libv2raymobile.setEnv("xray.location.asset", assetPath);
+            coreManager.runConfig(config_file.getAbsolutePath());
+        } else {
+            String corePath = prefs.getString("flutter.core.path", "");
+            String[] args = {corePath, "run", "-c", config_file.getAbsolutePath()};
+            ProcessBuilder processBuilder = new ProcessBuilder(args);
+            Map<String, String> env = processBuilder.environment();
+            env.put("v2ray.location.asset", assetPath);
+            env.put("xray.location.asset", assetPath);
+            try {
+                coreProcess = processBuilder.start();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+        }
+    }
+
+    private void stopCore(){
+        if (coreProcess != null){
+            coreProcess.destroy();
+            coreProcess = null;
+        }
+        if (coreManager != null){
+            coreManager.stop();
+            coreManager = null;
+        }
     }
 }
