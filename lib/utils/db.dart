@@ -13,7 +13,7 @@ part 'db.g.dart';
 
 class DatabaseManager {
   static final DatabaseManager _instance = DatabaseManager._internal();
-  late final LazyDatabase _db;
+  late final Database _db;
   final Completer<void> _completer = Completer<void>();
 
   // Private constructor
@@ -28,11 +28,9 @@ class DatabaseManager {
   Future<void> init() async {
     final dbFolder = await getApplicationDocumentsDirectory();
     final file = File(p.join(dbFolder.path, 'fv2ray', 'db.sqlite'));
-    _db = LazyDatabase(() async => NativeDatabase(file));
+    _db = Database(_openConnection(file));
 
-    final db = Database(_db);
-
-    await db.into(db.profileGroup).insertOnConflictUpdate(
+    await _db.into(_db.profileGroup).insertOnConflictUpdate(
       ProfileGroupCompanion(
         id: const drift.Value(1),
         name: const drift.Value(""),
@@ -44,8 +42,12 @@ class DatabaseManager {
     _completer.complete(); // Signal that initialization is complete
   }
 
+  static QueryExecutor _openConnection(File file) {
+    return NativeDatabase.createInBackground(file);
+  }
+
   // Getter for synchronous access (ensure db is initialized before using this)
-  LazyDatabase get db {
+  Database get db {
     if (!_completer.isCompleted) {
       throw Exception('Database has not been initialized. Call init() first.');
     }
@@ -64,4 +66,4 @@ class Database extends _$Database {
   int get schemaVersion => 2;
 }
 
-final db = Database(DatabaseManager().db);
+final db = DatabaseManager().db;
