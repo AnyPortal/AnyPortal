@@ -107,9 +107,16 @@ jobs:
     - name: Build macOS
       run: flutter build macos
 
-    - name: Create the DMG file
+    - name: Create DMG with Applications shortcut
       run: |
-        hdiutil create -format UDZO -srcfolder build/macos/Build/Products/Release/fv2ray.app build/macos/Build/Products/Release/fv2ray-macos.dmg
+        mkdir -p dmg-temp
+        cp -R build/macos/Build/Products/Release/fv2ray.app dmg-temp/
+        ln -s /Applications dmg-temp/Applications
+        hdiutil create -volname "fv2ray" \
+          -srcfolder dmg-temp \
+          -ov -format UDZO \
+          build/macos/Build/Products/Release/fv2ray-macos.dmg
+        rm -rf dmg-temp
 
     - name: Upload macOS artifacts
       uses: actions/upload-artifact@v4
