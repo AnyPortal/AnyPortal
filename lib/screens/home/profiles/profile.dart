@@ -1,9 +1,8 @@
-import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 import '../../../models/profile.dart';
 import '../../../utils/db.dart';
+import '../../../utils/update_profile.dart';
 
 class ProfileScreen extends StatefulWidget {
   final ProfileData? profile;
@@ -42,6 +41,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ..where((p) => p.profileId.equals(profileId)))
               .getSingle();
           _urlController.text = profileRemote.url;
+          _autoUpdateIntervalController.text = profileRemote.autoUpdateInterval.toString();
         case ProfileType.local:
       }
     }
@@ -62,64 +62,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     try {
       if (_formKey.currentState?.validate() ?? false) {
-        // Get the values from the controllers
-        String name = _nameController.text;
-        String url = _urlController.text;
-        int autoUpdateInterval = int.parse(_autoUpdateIntervalController.text);
-
-        await db.transaction(() async {
-          int profileId = 0;
-          if (widget.profile != null) {
-            profileId = widget.profile!.id;
-          } else {
-            profileId = await db.into(db.profile).insertOnConflictUpdate(
-                ProfileCompanion(
-                    name: drift.Value(name),
-                    lastUpdated: drift.Value(DateTime.now()),
-                    type: drift.Value(_profileType),
-                    coreCfg: drift.Value(_coreCfgController.text)));
-          }
-
-          switch (_profileType) {
-            case ProfileType.remote:
-              final response = await http.get(Uri.parse(url));
-              String coreCfg = "{}";
-              if (response.statusCode == 200) {
-                coreCfg = response.body;
-              } else {
-                throw Exception('failed to fetch url');
-              }
-
-              await db
-                  .into(db.profile)
-                  .insertOnConflictUpdate(ProfileCompanion(
-                    id: drift.Value(profileId),
-                    name: drift.Value(name),
-                    lastUpdated: drift.Value(DateTime.now()),
-                    coreCfg: drift.Value(coreCfg),
-                    type: drift.Value(_profileType),
-                  ));
-              await db
-                  .into(db.profileRemote)
-                  .insertOnConflictUpdate(ProfileRemoteCompanion(
-                    profileId: drift.Value(profileId),
-                    url: drift.Value(url),
-                    autoUpdateInterval: drift.Value(autoUpdateInterval),
-                  ));
-            case ProfileType.local:
-              await db
-                  .into(db.profile)
-                  .insertOnConflictUpdate(ProfileCompanion(
-                    id: drift.Value(profileId),
-                    name: drift.Value(name),
-                    lastUpdated: drift.Value(DateTime.now()),
-                    coreCfg: drift.Value(_coreCfgController.text),
-                    type: drift.Value(_profileType),
-                  ));
-              await db.into(db.profileLocal).insertOnConflictUpdate(
-                  ProfileLocalCompanion(profileId: drift.Value(profileId)));
-          }
-        });
+        await updateProfile(
+          oldProfile: widget.profile,
+          name: _nameController.text,
+          profileType: _profileType,
+          url: _urlController.text,
+          autoUpdateInterval: int.parse(_autoUpdateIntervalController.text),
+          coreCfg: _coreCfgController.text,
+        );
       }
       ok = true;
     } catch (e) {
@@ -174,15 +124,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             border: OutlineInputBorder(),
           ),
         ),
-      // if (_profileType == ProfileType.remote)
-      //   TextFormField(
-      //     controller: _autoUpdateIntervalController,
-      //     decoration: const InputDecoration(
-      //       labelText: 'auto update interval (minutes), 0 to disable',
-      //       border: OutlineInputBorder(),
-      //     ),
-      //     keyboardType: TextInputType.number,
-      //   ),
+      if (_profileType == ProfileType.remote)
+        TextFormField(
+          controller: _autoUpdateIntervalController,
+          decoration: const InputDecoration(
+            labelText: 'auto update interval (seconds), 0 to disable',
+            border: OutlineInputBorder(),
+          ),
+          keyboardType: TextInputType.number,
+        ),
       if (_profileType == ProfileType.local)
         TextFormField(
           controller: _coreCfgController,
@@ -207,7 +157,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         // Use the selected tab's label for the AppBar title
         title: const Text("Edit profile"),
-              ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(

@@ -12,6 +12,7 @@ import 'config_injector.dart';
 import 'db.dart';
 import 'prefs.dart';
 import 'get_pid_of_port.dart';
+import 'update_profile_with_group_remote.dart';
 
 class NoCorePathException implements Exception {
   String cause;
@@ -117,6 +118,9 @@ abstract class VPNManager with ChangeNotifier {
     if (_selectedProfile == null) {
       throw InvalidSelectedProfileException("Please select a profile first.");
     }
+
+    // check update
+    updateProfileWithGroupRemote(_selectedProfile!);
 
     // gen config.json
     folder = await getApplicationDocumentsDirectory();

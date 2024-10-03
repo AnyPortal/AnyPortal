@@ -1,13 +1,8 @@
-import 'dart:convert';
-
-import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
-import 'package:fv2ray/models/profile.dart';
-import 'package:http/http.dart' as http;
 
 import '../../../models/profile_group.dart';
-import '../../../models/profile_group_remote/fv2ray_rest.dart';
 import '../../../utils/db.dart';
+import '../../../utils/update_profile_group.dart';
 
 class ProfileGroupScreen extends StatefulWidget {
   final ProfileGroupData? profileGroup;
@@ -44,6 +39,8 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
                 ..where((p) => p.profileGroupId.equals(profileGroupId)))
               .getSingle();
           _urlController.text = profileGroupRemote.url;
+          _autoUpdateIntervalController.text =
+              profileGroupRemote.autoUpdateInterval.toString();
         case ProfileGroupType.local:
       }
     }
@@ -57,128 +54,22 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
 
   // Method to handle form submission
   void _submitForm() async {
-    setState(() {
-      _isSubmitting = true;
-    });
+    if (mounted) {
+      setState(() {
+        _isSubmitting = true;
+      });
+    }
     bool ok = false;
 
     try {
       if (_formKey.currentState?.validate() ?? false) {
-        // Get the values from the controllers
-        String name = _nameController.text;
-        String url = _urlController.text;
-        int autoUpdateInterval = int.parse(_autoUpdateIntervalController.text);
-
-        // for profile group remote update
-        ProfileGroupRemoteFv2rayREST? profileGroupRemoteFv2rayREST;
-        Set<String> newNameSet = {};
-        Set<String> oldNameSet = {};
-        List<ProfileData> oldProfileList = [];
-        int? profileGroupId;
-
-        if (_profileGroupType == ProfileGroupType.remote) {
-          final response = await http.get(Uri.parse(url));
-          String jsonString = "{}";
-          if (response.statusCode == 200) {
-            jsonString = response.body;
-            final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
-            profileGroupRemoteFv2rayREST =
-                ProfileGroupRemoteFv2rayREST.fromJson(jsonMap);
-            newNameSet = profileGroupRemoteFv2rayREST.profiles
-                .map((e) => e.name)
-                .toSet();
-            if (widget.profileGroup != null) {
-              profileGroupId = widget.profileGroup!.id;
-              oldProfileList = await (db.select(db.profile)
-                    ..where((e) => e.profileGroupId.equals(profileGroupId!)))
-                  .get();
-              oldNameSet = oldProfileList.map((e) => e.name).toSet();
-            }
-          } else {
-            throw Exception('failed to fetch url');
-          }
-        }
-
-        await db.transaction(() async {
-          int profileGroupId = 0;
-          if (widget.profileGroup != null) {
-            profileGroupId = widget.profileGroup!.id;
-          } else {
-            profileGroupId = await db
-                .into(db.profileGroup)
-                .insertOnConflictUpdate(ProfileGroupCompanion(
-                    name: drift.Value(name),
-                    lastUpdated: drift.Value(DateTime.now()),
-                    type: drift.Value(_profileGroupType)));
-          }
-
-          switch (_profileGroupType) {
-            case ProfileGroupType.remote:
-              // update profiles
-              for (var profile in profileGroupRemoteFv2rayREST!.profiles) {
-                // update
-                if (oldNameSet.contains(profile.name)){
-                  await (db.update(db.profile)..where((e) => e.name.equals(profile.name))).write(ProfileCompanion(
-                      name: drift.Value(profile.name),
-                      coreCfg: drift.Value(jsonEncode(profile.config)),
-                      lastUpdated: drift.Value(DateTime.now()),
-                      type: const drift.Value(ProfileType.local),
-                      profileGroupId: drift.Value(profileGroupId),
-                    )
-                  );
-                } else {
-                  // add
-                  await db.into(db.profile).insert(
-                    ProfileCompanion(
-                      name: drift.Value(profile.name),
-                      coreCfg: drift.Value(jsonEncode(profile.config)),
-                      lastUpdated: drift.Value(DateTime.now()),
-                      type: const drift.Value(ProfileType.local),
-                      profileGroupId: drift.Value(profileGroupId),
-                    )
-                  );
-                }
-              }
-              for (var profile in oldProfileList) {
-                if (!newNameSet.contains(profile.name)) {
-                  // delete
-                  await (db.delete(db.profile)
-                        ..where((e) => e.id.equals(profile.id)))
-                      .go();
-                }
-              }
-
-              // update profile group
-              await db
-                  .into(db.profileGroup)
-                  .insertOnConflictUpdate(ProfileGroupCompanion(
-                    id: drift.Value(profileGroupId),
-                    name: drift.Value(name),
-                    lastUpdated: drift.Value(DateTime.now()),
-                    type: drift.Value(_profileGroupType),
-                  ));
-              await db
-                  .into(db.profileGroupRemote)
-                  .insertOnConflictUpdate(ProfileGroupRemoteCompanion(
-                    profileGroupId: drift.Value(profileGroupId),
-                    url: drift.Value(url),
-                    autoUpdateInterval: drift.Value(autoUpdateInterval),
-                    format: const drift.Value(ProfileGroupRemoteFormat.fv2rayRest)
-                  ));
-            case ProfileGroupType.local:
-              await db
-                  .into(db.profileGroup)
-                  .insertOnConflictUpdate(ProfileGroupCompanion(
-                    id: drift.Value(profileGroupId),
-                    name: drift.Value(name),
-                    lastUpdated: drift.Value(DateTime.now()),
-                    type: drift.Value(_profileGroupType),
-                  ));
-              await db.into(db.profileGroupLocal).insertOnConflictUpdate(
-                  ProfileGroupLocalCompanion(
-                      profileGroupId: drift.Value(profileGroupId)));
-          }
-        });
+        await updateProfileGroup(
+          name: _nameController.text,
+          profileGroupType: _profileGroupType,
+          url: _urlController.text,
+          autoUpdateInterval: int.parse(_autoUpdateIntervalController.text),
+          oldProfileGroup: widget.profileGroup,
+        );
       }
       ok = true;
     } catch (e) {
@@ -188,9 +79,11 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
 
-    setState(() {
-      _isSubmitting = false;
-    });
+    if (mounted) {
+      setState(() {
+        _isSubmitting = false;
+      });
+    }
 
     if (ok) {
       if (mounted) Navigator.pop(context, {'ok': true});
@@ -234,6 +127,15 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
             border: OutlineInputBorder(),
           ),
         ),
+      if (_profileGroupType == ProfileGroupType.remote)
+        TextFormField(
+          controller: _autoUpdateIntervalController,
+          decoration: const InputDecoration(
+            labelText: 'auto update interval (seconds), 0 to disable',
+            border: OutlineInputBorder(),
+          ),
+          keyboardType: TextInputType.number,
+        ),
       Center(
         child: ElevatedButton(
           onPressed: _isSubmitting ? null : _submitForm,
@@ -249,7 +151,7 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
       appBar: AppBar(
         // Use the selected tab's label for the AppBar title
         title: const Text("Edit Profile Group"),
-              ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
