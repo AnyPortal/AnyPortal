@@ -43,7 +43,7 @@ public class TProxyTileService extends TileService {
     }
 
 
-    
+
 
     @Override
     public void onTileAdded() {
@@ -81,12 +81,13 @@ public class TProxyTileService extends TileService {
             return;
         }
 
-        tile.setState(Tile.STATE_UNAVAILABLE);
 
         if (tile.getState() == Tile.STATE_ACTIVE) {
+            tile.setState(Tile.STATE_UNAVAILABLE);
             notifyMainActivity(false);
             stopTProxy();
         } else {
+            tile.setState(Tile.STATE_UNAVAILABLE);
             notifyMainActivity(true);
             startTProxy();
         }

@@ -1,7 +1,5 @@
 import 'dart:io';
-import 'dart:ui';
 
-import 'package:flutter/scheduler.dart';
 import 'package:tray_manager/tray_manager.dart';
 
 Future<void> initSystemTray() async {

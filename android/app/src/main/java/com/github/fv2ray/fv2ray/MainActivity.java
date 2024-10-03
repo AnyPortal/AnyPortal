@@ -125,8 +125,9 @@ public class MainActivity extends FlutterActivity {
             if (tProxyService != null) {
                 boolean isActive = tProxyService.getIsActive();
                 result.success(isActive);
+            } else {
+                result.success(false);
             }
-            result.success(false);
         } else if (call.method.equals("startWatching")){
             String filePath = call.argument("filePath");
             fileObserver = new FileObserver(filePath) {
