@@ -175,6 +175,8 @@ class LogViewerState extends State<LogViewer> {
             itemBuilder: (context, index) {
               return colorizeLogLine(_logLines[index]);
             },
+            physics: const ClampingScrollPhysics(),
+            cacheExtent: 99999,
           ),
         ));
   }
