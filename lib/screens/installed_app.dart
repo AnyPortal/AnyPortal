@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fv2ray/widgets/installed_app_list.dart';
+import 'package:anyportal/widgets/installed_app_list.dart';
 
 class InstalledAppScreen extends StatefulWidget {
   const InstalledAppScreen({

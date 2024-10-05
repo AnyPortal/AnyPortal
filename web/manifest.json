@@ -1,6 +1,6 @@
 {
-    "name": "fv2ray",
-    "short_name": "fv2ray",
+    "name": "anyportal",
+    "short_name": "anyportal",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#ffffff",

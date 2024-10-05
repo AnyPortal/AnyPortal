@@ -50,16 +50,16 @@ class _AboutScreenState extends State<AboutScreen> {
 
 We hope you choose well between your home world and Wonderlands.""")),
       ListTile(
-        title: const Text("fv2ray"),
+        title: const Text("anyportal"),
         subtitle: Text("v$version+$buildNumber"),
       ),
       ListTile(
         title: const Text("Github"),
-        subtitle: const Text("https://github.com/fv2ray/fv2ray"),
+        subtitle: const Text("https://github.com/anyportal/anyportal"),
         trailing: const Icon(Icons.open_in_new),
         onTap: () {
           try {
-            launchUrl(Uri.parse("https://github.com/fv2ray/fv2ray"));
+            launchUrl(Uri.parse("https://github.com/anyportal/anyportal"));
           } catch (_) {}
         },
       ),

@@ -1,8 +1,8 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import 'package:fv2ray/screens/home/dashboard/direct_speed.dart';
-import 'package:fv2ray/screens/home/dashboard/proxy_speed.dart';
-import 'package:fv2ray/screens/home/dashboard/speed_chart.dart';
+import 'package:anyportal/screens/home/dashboard/direct_speed.dart';
+import 'package:anyportal/screens/home/dashboard/proxy_speed.dart';
+import 'package:anyportal/screens/home/dashboard/speed_chart.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 

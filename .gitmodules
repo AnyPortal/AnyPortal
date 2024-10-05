@@ -6,4 +6,4 @@
 	url = git@github.com:heiher/hev-socks5-tunnel.git
 [submodule "third_party/libv2raymobile"]
 	path = third_party/libv2raymobile
-	url = git@github.com:fv2ray/libv2raymobile
+	url = git@github.com:anyportal/libv2raymobile

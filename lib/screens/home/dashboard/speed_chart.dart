@@ -1,6 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:fv2ray/utils/core_data_notifier.dart';
+import 'package:anyportal/utils/core_data_notifier.dart';
 
 class SpeedChart extends StatefulWidget {
   const SpeedChart({super.key});

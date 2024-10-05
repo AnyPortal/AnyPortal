@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:fv2ray/utils/grpc_api.dart';
+import 'package:anyportal/utils/grpc_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../generated/grpc/v2ray-core/app/stats/command/command.pbgrpc.dart';

@@ -110,7 +110,7 @@ class _AssetScreenState extends State<AssetScreen> {
     String assetPath = result.files.single.path!;
     if (Platform.isAndroid) {
       final folder = await getApplicationDocumentsDirectory();
-      final dest = File(p.join(folder.path, 'fv2ray', 'asset')).path;
+      final dest = File(p.join(folder.path, 'anyportal', 'asset')).path;
       await File(assetPath).rename(dest);
       await FilePicker.platform.clearTemporaryFiles();
       assetPath = dest;

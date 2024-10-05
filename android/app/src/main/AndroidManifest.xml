@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="fv2ray"
+        android:label="anyportal"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <service android:name=".TProxyService"
@@ -42,9 +42,9 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
-                <action android:name="com.github.fv2ray.fv2ray.CONNECTED"/>
-                <action android:name="com.github.fv2ray.fv2ray.DISCONNECTED"/>
-                <action android:name="com.github.fv2ray.fv2ray.TILE_TOGGLED"/>
+                <action android:name="com.github.anyportal.anyportal.CONNECTED"/>
+                <action android:name="com.github.anyportal.anyportal.DISCONNECTED"/>
+                <action android:name="com.github.anyportal.anyportal.TILE_TOGGLED"/>
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

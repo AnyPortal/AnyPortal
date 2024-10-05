@@ -44,7 +44,7 @@ class ProfileGroupTypeConverter extends TypeConverter<ProfileGroupType, int> {
 }
 
 enum ProfileGroupRemoteFormat {
-  fv2rayRest,
+  anyportalRest,
 }
 
 class ProfileGroupFormatConverter extends TypeConverter<ProfileGroupRemoteFormat, int> {

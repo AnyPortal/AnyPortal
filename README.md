@@ -1,4 +1,4 @@
-# fv2ray
+# anyportal
 
 <img src="assets/image/README/dashboard_screen.gif" height="400" /> <img src="assets/image/README/profiles_screen.png" height="400" /> <img src="assets/image/README/settings_screen.png" height="400" /> <img src="assets/image/README/profile_override_screen.png" height="400" />
 
@@ -18,26 +18,26 @@
   <tbody align=left>
     <td>Android</td>
       <td>
-        <a href="https://github.com/fv2ray/fv2ray/releases/latest/download/fv2ray-android-api28.apk"><img src="https://img.shields.io/badge/APK-api28-044d29.svg?logo=android"></a><br>
-        <a href="https://github.com/fv2ray/fv2ray/releases/latest/download/fv2ray-android-apilatest.apk"><img src="https://img.shields.io/badge/APK-apilatest-168039.svg?logo=android"></a><br>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-api28.apk"><img src="https://img.shields.io/badge/APK-api28-044d29.svg?logo=android"></a><br>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-apilatest.apk"><img src="https://img.shields.io/badge/APK-apilatest-168039.svg?logo=android"></a><br>
       </td>
     </tr>
     <tr>
       <td>Windows</td>
       <td>
-        <a href="https://github.com/fv2ray/fv2ray/releases/latest/download/fv2ray-windows.zip"><img src="https://img.shields.io/badge/Portable-x64-0078d7.svg?logo=windows"></a><br>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-windows.zip"><img src="https://img.shields.io/badge/Portable-x64-0078d7.svg?logo=windows"></a><br>
       </td>
     </tr>
     <tr>
       <td>macOS</td>
       <td>
-        <a href="https://github.com/fv2ray/fv2ray/releases/latest/download/fv2ray-macos.dmg"><img src="https://img.shields.io/badge/DMG-Universal-ea005e.svg?logo=apple"></a><br>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-macos.dmg"><img src="https://img.shields.io/badge/DMG-Universal-ea005e.svg?logo=apple"></a><br>
       </td>
     </tr>
     <tr>
       <td>Linux</td>
       <td>
-        <a href="https://github.com/fv2ray/fv2ray/releases/latest/download/fv2ray-linux.zip"><img src="https://img.shields.io/badge/Portable-x64-f84e29.svg?logo=linux"> </a><br>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-linux.zip"><img src="https://img.shields.io/badge/Portable-x64-f84e29.svg?logo=linux"> </a><br>
       </td>
     </tr>
     <tr>
@@ -70,7 +70,7 @@
 - for v2ray to work properly on Android and iOS, tun2socks is necessary
   - v2ray native tun inbound is only half finished for now
   - tun2socks with best performance so far: hev-socks5-tunnel
-  - you can use fv2ray with tun disabled on Android, and use external tools to redirect traffic to a socks port, just like on desktop
+  - you can use anyportal with tun disabled on Android, and use external tools to redirect traffic to a socks port, just like on desktop
 - android api 29+ does not allow running binary directly
   - you can run custom cores (any version of v2ray, xray) with apk compiled with api target 28
   - playsotore always requires recent api targets, way over 28 now, so you can only use an embedded core with playstore apk
@@ -79,7 +79,7 @@
 
 |        | Windows | Linux | macOS | Android | iOS |
 | ------ | ------- | ----- | ----- | ------- | --- |
-| fv2ray | ✅       | ✅     | ✅     | ✅       | ❌   |
+| anyportal | ✅       | ✅     | ✅     | ✅       | ❌   |
 | tun    | 🔜       | 🔜     | 🔜     | ✅       | ❌   |
 
 - 💤 Not Planned: No plans for implementation or discontinued
@@ -92,7 +92,7 @@
 <!-- - ⏳ Awaiting Review: Needs testing or review -->
 <!-- - 📝 Documenting: In the process of being documented -->
 
-See planning [here](https://github.com/users/fv2ray/projects/1/views/1). 
+See planning [here](https://github.com/users/anyportal/projects/1/views/1). 
 
 ## License
 

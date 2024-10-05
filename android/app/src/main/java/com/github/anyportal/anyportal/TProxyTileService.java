@@ -1,4 +1,4 @@
-package com.github.fv2ray.fv2ray;
+package com.github.anyportal.anyportal;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,7 +11,7 @@ import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 
 public class TProxyTileService extends TileService {
-    public static final String ACTION_TILE_TOGGLED = "com.github.fv2ray.fv2ray.TILE_TOGGLED";
+    public static final String ACTION_TILE_TOGGLED = "com.github.anyportal.anyportal.TILE_TOGGLED";
     public static final String EXTRA_IS_ACTIVE = "is_active";
 
 
@@ -67,7 +67,7 @@ public class TProxyTileService extends TileService {
             tile.setSubtitle(selectedProfileName);
         }
 
-        tile.setLabel("fv2ray");
+        tile.setLabel("anyportal");
         tile.updateTile();
     }
 

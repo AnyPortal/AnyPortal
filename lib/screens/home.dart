@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
     getApplicationDocumentsDirectory().then((folder) {
       setState(() {
         _pathLog =
-            File(p.join(folder.path, 'fv2ray', 'core.log')).absolute.path;
+            File(p.join(folder.path, 'anyportal', 'core.log')).absolute.path;
       });
     });
   }

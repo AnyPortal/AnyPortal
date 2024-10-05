@@ -2,7 +2,7 @@ import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:fv2ray/models/asset.dart';
+import 'package:anyportal/models/asset.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
 import '../../../screens/core.dart';

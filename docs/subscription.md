@@ -4,9 +4,9 @@ A subscription is a remote profile group.
 
 ## protocol
 
-Currently only fv2ray REST is implemented.
+Currently only anyportal REST is implemented.
 
-### fv2ray REST
+### anyportal REST
 
 It's a REST url expecting the following content.
 

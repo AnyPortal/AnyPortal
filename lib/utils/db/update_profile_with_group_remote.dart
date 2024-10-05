@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:fv2ray/utils/db/update_profile.dart';
-import 'package:fv2ray/utils/db/update_profile_group.dart';
+import 'package:anyportal/utils/db/update_profile.dart';
+import 'package:anyportal/utils/db/update_profile_group.dart';
 
 import '../../models/profile.dart';
 import '../../models/profile_group.dart';

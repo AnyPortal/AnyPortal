@@ -42,7 +42,7 @@ jobs:
     - name: Upload Linux artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: fv2ray-linux
+        name: anyportal-linux
         path: build/linux/x64/release/bundle
 
   # Build for Windows
@@ -76,7 +76,7 @@ jobs:
     - name: Upload Windows artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: fv2ray-windows
+        name: anyportal-windows
         path: build/windows/x64/runner/Release
 
   # Build for macOS
@@ -110,19 +110,19 @@ jobs:
     - name: Create DMG with Applications shortcut
       run: |
         mkdir -p dmg-temp
-        cp -R build/macos/Build/Products/Release/fv2ray.app dmg-temp/
+        cp -R build/macos/Build/Products/Release/anyportal.app dmg-temp/
         ln -s /Applications dmg-temp/Applications
-        hdiutil create -volname "fv2ray" \
+        hdiutil create -volname "anyportal" \
           -srcfolder dmg-temp \
           -ov -format UDZO \
-          build/macos/Build/Products/Release/fv2ray-macos.dmg
+          build/macos/Build/Products/Release/anyportal-macos.dmg
         rm -rf dmg-temp
 
     - name: Upload macOS artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: fv2ray-macos
-        path: build/macos/Build/Products/Release/fv2ray-macos.dmg
+        name: anyportal-macos
+        path: build/macos/Build/Products/Release/anyportal-macos.dmg
 
   # Build for Android api28
   android-api28:
@@ -170,7 +170,7 @@ jobs:
     - name: Upload Android APK
       uses: actions/upload-artifact@v4
       with:
-        name: fv2ray-android-api28
+        name: anyportal-android-api28
         path: build/app/outputs/flutter-apk/app-api28-release.apk
 
   # Build for Android apilatest
@@ -219,7 +219,7 @@ jobs:
     - name: Upload Android APK
       uses: actions/upload-artifact@v4
       with:
-        name: fv2ray-android-apilatest
+        name: anyportal-android-apilatest
         path: build/app/outputs/flutter-apk/app-apilatest-release.apk
 
   # # Build for iOS (requires macOS)
@@ -281,32 +281,32 @@ jobs:
     - name: Download Linux artifacts
       uses: actions/download-artifact@v4
       with:
-        name: fv2ray-linux
-        path: fv2ray-linux
+        name: anyportal-linux
+        path: anyportal-linux
 
     - name: Download Windows artifacts
       uses: actions/download-artifact@v4
       with:
-        name: fv2ray-windows
-        path: fv2ray-windows
+        name: anyportal-windows
+        path: anyportal-windows
 
     - name: Download macOS artifacts
       uses: actions/download-artifact@v4
       with:
-        name: fv2ray-macos
-        path: fv2ray-macos
+        name: anyportal-macos
+        path: anyportal-macos
 
     - name: Download Android APK api28 artifacts
       uses: actions/download-artifact@v4
       with:
-        name: fv2ray-android-api28
-        path: fv2ray-android-api28
+        name: anyportal-android-api28
+        path: anyportal-android-api28
 
     - name: Download Android APK apilatest artifacts
       uses: actions/download-artifact@v4
       with:
-        name: fv2ray-android-apilatest
-        path: fv2ray-android-apilatest
+        name: anyportal-android-apilatest
+        path: anyportal-android-apilatest
     
     - run: ls -R
 
@@ -322,7 +322,7 @@ jobs:
         draft: true
 
     - name: zip linux
-      run: zip -r fv2ray-linux.zip fv2ray-linux
+      run: zip -r anyportal-linux.zip anyportal-linux
 
     - name: Upload Linux artifact
       uses: actions/upload-release-asset@v1
@@ -330,12 +330,12 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: fv2ray-linux.zip
-        asset_name: fv2ray-linux.zip
+        asset_path: anyportal-linux.zip
+        asset_name: anyportal-linux.zip
         asset_content_type: application/zip
 
     - name: zip windows
-      run: zip -r fv2ray-windows.zip fv2ray-windows
+      run: zip -r anyportal-windows.zip anyportal-windows
 
     - name: Upload Windows artifact
       uses: actions/upload-release-asset@v1
@@ -343,8 +343,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: fv2ray-windows.zip
-        asset_name: fv2ray-windows.zip
+        asset_path: anyportal-windows.zip
+        asset_name: anyportal-windows.zip
         asset_content_type: application/zip
 
     - name: Upload macOS artifact
@@ -353,8 +353,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: fv2ray-macos/fv2ray-macos.dmg
-        asset_name: fv2ray-macos.dmg
+        asset_path: anyportal-macos/anyportal-macos.dmg
+        asset_name: anyportal-macos.dmg
         asset_content_type: application/x-apple-diskimage
 
     - name: Upload Android APK api28
@@ -363,8 +363,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: fv2ray-android-api28/app-api28-release.apk
-        asset_name: fv2ray-android-api28.apk
+        asset_path: anyportal-android-api28/app-api28-release.apk
+        asset_name: anyportal-android-api28.apk
         asset_content_type: application/vnd.android.package-archive
 
     - name: Upload Android APK apilatest
@@ -373,6 +373,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: fv2ray-android-apilatest/app-apilatest-release.apk
-        asset_name: fv2ray-android-apilatest.apk
+        asset_path: anyportal-android-apilatest/app-apilatest-release.apk
+        asset_name: anyportal-android-apilatest.apk
         asset_content_type: application/vnd.android.package-archive

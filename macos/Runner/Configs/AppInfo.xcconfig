@@ -5,10 +5,10 @@
 // 'flutter create' template.
 
 // The application's name. By default this is also the title of the Flutter window.
-PRODUCT_NAME = fv2ray
+PRODUCT_NAME = anyportal
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.github.fv2ray.fv2ray
+PRODUCT_BUNDLE_IDENTIFIER = com.github.anyportal.anyportal
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2024 com.github.fv2ray. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2024 com.github.anyportal. All rights reserved.

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fv2ray/models/core.dart';
+import 'package:anyportal/models/core.dart';
 
 import '../models/profile.dart';
 import '../utils/db.dart';

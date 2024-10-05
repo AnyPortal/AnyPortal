@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:fv2ray/utils/get_local_ip.dart';
+import 'package:anyportal/utils/get_local_ip.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -42,7 +42,7 @@ Future<Map<String, dynamic>> getInjectedConfig(Map<String, dynamic> cfg) async {
   if (injectLog) {
     final folder = await getApplicationDocumentsDirectory();
     final pathLogErr =
-        File(p.join(folder.path, 'fv2ray', 'core.log')).absolute.path;
+        File(p.join(folder.path, 'anyportal', 'core.log')).absolute.path;
     cfg["log"] = {
       "loglevel": logLevel.name,
       "error": pathLogErr,
@@ -110,7 +110,7 @@ Future<Map<String, dynamic>> getInjectedConfig(Map<String, dynamic> cfg) async {
       "sniffing": {
         "enabled": true
       },
-      "tag": "fv2ray_in_socks"
+      "tag": "anyportal_in_socks"
     });
   }
 

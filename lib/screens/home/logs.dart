@@ -126,7 +126,7 @@ class LogViewerState extends State<LogViewer> {
     }
   }
 
-  static const platform = MethodChannel('com.github.fv2ray.fv2ray');
+  static const platform = MethodChannel('com.github.anyportal.anyportal');
 
   void _startFileMonitor() async {
     if (Platform.isAndroid) {

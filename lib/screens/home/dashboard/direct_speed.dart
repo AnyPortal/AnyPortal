@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fv2ray/utils/core_data_notifier.dart';
+import 'package:anyportal/utils/core_data_notifier.dart';
 
 import '../../../utils/format_byte.dart';
 

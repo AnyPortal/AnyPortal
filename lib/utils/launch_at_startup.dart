@@ -10,7 +10,7 @@ initLaunchAtStartup() async {
     appName: packageInfo.appName,
     appPath: Platform.resolvedExecutable,
     // Set packageName parameter to support MSIX.
-    packageName: 'fv2ray',
+    packageName: 'anyportal',
     args: [
       "--minimized",
     ]

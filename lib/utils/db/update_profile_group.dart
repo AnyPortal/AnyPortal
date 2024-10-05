@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:drift/drift.dart' as drift;
-import 'package:fv2ray/models/profile.dart';
+import 'package:anyportal/models/profile.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../../models/profile_group.dart';
-import '../../../../models/profile_group_remote/fv2ray_rest.dart';
+import '../../../../models/profile_group_remote/anyportal_rest.dart';
 import '../../../../utils/db.dart';
 
 Future<bool> updateProfileGroup({
@@ -16,7 +16,7 @@ Future<bool> updateProfileGroup({
   int? autoUpdateInterval,
 }) async {
   // for profile group remote update
-  ProfileGroupRemoteFv2rayREST? profileGroupRemoteFv2rayREST;
+  ProfileGroupRemoteAnyPortalREST? profileGroupRemoteAnyPortalREST;
   Set<String> newNameSet = {};
   Set<String> oldNameSet = {};
   List<ProfileData> oldProfileList = [];
@@ -51,10 +51,10 @@ Future<bool> updateProfileGroup({
     if (response.statusCode == 200) {
       jsonString = response.body;
       final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
-      profileGroupRemoteFv2rayREST =
-          ProfileGroupRemoteFv2rayREST.fromJson(jsonMap);
+      profileGroupRemoteAnyPortalREST =
+          ProfileGroupRemoteAnyPortalREST.fromJson(jsonMap);
       newNameSet =
-          profileGroupRemoteFv2rayREST.profiles.map((e) => e.name).toSet();
+          profileGroupRemoteAnyPortalREST.profiles.map((e) => e.name).toSet();
       if (oldProfileGroup != null) {
         profileGroupId = oldProfileGroup.id;
         oldProfileList = await (db.select(db.profile)
@@ -82,7 +82,7 @@ Future<bool> updateProfileGroup({
     switch (profileGroupType!) {
       case ProfileGroupType.remote:
         // update profiles
-        for (var profile in profileGroupRemoteFv2rayREST!.profiles) {
+        for (var profile in profileGroupRemoteAnyPortalREST!.profiles) {
           // update
           if (oldNameSet.contains(profile.name)) {
             await (db.update(db.profile)
@@ -130,7 +130,7 @@ Future<bool> updateProfileGroup({
                 url: drift.Value(url!),
                 autoUpdateInterval: drift.Value(autoUpdateInterval!),
                 format:
-                    const drift.Value(ProfileGroupRemoteFormat.fv2rayRest)));
+                    const drift.Value(ProfileGroupRemoteFormat.anyportalRest)));
       case ProfileGroupType.local:
         await db
             .into(db.profileGroup)

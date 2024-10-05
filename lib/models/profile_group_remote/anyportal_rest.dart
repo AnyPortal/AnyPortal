@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'fv2ray_rest.g.dart';
+part 'anyportal_rest.g.dart';
 
 @JsonSerializable()
 class Profile {
@@ -17,13 +17,13 @@ class Profile {
 }
 
 @JsonSerializable()
-class ProfileGroupRemoteFv2rayREST {
+class ProfileGroupRemoteAnyPortalREST {
   final int version;
   final List<Profile> profiles;
 
-  ProfileGroupRemoteFv2rayREST(this.version, this.profiles);
+  ProfileGroupRemoteAnyPortalREST(this.version, this.profiles);
 
-  factory ProfileGroupRemoteFv2rayREST.fromJson(Map<String, dynamic> json) => _$ProfileGroupRemoteFv2rayRESTFromJson(json);
+  factory ProfileGroupRemoteAnyPortalREST.fromJson(Map<String, dynamic> json) => _$ProfileGroupRemoteAnyPortalRESTFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ProfileGroupRemoteFv2rayRESTToJson(this);
+  Map<String, dynamic> toJson() => _$ProfileGroupRemoteAnyPortalRESTToJson(this);
 }

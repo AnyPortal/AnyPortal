@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:async';
 
-import 'package:fv2ray/models/log_level.dart';
-import 'package:fv2ray/models/send_through_binding_stratagy.dart';
+import 'package:anyportal/models/log_level.dart';
+import 'package:anyportal/models/send_through_binding_stratagy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'shared_preferences_with_defaults.dart';

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:fv2ray/screens/home/settings/tun.dart';
+import 'package:anyportal/screens/home/settings/tun.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'settings/about.dart';
@@ -82,7 +82,7 @@ class _SettingListState extends State<SettingList> {
                 }),
           ListTile(
             title: const Text("About"),
-            subtitle: const Text("fv2ray"),
+            subtitle: const Text("anyportal"),
             onTap: () {
               Navigator.push(
                 context,

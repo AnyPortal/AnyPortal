@@ -82,7 +82,7 @@ abstract class VPNManager with ChangeNotifier {
     await init();
 
     // clear logs
-    await File(p.join(folder.path, 'fv2ray', 'core.log')).writeAsString("");
+    await File(p.join(folder.path, 'anyportal', 'core.log')).writeAsString("");
 
     await _start();
   }
@@ -126,7 +126,7 @@ abstract class VPNManager with ChangeNotifier {
 
     // gen config.json
     folder = await getApplicationDocumentsDirectory();
-    final config = File(p.join(folder.path, 'fv2ray', 'config.gen.json'));
+    final config = File(p.join(folder.path, 'anyportal', 'config.gen.json'));
     rawCfg = jsonDecode(_selectedProfile!.coreCfg) as Map<String, dynamic>;
     final cfg = await getInjectedConfig(rawCfg);
     await config.writeAsString(jsonEncode(cfg));
@@ -234,7 +234,7 @@ class VPNManagerExec extends VPNManager {
 }
 
 class VPNManagerMC extends VPNManager {
-  static const platform = MethodChannel('com.github.fv2ray.fv2ray');
+  static const platform = MethodChannel('com.github.anyportal.anyportal');
 
   VPNManagerMC() {
     platform.setMethodCallHandler(_methodCallHandler);

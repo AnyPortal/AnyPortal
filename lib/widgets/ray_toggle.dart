@@ -2,7 +2,7 @@ import 'dart:async';
 // import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:fv2ray/utils/core_data_notifier.dart';
+import 'package:anyportal/utils/core_data_notifier.dart';
 
 import '../screens/home/settings/cores.dart';
 import '../utils/vpn_manager.dart';

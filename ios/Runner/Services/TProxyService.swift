@@ -20,11 +20,11 @@ class TProxyService {
                 
                 // Configure the protocol for the tunnel
                 let tunnelProtocol = NETunnelProviderProtocol()
-                tunnelProtocol.providerBundleIdentifier = "com.github.fv2ray.fv2ray.PacketTunnelProvider"
+                tunnelProtocol.providerBundleIdentifier = "com.github.anyportal.anyportal.PacketTunnelProvider"
                 tunnelProtocol.serverAddress = "127.0.0.1" // Not used but required
                 
                 newManager.protocolConfiguration = tunnelProtocol
-                newManager.localizedDescription = "fv2ray"
+                newManager.localizedDescription = "anyportal"
                 newManager.isEnabled = true
                 
                 // Save the new configuration

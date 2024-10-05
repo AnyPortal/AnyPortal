@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:fv2ray/screens/installed_app.dart';
+import 'package:anyportal/screens/installed_app.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -45,7 +45,7 @@ class _TunScreenState extends State<TunScreen> {
 
   void writeTProxyConf() async {
     final folder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(folder.path, 'fv2ray', 'tproxy.yaml'));
+    final file = File(p.join(folder.path, 'anyportal', 'tproxy.yaml'));
     final usernameLine =
         _socksUserName == "" ? "" : "username: $_socksUserName";
     final passwordLine =
@@ -278,7 +278,7 @@ misc:
 
 tProxyConfInit() async {
   final folder = await getApplicationDocumentsDirectory();
-  final file = File(p.join(folder.path, 'fv2ray', 'tproxy.yaml'));
+  final file = File(p.join(folder.path, 'anyportal', 'tproxy.yaml'));
   if (!file.existsSync()) {
     _TunScreenState().writeTProxyConf();
   }

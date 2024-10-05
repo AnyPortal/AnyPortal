@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:fv2ray/utils/vpn_manager.dart';
+import 'package:anyportal/utils/vpn_manager.dart';
 import 'package:system_theme/system_theme.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -72,11 +72,11 @@ void main(List<String> args) async {
     } catch (_) {}
   }
 
-  runApp(const Fv2ray());
+  runApp(const AnyPortal());
 }
 
-class Fv2ray extends StatelessWidget {
-  const Fv2ray({super.key});
+class AnyPortal extends StatelessWidget {
+  const AnyPortal({super.key});
 
   // This widget is the root of your application.
   @override
@@ -146,7 +146,7 @@ class Fv2ray extends StatelessWidget {
     }
 
     return MaterialApp(
-      title: 'Fv2ray',
+      title: 'AnyPortal',
       theme: getPlatformThemeData(),
       darkTheme: getPlatformDarkThemeData(),
       home: const HomePage(title: 'Flutter Demo Home Page'),
@@ -156,14 +156,14 @@ class Fv2ray extends StatelessWidget {
   }
 }
 
-// class Fv2ray extends StatefulWidget {
-//   const Fv2ray({super.key});
+// class AnyPortal extends StatefulWidget {
+//   const AnyPortal({super.key});
 
 //   @override
-//   State<Fv2ray> createState() => _Fv2rayState();
+//   State<AnyPortal> createState() => _AnyPortalState();
 // }
 
-// class _Fv2rayState extends State<Fv2ray> {
+// class _AnyPortalState extends State<AnyPortal> {
 //   ThemeMode? themeMode = ThemeMode.system; // initial brightness
 
 //   @override

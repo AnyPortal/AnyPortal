@@ -180,7 +180,7 @@ class _CoreScreenState extends State<CoreScreen> {
     String corePath = result.files.single.path!;
     if (Platform.isAndroid) {
       final folder = await getApplicationDocumentsDirectory();
-      final dest = File(p.join(folder.path, 'fv2ray', 'core')).path;
+      final dest = File(p.join(folder.path, 'anyportal', 'core')).path;
       await File(corePath).rename(dest);
       await FilePicker.platform.clearTemporaryFiles();
       corePath = dest;

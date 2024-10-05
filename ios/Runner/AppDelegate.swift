@@ -22,7 +22,7 @@ import Flutter
 
     private func setupFlutterMethodChannel() {
         let controller = window?.rootViewController as! FlutterViewController
-        let channel = FlutterMethodChannel(name: "com.github.fv2ray.fv2ray", binaryMessenger: controller.binaryMessenger)
+        let channel = FlutterMethodChannel(name: "com.github.anyportal.anyportal", binaryMessenger: controller.binaryMessenger)
         
         channel.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
             if call.method == "startTProxy" {
