@@ -4,9 +4,9 @@ import 'package:drift/drift.dart' as drift;
 import 'package:fv2ray/models/profile.dart';
 import 'package:http/http.dart' as http;
 
-import '../../../models/profile_group.dart';
-import '../../../models/profile_group_remote/fv2ray_rest.dart';
-import '../../../utils/db.dart';
+import '../../../../models/profile_group.dart';
+import '../../../../models/profile_group_remote/fv2ray_rest.dart';
+import '../../../../utils/db.dart';
 
 Future<bool> updateProfileGroup({
   ProfileGroupData? oldProfileGroup,
@@ -21,6 +21,12 @@ Future<bool> updateProfileGroup({
   Set<String> oldNameSet = {};
   List<ProfileData> oldProfileList = [];
   int? profileGroupId;
+
+  final coreTypeDataList = await (db.select(db.coreType).get());
+  Map<String, int> coreType2Id = {};
+  for (var coreTypeData in coreTypeDataList){
+    coreType2Id[coreTypeData.name] = coreTypeData.id;
+  }
 
   if (oldProfileGroup != null) {
     name ??= oldProfileGroup.name;
@@ -69,7 +75,7 @@ Future<bool> updateProfileGroup({
       profileGroupId = await db.into(db.profileGroup).insertOnConflictUpdate(
           ProfileGroupCompanion(
               name: drift.Value(name!),
-              lastUpdated: drift.Value(DateTime.now()),
+              updatedAt: drift.Value(DateTime.now()),
               type: drift.Value(profileGroupType!)));
     }
 
@@ -83,19 +89,21 @@ Future<bool> updateProfileGroup({
                   ..where((e) => e.name.equals(profile.name)))
                 .write(ProfileCompanion(
               name: drift.Value(profile.name),
-              coreCfg: drift.Value(jsonEncode(profile.config)),
-              lastUpdated: drift.Value(DateTime.now()),
+              coreCfg: drift.Value(jsonEncode(profile.coreConfig)),
+              updatedAt: drift.Value(DateTime.now()),
               type: const drift.Value(ProfileType.local),
               profileGroupId: drift.Value(profileGroupId),
+              coreTypeId: drift.Value(coreType2Id[profile.coreType]!),
             ));
           } else {
             // add
             await db.into(db.profile).insert(ProfileCompanion(
                   name: drift.Value(profile.name),
-                  coreCfg: drift.Value(jsonEncode(profile.config)),
-                  lastUpdated: drift.Value(DateTime.now()),
+                  coreCfg: drift.Value(jsonEncode(profile.coreConfig)),
+                  updatedAt: drift.Value(DateTime.now()),
                   type: const drift.Value(ProfileType.local),
                   profileGroupId: drift.Value(profileGroupId),
+                  coreTypeId: drift.Value(coreType2Id[profile.coreType]!),
                 ));
           }
         }
@@ -113,7 +121,7 @@ Future<bool> updateProfileGroup({
             .insertOnConflictUpdate(ProfileGroupCompanion(
               id: drift.Value(profileGroupId),
               name: drift.Value(name!),
-              lastUpdated: drift.Value(DateTime.now()),
+              updatedAt: drift.Value(DateTime.now()),
               type: drift.Value(profileGroupType),
             ));
         await db.into(db.profileGroupRemote).insertOnConflictUpdate(
@@ -129,7 +137,7 @@ Future<bool> updateProfileGroup({
             .insertOnConflictUpdate(ProfileGroupCompanion(
               id: drift.Value(profileGroupId),
               name: drift.Value(name!),
-              lastUpdated: drift.Value(DateTime.now()),
+              updatedAt: drift.Value(DateTime.now()),
               type: drift.Value(profileGroupType),
             ));
         await db.into(db.profileGroupLocal).insertOnConflictUpdate(

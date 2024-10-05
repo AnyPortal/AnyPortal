@@ -1,14 +1,14 @@
 import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import 'package:fv2ray/models/profile_group.dart';
-import 'package:fv2ray/screens/home/profiles/profile_group.dart';
-import 'package:fv2ray/utils/db.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
+import '../../models/profile_group.dart';
+import '../../screens/profile_group.dart';
+import '../../utils/db.dart';
 import '../../utils/prefs.dart';
-import 'profiles/profile.dart';
+import '../profile.dart';
 
 class ProfileList extends StatefulWidget {
   const ProfileList({
@@ -230,29 +230,31 @@ class _ProfileListState extends State<ProfileList> {
     if (profileGroup.type == ProfileGroupType.local) {
       return "Local profile group";
     }
-    return "${profileGroup.lastUpdated}";
+    return "${profileGroup.updatedAt}";
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Row(children: [
-            Expanded(child: Text(AppLocalizations.of(context)!.profiles)),
-            SmoothHighlight(
-                enabled: _highlightProfilesPopupMenuButton,
-                color: Colors.grey,
-                child: PopupMenuButton(
-                  itemBuilder: (context) => ProfilesAction.values
-                      .map((action) => PopupMenuItem(
-                            value: action,
-                            child: Text(action.toShortString(context)),
-                          ))
-                      .toList(),
-                  onSelected: (value) => handleProfilesAction(value),
-                )),
+          title: Stack(children: [
+            Text(AppLocalizations.of(context)!.profiles),
+            Align(
+                alignment: Alignment.topRight,
+                child: SmoothHighlight(
+                    enabled: _highlightProfilesPopupMenuButton,
+                    color: Colors.grey,
+                    child: PopupMenuButton(
+                      itemBuilder: (context) => ProfilesAction.values
+                          .map((action) => PopupMenuItem(
+                                value: action,
+                                child: Text(action.toShortString(context)),
+                              ))
+                          .toList(),
+                      onSelected: (value) => handleProfilesAction(value),
+                    )))
           ]),
-                  ),
+        ),
         body: Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
             child: CustomScrollView(slivers: [
@@ -276,13 +278,14 @@ class _ProfileListState extends State<ProfileList> {
                         groupValue: _selectedProfileId,
                         onChanged: (value) {
                           prefs.setInt('app.selectedProfileId', value!);
-                          prefs.setString('app.selectedProfileName', profile.name);
+                          prefs.setString(
+                              'app.selectedProfileName', profile.name);
                           setState(() {
                             _selectedProfileId = value;
                           });
                         },
                         title: Text(profile.name.toString()),
-                        subtitle: Text('last updated: ${profile.lastUpdated}'),
+                        subtitle: Text('last updated: ${profile.updatedAt}'),
                         secondary: PopupMenuButton<ProfileAction>(
                           onSelected: (value) =>
                               handleProfileAction(profile, value),

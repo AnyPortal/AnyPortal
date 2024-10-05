@@ -2,6 +2,8 @@
 
 os="$1"
 
+dart run build_runner build
+
 dart pub global activate protoc_plugin
 export PATH="$PATH":"$HOME/.pub-cache/bin"
 mkdir -p lib/generated/grpc/v2ray-core

@@ -9,14 +9,16 @@ import 'shared_preferences_with_defaults.dart';
 
 class PrefsManager {
   Map<String, dynamic> defaults = {
-    // 'core.path',
-    // 'core.assetPath',
+    // 'core.v2ray.path',
+    // 'core.xray.path',
+    // 'core.sing-box.path',
+    // 'core.v2ray.assetPath',
+    'core.useEmbedded': Platform.isAndroid || Platform.isIOS,
     // 'app.selectedProfileId': 1,
     'app.connectAtLaunch': true,
     'app.window.size.width': 1280.0,
     'app.window.size.height': 720.0,
     'app.window.isMaximized': false,
-    'core.useEmbedded': Platform.isAndroid || Platform.isIOS,
     'inject.api': true,
     'inject.api.port': 15490,
     'inject.log': true,

@@ -4,5 +4,10 @@
   "profiles": "Profiles",
   "settings": "Settings",
   "addProfile": "Add profile",
-  "addProfileGroup": "Add profile group"
+  "addProfileGroup": "Add profile group",
+  "cores": "Cores",
+  "addCore": "Add core",
+  "addCoreType": "Add core type",
+  "assets": "Assets",
+  "addAsset": "Add asset"
 }

@@ -5,7 +5,8 @@ import 'package:fv2ray/screens/home/settings/tun.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'settings/about.dart';
-import 'settings/core.dart';
+import 'settings/assets.dart';
+import 'settings/cores.dart';
 import 'settings/general.dart';
 import 'settings/profile_override.dart';
 
@@ -44,7 +45,7 @@ class _SettingListState extends State<SettingList> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const CoreScreen()),
+                MaterialPageRoute(builder: (context) => const CoresScreen()),
               );
             },
           ),
@@ -56,6 +57,16 @@ class _SettingListState extends State<SettingList> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => const ProfileOverrideScreen()),
+              );
+            },
+          ),
+          ListTile(
+            title: const Text("Asset"),
+            subtitle: const Text("Assets remote auto update, etc."),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AssetsScreen()),
               );
             },
           ),

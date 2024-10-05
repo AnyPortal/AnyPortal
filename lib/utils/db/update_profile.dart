@@ -1,8 +1,8 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:http/http.dart' as http;
 
-import '../../../models/profile.dart';
-import '../../../utils/db.dart';
+import '../../../../models/profile.dart';
+import '../../../../utils/db.dart';
 
 Future<bool> updateProfile({
   ProfileData? oldProfile,
@@ -10,34 +10,38 @@ Future<bool> updateProfile({
   ProfileType? profileType,
   String? url = "",
   int? autoUpdateInterval = 0,
+  int? coreTypeId = 0,
   String? coreCfg = "",
 }) async {
-    if (oldProfile != null) {
-      name ??= oldProfile.name;
-      profileType ??= oldProfile.type;
-      coreCfg ??= oldProfile.coreCfg;
-      final profileId = oldProfile.id;
-      switch (profileType) {
-        case ProfileType.remote:
-          final profileRemote = await (db.select(db.profileRemote)
-                ..where((p) => p.profileId.equals(profileId)))
-              .getSingle();
-          url ??= profileRemote.url;
-        case ProfileType.local:
-      }
+  if (oldProfile != null) {
+    name ??= oldProfile.name;
+    profileType ??= oldProfile.type;
+    coreTypeId ??= oldProfile.coreTypeId;
+    coreCfg ??= oldProfile.coreCfg;
+    final profileId = oldProfile.id;
+    switch (profileType) {
+      case ProfileType.remote:
+        final profileRemote = await (db.select(db.profileRemote)
+              ..where((p) => p.profileId.equals(profileId)))
+            .getSingle();
+        url ??= profileRemote.url;
+      case ProfileType.local:
     }
+  }
 
   await db.transaction(() async {
     int profileId = 0;
     if (oldProfile != null) {
       profileId = oldProfile.id;
     } else {
-      profileId = await db.into(db.profile).insertOnConflictUpdate(
-          ProfileCompanion(
-              name: drift.Value(name!),
-              lastUpdated: drift.Value(DateTime.now()),
-              type: drift.Value(profileType!),
-              coreCfg: drift.Value(coreCfg!)));
+      profileId =
+          await db.into(db.profile).insertOnConflictUpdate(ProfileCompanion(
+                name: drift.Value(name!),
+                updatedAt: drift.Value(DateTime.now()),
+                type: drift.Value(profileType!),
+                coreTypeId: drift.Value(coreTypeId!),
+                coreCfg: drift.Value(coreCfg!),
+              ));
     }
 
     switch (profileType!) {
@@ -53,9 +57,10 @@ Future<bool> updateProfile({
         await db.into(db.profile).insertOnConflictUpdate(ProfileCompanion(
               id: drift.Value(profileId),
               name: drift.Value(name!),
-              lastUpdated: drift.Value(DateTime.now()),
+              updatedAt: drift.Value(DateTime.now()),
               coreCfg: drift.Value(coreCfg),
               type: drift.Value(profileType),
+              coreTypeId: drift.Value(coreTypeId!),
             ));
         await db
             .into(db.profileRemote)
@@ -68,7 +73,7 @@ Future<bool> updateProfile({
         await db.into(db.profile).insertOnConflictUpdate(ProfileCompanion(
               id: drift.Value(profileId),
               name: drift.Value(name!),
-              lastUpdated: drift.Value(DateTime.now()),
+              updatedAt: drift.Value(DateTime.now()),
               coreCfg: drift.Value(coreCfg!),
               type: drift.Value(profileType),
             ));

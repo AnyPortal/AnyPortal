@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
@@ -12,7 +13,7 @@ import 'config_injector.dart';
 import 'db.dart';
 import 'prefs.dart';
 import 'get_pid_of_port.dart';
-import 'update_profile_with_group_remote.dart';
+import 'db/update_profile_with_group_remote.dart';
 
 class NoCorePathException implements Exception {
   String cause;
@@ -96,13 +97,14 @@ abstract class VPNManager with ChangeNotifier {
     await _stop();
   }
 
-  late int? _selectedProfileId;
-  late ProfileData? _selectedProfile;
-  late bool _useEmbedded;
-  late String? _corePath;
-  late String? _assetPath;
+  int? _selectedProfileId;
+  ProfileData? _selectedProfile;
+  late bool _isExec;
+  String? _corePath;
+  String? _workingDir;
+  String? _assetPath;
   late List<String> _coreArgList;
-  late Map<String, String>? _environment;
+  Map<String, String>? _environment;
   late Map<String, dynamic> rawCfg;
   late Directory folder;
 
@@ -130,11 +132,27 @@ abstract class VPNManager with ChangeNotifier {
     await config.writeAsString(jsonEncode(cfg));
 
     // check core path
-    _useEmbedded = prefs.getBool('core.useEmbedded')!;
-    _corePath = prefs.getString('core.path');
-    if (!_useEmbedded && _corePath == null) {
-      throw NoCorePathException("Core path not set. Check `Settings`->`Core`.");
+    final coreTypeId = _selectedProfile!.coreTypeId;
+    final core = await(db.select(db.coreTypeSelected).join([
+      leftOuterJoin(db.core, db.coreTypeSelected.coreId.equalsExp(db.core.id)),
+      leftOuterJoin(db.coreExec, db.core.id.equalsExp(db.coreExec.coreId)),
+      leftOuterJoin(db.coreLib, db.core.id.equalsExp(db.coreLib.coreId)),
+      leftOuterJoin(db.coreType, db.core.coreTypeId.equalsExp(db.coreType.id)),
+      leftOuterJoin(db.asset, db.coreExec.assetId.equalsExp(db.asset.id)),
+    ])..where(db.core.coreTypeId.equals(coreTypeId))).getSingleOrNull();
+    if (core == null){
+      throw Exception("No core of type specified by the profile is selected.");
     }
+    _isExec = core.read(db.core.isExec)!;
+    _corePath = core.read(db.asset.path);
+    if (_isExec) {
+      if (_corePath == null){
+        throw Exception("Core path is null.");
+      } else {
+        prefs.setString('core.path', _corePath!);
+      }
+    }
+    _workingDir ??= File(_corePath!).parent.path;
 
     // get core asset
     _assetPath = prefs.getString('core.assetPath') ?? "";
@@ -169,8 +187,12 @@ class VPNManagerExec extends VPNManager {
 
   @override
   _start() async {
-    process = await Process.start(_corePath!, _coreArgList,
-        environment: _environment);
+    process = await Process.start(
+      _corePath!,
+      _coreArgList,
+      workingDirectory: _workingDir,
+      environment: _environment,
+      );
     await updateIsActiveRecord();
     _setIsToggling(false);
     return;

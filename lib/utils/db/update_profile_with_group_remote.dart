@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:fv2ray/utils/update_profile.dart';
-import 'package:fv2ray/utils/update_profile_group.dart';
+import 'package:fv2ray/utils/db/update_profile.dart';
+import 'package:fv2ray/utils/db/update_profile_group.dart';
 
-import '../models/profile.dart';
-import '../models/profile_group.dart';
-import 'db.dart';
+import '../../models/profile.dart';
+import '../../models/profile_group.dart';
+import '../db.dart';
 
 Future<bool> updateProfileWithGroupRemote(ProfileData profile) async {
   if (profile.type == ProfileType.remote) {
@@ -13,7 +13,7 @@ Future<bool> updateProfileWithGroupRemote(ProfileData profile) async {
           ..where((p) => p.profileId.equals(profile.id)))
         .getSingleOrNull();
     if (profileRemote!.autoUpdateInterval != 0 &&
-        profile.lastUpdated
+        profile.updatedAt
             .add(Duration(seconds: profileRemote.autoUpdateInterval))
             .isBefore(DateTime.now())) {
       await updateProfile(
@@ -33,7 +33,7 @@ Future<bool> updateProfileWithGroupRemote(ProfileData profile) async {
             ..where((p) => p.profileGroupId.equals(selectedProfileGroup.id)))
           .getSingleOrNull();
       if (profileGroupRemote!.autoUpdateInterval != 0 &&
-          selectedProfileGroup.lastUpdated
+          selectedProfileGroup.updatedAt
               .add(Duration(seconds: profileGroupRemote.autoUpdateInterval))
               .isBefore(DateTime.now())) {
         await updateProfileGroup(

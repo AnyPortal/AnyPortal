@@ -1,11 +1,13 @@
 import 'dart:async'; // Add Completer for async handling
 import 'dart:io';
 import 'package:drift/drift.dart';
+import 'package:drift/drift.dart' as drift;
 import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:drift/drift.dart' as drift;
 
+import '../models/asset.dart';
+import '../models/core.dart';
 import '../models/profile.dart';
 import '../models/profile_group.dart';
 
@@ -30,15 +32,6 @@ class DatabaseManager {
     final file = File(p.join(dbFolder.path, 'fv2ray', 'db.sqlite'));
     _db = Database(_openConnection(file));
 
-    await _db.into(_db.profileGroup).insertOnConflictUpdate(
-      ProfileGroupCompanion(
-        id: const drift.Value(1),
-        name: const drift.Value(""),
-        lastUpdated: drift.Value(DateTime.now()),
-        type: const drift.Value(ProfileGroupType.local)
-      )
-    );
-
     _completer.complete(); // Signal that initialization is complete
   }
 
@@ -57,13 +50,45 @@ class DatabaseManager {
 
 // Drift database definition
 @DriftDatabase(tables: [
-  Profile, ProfileLocal, ProfileRemote, ProfileGroup, ProfileGroupLocal, ProfileGroupRemote
+  Asset,
+  AssetLocal,
+  AssetRemote,
+  Core,
+  CoreExec,
+  CoreLib,
+  CoreType,
+  CoreTypeSelected,
+  Profile,
+  ProfileLocal,
+  ProfileRemote,
+  ProfileGroup,
+  ProfileGroupLocal,
+  ProfileGroupRemote,
 ])
 class Database extends _$Database {
   Database(super.e);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 1;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        // Runs on the first database creation
+        onCreate: (Migrator m) async {
+          await m.createAll();
+          await into(profileGroup).insertOnConflictUpdate(ProfileGroupCompanion(
+              id: const Value(1),
+              name: const Value(""),
+              updatedAt: Value(DateTime.now()),
+              type: const Value(ProfileGroupType.local)));
+          for (var e in CoreTypeDefault.values) {
+            await into(coreType).insertOnConflictUpdate(CoreTypeCompanion(
+              id: Value(e.index),
+              name: Value(e.toString()),
+            ));
+          }
+        },
+      );
 }
 
 final db = DatabaseManager().db;

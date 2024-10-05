@@ -47,9 +47,11 @@ class _DashboardState extends State<Dashboard> {
       final selectedProfile = await (db.select(db.profile)
             ..where((p) => p.id.equals(selectedProfileId)))
           .getSingleOrNull();
-      setState(() {
-        _selectedProfile = selectedProfile;
-      });
+      if (mounted) {
+        setState(() {
+          _selectedProfile = selectedProfile;
+        });
+      }
     }
   }
 
@@ -61,9 +63,11 @@ class _DashboardState extends State<Dashboard> {
                 )
           ]))
         .get();
-    setState(() {
-      _profiles = profiles;
-    });
+    if (mounted) {
+      setState(() {
+        _profiles = profiles;
+      });
+    }
   }
 
   @override
@@ -78,7 +82,7 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.dashboard),
-                  ),
+        ),
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           padding: const EdgeInsets.all(8.0),

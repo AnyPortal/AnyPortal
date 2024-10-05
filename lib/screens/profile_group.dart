@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../models/profile_group.dart';
-import '../../../utils/db.dart';
-import '../../../utils/update_profile_group.dart';
+import '../models/profile_group.dart';
+import '../utils/db.dart';
+import '../utils/db/update_profile_group.dart';
 
 class ProfileGroupScreen extends StatefulWidget {
   final ProfileGroupData? profileGroup;

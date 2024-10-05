@@ -47,4 +47,5 @@ app.*.map.json
 .stfolder
 *.sync-conflict-*
 
+**/*.g.dart
 /tmp

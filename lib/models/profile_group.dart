@@ -3,7 +3,7 @@ import 'package:drift/drift.dart';
 class ProfileGroup extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
-  DateTimeColumn get lastUpdated => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
   IntColumn get type => integer().map(const ProfileGroupTypeConverter())();
 }
 

@@ -5,9 +5,11 @@ part 'fv2ray_rest.g.dart';
 @JsonSerializable()
 class Profile {
   final String name;
-  final dynamic config;
+  final String coreType;
+  final String format;
+  final dynamic coreConfig;
 
-  Profile(this.name, this.config);
+  Profile(this.name, this.coreType, this.format, this.coreConfig);
 
   factory Profile.fromJson(Map<String, dynamic> json) => _$ProfileFromJson(json);
 

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:fv2ray/models/core.dart';
 
-import '../../../models/profile.dart';
-import '../../../utils/db.dart';
-import '../../../utils/update_profile.dart';
+import '../models/profile.dart';
+import '../utils/db.dart';
+import '../utils/db/update_profile.dart';
 
 class ProfileScreen extends StatefulWidget {
   final ProfileData? profile;
@@ -25,15 +26,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _urlController = TextEditingController();
   final _autoUpdateIntervalController = TextEditingController(text: '0');
   final _coreCfgController = TextEditingController(text: '{}');
-
-  // ignore: prefer_final_fields
+  List<CoreTypeData> _coreTypeDataList = [];
   ProfileType _profileType = ProfileType.remote;
+  int _coreTypeId = CoreTypeDefault.v2ray.index;
+
+  Future<void> _loadField() async {
+    _coreTypeDataList = await (db.select(db.coreType).get());
+    if (mounted) {
+      setState(() {
+        _coreTypeDataList = _coreTypeDataList;
+      });
+    }
+  }
 
   Future<void> _loadProfile() async {
     if (widget.profile != null) {
       _nameController.text = widget.profile!.name;
       _profileType = widget.profile!.type;
       _coreCfgController.text = widget.profile!.coreCfg;
+      _coreTypeId = widget.profile!.coreTypeId;
       final profileId = widget.profile!.id;
       switch (_profileType) {
         case ProfileType.remote:
@@ -41,7 +52,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ..where((p) => p.profileId.equals(profileId)))
               .getSingle();
           _urlController.text = profileRemote.url;
-          _autoUpdateIntervalController.text = profileRemote.autoUpdateInterval.toString();
+          _autoUpdateIntervalController.text =
+              profileRemote.autoUpdateInterval.toString();
         case ProfileType.local:
       }
     }
@@ -50,6 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
+    _loadField();
     _loadProfile();
   }
 
@@ -68,6 +81,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           profileType: _profileType,
           url: _urlController.text,
           autoUpdateInterval: int.parse(_autoUpdateIntervalController.text),
+          coreTypeId: _coreTypeId,
           coreCfg: _coreCfgController.text,
         );
       }
@@ -98,9 +112,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
           border: OutlineInputBorder(),
         ),
       ),
+      DropdownButtonFormField<int>(
+        decoration: const InputDecoration(
+          labelText: 'core type',
+          border: OutlineInputBorder(),
+        ),
+        items: _coreTypeDataList.map((e) {
+          return DropdownMenuItem<int>(value: e.id, child: Text(e.name));
+        }).toList(),
+        onChanged: widget.profile != null
+            ? null
+            : (value) {
+                setState(() {
+                  _coreTypeId = value!;
+                });
+              },
+        value: _coreTypeId,
+      ),
       DropdownButtonFormField<ProfileType>(
         decoration: const InputDecoration(
-          labelText: 'type',
+          labelText: 'profile type',
           border: OutlineInputBorder(),
         ),
         items: ProfileType.values.map((ProfileType t) {

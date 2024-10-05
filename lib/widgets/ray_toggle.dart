@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fv2ray/utils/core_data_notifier.dart';
 
-import '../screens/home/settings/core.dart';
+import '../screens/home/settings/cores.dart';
 import '../utils/vpn_manager.dart';
 
 // ignore: must_be_immutable
@@ -63,7 +63,7 @@ class RayToggleState extends State<RayToggle> {
       if (mounted) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const CoreScreen()),
+          MaterialPageRoute(builder: (context) => const CoresScreen()),
         );
         const snackBar = SnackBar(
           content: Text("Please specify v2ray-core executable path"),

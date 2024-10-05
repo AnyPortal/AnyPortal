@@ -1,11 +1,13 @@
 import 'package:drift/drift.dart';
+import 'package:fv2ray/models/core.dart';
 import 'package:fv2ray/models/profile_group.dart';
 
 class Profile extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
+  IntColumn get coreTypeId => integer().references(CoreType, #id)();
   TextColumn get coreCfg => text().withDefault(const Constant("{}"))();
-  DateTimeColumn get lastUpdated => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
   IntColumn get type => integer().map(const ProfileTypeConverter())();
   IntColumn get profileGroupId =>
     integer().references(ProfileGroup, #id).withDefault(const Constant(1))();
