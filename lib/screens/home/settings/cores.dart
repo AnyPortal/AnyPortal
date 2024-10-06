@@ -241,14 +241,14 @@ class _CoresScreenState extends State<CoresScreen> {
   }
 
   String getCoreTitle(TypedResult core) {
-    if (core.readWithConverter(db.asset.type) == AssetType.local) {
-      if (core.read(db.core.isExec)!) {
+    if (core.read(db.core.isExec)!) {
+      if (core.readWithConverter(db.asset.type) == AssetType.local) {
         return core.read(db.asset.path)!;
       } else {
-        return "embedded";
+        return core.read(db.assetRemote.url)!;
       }
     } else {
-      return core.read(db.assetRemote.url)!;
+      return "embedded";
     }
   }
 

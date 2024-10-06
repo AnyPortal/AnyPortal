@@ -56,10 +56,14 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
     trayManager.addListener(this);
     windowManager.addListener(this);
     super.initState();
-    getApplicationDocumentsDirectory().then((folder) {
+    getApplicationSupportDirectory().then((folder) async {
+      final logFile =
+            File(p.join(folder.path, 'log', 'core.log'));
+      if (!await logFile.exists()){
+        await logFile.create(recursive: true);
+      }
       setState(() {
-        _pathLog =
-            File(p.join(folder.path, 'anyportal', 'core.log')).absolute.path;
+        _pathLog = logFile.absolute.path;
       });
     });
   }

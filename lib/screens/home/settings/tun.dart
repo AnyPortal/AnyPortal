@@ -34,8 +34,6 @@ class _TunScreenState extends State<TunScreen> {
     super.initState();
   }
 
-  void _updatePerAppProxy(bool value) {}
-
   void _editApplist() {
     Navigator.push(
       context,
@@ -44,16 +42,12 @@ class _TunScreenState extends State<TunScreen> {
   }
 
   void writeTProxyConf() async {
-    final folder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(folder.path, 'anyportal', 'tproxy.yaml'));
+    final folder = await getApplicationSupportDirectory();
+    final file = File(p.join(folder.path, 'conf', 'tproxy.yaml'));
     final usernameLine =
         _socksUserName == "" ? "" : "username: $_socksUserName";
     final passwordLine =
         _socksPassword == "" ? "" : "password: $_socksPassword";
-
-    if (!file.existsSync()) {
-      file.create();
-    }
 
     await file.writeAsString("""tunnel:
   mtu: 8500
@@ -277,9 +271,10 @@ misc:
 }
 
 tProxyConfInit() async {
-  final folder = await getApplicationDocumentsDirectory();
-  final file = File(p.join(folder.path, 'anyportal', 'tproxy.yaml'));
+  final folder = await getApplicationSupportDirectory();
+  final file = File(p.join(folder.path, 'conf', 'tproxy.yaml'));
   if (!file.existsSync()) {
+    await file.create(recursive: true);
     _TunScreenState().writeTProxyConf();
   }
 }

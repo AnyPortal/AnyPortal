@@ -59,7 +59,8 @@ class RayToggleState extends State<RayToggle> {
       } else {
         await vPNMan.start();
       }
-    } on NoCorePathException catch (_) {
+    } on NoCorePathException catch (e) {
+      err = e;
       if (mounted) {
         Navigator.push(
           context,
@@ -77,6 +78,7 @@ class RayToggleState extends State<RayToggle> {
       err = e;
     } finally {
       if (err != null) {
+        vPNMan.setIsToggling(false);
         final snackBar = SnackBar(
           content: Text("toggle: $err"),
         );

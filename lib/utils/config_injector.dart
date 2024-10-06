@@ -40,9 +40,9 @@ Future<Map<String, dynamic>> getInjectedConfig(Map<String, dynamic> cfg) async {
   }
 
   if (injectLog) {
-    final folder = await getApplicationDocumentsDirectory();
+    final folder = await getApplicationSupportDirectory();
     final pathLogErr =
-        File(p.join(folder.path, 'anyportal', 'core.log')).absolute.path;
+        File(p.join(folder.path, 'log', 'core.log')).absolute.path;
     cfg["log"] = {
       "loglevel": logLevel.name,
       "error": pathLogErr,

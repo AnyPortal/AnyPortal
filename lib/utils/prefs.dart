@@ -15,7 +15,7 @@ class PrefsManager {
     // 'core.v2ray.assetPath',
     'core.useEmbedded': Platform.isAndroid || Platform.isIOS,
     // 'app.selectedProfileId': 1,
-    'app.connectAtLaunch': true,
+    'app.connectAtLaunch': Platform.isWindows || Platform.isLinux || Platform.isMacOS,
     'app.window.size.width': 1280.0,
     'app.window.size.height': 720.0,
     'app.window.isMaximized': false,

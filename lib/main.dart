@@ -57,20 +57,21 @@ void main(List<String> args) async {
       effect: WindowEffect.mica,
       dark: dispatcher.platformBrightness == Brightness.dark,
     );
+
+    
+    // connect at launch
+    if (prefs.getBool('app.connectAtLaunch')!) {
+      try {
+        if (!(await vPNMan.updateIsActiveRecord()).isActive) {
+          await vPNMan.start();
+        }
+      } catch (_) {}
+    }
   }
 
   // theme color
   SystemTheme.fallbackColor = const Color.fromARGB(82, 0, 140, 255);
   await SystemTheme.accentColor.load();
-
-  // connect at launch
-  if (prefs.getBool('app.connectAtLaunch')!) {
-    try {
-      if (!(await vPNMan.updateIsActiveRecord()).isActive) {
-        await vPNMan.start();
-      }
-    } catch (_) {}
-  }
 
   runApp(const AnyPortal());
 }

@@ -68,12 +68,12 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
 
     private func getConfigFilePath() -> String {
         let appPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        return appPath.appendingPathComponent("anyportal/config.gen.json").path
+        return appPath.appendingPathComponent("conf/config.gen.json").path
     }
     
     private func getTproxyConfigFilePath() -> String {
         let appPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        return appPath.appendingPathComponent("anyportal/tproxy.yaml").path
+        return appPath.appendingPathComponent("conf/tproxy.yaml").path
     }
 
     private func getTunFd() -> Int32? {

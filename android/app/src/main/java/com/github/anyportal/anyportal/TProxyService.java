@@ -192,7 +192,7 @@ public class TProxyService extends VpnService {
         }
 
         /* TProxy */
-        File tproxy_file = new File(getFilesDir().getParent(), "app_flutter/anyportal/tproxy.yaml");
+        File tproxy_file = new File(getFilesDir(), "conf/tproxy.yaml");
         TProxyStartService(tproxy_file.getAbsolutePath(), tunFd.getFd());
     }
 
@@ -220,10 +220,10 @@ public class TProxyService extends VpnService {
         /* asset location */
         String assetPath = prefs.getString("flutter.core.assetPath", "");
         if (assetPath.isEmpty()){
-            File assetFolder = new File(getFilesDir().getParent(), "app_flutter/anyportal/asset");
+            File assetFolder = new File(getFilesDir().getParent(), "files/asset");
             assetPath = assetFolder.getAbsolutePath();
         }
-        File config_file = new File(getFilesDir().getParent(), "app_flutter/anyportal/config.gen.json");
+        File config_file = new File(getFilesDir().getParent(), "files/conf/config.gen.json");
         
         /* core */
         boolean useEmbedded = prefs.getBoolean("flutter.core.useEmbedded", true);

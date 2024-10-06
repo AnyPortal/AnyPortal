@@ -16,18 +16,18 @@ import 'get_pid_of_port.dart';
 import 'db/update_profile_with_group_remote.dart';
 
 class NoCorePathException implements Exception {
-  String cause;
-  NoCorePathException(this.cause);
+  String message;
+  NoCorePathException(this.message);
 }
 
 class NoSelectedProfileException implements Exception {
-  String cause;
-  NoSelectedProfileException(this.cause);
+  String message;
+  NoSelectedProfileException(this.message);
 }
 
 class InvalidSelectedProfileException implements Exception {
-  String cause;
-  InvalidSelectedProfileException(this.cause);
+  String message;
+  InvalidSelectedProfileException(this.message);
 }
 
 class IsActiveRecord {
@@ -47,7 +47,7 @@ abstract class VPNManager with ChangeNotifier {
   Future<void> _start();
   Future<void> _stop();
 
-  void _setIsToggling(bool val) {
+  void setIsToggling(bool val) {
     if (isToggling != val) {
       isToggling = val;
       notifyListeners();
@@ -74,27 +74,33 @@ abstract class VPNManager with ChangeNotifier {
 
   Future<void> start() async {
     if (isToggling) return;
-    _setIsToggling(true);
+    setIsToggling(true);
     isExpectingActive = true;
+
     if ((await updateIsActiveRecord()).isActive) {
       return;
     }
+
     await init();
-
-    // clear logs
-    await File(p.join(folder.path, 'anyportal', 'core.log')).writeAsString("");
-
+    await File(p.join(folder.path, 'log', 'core.log')).writeAsString("");
     await _start();
   }
 
   Future<void> stop() async {
     if (isToggling) return;
-    _setIsToggling(true);
+    setIsToggling(true);
     isExpectingActive = false;
+
     if (!(await updateIsActiveRecord()).isActive) {
       return;
     }
-    await _stop();
+
+    try {
+      await _stop();
+    } catch (e) {
+      setIsToggling(false);
+      rethrow;
+    }
   }
 
   int? _selectedProfileId;
@@ -125,34 +131,39 @@ abstract class VPNManager with ChangeNotifier {
     updateProfileWithGroupRemote(_selectedProfile!);
 
     // gen config.json
-    folder = await getApplicationDocumentsDirectory();
-    final config = File(p.join(folder.path, 'anyportal', 'config.gen.json'));
+    folder = await getApplicationSupportDirectory();
+    final config = File(p.join(folder.path, 'conf', 'config.gen.json'));
+    if (!await config.exists()) {
+      await config.create(recursive: true);
+    }
     rawCfg = jsonDecode(_selectedProfile!.coreCfg) as Map<String, dynamic>;
     final cfg = await getInjectedConfig(rawCfg);
     await config.writeAsString(jsonEncode(cfg));
 
     // check core path
     final coreTypeId = _selectedProfile!.coreTypeId;
-    final core = await(db.select(db.coreTypeSelected).join([
+    final core = await (db.select(db.coreTypeSelected).join([
       leftOuterJoin(db.core, db.coreTypeSelected.coreId.equalsExp(db.core.id)),
       leftOuterJoin(db.coreExec, db.core.id.equalsExp(db.coreExec.coreId)),
       leftOuterJoin(db.coreLib, db.core.id.equalsExp(db.coreLib.coreId)),
       leftOuterJoin(db.coreType, db.core.coreTypeId.equalsExp(db.coreType.id)),
       leftOuterJoin(db.asset, db.coreExec.assetId.equalsExp(db.asset.id)),
-    ])..where(db.core.coreTypeId.equals(coreTypeId))).getSingleOrNull();
-    if (core == null){
+    ])
+          ..where(db.core.coreTypeId.equals(coreTypeId)))
+        .getSingleOrNull();
+    if (core == null) {
       throw Exception("No core of type specified by the profile is selected.");
     }
     _isExec = core.read(db.core.isExec)!;
-    _corePath = core.read(db.asset.path);
     if (_isExec) {
-      if (_corePath == null){
+      _corePath = core.read(db.asset.path);
+      if (_corePath == null) {
         throw Exception("Core path is null.");
       } else {
         prefs.setString('core.path', _corePath!);
       }
+      _workingDir ??= File(_corePath!).parent.path;
     }
-    _workingDir ??= File(_corePath!).parent.path;
 
     // get core asset
     _assetPath = prefs.getString('core.assetPath') ?? "";
@@ -192,9 +203,9 @@ class VPNManagerExec extends VPNManager {
       _coreArgList,
       workingDirectory: _workingDir,
       environment: _environment,
-      );
+    );
     await updateIsActiveRecord();
-    _setIsToggling(false);
+    setIsToggling(false);
     return;
   }
 
@@ -204,17 +215,17 @@ class VPNManagerExec extends VPNManager {
       process!.kill();
       process = null;
       await updateIsActiveRecord();
-      _setIsToggling(false);
+      setIsToggling(false);
       return;
     }
     if (pid != null) {
       Process.killPid(pid!);
       await updateIsActiveRecord();
-      _setIsToggling(false);
+      setIsToggling(false);
       return;
     }
     await updateIsActiveRecord();
-    _setIsToggling(false);
+    setIsToggling(false);
     return;
   }
 
@@ -246,14 +257,14 @@ class VPNManagerMC extends VPNManager {
       final newIsActive = call.method == 'onVPNConnected';
       _setIsActive(IsActiveRecord(newIsActive, DateTime.now(), call.method));
       // if (newIsActive == isExpectingActive){
-      // log("_setIsToggling: false");
-      _setIsToggling(false);
+      // log("setIsToggling: false");
+      setIsToggling(false);
       // }
     } else if (call.method == 'onTileToggled') {
       isExpectingActive = call.arguments as bool;
       // log("isExpectingActive: ${call.arguments}");
       /// cannot promise onTileToggled reach before onVPNConnected/onVPNDisconnected
-      // _setIsToggling(true);
+      // setIsToggling(true);
     }
   }
 

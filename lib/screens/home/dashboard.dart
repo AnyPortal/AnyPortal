@@ -32,7 +32,7 @@ class _DashboardState extends State<Dashboard> {
 
   void setHighlightSelectProfile() async {
     for (var i = 0; i < 2; ++i) {
-      if (context.mounted) {
+      if (mounted) {
         setState(() {
           _highlightSelectProfile = true;
         });

@@ -13,7 +13,7 @@ public class AssetUtils {
     public static void copyAssetsIfNeeded(Context context) {
         AssetManager assetManager = context.getAssets();
         String[] files = {"geoip.dat", "geosite.dat"};
-        File targetDir = new File(context.getFilesDir().getParent(), "app_flutter/anyportal/asset");
+        File targetDir = new File(context.getFilesDir(), "asset");
 
         // Ensure the target directory exists
         if (!targetDir.exists()) {

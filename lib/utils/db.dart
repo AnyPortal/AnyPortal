@@ -76,15 +76,35 @@ class Database extends _$Database {
         // Runs on the first database creation
         onCreate: (Migrator m) async {
           await m.createAll();
+          // default profile group 1
           await into(profileGroup).insertOnConflictUpdate(ProfileGroupCompanion(
-              id: const Value(1),
-              name: const Value(""),
-              updatedAt: Value(DateTime.now()),
-              type: const Value(ProfileGroupType.local)));
+            id: const Value(1),
+            name: const Value(""),
+            updatedAt: Value(DateTime.now()),
+            type: const Value(ProfileGroupType.local),
+          ));
+          // default core types
           for (var e in CoreTypeDefault.values) {
             await into(coreType).insertOnConflictUpdate(CoreTypeCompanion(
               id: Value(e.index),
               name: Value(e.toString()),
+            ));
+          }
+          // android embedded core
+          if (Platform.isAndroid) {
+            final coreId = await into(core)
+                .insertOnConflictUpdate(CoreCompanion(
+              coreTypeId: Value(CoreTypeDefault.xray.index),
+              version: const Value("libv2raymobile"),
+              updatedAt: Value(DateTime.now()),
+              isExec: const Value(false),
+              workingDir: const Value(""),
+              envs: const Value("{}"),
+            ));
+            await into(coreTypeSelected)
+                .insertOnConflictUpdate(CoreTypeSelectedCompanion(
+              coreTypeId: Value(CoreTypeDefault.xray.index),
+              coreId: Value(coreId),
             ));
           }
         },

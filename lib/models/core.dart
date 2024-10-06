@@ -11,8 +11,8 @@ class Core extends Table {
   DateTimeColumn get updatedAt => dateTime()();
   BoolColumn get isExec => boolean().withDefault(const Constant(true))();
 
-  TextColumn get workingDir => text()();
-  TextColumn get envs => text()();
+  TextColumn get workingDir => text().nullable()();
+  TextColumn get envs => text().withDefault(const Constant("{}"))();
 }
 
 class CoreExec extends Table {
