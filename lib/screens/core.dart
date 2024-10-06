@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
 import '../../utils/db.dart';
 import '../../models/core.dart';
 import '../models/asset.dart';
+import '../utils/global.dart';
 import '../utils/prefs.dart';
 import 'asset.dart';
 import 'core_type.dart';
@@ -162,7 +162,7 @@ class _CoreScreenState extends State<CoreScreen> {
     }
     String corePath = result.files.single.path!;
     if (Platform.isAndroid) {
-      final folder = await getApplicationSupportDirectory();
+      final folder = global.applicationSupportDirectory;
       final dest = File(p.join(folder.path, 'core')).path;
       await File(corePath).rename(dest);
       await FilePicker.platform.clearTemporaryFiles();

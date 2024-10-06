@@ -24,7 +24,7 @@ class TProxyService {
                 tunnelProtocol.serverAddress = "127.0.0.1" // Not used but required
                 
                 newManager.protocolConfiguration = tunnelProtocol
-                newManager.localizedDescription = "anyportal"
+                newManager.localizedDescription = "AnyPortal"
                 newManager.isEnabled = true
                 
                 // Save the new configuration

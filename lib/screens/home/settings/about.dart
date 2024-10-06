@@ -15,7 +15,6 @@ class AboutScreen extends StatefulWidget {
 
 class _AboutScreenState extends State<AboutScreen> {
   String version = "";
-  String buildNumber = "";
 
   @override
   void initState() {
@@ -26,8 +25,7 @@ class _AboutScreenState extends State<AboutScreen> {
   _loadPackageInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     setState(() {
-      version = packageInfo.version;
-      buildNumber = packageInfo.buildNumber;
+      version = "v${packageInfo.version}+${packageInfo.buildNumber}";
     });
   }
 
@@ -50,8 +48,8 @@ class _AboutScreenState extends State<AboutScreen> {
 
 We hope you choose well between your home world and Wonderlands.""")),
       ListTile(
-        title: const Text("anyportal"),
-        subtitle: Text("v$version+$buildNumber"),
+        title: const Text("AnyPortal"),
+        subtitle: Text(version),
       ),
       ListTile(
         title: const Text("Github"),

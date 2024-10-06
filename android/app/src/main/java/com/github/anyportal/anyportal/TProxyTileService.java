@@ -67,7 +67,7 @@ public class TProxyTileService extends TileService {
             tile.setSubtitle(selectedProfileName);
         }
 
-        tile.setLabel("anyportal");
+        tile.setLabel("AnyPortal");
         tile.updateTile();
     }
 

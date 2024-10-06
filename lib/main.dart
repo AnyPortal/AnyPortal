@@ -2,6 +2,7 @@
 import 'dart:io';
 
 // import 'package:flutter/cupertino.dart';
+import 'package:anyportal/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
@@ -11,19 +12,21 @@ import 'package:system_theme/system_theme.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'screens/home.dart';
-import 'screens/home/settings/tun.dart';
+import 'screens/home/settings/tun_hev_socks5_tunnel.dart';
 import 'utils/core_data_notifier.dart';
 import 'utils/db.dart';
 import 'utils/launch_at_startup.dart';
 import 'utils/prefs.dart';
 import 'utils/tray.dart';
+import 'utils/copy_assets.dart';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await DatabaseManager().init();
+  await GlobalManager().init();
+  DatabaseManager().init(); // global
   await PrefsManager().init();
-  await VPNManManager().init();
+  await VPNManManager().init(); //prefs
   await CoreDataNotifierManager().init();
 
   if (Platform.isAndroid || Platform.isIOS) {
@@ -58,7 +61,9 @@ void main(List<String> args) async {
       dark: dispatcher.platformBrightness == Brightness.dark,
     );
 
-    
+    // copy assets
+    await copyAssetsToDefaultLocation();
+
     // connect at launch
     if (prefs.getBool('app.connectAtLaunch')!) {
       try {

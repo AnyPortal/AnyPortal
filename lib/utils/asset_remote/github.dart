@@ -5,12 +5,12 @@ import 'dart:io';
 import 'package:anyportal/utils/asset_remote/protocol.dart';
 import 'package:drift/drift.dart';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
 import '../../models/asset.dart';
 import '../db.dart';
 import '../extract.dart';
+import '../global.dart';
 
 class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
   final String url;
@@ -93,7 +93,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
         throw Exception("asset not found");
       }
 
-      final folder = await getApplicationSupportDirectory();
+      final folder = global.applicationSupportDirectory;
       final file =
           File(p.join(folder.path, 'asset', 'github', owner, repo, assetName));
 

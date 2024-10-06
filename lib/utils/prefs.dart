@@ -33,13 +33,15 @@ class PrefsManager {
     'tun.perAppProxy': false,
     'tun.selectedApps': "[]",
     'tun.socks.address': "127.0.0.1",
-    'tun.socks.port': 15491,
     'tun.socks.username': "",
     'tun.socks.password': "",
     'tun.dns.ipv4': "1.1.1.1",
     'tun.dns.ipv6': "2606:4700:4700::1111",
     'tun.ipv4': true,
     'tun.ipv6': false,
+    'tun.inject.log': true,
+    'tun.inject.log.level': LogLevel.warning.index,
+    'tun.inject.socks': true,
   };
 
   static final PrefsManager _instance = PrefsManager._internal();

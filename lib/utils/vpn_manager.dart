@@ -3,14 +3,16 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:anyportal/models/core.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter/services.dart';
 
-import 'config_injector.dart';
+import 'config_injector/core_ray.dart';
+import 'config_injector/tun_sing_box.dart';
 import 'db.dart';
+import 'global.dart';
 import 'prefs.dart';
 import 'get_pid_of_port.dart';
 import 'db/update_profile_with_group_remote.dart';
@@ -39,6 +41,7 @@ class IsActiveRecord {
 }
 
 abstract class VPNManager with ChangeNotifier {
+  bool isExecTun = false;
   bool isToggling = false;
   IsActiveRecord isActiveRecord = IsActiveRecord(false, DateTime.now(), "init");
   bool isExpectingActive = false;
@@ -111,8 +114,20 @@ abstract class VPNManager with ChangeNotifier {
   String? _assetPath;
   late List<String> _coreArgList;
   Map<String, String>? _environment;
-  late Map<String, dynamic> rawCfg;
+  late Map<String, dynamic> coreRawCfgMap;
   late Directory folder;
+
+  String? _tunSingBoxCorePath;
+  String? _tunSingBoxWorkingDir;
+  final List<String> _tunSingBoxCoreArgList = [
+    "run",
+    "-c",
+    p.join(
+      global.applicationSupportDirectory.path,
+      'conf',
+      'tun.sing_box.gen.json',
+    )
+  ];
 
   Future<void> init() async {
     // get selectedProfile
@@ -131,14 +146,17 @@ abstract class VPNManager with ChangeNotifier {
     updateProfileWithGroupRemote(_selectedProfile!);
 
     // gen config.json
-    folder = await getApplicationSupportDirectory();
-    final config = File(p.join(folder.path, 'conf', 'config.gen.json'));
+    folder = global.applicationSupportDirectory;
+    final config = File(p.join(folder.path, 'conf', 'core.gen.json'));
     if (!await config.exists()) {
       await config.create(recursive: true);
     }
-    rawCfg = jsonDecode(_selectedProfile!.coreCfg) as Map<String, dynamic>;
-    final cfg = await getInjectedConfig(rawCfg);
-    await config.writeAsString(jsonEncode(cfg));
+    coreRawCfgMap = jsonDecode(_selectedProfile!.coreCfg) as Map<String, dynamic>;
+    if (_selectedProfile!.coreTypeId == CoreTypeDefault.v2ray.index ||
+        _selectedProfile!.coreTypeId == CoreTypeDefault.xray.index) {
+      coreRawCfgMap = await getInjectedConfig(coreRawCfgMap);
+    }
+    await config.writeAsString(jsonEncode(coreRawCfgMap));
 
     // check core path
     final coreTypeId = _selectedProfile!.coreTypeId;
@@ -165,6 +183,56 @@ abstract class VPNManager with ChangeNotifier {
       _workingDir ??= File(_corePath!).parent.path;
     }
 
+    // check sing-box path if tun is enabled
+    isExecTun = prefs.getBool("tun")! && !Platform.isAndroid;
+    if (isExecTun) {
+      final coreTypeId = CoreTypeDefault.singBox.index;
+      final core = await (db.select(db.coreTypeSelected).join([
+        leftOuterJoin(
+            db.core, db.coreTypeSelected.coreId.equalsExp(db.core.id)),
+        leftOuterJoin(db.coreExec, db.core.id.equalsExp(db.coreExec.coreId)),
+        leftOuterJoin(db.coreLib, db.core.id.equalsExp(db.coreLib.coreId)),
+        leftOuterJoin(
+            db.coreType, db.core.coreTypeId.equalsExp(db.coreType.id)),
+        leftOuterJoin(db.asset, db.coreExec.assetId.equalsExp(db.asset.id)),
+      ])
+            ..where(db.core.coreTypeId.equals(coreTypeId)))
+          .getSingleOrNull();
+      if (core == null) {
+        throw Exception("Tun needs a sing-box core.");
+      }
+      _isExec = core.read(db.core.isExec)!;
+      if (_isExec) {
+        _tunSingBoxCorePath = core.read(db.asset.path);
+        if (_tunSingBoxCorePath == null) {
+          throw Exception("sing-box path is null.");
+        } else {
+          prefs.setString('tun.singBox.core.path', _tunSingBoxCorePath!);
+        }
+        _tunSingBoxWorkingDir ??= File(_tunSingBoxCorePath!).parent.path;
+      }
+
+      // gen config.json
+      final tunSingBoxUserConfig = File(p.join(
+        global.applicationDocumentsDirectory.path,
+        'AnyPortal',
+        'conf',
+        'tun.sing_box.json',
+      ));
+      final tunSingBoxConfig = File(p.join(
+        global.applicationSupportDirectory.path,
+        'conf',
+        'tun.sing_box.gen.json',
+      ));
+      if (!await tunSingBoxConfig.exists()) {
+        await tunSingBoxConfig.create(recursive: true);
+      }
+      Map<String, dynamic> tunSingBoxRawCfgMap = jsonDecode(await tunSingBoxUserConfig.readAsString())
+          as Map<String, dynamic>;
+      tunSingBoxRawCfgMap = await getInjectedConfigTunSingBox(tunSingBoxRawCfgMap);
+      await tunSingBoxConfig.writeAsString(jsonEncode(tunSingBoxRawCfgMap));
+    }
+
     // get core asset
     _assetPath = prefs.getString('core.assetPath') ?? "";
     if (_assetPath != null) {
@@ -179,16 +247,17 @@ abstract class VPNManager with ChangeNotifier {
   }
 }
 
-/// Direct process exec, need foreground, typically for PC
+/// Direct processCore exec, need foreground, typically for PC
 class VPNManagerExec extends VPNManager {
-  Process? process;
+  Process? processCore;
+  Process? processTun;
   int? pid;
 
   @override
   Future<IsActiveRecord> _getIsActiveRecord() async {
     final now = DateTime.now();
-    if (process != null) {
-      return IsActiveRecord(true, now, "process");
+    if (processCore != null) {
+      return IsActiveRecord(true, now, "processCore");
     } else {
       final port = prefs.getInt('inject.api.port') ?? 15490;
       pid = await getPidOfPort(port);
@@ -198,12 +267,19 @@ class VPNManagerExec extends VPNManager {
 
   @override
   _start() async {
-    process = await Process.start(
+    processCore = await Process.start(
       _corePath!,
       _coreArgList,
       workingDirectory: _workingDir,
       environment: _environment,
     );
+    if (isExecTun) {
+      processTun = await Process.start(
+        _tunSingBoxCorePath!,
+        _tunSingBoxCoreArgList,
+        workingDirectory: _tunSingBoxWorkingDir,
+      );
+    }
     await updateIsActiveRecord();
     setIsToggling(false);
     return;
@@ -211,9 +287,11 @@ class VPNManagerExec extends VPNManager {
 
   @override
   _stop() async {
-    if (process != null) {
-      process!.kill();
-      process = null;
+    processTun?.kill();
+    processTun = null;
+    if (processCore != null) {
+      processCore!.kill();
+      processCore = null;
       await updateIsActiveRecord();
       setIsToggling(false);
       return;

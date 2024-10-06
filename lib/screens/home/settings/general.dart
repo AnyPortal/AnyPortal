@@ -79,7 +79,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
     return Scaffold(
       appBar: AppBar(
         // Use the selected tab's label for the AppBar title
-        title: const Text("Core settings"),
+        title: const Text("General settings"),
               ),
       body: ListView.builder(
         itemCount: fields.length,

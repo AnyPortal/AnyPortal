@@ -4,12 +4,12 @@ import 'package:drift/drift.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 
 import '../models/asset.dart';
 import '../models/core.dart';
 import '../models/profile.dart';
 import '../models/profile_group.dart';
+import 'global.dart';
 
 part 'db.g.dart';
 
@@ -27,9 +27,9 @@ class DatabaseManager {
   }
 
   // Async initializer (call once at app startup)
-  Future<void> init() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'anyportal', 'db.sqlite'));
+  void init() {
+    final dbFolder = global.applicationDocumentsDirectory;
+    final file = File(p.join(dbFolder.path, "AnyPortal", "db.sqlite"));
     _db = Database(_openConnection(file));
 
     _completer.complete(); // Signal that initialization is complete

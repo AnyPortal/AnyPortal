@@ -1,9 +1,9 @@
 import 'dart:io';
 
+import 'package:anyportal/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:tray_manager/tray_manager.dart';
@@ -56,16 +56,19 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
     trayManager.addListener(this);
     windowManager.addListener(this);
     super.initState();
-    getApplicationSupportDirectory().then((folder) async {
-      final logFile =
-            File(p.join(folder.path, 'log', 'core.log'));
-      if (!await logFile.exists()){
+
+    final logFile = File(
+        p.join(global.applicationSupportDirectory.path, 'log', 'core.log'));
+    logFile.exists().then((logFileExists) async {
+      if (!logFileExists) {
         await logFile.create(recursive: true);
       }
-      setState(() {
-        _pathLog = logFile.absolute.path;
-      });
     });
+
+    setState(() {
+      _pathLog = logFile.absolute.path;
+    });
+    ;
   }
 
   @override
@@ -132,7 +135,8 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
                         leading: screen.icon,
                         title: Text(screen.title),
                         selected: _selectedIndex == index,
-                        selectedColor: Theme.of(context).textTheme.titleMedium!.color,
+                        selectedColor:
+                            Theme.of(context).textTheme.titleMedium!.color,
                         onTap: () {
                           setState(() {
                             _selectedIndex = index;

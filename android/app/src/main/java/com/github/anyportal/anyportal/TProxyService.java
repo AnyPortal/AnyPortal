@@ -192,7 +192,7 @@ public class TProxyService extends VpnService {
         }
 
         /* TProxy */
-        File tproxy_file = new File(getFilesDir(), "conf/tproxy.yaml");
+        File tproxy_file = new File(getFilesDir(), "conf/tun.hev_socks5_tunne.gen.yaml");
         TProxyStartService(tproxy_file.getAbsolutePath(), tunFd.getFd());
     }
 
@@ -223,7 +223,7 @@ public class TProxyService extends VpnService {
             File assetFolder = new File(getFilesDir().getParent(), "files/asset");
             assetPath = assetFolder.getAbsolutePath();
         }
-        File config_file = new File(getFilesDir().getParent(), "files/conf/config.gen.json");
+        File config_file = new File(getFilesDir().getParent(), "files/conf/core.gen.json");
         
         /* core */
         boolean useEmbedded = prefs.getBoolean("flutter.core.useEmbedded", true);

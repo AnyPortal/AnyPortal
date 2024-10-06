@@ -28,7 +28,7 @@ class RayToggleState extends State<RayToggle> {
     if (coreIsActive && !coreDataNotifier.on) {
       try {
         await vPNMan.init();
-        coreDataNotifier.loadCfg(vPNMan.rawCfg);
+        coreDataNotifier.loadCfg(vPNMan.coreRawCfgMap);
         // should do atomic check
         if (!coreDataNotifier.on) coreDataNotifier.start();
       } catch (e) {

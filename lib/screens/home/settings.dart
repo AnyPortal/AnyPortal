@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:anyportal/screens/home/settings/tun.dart';
+import 'package:anyportal/screens/home/settings/tun_hev_socks5_tunnel.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'settings/about.dart';
@@ -9,6 +9,7 @@ import 'settings/assets.dart';
 import 'settings/cores.dart';
 import 'settings/general.dart';
 import 'settings/profile_override.dart';
+import 'settings/tun_sing_box.dart';
 
 class SettingList extends StatefulWidget {
   const SettingList({
@@ -77,12 +78,22 @@ class _SettingListState extends State<SettingList> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const TunScreen()),
+                    MaterialPageRoute(builder: (context) => const TunHevSocks5TunnelScreen()),
+                  );
+                }),
+          if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
+            ListTile(
+                title: const Text("Tun"),
+                subtitle: const Text("Tun adaptor"),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const TunSingBoxScreen()),
                   );
                 }),
           ListTile(
             title: const Text("About"),
-            subtitle: const Text("anyportal"),
+            subtitle: const Text("AnyPortal"),
             onTap: () {
               Navigator.push(
                 context,

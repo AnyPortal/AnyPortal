@@ -77,18 +77,19 @@
 
 ## Todo
 
-|        | Windows | Linux | macOS | Android | iOS |
-| ------ | ------- | ----- | ----- | ------- | --- |
-| anyportal | ✅       | ✅     | ✅     | ✅       | ❌   |
-| tun    | 🔜       | 🔜     | 🔜     | ✅       | ❌   |
+|              | Windows | Linux | macOS | Android | iOS |
+| ------------ | ------- | ----- | ----- | ------- | --- |
+| anyportal    | ✅       | ✅     | ✅     | ✅       | ❌   |
+| tun          | 🧪       | 🧪     | 🧪     | ✅       | ❌   |
+| system proxy | 🔜       | 🔜     | 🔜     | 🔜       | ❌   |
 
 - 💤 Not Planned: No plans for implementation or discontinued
 - 🔜 Planned: Planned for future development
 - 🚧 In Progress: Partially implemented, but not fully functional yet
 - ✅ Working: Completed and functioning as expected
 - ❌ Not Working: Known issues, broken or currently non-functional
+- 🧪 Experimental: Under experimental implementation or testing
 <!-- - 🛠 Under Development: Actively being worked on -->
-<!-- - 🧪 Experimental: Under experimental implementation or testing -->
 <!-- - ⏳ Awaiting Review: Needs testing or review -->
 <!-- - 📝 Documenting: In the process of being documented -->
 

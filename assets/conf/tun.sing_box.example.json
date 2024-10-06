@@ -1,0 +1,69 @@
+{
+  "log": {
+    "disabled": true,
+    "level": "info",
+    "timestamp": true
+  },
+  "dns": {
+    "servers": [
+      {
+        "tag": "dn_dhcp_auto",
+        "address": "dhcp://auto",
+        "detour": "ot_direct"
+      },
+      {
+        "tag": "dn_fakeip",
+        "address": "fakeip"
+      }
+    ],
+    "rules": [
+      {
+        "query_type": [
+          "A",
+          "AAAA"
+        ],
+        "server": "dn_fakeip"
+      }
+    ],
+    "independent_cache": true,
+    "fakeip": {
+      "enabled": true,
+      "inet4_range": "198.18.0.1/15",
+      "inet6_range": "fc00::/18"
+    }
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "in_tun",
+      "sniff": true,
+      "inet4_address": "172.19.0.1/30",
+      "inet6_address": "fdfe:dcba:9876::1/126",
+      "auto_route": true,
+      "strict_route": true
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "direct",
+      "tag": "ot_direct"
+    },
+    {
+      "type": "block",
+      "tag": "ot_block"
+    },
+    {
+      "type": "dns",
+      "tag": "ot_dns"
+    }
+  ],
+  "route": {
+    "rules": [
+      {
+        "protocol": "dns",
+        "outbound": "ot_dns"
+      }
+    ],
+    "auto_detect_interface": true
+  }
+}
