@@ -58,10 +58,12 @@ class _AssetsScreenState extends State<AssetsScreen> {
   List<TypedResult> _assets = [];
 
   Future<void> _loadAssets() async {
-    final assets = await db.select(db.asset).join([
+    final assets = await (db.select(db.asset).join([
       leftOuterJoin(
           db.assetRemote, db.asset.id.equalsExp(db.assetRemote.assetId)),
-    ]).get();
+    ])
+          ..orderBy([OrderingTerm.asc(db.asset.path)]))
+        .get();
 
     if (assets.isEmpty) {
       setHighlightAssetsPopupMenuButton();
@@ -162,15 +164,14 @@ class _AssetsScreenState extends State<AssetsScreen> {
               title: Text(getAssetTitle(asset)),
               subtitle: Text(asset.read(db.asset.updatedAt).toString()),
               trailing: PopupMenuButton<AssetAction>(
-                        onSelected: (value) =>
-                            handleAssetAction(asset, value),
-                        itemBuilder: (context) => AssetAction.values
-                            .map((action) => PopupMenuItem(
-                                  value: action,
-                                  child: Text(action.name),
-                                ))
-                            .toList(),
-                      ),
+                onSelected: (value) => handleAssetAction(asset, value),
+                itemBuilder: (context) => AssetAction.values
+                    .map((action) => PopupMenuItem(
+                          value: action,
+                          child: Text(action.name),
+                        ))
+                    .toList(),
+              ),
             );
           },
         ));

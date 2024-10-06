@@ -52,10 +52,12 @@ class _CoreScreenState extends State<CoreScreen> {
   }
 
   Future<void> _loadAssets() async {
-    _assets = await db.select(db.asset).join([
+    _assets = await (db.select(db.asset).join([
       leftOuterJoin(
           db.assetRemote, db.asset.id.equalsExp(db.assetRemote.assetId)),
-    ]).get();
+    ])
+          ..orderBy([OrderingTerm.asc(db.asset.path)]))
+        .get();
     if (mounted) {
       setState(() {
         _assets = _assets;
@@ -130,7 +132,7 @@ class _CoreScreenState extends State<CoreScreen> {
 
           if (_coreIsExec) {
             await db.into(db.coreExec).insertOnConflictUpdate(CoreExecCompanion(
-                  coreId: Value(widget.core!.read(db.core.id)!),
+                  coreId: Value(coreId),
                   assetId: Value(_assetId!),
                 ));
           }
@@ -229,7 +231,7 @@ class _CoreScreenState extends State<CoreScreen> {
               ),
               items: _assets.map((e) {
                 return DropdownMenuItem<int>(
-                  value: e.read(db.asset.id), 
+                  value: e.read(db.asset.id),
                   child: Text(getAssetTitle(e)),
                 );
               }).toList(),
