@@ -6,6 +6,7 @@ class RadioListSelectionPopup<T> extends StatefulWidget {
   final T? initialValue;
   final Function(T) onSaved;
   final String Function(T) itemToString;
+  final VoidCallback? onNew;
 
   const RadioListSelectionPopup({
     super.key,
@@ -14,6 +15,7 @@ class RadioListSelectionPopup<T> extends StatefulWidget {
     required this.onSaved,
     this.initialValue,
     required this.itemToString,
+    this.onNew,
   });
 
   @override
@@ -49,6 +51,10 @@ class RadioListSelectionPopupState<T> extends State<RadioListSelectionPopup<T>> 
         }).toList(),
       ),
       actions: [
+        if (widget.onNew != null) TextButton(
+          onPressed: widget.onNew,
+          child: const Text('New'),
+        ),
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),

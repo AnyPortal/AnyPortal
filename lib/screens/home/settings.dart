@@ -40,12 +40,22 @@ class _SettingListState extends State<SettingList> {
             },
           ),
           ListTile(
-            title: const Text("Core"),
+            title: const Text("Cores"),
             subtitle: const Text("Path of core exectuable, assets, etc."),
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const CoresScreen()),
+              );
+            },
+          ),
+          ListTile(
+            title: const Text("Assets"),
+            subtitle: const Text("Assets remote auto update, etc."),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AssetsScreen()),
               );
             },
           ),
@@ -57,16 +67,6 @@ class _SettingListState extends State<SettingList> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => const ProfileOverrideScreen()),
-              );
-            },
-          ),
-          ListTile(
-            title: const Text("Asset"),
-            subtitle: const Text("Assets remote auto update, etc."),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AssetsScreen()),
               );
             },
           ),

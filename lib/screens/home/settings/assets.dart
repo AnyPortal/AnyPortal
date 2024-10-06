@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
+import '../../../models/asset.dart';
 import '../../../screens/asset.dart';
 import '../../../utils/db.dart';
 
@@ -123,6 +124,14 @@ class _AssetsScreenState extends State<AssetsScreen> {
     }
   }
 
+  String getAssetTitle(TypedResult asset) {
+    if (asset.readWithConverter(db.asset.type) == AssetType.local) {
+      return asset.read(db.asset.path)!;
+    } else {
+      return asset.read(db.assetRemote.url)!;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -150,7 +159,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
           itemBuilder: (context, index) {
             final asset = _assets[index];
             return ListTile(
-              title: Text(asset.read(db.asset.path)!),
+              title: Text(getAssetTitle(asset)),
               subtitle: Text(asset.read(db.asset.updatedAt).toString()),
               trailing: PopupMenuButton<AssetAction>(
                         onSelected: (value) =>

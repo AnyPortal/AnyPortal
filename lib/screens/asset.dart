@@ -9,6 +9,7 @@ import 'package:path/path.dart' as p;
 import '../../utils/db.dart';
 import '../../models/asset.dart';
 import '../utils/prefs.dart';
+import '../utils/asset_remote/github.dart';
 
 class AssetScreen extends StatefulWidget {
   final TypedResult? asset;
@@ -34,11 +35,17 @@ class _AssetScreenState extends State<AssetScreen> {
   Future<void> _loadAsset() async {
     String assetPath = "";
 
-    if (widget.asset != null) {
-        _assetType = widget.asset!.readWithConverter(db.asset.type)!;
-        if (_assetType == AssetType.local) {
-          assetPath = widget.asset!.read(db.asset.path)!;
-        }
+    final asset = widget.asset;
+
+    if (asset != null) {
+      _assetType = widget.asset!.readWithConverter(db.asset.type)!;
+      if (_assetType == AssetType.local) {
+        assetPath = asset.read(db.asset.path)!;
+      } else {
+        _urlController.text = asset.read(db.assetRemote.url)!;
+        _autoUpdateIntervalController.text =
+            asset.read(db.assetRemote.autoUpdateInterval).toString();
+      }
     }
 
     if (mounted) {
@@ -65,25 +72,37 @@ class _AssetScreenState extends State<AssetScreen> {
     try {
       if (_formKey.currentState?.validate() ?? false) {
         final oldAsset = widget.asset;
-        String _assetPath = _assetPathController.text;
-        int assetId;
-        await db.transaction(() async {
-          if (oldAsset != null) {
-            assetId = oldAsset.read(db.asset.id)!;
-              await db.into(db.asset).insertOnConflictUpdate(AssetCompanion(
-                    id: Value(assetId),
-                    type: Value(_assetType),
-                    path: Value(_assetPath),
-                    updatedAt: Value(DateTime.now()),
-                  ));
+        final assetPath = _assetPathController.text;
+        final autoUpdateInterval = _autoUpdateIntervalController.text;
+
+        if (_assetType == AssetType.remote) {
+          final assetRemote =
+              AssetRemoteProtocolGithub.fromUrl(_urlController.text);
+          if (assetRemote == null) {
+            throw Exception("invalid url");
           } else {
-            assetId = await db.into(db.asset).insert(AssetCompanion(
+            await assetRemote.update(
+              oldAsset: oldAsset,
+              autoUpdateInterval: int.parse(autoUpdateInterval),
+            );
+          }
+        } else if (_assetType == AssetType.local) {
+          if (oldAsset != null) {
+            final assetId = oldAsset.read(db.asset.id)!;
+            await db.into(db.asset).insertOnConflictUpdate(AssetCompanion(
+                  id: Value(assetId),
                   type: Value(_assetType),
-                  path: Value(_assetPath),
+                  path: Value(assetPath),
+                  updatedAt: Value(DateTime.now()),
+                ));
+          } else {
+            await db.into(db.asset).insertOnConflictUpdate(AssetCompanion(
+                  type: Value(_assetType),
+                  path: Value(assetPath),
                   updatedAt: Value(DateTime.now()),
                 ));
           }
-        });
+        }
       }
       ok = true;
     } catch (e) {
@@ -110,7 +129,7 @@ class _AssetScreenState extends State<AssetScreen> {
     String assetPath = result.files.single.path!;
     if (Platform.isAndroid) {
       final folder = await getApplicationSupportDirectory();
-      final dest = File(p.join(folder.path, 'anyportal', 'asset')).path;
+      final dest = File(p.join(folder.path, 'asset')).path;
       await File(assetPath).rename(dest);
       await FilePicker.platform.clearTemporaryFiles();
       assetPath = dest;
@@ -175,11 +194,6 @@ class _AssetScreenState extends State<AssetScreen> {
           ),
           keyboardType: TextInputType.number,
         ),
-      const Divider(),
-      Text(
-        "Advanced",
-        style: TextStyle(color: Theme.of(context).colorScheme.primary),
-      ),
       Center(
         child: ElevatedButton(
           onPressed: _isSubmitting ? null : _submitForm,

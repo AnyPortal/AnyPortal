@@ -46,12 +46,12 @@ class _CoreTypeScreenState extends State<CoreTypeScreen> {
     try {
       if (_formKey.currentState?.validate() ?? false) {
         if (widget.coreType != null) {
-          db.into(db.coreType).insertOnConflictUpdate(CoreTypeCompanion(
+          await db.into(db.coreType).insertOnConflictUpdate(CoreTypeCompanion(
                 id: Value(widget.coreType!.id),
                 name: Value(_typeController.text),
               ));
         } else {
-          db.into(db.coreType).insert(CoreTypeCompanion(
+          await db.into(db.coreType).insert(CoreTypeCompanion(
                 name: Value(_typeController.text),
               ));
         }

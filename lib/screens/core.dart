@@ -10,6 +10,8 @@ import '../../utils/db.dart';
 import '../../models/core.dart';
 import '../models/asset.dart';
 import '../utils/prefs.dart';
+import 'asset.dart';
+import 'core_type.dart';
 
 class CoreScreen extends StatefulWidget {
   final TypedResult? core;
@@ -28,20 +30,19 @@ class _CoreScreenState extends State<CoreScreen> {
   final _formKey = GlobalKey<FormState>();
 
   List<CoreTypeData> _coreTypeDataList = [];
+  List<TypedResult> _assets = [];
   int _coreTypeId = CoreTypeDefault.v2ray.index;
   bool _coreIsExec = true;
+  int? _assetId;
+  String _args = "";
+  String _envs = "{}";
 
   final _workingDirController = TextEditingController(text: '');
   final _argsController =
       TextEditingController(text: '["run", "-c", "{configFile}"}]');
   final _envsController = TextEditingController(text: '{}');
 
-  AssetType _assetType = AssetType.local;
-  final _assetPathController = TextEditingController();
-  final _urlController = TextEditingController();
-  final _autoUpdateIntervalController = TextEditingController(text: '0');
-
-  Future<void> _loadField() async {
+  Future<void> _loadCoreTypes() async {
     _coreTypeDataList = await (db.select(db.coreType).get());
     if (mounted) {
       setState(() {
@@ -50,26 +51,26 @@ class _CoreScreenState extends State<CoreScreen> {
     }
   }
 
-  Future<void> _loadCore() async {
-    String args = "";
-    String assetPath = "";
+  Future<void> _loadAssets() async {
+    _assets = await db.select(db.asset).join([
+      leftOuterJoin(
+          db.assetRemote, db.asset.id.equalsExp(db.assetRemote.assetId)),
+    ]).get();
+    if (mounted) {
+      setState(() {
+        _assets = _assets;
+      });
+    }
+  }
 
+  Future<void> _loadCore() async {
     if (widget.core != null) {
       _coreIsExec = widget.core!.read(db.core.isExec)!;
       _coreTypeId = widget.core!.read(db.core.coreTypeId)!;
-      final coreId = widget.core!.read(db.core.id)!;
+      _envs = widget.core!.read(db.core.envs)!;
       if (_coreIsExec) {
-        final coreExec = await (db.select(db.coreExec)
-              ..where((p) => p.coreId.equals(coreId)))
-            .getSingle();
-        args = coreExec.args;
-        final asset = await (db.select(db.asset)
-              ..where((p) => p.id.equals(coreExec.assetId)))
-            .getSingle();
-        _assetType = asset.type;
-        if (_assetType == AssetType.local) {
-          assetPath = asset.path;
-        }
+        _args = widget.core!.read(db.coreExec.args)!;
+        _assetId = widget.core!.read(db.coreExec.assetId)!;
       }
     }
 
@@ -77,9 +78,9 @@ class _CoreScreenState extends State<CoreScreen> {
       setState(() {
         _coreIsExec = _coreIsExec;
         _coreTypeId = _coreTypeId;
-        _assetType = _assetType;
-        _argsController.text = args;
-        _assetPathController.text = assetPath;
+        _envsController.text = _envs;
+        _argsController.text = _args;
+        _assetId = _assetId;
       });
     }
   }
@@ -87,7 +88,8 @@ class _CoreScreenState extends State<CoreScreen> {
   @override
   void initState() {
     super.initState();
-    _loadField();
+    _loadCoreTypes();
+    _loadAssets();
     _loadCore();
   }
 
@@ -102,9 +104,8 @@ class _CoreScreenState extends State<CoreScreen> {
       if (_formKey.currentState?.validate() ?? false) {
         final oldCore = widget.core;
         final _envs = _envsController.text;
-        final _args = _argsController.text;
+
         String _workingDir = _workingDirController.text;
-        String _assetPath = _assetPathController.text;
         int coreId;
         await db.transaction(() async {
           if (oldCore != null) {
@@ -127,30 +128,10 @@ class _CoreScreenState extends State<CoreScreen> {
                 ));
           }
 
-          int assetId;
           if (_coreIsExec) {
-            if (oldCore != null) {
-              assetId = (await (db.select(db.coreExec)
-                        ..where((p) => p.coreId.equals(coreId)))
-                      .getSingle())
-                  .assetId;
-              await db.into(db.asset).insertOnConflictUpdate(AssetCompanion(
-                    id: Value(assetId),
-                    type: Value(_assetType),
-                    path: Value(_assetPath),
-                    updatedAt: Value(DateTime.now()),
-                  ));
-            } else {
-              assetId = await db.into(db.asset).insert(AssetCompanion(
-                    type: Value(_assetType),
-                    path: Value(_assetPath),
-                    updatedAt: Value(DateTime.now()),
-                  ));
-            }
             await db.into(db.coreExec).insertOnConflictUpdate(CoreExecCompanion(
-                  coreId: Value(coreId),
-                  args: Value(_args),
-                  assetId: Value(assetId),
+                  coreId: Value(widget.core!.read(db.core.id)!),
+                  assetId: Value(_assetId!),
                 ));
           }
         });
@@ -180,7 +161,7 @@ class _CoreScreenState extends State<CoreScreen> {
     String corePath = result.files.single.path!;
     if (Platform.isAndroid) {
       final folder = await getApplicationSupportDirectory();
-      final dest = File(p.join(folder.path, 'anyportal', 'core')).path;
+      final dest = File(p.join(folder.path, 'core')).path;
       await File(corePath).rename(dest);
       await FilePicker.platform.clearTemporaryFiles();
       corePath = dest;
@@ -189,82 +170,92 @@ class _CoreScreenState extends State<CoreScreen> {
       await Process.start("chmod", ["a+x", corePath]);
     }
     prefs.setString('core.path', corePath);
-    setState(() {
-      _assetPathController.text = corePath;
-    });
+  }
+
+  String getAssetTitle(TypedResult asset) {
+    if (asset.readWithConverter(db.asset.type) == AssetType.local) {
+      return asset.read(db.asset.path)!;
+    } else {
+      return asset.read(db.assetRemote.url)!;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final fields = [
-      DropdownButtonFormField<int>(
-        decoration: const InputDecoration(
-          labelText: 'core type',
-          border: OutlineInputBorder(),
-        ),
-        items: _coreTypeDataList.map((e) {
-          return DropdownMenuItem<int>(value: e.id, child: Text(e.name));
-        }).toList(),
-        onChanged: widget.core != null
-            ? null
-            : (value) {
+      Row(
+        children: [
+          Expanded(
+            child: DropdownButtonFormField<int>(
+              decoration: const InputDecoration(
+                labelText: 'core type',
+                border: OutlineInputBorder(),
+              ),
+              items: _coreTypeDataList.map((e) {
+                return DropdownMenuItem<int>(value: e.id, child: Text(e.name));
+              }).toList(),
+              onChanged: widget.core != null
+                  ? null
+                  : (value) {
+                      setState(() {
+                        _coreTypeId = value!;
+                      });
+                    },
+              value: _coreTypeId,
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const CoreTypeScreen()),
+              ).then((res) {
+                if (res != null && res['ok'] == true) {
+                  _loadCoreTypes();
+                }
+              });
+            },
+          ),
+        ],
+      ),
+      Row(
+        children: [
+          Expanded(
+            child: DropdownButtonFormField<int>(
+              decoration: const InputDecoration(
+                labelText: 'core asset',
+                border: OutlineInputBorder(),
+              ),
+              items: _assets.map((e) {
+                return DropdownMenuItem<int>(
+                  value: e.read(db.asset.id), 
+                  child: Text(getAssetTitle(e)),
+                );
+              }).toList(),
+              onChanged: (e) {
                 setState(() {
-                  _coreTypeId = value!;
+                  _assetId = e;
                 });
               },
-        value: _coreTypeId,
+              value: _assetId,
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AssetScreen()),
+              ).then((res) {
+                if (res != null && res['ok'] == true) {
+                  _loadAssets();
+                }
+              });
+            },
+          ),
+        ],
       ),
-      DropdownButtonFormField<AssetType>(
-          decoration: const InputDecoration(
-            labelText: 'core file type',
-            border: OutlineInputBorder(),
-          ),
-          items: AssetType.values.map((AssetType t) {
-            return DropdownMenuItem<AssetType>(value: t, child: Text(t.name));
-          }).toList(),
-          value: _assetType,
-          onChanged: (value) {
-            setState(() {
-              _assetType = value!;
-            });
-          }),
-      if (_coreIsExec && _assetType == AssetType.local)
-        Row(
-          children: [
-            Expanded(
-              child: TextFormField(
-                controller: _assetPathController,
-                decoration: const InputDecoration(
-                  labelText: 'core path',
-                  hintText: '/path/to/core_excutable',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.open_in_new),
-              onPressed: _selectCorePath,
-            ),
-          ],
-        ),
-      if (_assetType == AssetType.remote)
-        TextFormField(
-          controller: _urlController,
-          decoration: const InputDecoration(
-            labelText: 'url',
-            hintText: 'github://owner/repo/asset.ext[/sub/path]',
-            border: OutlineInputBorder(),
-          ),
-        ),
-      if (_assetType == AssetType.remote)
-        TextFormField(
-          controller: _autoUpdateIntervalController,
-          decoration: const InputDecoration(
-            labelText: 'auto update interval (seconds), 0 to disable',
-            border: OutlineInputBorder(),
-          ),
-          keyboardType: TextInputType.number,
-        ),
       const Divider(),
       Text(
         "Advanced",
