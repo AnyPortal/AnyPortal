@@ -69,13 +69,13 @@
 - remote profile has only one required field, a REST URL pointing to a v2ray config
 - for v2ray to work properly on Android and iOS, tun2socks is necessary
   - v2ray native tun inbound is only half finished for now
-  - tun2socks with best performance so far: hev-socks5-tunnel
+  - tun2socks with best performance so far: hev-socks5-tunnel, followed by sing-box
   - you can use anyportal with tun disabled on Android, and use external tools to redirect traffic to a socks port, just like on desktop
 - android api 29+ does not allow running binary directly
   - you can run custom cores (any version of v2ray, xray) with apk compiled with api target 28
   - playsotore always requires recent api targets, way over 28 now, so you can only use an embedded core with playstore apk
 
-## Todo
+## Dev roadmap
 
 |              | Windows | Linux | macOS | Android | iOS |
 | ------------ | ------- | ----- | ----- | ------- | --- |
@@ -87,8 +87,8 @@
 - 🔜 Planned: Planned for future development
 - 🚧 In Progress: Partially implemented, but not fully functional yet
 - ✅ Working: Completed and functioning as expected
-- ❌ Not Working: Known issues, broken or currently non-functional
 - 🧪 Experimental: Under experimental implementation or testing
+- ❌ Not Working: Known issues, broken or currently non-functional
 <!-- - 🛠 Under Development: Actively being worked on -->
 <!-- - ⏳ Awaiting Review: Needs testing or review -->
 <!-- - 📝 Documenting: In the process of being documented -->

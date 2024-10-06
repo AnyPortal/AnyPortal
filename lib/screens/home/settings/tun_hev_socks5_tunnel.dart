@@ -43,7 +43,7 @@ class _TunHevSocks5TunnelScreenState extends State<TunHevSocks5TunnelScreen> {
 
   void writeTProxyConf() async {
     final folder = global.applicationSupportDirectory;
-    final file = File(p.join(folder.path, 'conf', 'tun.hev_socks5_tunne.gen.yaml'));
+    final file = File(p.join(folder.path, 'conf', 'tun.hev_socks5_tunnel.gen.yaml'));
     final usernameLine =
         _socksUserName == "" ? "" : "username: $_socksUserName";
     final passwordLine =
@@ -272,7 +272,7 @@ misc:
 
 tProxyConfInit() async {
   final folder = global.applicationSupportDirectory;
-  final file = File(p.join(folder.path, 'conf', 'tun.hev_socks5_tunne.gen.yaml'));
+  final file = File(p.join(folder.path, 'conf', 'tun.hev_socks5_tunnel.gen.yaml'));
   if (!file.existsSync()) {
     await file.create(recursive: true);
     _TunHevSocks5TunnelScreenState().writeTProxyConf();

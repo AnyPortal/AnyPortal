@@ -192,7 +192,7 @@ public class TProxyService extends VpnService {
         }
 
         /* TProxy */
-        File tproxy_file = new File(getFilesDir(), "conf/tun.hev_socks5_tunne.gen.yaml");
+        File tproxy_file = new File(getFilesDir(), "conf/tun.hev_socks5_tunnel.gen.yaml");
         TProxyStartService(tproxy_file.getAbsolutePath(), tunFd.getFd());
     }
 
