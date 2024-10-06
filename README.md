@@ -1,9 +1,9 @@
-# anyportal
+# AnyPortal
 
 <img src="assets/image/README/dashboard_screen.gif" height="400" /> <img src="assets/image/README/profiles_screen.png" height="400" /> <img src="assets/image/README/settings_screen.png" height="400" /> <img src="assets/image/README/profile_override_screen.png" height="400" />
 
-- Free/Flutter v2ray GUI for Windows, macOS, Linux, Android, (iOS currently blocked).
-- Typically used in combination with a v2ray-core (or xray-core and alike)
+- v2ray, xray, ... GUI for Windows, macOS, Linux, Android, (iOS currently blocked).
+- Typically used in combination with a core (v2ray-core, xray-core, etc)
 
 ## Download latest release
 
@@ -100,7 +100,7 @@ All rights reserved until further notice (hopefully soon).
 
 ## Thanks
 
-- [v2fly/v2ray](https://github.com/v2fly/v2ray-core), [xtls/xray](https://github.com/xtls/xray-core)
+- [v2fly/v2ray-core](https://github.com/v2fly/v2ray-core), [xtls/xray-core](https://github.com/xtls/xray-core)
 - [flutter](https://flutter.dev/) and all its awesome plugins
 - [heiher/hev-socks5-tunnel](https://github.com/heiher/hev-socks5-tunnel)
 
