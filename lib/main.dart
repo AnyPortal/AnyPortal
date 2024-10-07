@@ -3,6 +3,7 @@ import 'dart:io';
 
 // import 'package:flutter/cupertino.dart';
 import 'package:anyportal/utils/global.dart';
+import 'package:anyportal/utils/platform_elevation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
@@ -23,19 +24,29 @@ import 'utils/copy_assets.dart';
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await GlobalManager().init();
-  DatabaseManager().init(); // global
+  /// elevate
   await PrefsManager().init();
-  await VPNManManager().init(); //prefs
+  await GlobalManager().init();
+  if (prefs.getBool("app.runElevated")! && !global.isElevated) {
+    await PlatformElevation.elevate();
+    exit(0);
+  }
+
+  DatabaseManager().init();
+
+  /// global
+  await VPNManManager().init();
+
+  ///prefs
   await CoreDataNotifierManager().init();
 
   if (Platform.isAndroid || Platform.isIOS) {
     await tProxyConfInit();
   } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-    // auto launch at login
+    /// auto launch at login
     initLaunchAtStartup();
 
-    // minimize to tray
+    /// minimize to tray
     await TrayMenuManager().init();
     await windowManager.ensureInitialized();
     final width = prefs.getDouble("app.window.size.width");
@@ -53,7 +64,7 @@ void main(List<String> args) async {
       }
     });
 
-    // transparent background
+    /// transparent background
     await Window.initialize();
     var dispatcher = SchedulerBinding.instance.platformDispatcher;
     await Window.setEffect(
@@ -63,28 +74,37 @@ void main(List<String> args) async {
 
     // copy assets
     await copyAssetsToDefaultLocation();
+  }
 
-    // connect at launch
+  /// theme color
+  SystemTheme.fallbackColor = const Color.fromARGB(82, 0, 140, 255);
+  await SystemTheme.accentColor.load();
+
+  runApp(const AnyPortal());
+
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    /// connect at launch
+    Exception? err;
     if (prefs.getBool('app.connectAtLaunch')!) {
       try {
         if (!(await vPNMan.updateIsCoreActiveRecord()).isCoreActive) {
           await vPNMan.start();
         }
-      } catch (_) {}
+      } on Exception catch (e) {
+        err = e;
+      } finally {
+        if (err != null) {
+          vPNMan.setIsToggling(false);
+        }
+      }
     }
   }
-
-  // theme color
-  SystemTheme.fallbackColor = const Color.fromARGB(82, 0, 140, 255);
-  await SystemTheme.accentColor.load();
-
-  runApp(const AnyPortal());
 }
 
 class AnyPortal extends StatelessWidget {
   const AnyPortal({super.key});
 
-  // This widget is the root of your application.
+  /// This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     ThemeData getPlatformThemeData() {

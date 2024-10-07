@@ -14,6 +14,7 @@ import 'config_injector/core_ray.dart';
 import 'config_injector/tun_sing_box.dart';
 import 'db.dart';
 import 'global.dart';
+import 'platform_elevation.dart';
 import 'prefs.dart';
 import 'get_pid_of_port.dart';
 import 'db/update_profile_with_group_remote.dart';
@@ -199,6 +200,10 @@ abstract class VPNManager with ChangeNotifier {
     // check sing-box path if tun is enabled
     isExecTun = prefs.getBool("tun")! && (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
     if (isExecTun) {
+      if (!await PlatformElevation.isElevated()){
+        throw Exception("Permission denied: Tun");
+      }
+
       final coreTypeId = CoreTypeDefault.singBox.index;
       final core = await (db.select(db.coreTypeSelected).join([
         leftOuterJoin(

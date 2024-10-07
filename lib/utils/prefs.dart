@@ -16,6 +16,7 @@ class PrefsManager {
     'core.useEmbedded': Platform.isAndroid || Platform.isIOS,
     // 'app.selectedProfileId': 1,
     'app.connectAtLaunch': Platform.isWindows || Platform.isLinux || Platform.isMacOS,
+    'app.runElevated': false,
     'app.window.size.width': 1280.0,
     'app.window.size.height': 720.0,
     'app.window.isMaximized': false,

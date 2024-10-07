@@ -42,7 +42,9 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
     final fields = [
       ListTile(
         title: const Text("Enable tun"),
-        subtitle: const Text("Enable tun2socks so a socks proxy works like a VPN"),
+        subtitle: const Text("""Enable tun2socks so a socks proxy works like a VPN
+Requires elevation
+"""),
         trailing: Switch(
           value: _tun,
           onChanged: (value) {

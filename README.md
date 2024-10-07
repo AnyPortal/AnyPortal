@@ -80,7 +80,7 @@
 |              | Windows | Linux | macOS | Android | iOS |
 | ------------ | ------- | ----- | ----- | ------- | --- |
 | anyportal    | ✅       | ✅     | ✅     | ✅       | ❌   |
-| tun          | 🧪       | 🧪     | 🧪     | ✅       | ❌   |
+| tun          | ✅       | 🧪     | 🧪     | ✅       | ❌   |
 | system proxy | 🔜       | 🔜     | 🔜     | 🔜       | ❌   |
 
 - 💤 Not Planned: No plans for implementation or discontinued
