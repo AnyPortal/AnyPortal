@@ -53,7 +53,7 @@ Requires elevation
               _tun = value;
             });
             trayMenu.updateContextMenu();
-            if (vPNMan.isCoreActiveRecord.isCoreActive) {
+            if (vPNMan.isCoreActiveRecord.isActive) {
               if (value) {
                 vPNMan.startTun();
               } else {

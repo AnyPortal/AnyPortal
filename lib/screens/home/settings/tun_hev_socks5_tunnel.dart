@@ -78,7 +78,7 @@ misc:
             setState(() {
               _tun = value;
             });
-            if (vPNMan.isCoreActiveRecord.isCoreActive) {
+            if (vPNMan.isCoreActiveRecord.isActive) {
               if (value) {
                 vPNMan.startTun();
               } else {

@@ -34,7 +34,6 @@ void main(List<String> args) async {
   LoggerManager().init();
   DatabaseManager().init();
 
-  /// global
   VPNManManager().init();
 
   ///prefs
@@ -83,11 +82,18 @@ void main(List<String> args) async {
   runApp(const AnyPortal());
 
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    /// find active core and tun
+    await vPNMan.init();
+    await Future.wait([
+      vPNMan.updateIsCoreActiveRecord(),
+      vPNMan.isTunActive(),
+    ]);
+
     /// connect at launch
     Exception? err;
     if (prefs.getBool('app.connectAtLaunch')!) {
       try {
-        if (!(await vPNMan.updateIsCoreActiveRecord()).isCoreActive) {
+        if (vPNMan.isCoreActiveRecord.isActive) {
           await vPNMan.start();
         }
       } on Exception catch (e) {

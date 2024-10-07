@@ -15,8 +15,8 @@ import 'db.dart';
 import 'global.dart';
 import 'logger.dart';
 import 'platform_elevation.dart';
+import 'platform_process.dart';
 import 'prefs.dart';
-import 'get_pid_of_port.dart';
 import 'db/update_profile_with_group_remote.dart';
 
 class NoCorePathException implements Exception {
@@ -34,21 +34,21 @@ class InvalidSelectedProfileException implements Exception {
   InvalidSelectedProfileException(this.message);
 }
 
-class IsCoreActiveRecord {
-  bool isCoreActive;
+class IsActiveRecord {
+  bool isActive;
   DateTime datetime;
   String source;
 
-  IsCoreActiveRecord(this.isCoreActive, this.datetime, this.source);
+  IsActiveRecord(this.isActive, this.datetime, this.source);
 }
 
 abstract class VPNManager with ChangeNotifier {
   bool isToggling = false;
-  IsCoreActiveRecord isCoreActiveRecord =
-      IsCoreActiveRecord(false, DateTime.now(), "init");
+  IsActiveRecord isCoreActiveRecord =
+      IsActiveRecord(false, DateTime.now(), "init");
   bool isExpectingActive = false;
 
-  Future<IsCoreActiveRecord> _getIsCoreActiveRecord();
+  Future<IsActiveRecord> _getCoreIsActiveRecord();
   Future<void> _startAll();
   Future<void> _stopAll();
   Future<void> startTun();
@@ -61,16 +61,16 @@ abstract class VPNManager with ChangeNotifier {
     }
   }
 
-  Future<IsCoreActiveRecord> updateIsCoreActiveRecord() async {
-    _setIsCoreActive(await _getIsCoreActiveRecord());
+  Future<IsActiveRecord> updateIsCoreActiveRecord() async {
+    _setIsCoreActive(await _getCoreIsActiveRecord());
     return isCoreActiveRecord;
   }
 
-  void _setIsCoreActive(IsCoreActiveRecord r) {
+  void _setIsCoreActive(IsActiveRecord r) {
     if (r.datetime.isBefore(isCoreActiveRecord.datetime)) {
       return;
     }
-    if (r.isCoreActive == isCoreActiveRecord.isCoreActive) {
+    if (r.isActive == isCoreActiveRecord.isActive) {
       isCoreActiveRecord = r;
       return;
     }
@@ -87,7 +87,7 @@ abstract class VPNManager with ChangeNotifier {
     isExpectingActive = true;
 
     /// check is already active
-    if ((await updateIsCoreActiveRecord()).isCoreActive) {
+    if ((await updateIsCoreActiveRecord()).isActive) {
       setIsToggling(false);
       return;
     }
@@ -107,7 +107,7 @@ abstract class VPNManager with ChangeNotifier {
     isExpectingActive = false;
 
     /// check is already inactive
-    if (!(await updateIsCoreActiveRecord()).isCoreActive) {
+    if (!(await updateIsCoreActiveRecord()).isActive) {
       setIsToggling(false);
       return;
     }
@@ -193,6 +193,7 @@ abstract class VPNManager with ChangeNotifier {
     }
     _isExec = core.read(db.core.isExec)!;
     if (_isExec) {
+      await prefs.setBool("core.useEmbedded", false);
       corePath = core.read(db.asset.path);
       if (corePath == null) {
         throw Exception("Core path is null.");
@@ -200,6 +201,8 @@ abstract class VPNManager with ChangeNotifier {
         prefs.setString('core.path', corePath!);
       }
       _workingDir ??= File(corePath!).parent.path;
+    } else {
+      await prefs.setBool("core.useEmbedded", true);
     }
 
     // check sing-box path if tun is enabled
@@ -275,17 +278,18 @@ abstract class VPNManager with ChangeNotifier {
 class VPNManagerExec extends VPNManager {
   Process? processCore;
   Process? processTun;
-  int? pid;
+  int? corePid;
+  int? tunPid;
 
   @override
-  Future<IsCoreActiveRecord> _getIsCoreActiveRecord() async {
+  Future<IsActiveRecord> _getCoreIsActiveRecord() async {
     final now = DateTime.now();
     if (processCore != null) {
-      return IsCoreActiveRecord(true, now, "processCore");
+      return IsActiveRecord(true, now, "processCore");
     } else {
-      final port = prefs.getInt('inject.api.port')!;
-      pid = await getPidOfPort(port);
-      return IsCoreActiveRecord(pid != null, now, "port");
+      final coreCommandLine = "$corePath ${_coreArgList.join(' ')}";
+      corePid = await PlatformProcess.getProcessPid(coreCommandLine);
+      return IsActiveRecord(corePid != null, now, "port");
     }
   }
 
@@ -306,8 +310,8 @@ class VPNManagerExec extends VPNManager {
       setIsToggling(false);
       return;
     }
-    if (pid != null) {
-      Process.killPid(pid!);
+    if (corePid != null) {
+      Process.killPid(corePid!);
       await updateIsCoreActiveRecord();
       setIsToggling(false);
       return;
@@ -316,7 +320,14 @@ class VPNManagerExec extends VPNManager {
 
   @override
   isTunActive() async {
-    return processTun != null;
+    if (processTun != null) {
+      return true;
+    } else {
+      final tunCommandLine =
+          "$_tunSingBoxCorePath ${_tunSingBoxCoreArgList.join(' ')}";
+      tunPid = await PlatformProcess.getProcessPid(tunCommandLine);
+      return tunPid != null;
+    }
   }
 
   @override
@@ -334,6 +345,9 @@ class VPNManagerExec extends VPNManager {
   stopTun() async {
     processTun?.kill();
     processTun = null;
+    if (tunPid != null) {
+      Process.killPid(tunPid!);
+    }
   }
 
   @override
@@ -382,7 +396,7 @@ class VPNManagerMC extends VPNManager {
         call.method == 'onCoreDeactivated') {
       final newIsCoreActive = call.method == 'onCoreActivated';
       _setIsCoreActive(
-          IsCoreActiveRecord(newIsCoreActive, DateTime.now(), call.method));
+          IsActiveRecord(newIsCoreActive, DateTime.now(), call.method));
       // if (newIsCoreActive == isExpectingActive){
       // logger.d"setIsToggling: false");
       setIsToggling(false);
@@ -396,11 +410,11 @@ class VPNManagerMC extends VPNManager {
   }
 
   @override
-  Future<IsCoreActiveRecord> _getIsCoreActiveRecord() async {
+  Future<IsActiveRecord> _getCoreIsActiveRecord() async {
     final now = DateTime.now();
     final newIsCoreActive =
         await platform.invokeMethod('vpn.isCoreActive') as bool;
-    return IsCoreActiveRecord(newIsCoreActive, now, "vpn.isCoreActive");
+    return IsActiveRecord(newIsCoreActive, now, "vpn.isCoreActive");
   }
 
   @override

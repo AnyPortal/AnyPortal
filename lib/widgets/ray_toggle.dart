@@ -23,10 +23,9 @@ class RayToggleState extends State<RayToggle> {
   Timer? timer;
 
   Future<void> syncCoreDataNotifier() async {
-    final isCoreActive = (await vPNMan.updateIsCoreActiveRecord()).isCoreActive;
+    final isCoreActive = (await vPNMan.updateIsCoreActiveRecord()).isActive;
     if (isCoreActive && !coreDataNotifier.on) {
       try {
-        await vPNMan.init();
         coreDataNotifier.loadCfg(vPNMan.coreRawCfgMap);
         // should do atomic check
         if (!coreDataNotifier.on) coreDataNotifier.start();
@@ -49,7 +48,7 @@ class RayToggleState extends State<RayToggle> {
   }
 
   void _toggle() async {
-    final isCoreActive = (await vPNMan.updateIsCoreActiveRecord()).isCoreActive;
+    final isCoreActive = (await vPNMan.updateIsCoreActiveRecord()).isActive;
 
     Exception? err;
     try {
@@ -100,11 +99,11 @@ class RayToggleState extends State<RayToggle> {
         listenable: vPNMan,
         builder: (BuildContext context, Widget? child) {
           syncCoreDataNotifier();
-          // logger.d("vPNMan: ${vPNMan.isCoreActiveRecord.datetime} ${vPNMan.isCoreActiveRecord.isCoreActive} ${vPNMan.isCoreActiveRecord.source}");
+          // logger.d("vPNMan: ${vPNMan.isCoreActiveRecord.datetime} ${vPNMan.isCoreActiveRecorisActive} ${vPNMan.isCoreActiveRecord.source}");
           // logger.d("isToggling: ${vPNMan.isToggling}");
           return FloatingActionButton(
               onPressed: vPNMan.isToggling ? null : _toggle,
-              tooltip: vPNMan.isCoreActiveRecord.isCoreActive
+              tooltip: vPNMan.isCoreActiveRecord.isActive
                   ? 'disconnect'
                   : 'connect',
               child: vPNMan.isToggling
@@ -112,7 +111,7 @@ class RayToggleState extends State<RayToggle> {
                       scale: 0.5,
                       child: const CircularProgressIndicator(),
                     )
-                  : vPNMan.isCoreActiveRecord.isCoreActive
+                  : vPNMan.isCoreActiveRecord.isActive
                       ? const Icon(Icons.stop)
                       : const Icon(Icons.play_arrow));
         });

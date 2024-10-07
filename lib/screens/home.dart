@@ -216,7 +216,7 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
         final shouldTun = !menuItem.checked!;
         menuItem.checked = shouldTun;
         await prefs.setBool("tun", shouldTun);
-        if (vPNMan.isCoreActiveRecord.isCoreActive) {
+        if (vPNMan.isCoreActiveRecord.isActive) {
           if (shouldTun) {
             await vPNMan.startTun();
           } else {

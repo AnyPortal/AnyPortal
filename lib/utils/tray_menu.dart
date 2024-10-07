@@ -44,7 +44,7 @@ class TrayMenuManager {
         MenuItem.checkbox(
           key: 'toggle_all',
           label: 'Connect',
-          checked: vPNMan.isCoreActiveRecord.isCoreActive,
+          checked: vPNMan.isCoreActiveRecord.isActive,
         ),
         MenuItem.separator(),
         // MenuItem.checkbox(
