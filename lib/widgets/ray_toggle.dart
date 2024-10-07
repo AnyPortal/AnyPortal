@@ -1,5 +1,4 @@
 import 'dart:async';
-// import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:anyportal/utils/core_data_notifier.dart';
@@ -101,12 +100,13 @@ class RayToggleState extends State<RayToggle> {
         listenable: vPNMan,
         builder: (BuildContext context, Widget? child) {
           syncCoreDataNotifier();
-          // log("vPNMan: ${vPNMan.isCoreActiveRecord.datetime} ${vPNMan.isCoreActiveRecord.isCoreActive} ${vPNMan.isCoreActiveRecord.source}");
-          // log("isToggling: ${vPNMan.isToggling}");
+          // logger.d("vPNMan: ${vPNMan.isCoreActiveRecord.datetime} ${vPNMan.isCoreActiveRecord.isCoreActive} ${vPNMan.isCoreActiveRecord.source}");
+          // logger.d("isToggling: ${vPNMan.isToggling}");
           return FloatingActionButton(
               onPressed: vPNMan.isToggling ? null : _toggle,
-              tooltip:
-                  vPNMan.isCoreActiveRecord.isCoreActive ? 'disconnect' : 'connect',
+              tooltip: vPNMan.isCoreActiveRecord.isCoreActive
+                  ? 'disconnect'
+                  : 'connect',
               child: vPNMan.isToggling
                   ? Transform.scale(
                       scale: 0.5,

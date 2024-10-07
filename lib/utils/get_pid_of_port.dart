@@ -1,5 +1,6 @@
-import 'dart:developer';
 import 'dart:io';
+
+import 'logger.dart';
 
 Future<int?> getPidOfPort(int port) async {
     try {
@@ -48,7 +49,7 @@ Future<int?> getPidOfPort(int port) async {
         }
       }
     } catch (e) {
-      log('Error: $e');
+      logger.d('Error: $e');
     }
     return null; // Return null if PID is not found
   }

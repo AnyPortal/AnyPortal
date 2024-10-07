@@ -52,7 +52,6 @@ Requires elevation
             setState(() {
               _tun = value;
             });
-            trayMenu.isTun = value;
             trayMenu.updateContextMenu();
             if (vPNMan.isCoreActiveRecord.isCoreActive) {
               if (value) {

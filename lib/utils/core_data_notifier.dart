@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +6,7 @@ import 'package:anyportal/utils/grpc_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../generated/grpc/v2ray-core/app/stats/command/command.pbgrpc.dart';
+import 'logger.dart';
 
 enum TrafficStatType {
   directUp,
@@ -131,12 +131,12 @@ class CoreDataNotifier with ChangeNotifier {
       try {
         sysStats = await v2ApiServer.getSysStats();
         final stats = await v2ApiServer.queryStats();
-        // log("${stats}");
+        // logger.d("${stats}");
         processStats(stats);
-        // log("${coreDataNotifier.trafficStatCur}");
+        // logger.d("${coreDataNotifier.trafficStatCur}");
         // ignore: empty_catches
       } catch (e) {
-        log("data_watcher.start: $e");
+        logger.d("data_watcher.start: $e");
       }
       notifyListeners();
     });
@@ -162,7 +162,7 @@ class CoreDataNotifierManager {
   }
 
   // Async initializer (call once at app startup)
-  Future<void> init() async {
+  void init() {
     _coreDataNotifier = CoreDataNotifier();
     _completer.complete(); // Signal that initialization is complete
   }

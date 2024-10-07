@@ -1,8 +1,8 @@
-// import 'dart:developer';
 import 'dart:io';
 
 // import 'package:flutter/cupertino.dart';
 import 'package:anyportal/utils/global.dart';
+import 'package:anyportal/utils/logger.dart';
 import 'package:anyportal/utils/platform_elevation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -31,14 +31,14 @@ void main(List<String> args) async {
     await PlatformElevation.elevate();
     exit(0);
   }
-
+  LoggerManager().init();
   DatabaseManager().init();
 
   /// global
-  await VPNManManager().init();
+  VPNManManager().init();
 
   ///prefs
-  await CoreDataNotifierManager().init();
+  CoreDataNotifierManager().init();
 
   if (Platform.isAndroid || Platform.isIOS) {
     await tProxyConfInit();

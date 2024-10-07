@@ -179,7 +179,7 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
 
   // @override
   // void onWindowEvent(String eventName) {
-  //   log('[WindowManager] onWindowEvent: $eventName');
+  //   logger.d('[WindowManager] onWindowEvent: $eventName');
   // }
 
   @override
@@ -199,7 +199,7 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
   }
 
   @override
-  void onTrayMenuItemClick(MenuItem menuItem) {
+  void onTrayMenuItemClick(MenuItem menuItem) async {
     switch (menuItem.key) {
       case 'exit':
         // SystemChannels.platform.invokeMethod('SystemNavigator.pop');
@@ -213,14 +213,14 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
           vPNMan.stop();
         }
       case 'toggle_tun':
-        final isTun = !menuItem.checked!;
-        menuItem.checked = isTun;
-        prefs.setBool("tun", isTun);
+        final shouldTun = !menuItem.checked!;
+        menuItem.checked = shouldTun;
+        await prefs.setBool("tun", shouldTun);
         if (vPNMan.isCoreActiveRecord.isCoreActive) {
-          if (isTun) {
-            vPNMan.startTun();
+          if (shouldTun) {
+            await vPNMan.startTun();
           } else {
-            vPNMan.stopTun();
+            await vPNMan.stopTun();
           }
         }
     }

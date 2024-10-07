@@ -1,4 +1,4 @@
-import 'dart:developer';
+import '../logger.dart';
 
 import 'package:flutter/services.dart';
 
@@ -9,7 +9,7 @@ class FilePermission {
     try {
       await platform.invokeMethod('addExecutablePermission', {'filePath': filePath});
     } on PlatformException catch (e) {
-      log("Failed to change file permission: '${e.message}'.");
+      logger.d("Failed to change file permission: '${e.message}'.");
     }
   }
 }

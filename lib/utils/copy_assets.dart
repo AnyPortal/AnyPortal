@@ -1,10 +1,10 @@
-import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data'; // For handling binary data
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path/path.dart' as p;
 
-import 'global.dart'; // For system directories
+import 'global.dart';
+import 'logger.dart';
 
 Future<void> copyAssetToDesiredLocation(String assetPath, String desiredPath) async {
   try {
@@ -18,9 +18,9 @@ Future<void> copyAssetToDesiredLocation(String assetPath, String desiredPath) as
     File targetFile = File(desiredPath);
     await targetFile.writeAsBytes(bytes);
 
-    log("Asset copied successfully to: $desiredPath");
+    logger.d("Asset copied successfully to: $desiredPath");
   } catch (e) {
-    log("Error copying asset: $e");
+    logger.d("Error copying asset: $e");
   }
 }
 

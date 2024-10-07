@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:anyportal/models/core.dart';
@@ -14,6 +13,7 @@ import 'config_injector/core_ray.dart';
 import 'config_injector/tun_sing_box.dart';
 import 'db.dart';
 import 'global.dart';
+import 'logger.dart';
 import 'platform_elevation.dart';
 import 'prefs.dart';
 import 'get_pid_of_port.dart';
@@ -44,10 +44,9 @@ class IsCoreActiveRecord {
 
 abstract class VPNManager with ChangeNotifier {
   bool isToggling = false;
-  IsCoreActiveRecord isCoreActiveRecord = IsCoreActiveRecord(false, DateTime.now(), "init");
+  IsCoreActiveRecord isCoreActiveRecord =
+      IsCoreActiveRecord(false, DateTime.now(), "init");
   bool isExpectingActive = false;
-
-  bool isExecTun = false;
 
   Future<IsCoreActiveRecord> _getIsCoreActiveRecord();
   Future<void> _startAll();
@@ -77,7 +76,6 @@ abstract class VPNManager with ChangeNotifier {
     }
     isCoreActiveRecord = r;
     notifyListeners();
-    trayMenu.isConnected = isCoreActiveRecord.isCoreActive;
     trayMenu.updateContextMenu();
     return;
   }
@@ -143,6 +141,12 @@ abstract class VPNManager with ChangeNotifier {
     )
   ];
 
+  bool getIsExecTun() {
+    logger.d(prefs.getBool("tun"));
+    return prefs.getBool("tun")! &&
+        (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
+  }
+
   Future<void> init() async {
     // get selectedProfile
     _selectedProfileId = prefs.getInt('app.selectedProfileId');
@@ -165,7 +169,8 @@ abstract class VPNManager with ChangeNotifier {
     if (!await config.exists()) {
       await config.create(recursive: true);
     }
-    coreRawCfgMap = jsonDecode(_selectedProfile!.coreCfg) as Map<String, dynamic>;
+    coreRawCfgMap =
+        jsonDecode(_selectedProfile!.coreCfg) as Map<String, dynamic>;
     if (_selectedProfile!.coreTypeId == CoreTypeDefault.v2ray.index ||
         _selectedProfile!.coreTypeId == CoreTypeDefault.xray.index) {
       coreRawCfgMap = await getInjectedConfig(coreRawCfgMap);
@@ -198,9 +203,8 @@ abstract class VPNManager with ChangeNotifier {
     }
 
     // check sing-box path if tun is enabled
-    isExecTun = prefs.getBool("tun")! && (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
-    if (isExecTun) {
-      if (!await PlatformElevation.isElevated()){
+    if (getIsExecTun()) {
+      if (!await PlatformElevation.isElevated()) {
         throw Exception("Permission denied: Tun");
       }
 
@@ -245,9 +249,11 @@ abstract class VPNManager with ChangeNotifier {
       if (!await tunSingBoxConfig.exists()) {
         await tunSingBoxConfig.create(recursive: true);
       }
-      Map<String, dynamic> tunSingBoxRawCfgMap = jsonDecode(await tunSingBoxUserConfig.readAsString())
-          as Map<String, dynamic>;
-      tunSingBoxRawCfgMap = await getInjectedConfigTunSingBox(tunSingBoxRawCfgMap);
+      Map<String, dynamic> tunSingBoxRawCfgMap =
+          jsonDecode(await tunSingBoxUserConfig.readAsString())
+              as Map<String, dynamic>;
+      tunSingBoxRawCfgMap =
+          await getInjectedConfigTunSingBox(tunSingBoxRawCfgMap);
       await tunSingBoxConfig.writeAsString(jsonEncode(tunSingBoxRawCfgMap));
     }
 
@@ -277,7 +283,7 @@ class VPNManagerExec extends VPNManager {
     if (processCore != null) {
       return IsCoreActiveRecord(true, now, "processCore");
     } else {
-      final port = prefs.getInt('inject.api.port') ?? 15490;
+      final port = prefs.getInt('inject.api.port')!;
       pid = await getPidOfPort(port);
       return IsCoreActiveRecord(pid != null, now, "port");
     }
@@ -315,7 +321,7 @@ class VPNManagerExec extends VPNManager {
 
   @override
   startTun() async {
-    if (isExecTun && processTun == null) {
+    if (getIsExecTun() && processTun == null) {
       processTun = await Process.start(
         _tunSingBoxCorePath!,
         _tunSingBoxCoreArgList,
@@ -353,7 +359,7 @@ class VPNManagerExec extends VPNManager {
       await ServerSocket.bind(InternetAddress.anyIPv4, port);
       return false; // Port is available
     } on SocketException catch (e) {
-      log("$e");
+      logger.d("$e");
       return true; // Port is occupied
     }
     // return false;
@@ -371,17 +377,19 @@ class VPNManagerMC extends VPNManager {
   }
 
   Future<void> _methodCallHandler(MethodCall call) async {
-    log("_methodCallHandler: ${call.method}");
-    if (call.method == 'onCoreActivated' || call.method == 'onCoreDeactivated') {
+    logger.d("_methodCallHandler: ${call.method}");
+    if (call.method == 'onCoreActivated' ||
+        call.method == 'onCoreDeactivated') {
       final newIsCoreActive = call.method == 'onCoreActivated';
-      _setIsCoreActive(IsCoreActiveRecord(newIsCoreActive, DateTime.now(), call.method));
+      _setIsCoreActive(
+          IsCoreActiveRecord(newIsCoreActive, DateTime.now(), call.method));
       // if (newIsCoreActive == isExpectingActive){
-      // log("setIsToggling: false");
+      // logger.d"setIsToggling: false");
       setIsToggling(false);
       // }
     } else if (call.method == 'onTileToggled') {
       isExpectingActive = call.arguments as bool;
-      // log("isExpectingActive: ${call.arguments}");
+      // logger.d"isExpectingActive: ${call.arguments}");
       /// cannot promise onTileToggled reach before onCoreActivated/onCoreDeactivated
       // setIsToggling(true);
     }
@@ -390,7 +398,8 @@ class VPNManagerMC extends VPNManager {
   @override
   Future<IsCoreActiveRecord> _getIsCoreActiveRecord() async {
     final now = DateTime.now();
-    final newIsCoreActive = await platform.invokeMethod('vpn.isCoreActive') as bool;
+    final newIsCoreActive =
+        await platform.invokeMethod('vpn.isCoreActive') as bool;
     return IsCoreActiveRecord(newIsCoreActive, now, "vpn.isCoreActive");
   }
 
@@ -433,7 +442,7 @@ class VPNManManager {
   }
 
   // Async initializer (call once at app startup)
-  Future<void> init() async {
+  void init() {
     _vPNMan = Platform.isAndroid || Platform.isIOS
         ? VPNManagerMC()
         : VPNManagerExec();

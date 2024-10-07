@@ -4,11 +4,10 @@ import 'dart:io';
 import 'package:tray_manager/tray_manager.dart';
 
 import 'prefs.dart';
+import 'vpn_manager.dart';
 
 class TrayMenuManager {
-  bool isConnected = false;
   bool isSystemProxy = false;
-  bool isTun = prefs.getBool("tun")!;
 
   Menu menu = Menu();
 
@@ -45,7 +44,7 @@ class TrayMenuManager {
         MenuItem.checkbox(
           key: 'toggle_all',
           label: 'Connect',
-          checked: isConnected,
+          checked: vPNMan.isCoreActiveRecord.isCoreActive,
         ),
         MenuItem.separator(),
         // MenuItem.checkbox(
@@ -56,7 +55,7 @@ class TrayMenuManager {
         MenuItem.checkbox(
           key: 'toggle_tun',
           label: 'Tun',
-          checked: isTun,
+          checked: prefs.getBool("tun"),
         ),
         MenuItem.separator(),
         MenuItem(
