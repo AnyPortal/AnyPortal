@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:anyportal/utils/global.dart';
+import 'package:anyportal/utils/vpn_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
@@ -199,9 +200,29 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
 
   @override
   void onTrayMenuItemClick(MenuItem menuItem) {
-    if (menuItem.key == 'exit') {
-      // SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-      exit(0);
+    switch (menuItem.key) {
+      case 'exit':
+        // SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        exit(0);
+      case 'toggle_all':
+        final shouldConnect = !menuItem.checked!;
+        menuItem.checked = shouldConnect;
+        if (shouldConnect) {
+          vPNMan.start();
+        } else {
+          vPNMan.stop();
+        }
+      case 'toggle_tun':
+        final isTun = !menuItem.checked!;
+        menuItem.checked = isTun;
+        prefs.setBool("tun", isTun);
+        if (vPNMan.isCoreActiveRecord.isCoreActive) {
+          if (isTun) {
+            vPNMan.startTun();
+          } else {
+            vPNMan.stopTun();
+          }
+        }
     }
   }
 

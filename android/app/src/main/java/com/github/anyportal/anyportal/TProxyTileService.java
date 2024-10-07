@@ -85,26 +85,14 @@ public class TProxyTileService extends TileService {
         if (tile.getState() == Tile.STATE_ACTIVE) {
             tile.setState(Tile.STATE_UNAVAILABLE);
             notifyMainActivity(false);
-            stopTProxy();
+            tProxyService.stopAll();
         } else {
             tile.setState(Tile.STATE_UNAVAILABLE);
             notifyMainActivity(true);
-            startTProxy();
+            tProxyService.startAll();
         }
 
         updateTileState();
-    }
-
-    private void startTProxy() {
-        if (tProxyService != null) {
-            tProxyService.startTProxy();
-        }
-    }
-
-    private void stopTProxy() {
-        if (tProxyService != null) {
-            tProxyService.stopTProxy();
-        }
     }
 
     public void notifyMainActivity(boolean isExpectingActive) {
@@ -117,8 +105,8 @@ public class TProxyTileService extends TileService {
     private void updateTileState() {
         Tile tile = getQsTile();
         if (tile != null && tProxyService != null) {
-            boolean isActive = tProxyService.getIsActive();
-            tile.setState(isActive ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
+            boolean isCoreActive = tProxyService.isCoreActive;
+            tile.setState(isCoreActive ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
             tile.updateTile();
         }
     }

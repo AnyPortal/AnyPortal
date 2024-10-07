@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import 'package:anyportal/models/log_level.dart';
+import 'package:anyportal/utils/tray_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 
 import '../../../utils/global.dart';
-import '../../../utils/open_File_in_file_manager.dart';
+import '../../../utils/platform_file_mananger.dart';
 import '../../../utils/prefs.dart';
+import '../../../utils/vpn_manager.dart';
 import '../../../widgets/popup/radio_list_selection.dart';
 import '../../../widgets/popup/text_input.dart';
 
@@ -26,6 +28,7 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
 
   bool _injectSocks = prefs.getBool('tun.inject.socks')!;
   int _socksPort = prefs.getInt('inject.socks.port')!;
+  bool _injectExcludeCorePath = prefs.getBool('tun.inject.excludeCorePath')!;
 
   @override
   void initState() {
@@ -47,6 +50,15 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
             setState(() {
               _tun = value;
             });
+            trayMenu.isTun = value;
+            trayMenu.updateContextMenu();
+            if (vPNMan.isCoreActiveRecord.isCoreActive) {
+              if (value) {
+                vPNMan.startTun();
+              } else {
+                vPNMan.stopTun();
+              }
+            }
           },
         ),
       ),
@@ -54,7 +66,7 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
       Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Text(
-          "Log config",
+          "Log config override",
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
       ),
@@ -96,7 +108,7 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
       Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Text(
-          "Outbound config: socks",
+          "Outbound config: additional socks outbound",
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
       ),
@@ -138,6 +150,28 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
       Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Text(
+          "Routing rule: additionally exclude core path",
+          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+        ),
+      ),
+      ListTile(
+        title: const Text("Inject rule to exclude core path"),
+        subtitle: const Text(
+            "Disable to improve performance, make sure you have bound core to a correct interface"),
+        trailing: Switch(
+          value: _injectExcludeCorePath,
+          onChanged: (value) {
+            prefs.setBool('tun.inject.excludeCorePath', value);
+            setState(() {
+              _injectExcludeCorePath = value;
+            });
+          },
+        ),
+      ),
+      const Divider(),
+      Container(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        child: Text(
           "Advanced",
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
@@ -145,9 +179,9 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
       ListTile(
         title: const Text("Edit config"),
         subtitle: const Text("sing-box config"),
-        trailing: Icon(Icons.open_in_new),
+        trailing: const Icon(Icons.folder_open),
         onTap: () {
-          openFileInFileManager(p.join(
+          PlatformFileMananger.highlightFileInFolder(p.join(
               global.applicationDocumentsDirectory.path,
               "AnyPortal",
               "conf",

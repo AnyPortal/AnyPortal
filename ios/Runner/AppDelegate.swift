@@ -25,11 +25,11 @@ import Flutter
         let channel = FlutterMethodChannel(name: "com.github.anyportal.anyportal", binaryMessenger: controller.binaryMessenger)
         
         channel.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-            if call.method == "startTProxy" {
-                self.startTProxy()
+            if call.method == "startAll" {
+                tProxyService?.startAll()
                 result(nil)
-            } else if call.method == "stopTProxy" {
-                self.stopTProxy()
+            } else if call.method == "stopAll" {
+                tProxyService?.stopAll()
                 result(nil)
             } else if call.method == "isTProxyRunning" {
                 let isRunning = self.isTProxyRunning()
@@ -40,16 +40,6 @@ import Flutter
         }
     }
 
-    // Start the TProxyService (equivalent to startService() in Java)
-    private func startTProxy() {
-        tProxyService?.startService()
-    }
-
-    // Stop the TProxyService (equivalent to stopService() in Java)
-    private func stopTProxy() {
-        tProxyService?.stopService()
-    }
-    
     var _isTProxyRunning: Bool = false
     
     private func updateisTProxyRunning(value: Bool) {

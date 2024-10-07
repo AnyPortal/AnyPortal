@@ -5,6 +5,7 @@ import 'package:anyportal/screens/installed_app.dart';
 import 'package:path/path.dart' as p;
 
 import '../../../utils/global.dart';
+import '../../../utils/vpn_manager.dart';
 import '../../../widgets/popup/text_input.dart';
 import '../../../utils/prefs.dart';
 
@@ -77,6 +78,13 @@ misc:
             setState(() {
               _tun = value;
             });
+            if (vPNMan.isCoreActiveRecord.isCoreActive) {
+              if (value) {
+                vPNMan.startTun();
+              } else {
+                vPNMan.stopTun();
+              }
+            }
           },
         ),
       ),

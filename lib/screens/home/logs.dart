@@ -130,7 +130,7 @@ class LogViewerState extends State<LogViewer> {
 
   void _startFileMonitor() async {
     if (Platform.isAndroid) {
-      platform.invokeMethod('startWatching', {"filePath": widget.filePath});
+      platform.invokeMethod('log.core.startWatching', {"filePath": widget.filePath});
 
       platform.setMethodCallHandler((call) async {
         if (call.method == 'onFileChange') {

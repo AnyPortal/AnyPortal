@@ -17,7 +17,7 @@ import 'utils/core_data_notifier.dart';
 import 'utils/db.dart';
 import 'utils/launch_at_startup.dart';
 import 'utils/prefs.dart';
-import 'utils/tray.dart';
+import 'utils/tray_menu.dart';
 import 'utils/copy_assets.dart';
 
 void main(List<String> args) async {
@@ -36,7 +36,7 @@ void main(List<String> args) async {
     initLaunchAtStartup();
 
     // minimize to tray
-    initSystemTray();
+    await TrayMenuManager().init();
     await windowManager.ensureInitialized();
     final width = prefs.getDouble("app.window.size.width");
     final height = prefs.getDouble("app.window.size.height");
@@ -67,7 +67,7 @@ void main(List<String> args) async {
     // connect at launch
     if (prefs.getBool('app.connectAtLaunch')!) {
       try {
-        if (!(await vPNMan.updateIsActiveRecord()).isActive) {
+        if (!(await vPNMan.updateIsCoreActiveRecord()).isCoreActive) {
           await vPNMan.start();
         }
       } catch (_) {}

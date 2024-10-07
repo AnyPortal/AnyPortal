@@ -24,8 +24,8 @@ class RayToggleState extends State<RayToggle> {
   Timer? timer;
 
   Future<void> syncCoreDataNotifier() async {
-    final coreIsActive = (await vPNMan.updateIsActiveRecord()).isActive;
-    if (coreIsActive && !coreDataNotifier.on) {
+    final isCoreActive = (await vPNMan.updateIsCoreActiveRecord()).isCoreActive;
+    if (isCoreActive && !coreDataNotifier.on) {
       try {
         await vPNMan.init();
         coreDataNotifier.loadCfg(vPNMan.coreRawCfgMap);
@@ -37,7 +37,7 @@ class RayToggleState extends State<RayToggle> {
         );
         if (mounted) ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
-    } else if (!coreIsActive && coreDataNotifier.on) {
+    } else if (!isCoreActive && coreDataNotifier.on) {
       // should do atomic check
       coreDataNotifier.stop();
     }
@@ -50,11 +50,11 @@ class RayToggleState extends State<RayToggle> {
   }
 
   void _toggle() async {
-    final isActive = (await vPNMan.updateIsActiveRecord()).isActive;
+    final isCoreActive = (await vPNMan.updateIsCoreActiveRecord()).isCoreActive;
 
     Exception? err;
     try {
-      if (isActive) {
+      if (isCoreActive) {
         await vPNMan.stop();
       } else {
         await vPNMan.start();
@@ -101,18 +101,18 @@ class RayToggleState extends State<RayToggle> {
         listenable: vPNMan,
         builder: (BuildContext context, Widget? child) {
           syncCoreDataNotifier();
-          // log("vPNMan: ${vPNMan.isActiveRecord.datetime} ${vPNMan.isActiveRecord.isActive} ${vPNMan.isActiveRecord.source}");
+          // log("vPNMan: ${vPNMan.isCoreActiveRecord.datetime} ${vPNMan.isCoreActiveRecord.isCoreActive} ${vPNMan.isCoreActiveRecord.source}");
           // log("isToggling: ${vPNMan.isToggling}");
           return FloatingActionButton(
               onPressed: vPNMan.isToggling ? null : _toggle,
               tooltip:
-                  vPNMan.isActiveRecord.isActive ? 'disconnect' : 'connect',
+                  vPNMan.isCoreActiveRecord.isCoreActive ? 'disconnect' : 'connect',
               child: vPNMan.isToggling
                   ? Transform.scale(
                       scale: 0.5,
                       child: const CircularProgressIndicator(),
                     )
-                  : vPNMan.isActiveRecord.isActive
+                  : vPNMan.isCoreActiveRecord.isCoreActive
                       ? const Icon(Icons.stop)
                       : const Icon(Icons.play_arrow));
         });

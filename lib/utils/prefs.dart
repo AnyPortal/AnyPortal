@@ -42,6 +42,7 @@ class PrefsManager {
     'tun.inject.log': true,
     'tun.inject.log.level': LogLevel.warning.index,
     'tun.inject.socks': true,
+    'tun.inject.excludeCorePath': true,
   };
 
   static final PrefsManager _instance = PrefsManager._internal();

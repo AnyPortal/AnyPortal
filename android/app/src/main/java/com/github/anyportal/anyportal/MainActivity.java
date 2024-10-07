@@ -94,12 +94,12 @@ public class MainActivity extends FlutterActivity {
             tProxyService = binder.getService();
 
             // Set the status listener to receive updates
-            tProxyService.setStatusUpdateListener(isActive -> {
+            tProxyService.setStatusUpdateListener(isCoreActive -> {
                 // Handle VPN status update in MainActivity
-                if (isActive){
-                    methodChannel.invokeMethod("onVPNConnected", null);
+                if (isCoreActive){
+                    methodChannel.invokeMethod("onCoreActivated", null);
                 } else {
-                    methodChannel.invokeMethod("onVPNDisconnected", null);
+                    methodChannel.invokeMethod("onCoreDeactivated", null);
                 }
             });
         }
@@ -115,20 +115,23 @@ public class MainActivity extends FlutterActivity {
     private FileObserver fileObserver;
 
     private void onMethodCall(MethodCall call, MethodChannel.Result result) {
-        if (call.method.equals("startTProxy")){
-            startTProxy();
+        if (call.method.equals("vpn.startAll")){
+            tProxyService.startAll();
             result.success(null);
-        } else if (call.method.equals("stopTProxy")){
-            stopTProxy();
+        } else if (call.method.equals("vpn.stopAll")){
+            tProxyService.stopAll();
             result.success(null);
-        } else if (call.method.equals("isTProxyRunning")){
-            if (tProxyService != null) {
-                boolean isActive = tProxyService.getIsActive();
-                result.success(isActive);
-            } else {
-                result.success(false);
-            }
-        } else if (call.method.equals("startWatching")){
+        } else if (call.method.equals("vpn.startTun")){
+            tProxyService.startTun();
+            result.success(null);
+        } else if (call.method.equals("vpn.stopTun")){
+            tProxyService.stopTun();
+            result.success(null);
+        } else if (call.method.equals("vpn.isCoreActive")){
+            result.success(tProxyService.isCoreActive);
+        } else if (call.method.equals("vpn.isTunActive")){
+            result.success(tProxyService.isTunActive);
+        } else if (call.method.equals("log.core.startWatching")){
             String filePath = call.argument("filePath");
             fileObserver = new FileObserver(filePath) {
                 @Override
@@ -150,18 +153,6 @@ public class MainActivity extends FlutterActivity {
         }
     }
     
-    private void startTProxy() {
-        if (tProxyService != null) {
-            tProxyService.startTProxy();
-        }
-    }
-
-    private void stopTProxy() {
-        if (tProxyService != null) {
-            tProxyService.stopTProxy();
-        }
-    }
-
     private void registerBroadcastReceiver() {
         MethodChannel methodChannel = new MethodChannel(getFlutterEngine().getDartExecutor().getBinaryMessenger(), CHANNEL);
         broadcastReceiver = new BroadcastReceiver() {
@@ -169,8 +160,8 @@ public class MainActivity extends FlutterActivity {
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
                 if (action.equals(TProxyTileService.ACTION_TILE_TOGGLED)) {
-                    boolean isActive = intent.getBooleanExtra(TProxyTileService.EXTRA_IS_ACTIVE, false);
-                    methodChannel.invokeMethod("onTileToggled", isActive);
+                    boolean isCoreActive = intent.getBooleanExtra(TProxyTileService.EXTRA_IS_ACTIVE, false);
+                    methodChannel.invokeMethod("onTileToggled", isCoreActive);
                 }
             }
         };

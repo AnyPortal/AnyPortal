@@ -171,7 +171,7 @@ class _AssetScreenState extends State<AssetScreen> {
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.open_in_new),
+              icon: const Icon(Icons.folder_open),
               onPressed: _selectAssetPath,
             ),
           ],

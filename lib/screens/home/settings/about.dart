@@ -1,7 +1,12 @@
+import 'dart:io';
+
+import 'package:anyportal/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:path/path.dart' as p;
 
+import '../../../utils/platform_file_mananger.dart';
 import '../../../widgets/blockquote.dart';
 
 class AboutScreen extends StatefulWidget {
@@ -59,6 +64,38 @@ We hope you choose well between your home world and Wonderlands.""")),
           try {
             launchUrl(Uri.parse("https://github.com/anyportal/anyportal"));
           } catch (_) {}
+        },
+      ),
+      const Divider(),
+      Container(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        child: Text(
+          "Local directory",
+          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+        ),
+      ),
+      ListTile(
+        title: const Text("App"),
+        subtitle: Text(File(Platform.resolvedExecutable).parent.path),
+        trailing: const Icon(Icons.folder_open),
+        onTap: () {
+          PlatformFileMananger.highlightFileInFolder(Platform.resolvedExecutable);
+        },
+      ),
+      ListTile(
+        title: const Text("User data"),
+        subtitle: Text(p.join(global.applicationDocumentsDirectory.path, "AnyPortal")),
+        trailing: const Icon(Icons.folder_open),
+        onTap: () {
+          PlatformFileMananger.openFolder(p.join(global.applicationDocumentsDirectory.path, "AnyPortal"));
+        },
+      ),
+      ListTile(
+        title: const Text("Generated assets"),
+        subtitle: Text(global.applicationSupportDirectory.path),
+        trailing: const Icon(Icons.folder_open),
+        onTap: () {
+          PlatformFileMananger.openFolder(p.join(global.applicationSupportDirectory.path));
         },
       ),
     ];

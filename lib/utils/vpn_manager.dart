@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:anyportal/models/core.dart';
+import 'package:anyportal/utils/tray_menu.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
@@ -32,23 +33,26 @@ class InvalidSelectedProfileException implements Exception {
   InvalidSelectedProfileException(this.message);
 }
 
-class IsActiveRecord {
-  bool isActive;
+class IsCoreActiveRecord {
+  bool isCoreActive;
   DateTime datetime;
   String source;
 
-  IsActiveRecord(this.isActive, this.datetime, this.source);
+  IsCoreActiveRecord(this.isCoreActive, this.datetime, this.source);
 }
 
 abstract class VPNManager with ChangeNotifier {
-  bool isExecTun = false;
   bool isToggling = false;
-  IsActiveRecord isActiveRecord = IsActiveRecord(false, DateTime.now(), "init");
+  IsCoreActiveRecord isCoreActiveRecord = IsCoreActiveRecord(false, DateTime.now(), "init");
   bool isExpectingActive = false;
 
-  Future<IsActiveRecord> _getIsActiveRecord();
-  Future<void> _start();
-  Future<void> _stop();
+  bool isExecTun = false;
+
+  Future<IsCoreActiveRecord> _getIsCoreActiveRecord();
+  Future<void> _startAll();
+  Future<void> _stopAll();
+  Future<void> startTun();
+  Future<void> stopTun();
 
   void setIsToggling(bool val) {
     if (isToggling != val) {
@@ -57,59 +61,68 @@ abstract class VPNManager with ChangeNotifier {
     }
   }
 
-  Future<IsActiveRecord> updateIsActiveRecord() async {
-    _setIsActive(await _getIsActiveRecord());
-    return isActiveRecord;
+  Future<IsCoreActiveRecord> updateIsCoreActiveRecord() async {
+    _setIsCoreActive(await _getIsCoreActiveRecord());
+    return isCoreActiveRecord;
   }
 
-  void _setIsActive(IsActiveRecord r) {
-    if (r.datetime.isBefore(isActiveRecord.datetime)) {
+  void _setIsCoreActive(IsCoreActiveRecord r) {
+    if (r.datetime.isBefore(isCoreActiveRecord.datetime)) {
       return;
     }
-    if (r.isActive == isActiveRecord.isActive) {
-      isActiveRecord = r;
+    if (r.isCoreActive == isCoreActiveRecord.isCoreActive) {
+      isCoreActiveRecord = r;
       return;
     }
-    isActiveRecord = r;
+    isCoreActiveRecord = r;
     notifyListeners();
+    trayMenu.isConnected = isCoreActiveRecord.isCoreActive;
+    trayMenu.updateContextMenu();
     return;
   }
 
   Future<void> start() async {
+    /// check is toggling
     if (isToggling) return;
     setIsToggling(true);
     isExpectingActive = true;
 
-    if ((await updateIsActiveRecord()).isActive) {
+    /// check is already active
+    if ((await updateIsCoreActiveRecord()).isCoreActive) {
+      setIsToggling(false);
       return;
     }
 
+    /// prepare
     await init();
     await File(p.join(folder.path, 'log', 'core.log')).writeAsString("");
-    await _start();
+
+    /// start
+    await _startAll();
   }
 
   Future<void> stop() async {
+    /// check is toggling
     if (isToggling) return;
     setIsToggling(true);
     isExpectingActive = false;
 
-    if (!(await updateIsActiveRecord()).isActive) {
+    /// check is already inactive
+    if (!(await updateIsCoreActiveRecord()).isCoreActive) {
+      setIsToggling(false);
       return;
     }
 
-    try {
-      await _stop();
-    } catch (e) {
-      setIsToggling(false);
-      rethrow;
-    }
+    /// stop
+    await _stopAll();
   }
+
+  Future<bool> isTunActive();
 
   int? _selectedProfileId;
   ProfileData? _selectedProfile;
   late bool _isExec;
-  String? _corePath;
+  String? corePath;
   String? _workingDir;
   String? _assetPath;
   late List<String> _coreArgList;
@@ -174,17 +187,17 @@ abstract class VPNManager with ChangeNotifier {
     }
     _isExec = core.read(db.core.isExec)!;
     if (_isExec) {
-      _corePath = core.read(db.asset.path);
-      if (_corePath == null) {
+      corePath = core.read(db.asset.path);
+      if (corePath == null) {
         throw Exception("Core path is null.");
       } else {
-        prefs.setString('core.path', _corePath!);
+        prefs.setString('core.path', corePath!);
       }
-      _workingDir ??= File(_corePath!).parent.path;
+      _workingDir ??= File(corePath!).parent.path;
     }
 
     // check sing-box path if tun is enabled
-    isExecTun = prefs.getBool("tun")! && !Platform.isAndroid;
+    isExecTun = prefs.getBool("tun")! && (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
     if (isExecTun) {
       final coreTypeId = CoreTypeDefault.singBox.index;
       final core = await (db.select(db.coreTypeSelected).join([
@@ -247,62 +260,85 @@ abstract class VPNManager with ChangeNotifier {
   }
 }
 
-/// Direct processCore exec, need foreground, typically for PC
+/// Direct processCore exec, need foreground, typically for desktop
 class VPNManagerExec extends VPNManager {
   Process? processCore;
   Process? processTun;
   int? pid;
 
   @override
-  Future<IsActiveRecord> _getIsActiveRecord() async {
+  Future<IsCoreActiveRecord> _getIsCoreActiveRecord() async {
     final now = DateTime.now();
     if (processCore != null) {
-      return IsActiveRecord(true, now, "processCore");
+      return IsCoreActiveRecord(true, now, "processCore");
     } else {
       final port = prefs.getInt('inject.api.port') ?? 15490;
       pid = await getPidOfPort(port);
-      return IsActiveRecord(pid != null, now, "port");
+      return IsCoreActiveRecord(pid != null, now, "port");
     }
   }
 
-  @override
-  _start() async {
+  _startCore() async {
     processCore = await Process.start(
-      _corePath!,
+      corePath!,
       _coreArgList,
       workingDirectory: _workingDir,
       environment: _environment,
     );
-    if (isExecTun) {
+  }
+
+  _stopCore() async {
+    if (processCore != null) {
+      processCore!.kill();
+      processCore = null;
+      await updateIsCoreActiveRecord();
+      setIsToggling(false);
+      return;
+    }
+    if (pid != null) {
+      Process.killPid(pid!);
+      await updateIsCoreActiveRecord();
+      setIsToggling(false);
+      return;
+    }
+  }
+
+  @override
+  isTunActive() async {
+    return processTun != null;
+  }
+
+  @override
+  startTun() async {
+    if (isExecTun && processTun == null) {
       processTun = await Process.start(
         _tunSingBoxCorePath!,
         _tunSingBoxCoreArgList,
         workingDirectory: _tunSingBoxWorkingDir,
       );
     }
-    await updateIsActiveRecord();
+  }
+
+  @override
+  stopTun() async {
+    processTun?.kill();
+    processTun = null;
+  }
+
+  @override
+  _startAll() async {
+    await _startCore();
+    await startTun();
+    await updateIsCoreActiveRecord();
     setIsToggling(false);
     return;
   }
 
   @override
-  _stop() async {
-    processTun?.kill();
-    processTun = null;
-    if (processCore != null) {
-      processCore!.kill();
-      processCore = null;
-      await updateIsActiveRecord();
-      setIsToggling(false);
-      return;
-    }
-    if (pid != null) {
-      Process.killPid(pid!);
-      await updateIsActiveRecord();
-      setIsToggling(false);
-      return;
-    }
-    await updateIsActiveRecord();
+  _stopAll() async {
+    await stopTun();
+    await _stopCore();
+    await updateIsCoreActiveRecord();
     setIsToggling(false);
     return;
   }
@@ -331,36 +367,51 @@ class VPNManagerMC extends VPNManager {
 
   Future<void> _methodCallHandler(MethodCall call) async {
     log("_methodCallHandler: ${call.method}");
-    if (call.method == 'onVPNConnected' || call.method == 'onVPNDisconnected') {
-      final newIsActive = call.method == 'onVPNConnected';
-      _setIsActive(IsActiveRecord(newIsActive, DateTime.now(), call.method));
-      // if (newIsActive == isExpectingActive){
+    if (call.method == 'onCoreActivated' || call.method == 'onCoreDeactivated') {
+      final newIsCoreActive = call.method == 'onCoreActivated';
+      _setIsCoreActive(IsCoreActiveRecord(newIsCoreActive, DateTime.now(), call.method));
+      // if (newIsCoreActive == isExpectingActive){
       // log("setIsToggling: false");
       setIsToggling(false);
       // }
     } else if (call.method == 'onTileToggled') {
       isExpectingActive = call.arguments as bool;
       // log("isExpectingActive: ${call.arguments}");
-      /// cannot promise onTileToggled reach before onVPNConnected/onVPNDisconnected
+      /// cannot promise onTileToggled reach before onCoreActivated/onCoreDeactivated
       // setIsToggling(true);
     }
   }
 
   @override
-  Future<IsActiveRecord> _getIsActiveRecord() async {
+  Future<IsCoreActiveRecord> _getIsCoreActiveRecord() async {
     final now = DateTime.now();
-    final newIsActive = await platform.invokeMethod('isTProxyRunning');
-    return IsActiveRecord(newIsActive, now, "isTProxyRunning");
+    final newIsCoreActive = await platform.invokeMethod('vpn.isCoreActive') as bool;
+    return IsCoreActiveRecord(newIsCoreActive, now, "vpn.isCoreActive");
   }
 
   @override
-  _start() async {
-    await platform.invokeMethod('startTProxy');
+  _startAll() async {
+    await platform.invokeMethod('vpn.startAll');
   }
 
   @override
-  _stop() async {
-    await platform.invokeMethod('stopTProxy');
+  _stopAll() async {
+    await platform.invokeMethod('vpn.stopAll');
+  }
+
+  @override
+  startTun() async {
+    await platform.invokeMethod('vpn.startTun');
+  }
+
+  @override
+  stopTun() async {
+    await platform.invokeMethod('vpn.stopTun');
+  }
+
+  @override
+  isTunActive() async {
+    return await platform.invokeMethod('vpn.isTunActive') as bool;
   }
 }
 

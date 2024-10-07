@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:anyportal/utils/vpn_manager.dart';
 import 'package:path/path.dart' as p;
 
 import '../../models/log_level.dart';
@@ -12,6 +13,8 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
   final logLevel = LogLevel.values[prefs.getInt('tun.inject.log.level')!];
   final injectSocks = prefs.getBool('tun.inject.socks')!;
   final injectSocksPort = prefs.getInt('inject.socks.port')!;
+  final injectExcludeCore = prefs.getBool('tun.inject.excludeCorePath')!;
+  final corePath = vPNMan.corePath!;
 
   if (injectLog) {
     final pathLog = File(p.join(
@@ -33,6 +36,14 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
       "tag": "ot_socks",
       "server": "127.0.0.1",
       "server_port": injectSocksPort
+    });
+  }
+
+  if (injectExcludeCore) {
+    final route = cfg["route"] as Map<String, dynamic>;
+    route["rules"].insert(0, {
+      "process_path": [corePath],
+      "outbound": "ot_direct"
     });
   }
 

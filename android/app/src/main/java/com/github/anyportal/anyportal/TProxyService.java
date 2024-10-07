@@ -22,6 +22,7 @@ import java.io.IOException;
 
 import libv2raymobile.Libv2raymobile;
 
+/// despite name TProxyServiced (bind to hev-socks5-tunnel), this class should be counter part of vpn_manager.dart
 public class TProxyService extends VpnService {
     public static native void TProxyStartService(String config_path, int fd);
     public static native void TProxyStopService();
@@ -46,13 +47,13 @@ public class TProxyService extends VpnService {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        stopTProxy();
+        stopAll();
     }
 
     @Override
     public void onRevoke() {
         super.onRevoke();
-        stopTProxy();
+        stopAll();
     }
     
 
@@ -73,7 +74,7 @@ public class TProxyService extends VpnService {
 
     /// Interface for MainActivity to receive status updates
     public interface StatusUpdateListener {
-        void onStatusUpdate(boolean isActive);
+        void onStatusUpdate(boolean isCoreActive);
     }
 
     private StatusUpdateListener statusListener;
@@ -82,14 +83,10 @@ public class TProxyService extends VpnService {
         this.statusListener = listener;
     }
 
-    public boolean getIsActive() {
-        return isActive;
-    }
-
     /// Notify MainActivity of VPN status updates
     private void notifyMainActivity() {
         if (statusListener != null) {
-            statusListener.onStatusUpdate(isActive);
+            statusListener.onStatusUpdate(isCoreActive);
         }
     }
 
@@ -99,32 +96,35 @@ public class TProxyService extends VpnService {
     private ParcelFileDescriptor tunFd = null;
     private java.lang.Process coreProcess = null;
     private libv2raymobile.CoreManager coreManager = null;
-    private boolean isActive = false;
+    public boolean isCoreActive = false;
+    public boolean isTunActive = false;
     private SharedPreferences prefs;
 
-    public void startTProxy() {
+    public void startAll() {
         startCore();
+        isCoreActive = true;
 
         if (prefs.getBoolean("flutter.tun", true)){
             startTun();
+            isTunActive = true;
         }
 
-        isActive = true;
         notifyMainActivity();
     }
 
-    public void stopTProxy() {
+    public void stopAll() {
         stopCore();
+        isCoreActive = false;
 
         if (prefs.getBoolean("flutter.tun", true)){
             stopTun();
+            isTunActive = false;
         }
 
-        isActive = false;
         notifyMainActivity();
     }
 
-    private void startTun() {
+    public void startTun() {
         if (tunFd != null)
           return;
 
@@ -196,7 +196,7 @@ public class TProxyService extends VpnService {
         TProxyStartService(tproxy_file.getAbsolutePath(), tunFd.getFd());
     }
 
-    private void stopTun(){
+    public void stopTun(){
         if (tunFd != null){
             stopForeground(true);
 
