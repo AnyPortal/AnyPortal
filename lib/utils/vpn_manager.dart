@@ -377,6 +377,7 @@ class VPNManagerExec extends VPNManager {
     }
     if (pidCore != null) {
       Process.killPid(pidCore!);
+      pidCore = null;
       await updateIsCoreActive();
       return;
     }
