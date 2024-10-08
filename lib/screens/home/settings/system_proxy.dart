@@ -2,8 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import '../../../utils/prefs.dart';
-import '../../../utils/tray_menu.dart';
+import '../../../utils/platform_system_proxy_user.dart';
 import '../../../utils/vpn_manager.dart';
 
 class SystemProxyScreen extends StatefulWidget {
@@ -16,7 +15,7 @@ class SystemProxyScreen extends StatefulWidget {
 }
 
 class _SystemProxyScreenState extends State<SystemProxyScreen> {
-  bool _systemProxy = false;
+  bool? _systemProxy = false;
 
   @override
   void initState() {
@@ -25,8 +24,9 @@ class _SystemProxyScreenState extends State<SystemProxyScreen> {
   }
 
   _loadSettings() async {
+    _systemProxy = await platformSystemProxyUser.isEnabled();
     setState(() {
-      _systemProxy = prefs.getBool('systemProxy')!;
+      _systemProxy = _systemProxy;
     });
   }
 
@@ -34,16 +34,15 @@ class _SystemProxyScreenState extends State<SystemProxyScreen> {
   Widget build(BuildContext context) {
     final fields = [
       ListTile(
+        enabled: _systemProxy != null,
         title: const Text("Enable system proxy"),
-        subtitle: Text("Provided by ${Platform.operatingSystem}, not all apps respect this setting"),
+        subtitle: Text(
+            "Provided by ${Platform.operatingSystem}, not all apps respect this setting"),
         trailing: Switch(
-          value: _systemProxy,
+          value: _systemProxy == null ? false : _systemProxy!,
           onChanged: (bool shouldEnable) {
             setState(() {
               _systemProxy = shouldEnable;
-            });
-            prefs.setBool('systemProxy', shouldEnable).then((_){
-              trayMenu.updateContextMenu();
             });
             vPNMan.getIsCoreActive().then((isCoreActive) {
               if (isCoreActive) {
@@ -62,7 +61,7 @@ class _SystemProxyScreenState extends State<SystemProxyScreen> {
         appBar: AppBar(
           // Use the selected tab's label for the AppBar title
           title: const Text("SystemProxy"),
-                  ),
+        ),
         body: ListView.builder(
           itemCount: fields.length,
           itemBuilder: (context, index) => fields[index],

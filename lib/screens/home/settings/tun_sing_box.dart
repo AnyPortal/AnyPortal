@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:anyportal/models/log_level.dart';
-import 'package:anyportal/utils/tray_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 
@@ -54,9 +53,7 @@ Requires elevation
             setState(() {
               _tun = shouldEnable;
             });
-            prefs.setBool('tun', shouldEnable).then((_){
-              trayMenu.updateContextMenu();
-            });
+            prefs.setBool('tun', shouldEnable);
             vPNMan.getIsCoreActive().then((isCoreActive) {
               if (isCoreActive) {
                 if (shouldEnable) {

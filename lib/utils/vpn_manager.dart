@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:anyportal/models/core.dart';
 import 'package:anyportal/utils/platform_system_proxy_user.dart';
-import 'package:anyportal/utils/tray_menu.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
@@ -95,7 +94,6 @@ abstract class VPNManager with ChangeNotifier {
     isCoreActive = value;
     notifyListeners();
     setIsToggling(false);
-    trayMenu.updateContextMenu();
   }
 
   Future<void> setIsTunActive(value) async {
@@ -103,7 +101,6 @@ abstract class VPNManager with ChangeNotifier {
       return;
     }
     isTunActive = value;
-    trayMenu.updateContextMenu();
   }
 
   Future<void> updateIsCoreActive() async {

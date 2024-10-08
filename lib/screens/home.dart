@@ -195,7 +195,8 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
   }
 
   @override
-  void onTrayIconRightMouseDown() {
+  void onTrayIconRightMouseDown() async {
+    await trayMenu.updateContextMenu();
     trayManager.popUpContextMenu();
   }
 
@@ -217,25 +218,20 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
         final shouldEnable = !menuItem.checked!;
         menuItem.checked = shouldEnable;
         await prefs.setBool("tun", shouldEnable);
-        if (await vPNMan.getIsCoreActive()) {
-          if (shouldEnable) {
-            await vPNMan.startTun();
-          } else {
-            await vPNMan.stopTun();
-          }
+        if (shouldEnable && await vPNMan.getIsCoreActive()) {
+          await vPNMan.startTun();
+        } else {
+          await vPNMan.stopTun();
         }
       case 'toggle_system_proxy':
         final shouldEnable = !menuItem.checked!;
         menuItem.checked = shouldEnable;
         await prefs.setBool("systemProxy", shouldEnable);
-        if (await vPNMan.getIsCoreActive()) {
-          if (shouldEnable) {
-            await vPNMan.startSystemProxy();
-          } else {
-            await vPNMan.stopSystemProxy();
-          }
+        if (shouldEnable && await vPNMan.getIsCoreActive()) {
+          await vPNMan.startSystemProxy();
+        } else {
+          await vPNMan.stopSystemProxy();
         }
-        trayMenu.updateContextMenu();
     }
   }
 

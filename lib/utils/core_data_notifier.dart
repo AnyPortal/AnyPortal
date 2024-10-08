@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:anyportal/utils/grpc_api.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../generated/grpc/v2ray-core/app/stats/command/command.pbgrpc.dart';
 import 'logger.dart';
+import 'prefs.dart';
 
 enum TrafficStatType {
   directUp,
@@ -124,7 +124,6 @@ class CoreDataNotifier with ChangeNotifier {
 
 
   start() async {
-    final prefs = await SharedPreferences.getInstance();
     final apiPort = prefs.getInt('inject.api.port') ?? 15490;
     final v2ApiServer = V2ApiServer("localhost", apiPort);
     timer = Timer.periodic(const Duration(seconds: 1), (timer) async {

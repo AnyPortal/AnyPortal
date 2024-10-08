@@ -33,7 +33,6 @@ class PrefsManager {
     'inject.sendThrough.bindingInterface': "eth0",
     'inject.sendThrough.bindingIp': "0.0.0.0",
     'inject.sendThrough.bindingStratagy': SendThroughBindingStratagy.ip.index,
-    'systemProxy': false,
     'tun': Platform.isAndroid || Platform.isIOS,
     'tun.perAppProxy': false,
     'tun.selectedApps': "[]",
