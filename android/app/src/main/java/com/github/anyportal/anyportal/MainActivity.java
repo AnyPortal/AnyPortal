@@ -77,17 +77,18 @@ public class MainActivity extends FlutterActivity {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
-        // Unregister the BroadcastReceiver
+        if (serviceConnection != null) {
+            unbindService(serviceConnection);
+            serviceConnection = null;
+        }
         unregisterReceiver(broadcastReceiver);
+        super.onDestroy();
     }
 
-
-    
     /// bind TProxyService
     private TProxyService tProxyService;
 
-    private final ServiceConnection serviceConnection = new ServiceConnection() {
+    private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             TProxyService.LocalBinder binder = (TProxyService.LocalBinder) service;
