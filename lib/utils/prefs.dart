@@ -45,6 +45,7 @@ class PrefsManager {
     'tun.ipv6': false,
     'tun.inject.log': true,
     'tun.inject.log.level': LogLevel.warning.index,
+    'tun.inject.http': true,
     'tun.inject.socks': true,
     'tun.inject.excludeCorePath': true,
   };

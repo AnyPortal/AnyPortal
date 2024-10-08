@@ -15,7 +15,6 @@ import 'config_injector/tun_sing_box.dart';
 import 'db.dart';
 import 'global.dart';
 import 'logger.dart';
-import 'platform_elevation.dart';
 import 'platform_process.dart';
 import 'prefs.dart';
 import 'db/update_profile_with_group_remote.dart';
@@ -241,10 +240,10 @@ abstract class VPNManager with ChangeNotifier {
       await prefs.setBool("core.useEmbedded", true);
     }
 
-    // check sing-box path if tun is enabled
-    if (getIsExecTun()) {
-      if (!await PlatformElevation.isElevated()) {
-        throw Exception("Permission denied: Tun");
+    /// tun
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      if (!global.isElevated) {
+        return;
       }
 
       final coreTypeId = CoreTypeDefault.singBox.index;
