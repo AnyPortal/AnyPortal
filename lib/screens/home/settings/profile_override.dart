@@ -199,7 +199,7 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
                   ));
         },
       ),
-      ListTile(
+      if (_sendThroughBindingStratagy == SendThroughBindingStratagy.interface) ListTile(
         enabled: _injectSendThrough,
         title: const Text("Binding interface"),
         subtitle: Text(_bindingInterface),
@@ -218,15 +218,15 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
           );
         },
       ),
-      ListTile(
+      if (_sendThroughBindingStratagy == SendThroughBindingStratagy.ip) ListTile(
         enabled: _injectSendThrough,
-        title: const Text('Binding constant ip'),
+        title: const Text('Binding ip'),
         subtitle: Text(_bindingIp),
         onTap: () {
           showDialog(
             context: context,
             builder: (context) => TextInputPopup(
-                title: 'Binding constant ip',
+                title: 'Binding ip',
                 initialValue: _bindingIp,
                 onSaved: (value) {
                   prefs.setString('inject.sendThrough.bindingIp', value);
