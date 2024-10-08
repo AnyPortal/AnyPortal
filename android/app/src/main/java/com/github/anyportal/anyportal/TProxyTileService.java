@@ -20,7 +20,7 @@ public class TProxyTileService extends TileService {
     private TProxyService tProxyService;
     private boolean bound = false;
 
-    private final ServiceConnection serviceConnection = new ServiceConnection() {
+    private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             TProxyService.LocalBinder binder = (TProxyService.LocalBinder) service;
@@ -69,6 +69,15 @@ public class TProxyTileService extends TileService {
 
         tile.setLabel("AnyPortal");
         tile.updateTile();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (serviceConnection != null) {
+            unbindService(serviceConnection);
+            serviceConnection = null;
+        }
+        super.onDestroy();
     }
 
     public void onClick() {
