@@ -140,8 +140,7 @@ public class MainActivity extends FlutterActivity {
                         @Override
                         public void run() {
                             if (event == FileObserver.MODIFY) {
-                                new MethodChannel(getFlutterEngine().getDartExecutor().getBinaryMessenger(), CHANNEL)
-                                        .invokeMethod("onFileChange", null);
+                                methodChannel.invokeMethod("onFileChange", null);
                             }
                         }
                     });
@@ -154,7 +153,6 @@ public class MainActivity extends FlutterActivity {
     }
     
     private void registerBroadcastReceiver() {
-        MethodChannel methodChannel = new MethodChannel(getFlutterEngine().getDartExecutor().getBinaryMessenger(), CHANNEL);
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
