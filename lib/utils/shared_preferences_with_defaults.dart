@@ -1,6 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SharedPreferencesWithDefaults {
+class SharedPreferencesWithDefaults with ChangeNotifier {
   final SharedPreferences _prefs;
   final Map<String, dynamic> defaults;
 
@@ -126,5 +127,11 @@ class SharedPreferencesWithDefaults {
       return await _prefs.setStringList(key, value);
     }
     return false;
+  }
+
+  Future<bool> setWithNotification(String key, dynamic value) async {
+    final ok = await set(key, value);
+    notifyListeners();
+    return ok;
   }
 }

@@ -64,7 +64,7 @@ Requires elevation
             setState(() {
               _tun = shouldEnable;
             });
-            prefs.setBool('tun', shouldEnable);
+            prefs.setWithNotification('tun', shouldEnable);
             vPNMan.getIsCoreActive().then((isCoreActive) {
               if (isCoreActive) {
                 if (shouldEnable) {

@@ -11,6 +11,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
+import '../utils/platform_system_proxy_user.dart';
 import '../utils/prefs.dart';
 import 'home/logs.dart';
 import 'home/dashboard.dart';
@@ -59,6 +60,8 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
     windowManager.addListener(this);
     super.initState();
 
+    _loadSystemProxyIsEnabled();
+
     final logFile = File(
         p.join(global.applicationSupportDirectory.path, 'log', 'core.log'));
     logFile.exists().then((logFileExists) async {
@@ -73,6 +76,14 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
     ;
   }
 
+  bool? _systemProxyIsEnabled;
+  _loadSystemProxyIsEnabled() async {
+    _systemProxyIsEnabled = await platformSystemProxyUser.isEnabled();
+    setState(() {
+      _systemProxyIsEnabled = _systemProxyIsEnabled;
+    });
+  }
+
   @override
   void dispose() {
     trayManager.removeListener(this);
@@ -81,9 +92,6 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
   }
 
   final _elevatedUser = Platform.isWindows ? "Administrator" : "root";
-  bool _tun = prefs.getBool('tun')!;
-  bool? _systemProxyIsEnabled = false;
-  bool _systemProxyShouldEnable = false;
 
   @override
   Widget build(BuildContext context) {
@@ -161,41 +169,48 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
                   child: Column(
                     children: [
                       ListTile(
-                            dense: true,
-                          title: const Text("Tun"),
-                          trailing: Transform.scale(
+                        dense: true,
+                        title: const Text("Tun"),
+                        trailing: Transform.scale(
                             scale: 0.5,
                             origin: const Offset(32, 4),
-                            child: Switch(
-                              value: _tun,
-                              onChanged: (shouldEnable) {
-                                if (!global.isElevated) {
-                                  final snackBar = SnackBar(
-                                    content: Text(
-                                        "You need to be $_elevatedUser to modify this setting"),
+                            child: ListenableBuilder(
+                                listenable: prefs,
+                                builder: (BuildContext context, Widget? child) {
+                                  bool tun = prefs.getBool('tun')!;
+                                  return Switch(
+                                    value: tun,
+                                    onChanged: (shouldEnable) {
+                                      if (!global.isElevated) {
+                                        final snackBar = SnackBar(
+                                          content: Text(
+                                              "You need to be $_elevatedUser to modify this setting"),
+                                        );
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(snackBar);
+                                        }
+                                        return;
+                                      }
+                                      setState(() {
+                                        tun = shouldEnable;
+                                      });
+                                      prefs.setBool('tun', shouldEnable);
+                                      vPNMan
+                                          .getIsCoreActive()
+                                          .then((isCoreActive) {
+                                        if (isCoreActive) {
+                                          if (shouldEnable) {
+                                            vPNMan.startTun();
+                                          } else {
+                                            vPNMan.stopTun();
+                                          }
+                                        }
+                                      });
+                                    },
                                   );
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(snackBar);
-                                  }
-                                  return;
-                                }
-                                setState(() {
-                                  _tun = shouldEnable;
-                                });
-                                prefs.setBool('tun', shouldEnable);
-                                vPNMan.getIsCoreActive().then((isCoreActive) {
-                                  if (isCoreActive) {
-                                    if (shouldEnable) {
-                                      vPNMan.startTun();
-                                    } else {
-                                      vPNMan.stopTun();
-                                    }
-                                  }
-                                });
-                              },
-                            ),
-                          )),
+                                })),
+                      ),
                       if (Platform.isWindows ||
                           Platform.isLinux ||
                           Platform.isMacOS)
@@ -205,26 +220,36 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
                             trailing: Transform.scale(
                               scale: 0.5,
                               origin: const Offset(32, 4),
-                              child: Switch(
-                                value: _systemProxyIsEnabled == null
-                                    ? false
-                                    : _systemProxyShouldEnable,
-                                onChanged: (bool shouldEnable) {
-                                  setState(() {
-                                    _systemProxyShouldEnable = shouldEnable;
-                                  });
-                                  prefs.setBool('systemProxy', shouldEnable);
-                                  vPNMan.getIsCoreActive().then((isCoreActive) {
-                                    if (isCoreActive) {
-                                      if (shouldEnable) {
-                                        vPNMan.startSystemProxy();
-                                      } else {
-                                        vPNMan.stopSystemProxy();
-                                      }
-                                    }
-                                  });
-                                },
-                              ),
+                              child: ListenableBuilder(
+                                  listenable: prefs,
+                                  builder:
+                                      (BuildContext context, Widget? child) {
+                                    bool systemProxyShouldEnable = prefs.getBool("systemProxy")!;
+                                    return Switch(
+                                      value: _systemProxyIsEnabled == null
+                                          ? false
+                                          : systemProxyShouldEnable,
+                                      onChanged: (bool shouldEnable) {
+                                        setState(() {
+                                          systemProxyShouldEnable =
+                                              shouldEnable;
+                                        });
+                                        prefs.setBool(
+                                            'systemProxy', shouldEnable);
+                                        vPNMan
+                                            .getIsCoreActive()
+                                            .then((isCoreActive) {
+                                          if (isCoreActive) {
+                                            if (shouldEnable) {
+                                              vPNMan.startSystemProxy();
+                                            } else {
+                                              vPNMan.stopSystemProxy();
+                                            }
+                                          }
+                                        });
+                                      },
+                                    );
+                                  }),
                             ))
                     ],
                   ),
@@ -302,7 +327,7 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
       case 'toggle_tun':
         final shouldEnable = !menuItem.checked!;
         menuItem.checked = shouldEnable;
-        await prefs.setBool("tun", shouldEnable);
+        await prefs.setWithNotification("tun", shouldEnable);
         if (await vPNMan.getIsCoreActive()) {
           if (shouldEnable) {
             await vPNMan.startTun();
@@ -313,7 +338,7 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
       case 'toggle_system_proxy':
         final shouldEnable = !menuItem.checked!;
         menuItem.checked = shouldEnable;
-        await prefs.setBool("systemProxy", shouldEnable);
+        await prefs.setWithNotification("systemProxy", shouldEnable);
         if (await vPNMan.getIsCoreActive()) {
           if (shouldEnable) {
             await vPNMan.startSystemProxy();

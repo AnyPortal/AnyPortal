@@ -48,7 +48,7 @@ class _SystemProxyScreenState extends State<SystemProxyScreen> {
             setState(() {
               _systemProxyShouldEnable = shouldEnable;
             });
-            prefs.setBool('systemProxy', shouldEnable);
+            prefs.setWithNotification('systemProxy', shouldEnable);
             vPNMan.getIsCoreActive().then((isCoreActive) {
               if (isCoreActive) {
                 if (shouldEnable) {

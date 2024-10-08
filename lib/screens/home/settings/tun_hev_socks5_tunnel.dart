@@ -78,7 +78,7 @@ misc:
         trailing: Switch(
           value: _tun,
           onChanged: (value) {
-            prefs.setBool('tun', value);
+            prefs.setWithNotification('tun', value);
             setState(() {
               _tun = value;
             });
