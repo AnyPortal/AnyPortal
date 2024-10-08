@@ -60,6 +60,32 @@
 >
 > 2024-09-27
 
+## Dev roadmap
+
+|              | Windows | Linux | macOS | Android | iOS |
+| ------------ | ------- | ----- | ----- | ------- | --- |
+| AnyPortal    | ✅       | ✅     | ✅     | ✅       | 🚧   |
+| core as exec | ✅       | ✅     | ✅     | 🚧^1     | 💤   |
+| core as lib  | 💤       | 💤     | 💤     | ✅       | 🧪   |
+| tun          | ✅       | 🧪     | 🧪     | ✅       | ❌*  |
+| system proxy | ✅       | 🧪     | 🧪     | 🚧^2     | 💤   |
+
+- ^1. Require `api28` variant, not available for play store `apilatest` version
+- ^2. Require root / [Shizuku](https://github.com/RikkaApps/Shizuku)
+- *. iOS requires an apple developer license to even debug an app that uses Network Extension. Dev progress currently blocked and the app wound serve little purpose right now without tun.
+
+- 💤 Not Planned: No plans for implementation or discontinued
+- 🔜 Planned: Planned for future development
+- 🚧 In Progress: Partially implemented, but not fully functional yet
+- ✅ Working: Completed and functioning as expected
+- 🧪 Experimental: Under experimental implementation or testing
+- ❌ Not Working: Known issues, broken or currently non-functional
+<!-- - 🛠 Under Development: Actively being worked on -->
+<!-- - ⏳ Awaiting Review: Needs testing or review -->
+<!-- - 📝 Documenting: In the process of being documented -->
+
+See planning [here](https://github.com/users/anyportal/projects/1/views/1). 
+
 ## Technical details for power users
 
 - why v2ray/xray over sing-box?
@@ -74,26 +100,6 @@
 - android api 29+ does not allow running binary directly
   - you can run custom cores (any version of v2ray, xray) with apk compiled with api target 28
   - playsotore always requires recent api targets, way over 28 now, so you can only use an embedded core with playstore apk
-
-## Dev roadmap
-
-|              | Windows | Linux | macOS | Android | iOS |
-| ------------ | ------- | ----- | ----- | ------- | --- |
-| AnyPortal    | ✅       | ✅     | ✅     | ✅       | ❌   |
-| tun          | ✅       | 🧪     | 🧪     | ✅       | ❌   |
-| system proxy | ✅       | 🧪     | 🧪     | 💤       | ❌   |
-
-- 💤 Not Planned: No plans for implementation or discontinued
-- 🔜 Planned: Planned for future development
-- 🚧 In Progress: Partially implemented, but not fully functional yet
-- ✅ Working: Completed and functioning as expected
-- 🧪 Experimental: Under experimental implementation or testing
-- ❌ Not Working: Known issues, broken or currently non-functional
-<!-- - 🛠 Under Development: Actively being worked on -->
-<!-- - ⏳ Awaiting Review: Needs testing or review -->
-<!-- - 📝 Documenting: In the process of being documented -->
-
-See planning [here](https://github.com/users/anyportal/projects/1/views/1). 
 
 ## License
 
