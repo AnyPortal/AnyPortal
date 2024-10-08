@@ -34,21 +34,12 @@ class InvalidSelectedProfileException implements Exception {
   InvalidSelectedProfileException(this.message);
 }
 
-class IsActiveRecord {
-  bool isActive;
-  DateTime datetime;
-  String source;
-
-  IsActiveRecord(this.isActive, this.datetime, this.source);
-}
-
 abstract class VPNManager with ChangeNotifier {
   bool isToggling = false;
-  IsActiveRecord isCoreActiveRecord =
-      IsActiveRecord(false, DateTime.now(), "init");
+  bool isCoreActive = false;
+  bool isTunActive = false;
   bool isExpectingActive = false;
 
-  Future<IsActiveRecord> _getCoreIsActiveRecord();
   Future<void> _startAll();
   Future<void> _stopAll();
   Future<void> startTun();
@@ -61,34 +52,55 @@ abstract class VPNManager with ChangeNotifier {
       isToggling = val;
       notifyListeners();
     }
-    if (isToggling){
-      delayedTogglingChecker = Future.delayed(const Duration(seconds: 5), () {
-        if (isToggling){
-          logger.w("toggled for 5 sec, force stopped");
+
+    /// with timeout
+    const timeoutSec = 5;
+    if (isToggling) {
+      delayedTogglingChecker =
+          Future.delayed(const Duration(seconds: timeoutSec), () {
+        if (isToggling) {
+          logger.w("toggled for $timeoutSec sec, force stopped");
           setIsToggling(false);
-          updateIsCoreActiveRecord();
         }
       });
     }
   }
 
-  Future<IsActiveRecord> updateIsCoreActiveRecord() async {
-    _setIsCoreActive(await _getCoreIsActiveRecord());
-    return isCoreActiveRecord;
+  Future<bool> getIsCoreActive();
+  Future<bool> getIsTunActive();
+
+  Future<void> setIsCoreActive(value) async {
+    if (value == isCoreActive) {
+      return;
+    }
+    isCoreActive = value;
+    notifyListeners();
+    setIsToggling(false);
+    trayMenu.updateContextMenu();
   }
 
-  void _setIsCoreActive(IsActiveRecord r) {
-    if (r.datetime.isBefore(isCoreActiveRecord.datetime)) {
+  Future<void> setIsTunActive(value) async {
+    if (value == isTunActive) {
       return;
     }
-    if (r.isActive == isCoreActiveRecord.isActive) {
-      isCoreActiveRecord = r;
-      return;
-    }
-    isCoreActiveRecord = r;
-    notifyListeners();
+    isTunActive = value;
     trayMenu.updateContextMenu();
-    return;
+  }
+
+  Future<void> updateIsCoreActive() async {
+    await setIsCoreActive(await getIsCoreActive());
+  }
+
+  Future<void> updateIsTunActive() async {
+    await setIsTunActive(await getIsTunActive());
+  }
+
+  Future<void> updateDetachedCore() async {
+    await updateIsCoreActive();
+  }
+
+  Future<void> updateDetachedTun() async {
+    await updateIsTunActive();
   }
 
   Future<void> start() async {
@@ -98,7 +110,7 @@ abstract class VPNManager with ChangeNotifier {
     isExpectingActive = true;
 
     /// check is already active
-    if ((await updateIsCoreActiveRecord()).isActive) {
+    if (await getIsCoreActive()) {
       setIsToggling(false);
       return;
     }
@@ -118,7 +130,7 @@ abstract class VPNManager with ChangeNotifier {
     isExpectingActive = false;
 
     /// check is already inactive
-    if (!(await updateIsCoreActiveRecord()).isActive) {
+    if (!await getIsCoreActive()) {
       setIsToggling(false);
       return;
     }
@@ -126,8 +138,6 @@ abstract class VPNManager with ChangeNotifier {
     /// stop
     await _stopAll();
   }
-
-  Future<bool> isTunActive();
 
   int? _selectedProfileId;
   ProfileData? _selectedProfile;
@@ -153,7 +163,6 @@ abstract class VPNManager with ChangeNotifier {
   ];
 
   bool getIsExecTun() {
-    logger.d(prefs.getBool("tun"));
     return prefs.getBool("tun")! &&
         (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
   }
@@ -289,19 +298,44 @@ abstract class VPNManager with ChangeNotifier {
 class VPNManagerExec extends VPNManager {
   Process? processCore;
   Process? processTun;
-  int? corePid;
-  int? tunPid;
+  int? pidCore;
+  int? pidTun;
 
   @override
-  Future<IsActiveRecord> _getCoreIsActiveRecord() async {
-    final now = DateTime.now();
+  Future<void> updateDetachedCore() async {
+    final coreCommandLine = "$corePath ${_coreArgList.join(' ')}";
+    pidCore = await PlatformProcess.getProcessPid(coreCommandLine);
+    setIsCoreActive(pidCore != null);
+  }
+
+  @override
+  Future<void> updateDetachedTun() async {
+    final tunCommandLine =
+        "$_tunSingBoxCorePath ${_tunSingBoxCoreArgList.join(' ')}";
+    pidTun = await PlatformProcess.getProcessPid(tunCommandLine);
+    setIsTunActive(pidTun != null);
+  }
+
+  @override
+  getIsCoreActive() async {
     if (processCore != null) {
-      return IsActiveRecord(true, now, "processCore");
-    } else {
-      final coreCommandLine = "$corePath ${_coreArgList.join(' ')}";
-      corePid = await PlatformProcess.getProcessPid(coreCommandLine);
-      return IsActiveRecord(corePid != null, now, "port");
+      return true;
     }
+    if (pidCore != null) {
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  getIsTunActive() async {
+    if (processTun != null) {
+      return true;
+    }
+    if (pidTun != null) {
+      return true;
+    }
+    return false;
   }
 
   _startCore() async {
@@ -317,27 +351,13 @@ class VPNManagerExec extends VPNManager {
     if (processCore != null) {
       processCore!.kill();
       processCore = null;
-      await updateIsCoreActiveRecord();
-      setIsToggling(false);
+      await updateIsCoreActive();
       return;
     }
-    if (corePid != null) {
-      Process.killPid(corePid!);
-      await updateIsCoreActiveRecord();
-      setIsToggling(false);
+    if (pidCore != null) {
+      Process.killPid(pidCore!);
+      await updateIsCoreActive();
       return;
-    }
-  }
-
-  @override
-  isTunActive() async {
-    if (processTun != null) {
-      return true;
-    } else {
-      final tunCommandLine =
-          "$_tunSingBoxCorePath ${_tunSingBoxCoreArgList.join(' ')}";
-      tunPid = await PlatformProcess.getProcessPid(tunCommandLine);
-      return tunPid != null;
     }
   }
 
@@ -356,8 +376,8 @@ class VPNManagerExec extends VPNManager {
   stopTun() async {
     processTun?.kill();
     processTun = null;
-    if (tunPid != null) {
-      Process.killPid(tunPid!);
+    if (pidTun != null) {
+      Process.killPid(pidTun!);
     }
   }
 
@@ -365,8 +385,7 @@ class VPNManagerExec extends VPNManager {
   _startAll() async {
     await _startCore();
     await startTun();
-    await updateIsCoreActiveRecord();
-    setIsToggling(false);
+    await updateIsCoreActive();
     return;
   }
 
@@ -374,8 +393,7 @@ class VPNManagerExec extends VPNManager {
   _stopAll() async {
     await stopTun();
     await _stopCore();
-    await updateIsCoreActiveRecord();
-    setIsToggling(false);
+    await updateIsCoreActive();
     return;
   }
 
@@ -405,27 +423,20 @@ class VPNManagerMC extends VPNManager {
     logger.d("_methodCallHandler: ${call.method}");
     if (call.method == 'onCoreActivated' ||
         call.method == 'onCoreDeactivated') {
-      final newIsCoreActive = call.method == 'onCoreActivated';
-      _setIsCoreActive(
-          IsActiveRecord(newIsCoreActive, DateTime.now(), call.method));
-      // if (newIsCoreActive == isExpectingActive){
-      // logger.d"setIsToggling: false");
-      setIsToggling(false);
-      // }
+      setIsCoreActive(call.method == 'onCoreActivated');
     } else if (call.method == 'onTileToggled') {
       isExpectingActive = call.arguments as bool;
-      // logger.d"isExpectingActive: ${call.arguments}");
-      /// cannot promise onTileToggled reach before onCoreActivated/onCoreDeactivated
-      // setIsToggling(true);
     }
   }
 
   @override
-  Future<IsActiveRecord> _getCoreIsActiveRecord() async {
-    final now = DateTime.now();
-    final newIsCoreActive =
-        await platform.invokeMethod('vpn.isCoreActive') as bool;
-    return IsActiveRecord(newIsCoreActive, now, "vpn.isCoreActive");
+  Future<bool> getIsCoreActive() async {
+    return await platform.invokeMethod('vpn.isCoreActive') as bool;
+  }
+
+  @override
+  Future<bool> getIsTunActive() async {
+    return await platform.invokeMethod('vpn.isTunActive') as bool;
   }
 
   @override
@@ -446,11 +457,6 @@ class VPNManagerMC extends VPNManager {
   @override
   stopTun() async {
     await platform.invokeMethod('vpn.stopTun');
-  }
-
-  @override
-  isTunActive() async {
-    return await platform.invokeMethod('vpn.isTunActive') as bool;
   }
 }
 

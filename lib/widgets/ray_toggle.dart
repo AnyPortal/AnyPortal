@@ -23,7 +23,7 @@ class RayToggleState extends State<RayToggle> {
   Timer? timer;
 
   Future<void> syncCoreDataNotifier() async {
-    final isCoreActive = (await vPNMan.updateIsCoreActiveRecord()).isActive;
+    final isCoreActive = await vPNMan.getIsCoreActive();
     if (isCoreActive && !coreDataNotifier.on) {
       try {
         coreDataNotifier.loadCfg(vPNMan.coreRawCfgMap);
@@ -48,7 +48,7 @@ class RayToggleState extends State<RayToggle> {
   }
 
   void _toggle() async {
-    final isCoreActive = (await vPNMan.updateIsCoreActiveRecord()).isActive;
+    final isCoreActive = await vPNMan.getIsCoreActive();
 
     Exception? err;
     try {
@@ -99,11 +99,9 @@ class RayToggleState extends State<RayToggle> {
         listenable: vPNMan,
         builder: (BuildContext context, Widget? child) {
           syncCoreDataNotifier();
-          // logger.d("vPNMan: ${vPNMan.isCoreActiveRecord.datetime} ${vPNMan.isCoreActiveRecorisActive} ${vPNMan.isCoreActiveRecord.source}");
-          // logger.d("isToggling: ${vPNMan.isToggling}");
           return FloatingActionButton(
               onPressed: vPNMan.isToggling ? null : _toggle,
-              tooltip: vPNMan.isCoreActiveRecord.isActive
+              tooltip: vPNMan.isCoreActive
                   ? 'disconnect'
                   : 'connect',
               child: vPNMan.isToggling
@@ -111,7 +109,7 @@ class RayToggleState extends State<RayToggle> {
                       scale: 0.5,
                       child: const CircularProgressIndicator(),
                     )
-                  : vPNMan.isCoreActiveRecord.isActive
+                  : vPNMan.isCoreActive
                       ? const Icon(Icons.stop)
                       : const Icon(Icons.play_arrow));
         });
