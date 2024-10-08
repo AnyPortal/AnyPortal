@@ -54,10 +54,21 @@ abstract class VPNManager with ChangeNotifier {
   Future<void> startTun();
   Future<void> stopTun();
 
+  Future<Null>? delayedTogglingChecker;
+
   void setIsToggling(bool val) {
     if (isToggling != val) {
       isToggling = val;
       notifyListeners();
+    }
+    if (isToggling){
+      delayedTogglingChecker = Future.delayed(const Duration(seconds: 5), () {
+        if (isToggling){
+          logger.w("toggled for 5 sec, force stopped");
+          setIsToggling(false);
+          updateIsCoreActiveRecord();
+        }
+      });
     }
   }
 
