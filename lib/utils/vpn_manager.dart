@@ -79,7 +79,7 @@ abstract class VPNManager with ChangeNotifier {
           Future.delayed(const Duration(seconds: timeoutSec), () {
         if (isToggling) {
           logger.w("toggled for $timeoutSec sec, force stopped");
-          setIsToggling(false);
+          updateIsCoreActive();
         }
       });
     }
@@ -419,20 +419,6 @@ class VPNManagerExec extends VPNManager {
     await stopCore();
     await updateIsCoreActive();
     return;
-  }
-
-  Future<bool> isPortOccupied(int port) async {
-    try {
-      await ServerSocket.bind(InternetAddress.anyIPv4, port);
-      return false; // Port is available
-    } on SocketException catch (e) {
-      logger.d("$e");
-      return true; // Port is occupied
-    }
-    // return false;
-    // catch (e) {
-    //   rethrow; // Rethrow other exceptions for debugging
-    // }
   }
 }
 
