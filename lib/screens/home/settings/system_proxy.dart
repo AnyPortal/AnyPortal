@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import '../../../utils/platform_system_proxy_user.dart';
+import '../../../utils/prefs.dart';
 import '../../../utils/vpn_manager.dart';
 
 class SystemProxyScreen extends StatefulWidget {
@@ -15,7 +16,8 @@ class SystemProxyScreen extends StatefulWidget {
 }
 
 class _SystemProxyScreenState extends State<SystemProxyScreen> {
-  bool? _systemProxy = false;
+  bool? _systemProxyIsEnabled = false;
+  bool _systemProxyShouldEnable = false;
 
   @override
   void initState() {
@@ -24,9 +26,11 @@ class _SystemProxyScreenState extends State<SystemProxyScreen> {
   }
 
   _loadSettings() async {
-    _systemProxy = await platformSystemProxyUser.isEnabled();
+    _systemProxyIsEnabled = await platformSystemProxyUser.isEnabled();
+    _systemProxyShouldEnable = prefs.getBool('systemProxy')!;
     setState(() {
-      _systemProxy = _systemProxy;
+      _systemProxyIsEnabled = _systemProxyIsEnabled;
+      _systemProxyShouldEnable = _systemProxyShouldEnable;
     });
   }
 
@@ -34,16 +38,17 @@ class _SystemProxyScreenState extends State<SystemProxyScreen> {
   Widget build(BuildContext context) {
     final fields = [
       ListTile(
-        enabled: _systemProxy != null,
+        enabled: _systemProxyIsEnabled != null,
         title: const Text("Enable system proxy"),
         subtitle: Text(
             "Provided by ${Platform.operatingSystem}, not all apps respect this setting"),
         trailing: Switch(
-          value: _systemProxy == null ? false : _systemProxy!,
+          value: _systemProxyIsEnabled == null ? false : _systemProxyShouldEnable,
           onChanged: (bool shouldEnable) {
             setState(() {
-              _systemProxy = shouldEnable;
+              _systemProxyShouldEnable = shouldEnable;
             });
+            prefs.setBool('systemProxy', shouldEnable);
             vPNMan.getIsCoreActive().then((isCoreActive) {
               if (isCoreActive) {
                 if (shouldEnable) {

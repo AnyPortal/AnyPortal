@@ -41,7 +41,8 @@ class TrayMenuManager {
     if (Platform.isAndroid || Platform.isIOS) {
       return;
     }
-    final systemProxyEnabled = await platformSystemProxyUser.isEnabled();
+    final systemProxyIsEnabled = await platformSystemProxyUser.isEnabled();
+    final systemProxyShouldEnable = prefs.getBool('systemProxy')!;
     menu = Menu(
       items: [
         MenuItem.checkbox(
@@ -51,10 +52,10 @@ class TrayMenuManager {
         ),
         MenuItem.separator(),
         MenuItem.checkbox(
-          disabled: systemProxyEnabled == null,
+          disabled: systemProxyIsEnabled == null,
           key: 'toggle_system_proxy',
           label: 'System proxy',
-          checked: systemProxyEnabled,
+          checked: systemProxyShouldEnable,
         ),
         MenuItem.checkbox(
           disabled: global.isElevated == false,

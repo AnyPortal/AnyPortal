@@ -25,7 +25,7 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
   LogLevel _logLevel = LogLevel.values[prefs.getInt('tun.inject.log.level')!];
   bool _injectSocks = prefs.getBool('tun.inject.socks')!;
   bool _injectExcludeCorePath = prefs.getBool('tun.inject.excludeCorePath')!;
-  final String _elevatedUser = Platform.isWindows ? "Administrator" : "root";
+  final _elevatedUser = Platform.isWindows ? "Administrator" : "root";
 
   @override
   void initState() {

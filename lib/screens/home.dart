@@ -80,6 +80,11 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
     super.dispose();
   }
 
+  final _elevatedUser = Platform.isWindows ? "Administrator" : "root";
+  bool _tun = prefs.getBool('tun')!;
+  bool? _systemProxyIsEnabled = false;
+  bool _systemProxyShouldEnable = false;
+
   @override
   Widget build(BuildContext context) {
     List<ScreenNav> screens = <ScreenNav>[
@@ -115,37 +120,117 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
         // Custom Drawer in landscape mode
         SizedBox(
             width: 250,
-            child: ListView(
-                padding: const EdgeInsets.all(12),
-                children: (screens.asMap().entries.map<Widget>((entry) {
-                  final index = entry.key;
-                  final screen = entry.value;
-                  return Card(
-                      // color: _selectedIndex == index
-                      //     ? Theme.of(context).colorScheme.surfaceContainerLowest
-                      //     : Theme.of(context).colorScheme.surfaceContainer,
-                      // shadowColor: _selectedIndex == index
-                      //     ? Theme.of(context).colorScheme.shadow
-                      //     : Colors.transparent,
-                      color: _selectedIndex == index
-                          ? Theme.of(context).cardTheme.color
-                          : Colors.transparent,
-                      shadowColor: _selectedIndex == index
-                          ? Theme.of(context).cardTheme.shadowColor
-                          : Colors.transparent,
-                      child: ListTile(
-                        leading: screen.icon,
-                        title: Text(screen.title),
-                        selected: _selectedIndex == index,
-                        selectedColor:
-                            Theme.of(context).textTheme.titleMedium!.color,
-                        onTap: () {
-                          setState(() {
-                            _selectedIndex = index;
-                          });
-                        },
-                      ));
-                }).toList()))),
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView(
+                      padding: const EdgeInsets.all(12),
+                      children: screens.asMap().entries.map<Widget>((entry) {
+                        final index = entry.key;
+                        final screen = entry.value;
+                        return Card(
+                          // color: _selectedIndex == index
+                          //     ? Theme.of(context).colorScheme.surfaceContainerLowest
+                          //     : Theme.of(context).colorScheme.surfaceContainer,
+                          // shadowColor: _selectedIndex == index
+                          //     ? Theme.of(context).colorScheme.shadow
+                          //     : Colors.transparent,
+                          color: _selectedIndex == index
+                              ? Theme.of(context).cardTheme.color
+                              : Colors.transparent,
+                          shadowColor: _selectedIndex == index
+                              ? Theme.of(context).cardTheme.shadowColor
+                              : Colors.transparent,
+                          child: ListTile(
+                            leading: screen.icon,
+                            title: Text(screen.title),
+                            selected: _selectedIndex == index,
+                            selectedColor:
+                                Theme.of(context).textTheme.titleMedium!.color,
+                            onTap: () {
+                              setState(() {
+                                _selectedIndex = index;
+                              });
+                            },
+                          ),
+                        );
+                      }).toList()),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
+                  child: Column(
+                    children: [
+                      ListTile(
+                            dense: true,
+                          title: const Text("Tun"),
+                          trailing: Transform.scale(
+                            scale: 0.5,
+                            origin: const Offset(32, 4),
+                            child: Switch(
+                              value: _tun,
+                              onChanged: (shouldEnable) {
+                                if (!global.isElevated) {
+                                  final snackBar = SnackBar(
+                                    content: Text(
+                                        "You need to be $_elevatedUser to modify this setting"),
+                                  );
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(snackBar);
+                                  }
+                                  return;
+                                }
+                                setState(() {
+                                  _tun = shouldEnable;
+                                });
+                                prefs.setBool('tun', shouldEnable);
+                                vPNMan.getIsCoreActive().then((isCoreActive) {
+                                  if (isCoreActive) {
+                                    if (shouldEnable) {
+                                      vPNMan.startTun();
+                                    } else {
+                                      vPNMan.stopTun();
+                                    }
+                                  }
+                                });
+                              },
+                            ),
+                          )),
+                      if (Platform.isWindows ||
+                          Platform.isLinux ||
+                          Platform.isMacOS)
+                        ListTile(
+                            dense: true,
+                            title: const Text("System proxy"),
+                            trailing: Transform.scale(
+                              scale: 0.5,
+                              origin: const Offset(32, 4),
+                              child: Switch(
+                                value: _systemProxyIsEnabled == null
+                                    ? false
+                                    : _systemProxyShouldEnable,
+                                onChanged: (bool shouldEnable) {
+                                  setState(() {
+                                    _systemProxyShouldEnable = shouldEnable;
+                                  });
+                                  prefs.setBool('systemProxy', shouldEnable);
+                                  vPNMan.getIsCoreActive().then((isCoreActive) {
+                                    if (isCoreActive) {
+                                      if (shouldEnable) {
+                                        vPNMan.startSystemProxy();
+                                      } else {
+                                        vPNMan.stopSystemProxy();
+                                      }
+                                    }
+                                  });
+                                },
+                              ),
+                            ))
+                    ],
+                  ),
+                ),
+              ],
+            )),
         // Body of the app
         Expanded(
           child: Center(
@@ -218,19 +303,23 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
         final shouldEnable = !menuItem.checked!;
         menuItem.checked = shouldEnable;
         await prefs.setBool("tun", shouldEnable);
-        if (shouldEnable && await vPNMan.getIsCoreActive()) {
-          await vPNMan.startTun();
-        } else {
-          await vPNMan.stopTun();
+        if (await vPNMan.getIsCoreActive()) {
+          if (shouldEnable) {
+            await vPNMan.startTun();
+          } else {
+            await vPNMan.stopTun();
+          }
         }
       case 'toggle_system_proxy':
         final shouldEnable = !menuItem.checked!;
         menuItem.checked = shouldEnable;
         await prefs.setBool("systemProxy", shouldEnable);
-        if (shouldEnable && await vPNMan.getIsCoreActive()) {
-          await vPNMan.startSystemProxy();
-        } else {
-          await vPNMan.stopSystemProxy();
+        if (await vPNMan.getIsCoreActive()) {
+          if (shouldEnable) {
+            await vPNMan.startSystemProxy();
+          } else {
+            await vPNMan.stopSystemProxy();
+          }
         }
     }
   }
