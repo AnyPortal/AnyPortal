@@ -143,13 +143,13 @@ class _GeneralScreenState extends State<GeneralScreen> {
         ),
       ),
       ListTile(
-        title: const Text('Socks address'),
+        title: const Text('Server address'),
         subtitle: Text(_serverAddress),
         onTap: () {
           showDialog(
             context: context,
             builder: (context) => TextInputPopup(
-                title: 'Socks address',
+                title: 'Server address',
                 initialValue: _serverAddress,
                 onSaved: (String value) {
                   prefs.setString('app.server.address', _serverAddress);
