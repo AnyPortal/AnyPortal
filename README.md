@@ -79,9 +79,9 @@
 
 |              | Windows | Linux | macOS | Android | iOS |
 | ------------ | ------- | ----- | ----- | ------- | --- |
-| anyportal    | ✅       | ✅     | ✅     | ✅       | ❌   |
+| AnyPortal    | ✅       | ✅     | ✅     | ✅       | ❌   |
 | tun          | ✅       | 🧪     | 🧪     | ✅       | ❌   |
-| system proxy | 🔜       | 🔜     | 🔜     | 🔜       | ❌   |
+| system proxy | ✅       | 🧪     | 🧪     | 💤       | ❌   |
 
 - 💤 Not Planned: No plans for implementation or discontinued
 - 🔜 Planned: Planned for future development

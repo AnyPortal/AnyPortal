@@ -9,6 +9,7 @@ import 'settings/assets.dart';
 import 'settings/cores.dart';
 import 'settings/general.dart';
 import 'settings/profile_override.dart';
+import 'settings/system_proxy.dart';
 import 'settings/tun_sing_box.dart';
 
 class SettingList extends StatefulWidget {
@@ -40,6 +41,14 @@ class _SettingListState extends State<SettingList> {
               );
             },
           ),
+          const Divider(),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: Text(
+              "Assets",
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
+          ),
           ListTile(
             title: const Text("Cores"),
             subtitle: const Text("Path of core exectuable, assets, etc."),
@@ -60,6 +69,14 @@ class _SettingListState extends State<SettingList> {
               );
             },
           ),
+          const Divider(),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: Text(
+              "Profile",
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
+          ),
           ListTile(
             title: const Text("Profile override"),
             subtitle: const Text("Inject configuration into v2ray profile"),
@@ -71,10 +88,18 @@ class _SettingListState extends State<SettingList> {
               );
             },
           ),
+          const Divider(),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: Text(
+              "Connection",
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
+          ),
           if (Platform.isAndroid || Platform.isIOS)
             ListTile(
                 title: const Text("Tun"),
-                subtitle: const Text("Tun adaptor"),
+                subtitle: const Text("Vitual network adaptor to direct all traffic"),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -84,13 +109,31 @@ class _SettingListState extends State<SettingList> {
           if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
             ListTile(
                 title: const Text("Tun"),
-                subtitle: const Text("Tun adaptor"),
+                subtitle: const Text("Vitual network adaptor to direct all traffic"),
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const TunSingBoxScreen()),
                   );
                 }),
+          if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
+            ListTile(
+                title: const Text("System proxy"),
+                subtitle: Text("Provided by ${Platform.operatingSystem}, not all apps respect this setting"),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SystemProxyScreen()),
+                  );
+                }),
+          const Divider(),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: Text(
+              "About",
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
+          ),
           ListTile(
             title: const Text("About"),
             subtitle: const Text("AnyPortal"),

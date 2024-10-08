@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../utils/global.dart';
 import '../../../utils/platform_launch_at_login.dart';
 import '../../../utils/prefs.dart';
+import '../../../widgets/popup/text_input.dart';
 
 class GeneralScreen extends StatefulWidget {
   const GeneralScreen({
@@ -20,6 +21,9 @@ class _GeneralScreenState extends State<GeneralScreen> {
   bool _connectAtLaunch = prefs.getBool('app.connectAtLaunch')!;
   bool _runElevated = prefs.getBool('app.runElevated')!;
   final String _elevatedUser = Platform.isWindows ? "Administrator" : "root";
+  int _socksPort = prefs.getInt('app.socks.port')!;
+  int _httpPort = prefs.getInt('app.http.port')!;
+  String _serverAddress = prefs.getString('app.server.address')!;
 
   @override
   void initState() {
@@ -130,6 +134,69 @@ class _GeneralScreenState extends State<GeneralScreen> {
             });
           },
         ),
+      ),
+      Container(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        child: Text(
+          "Advanced",
+          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+        ),
+      ),
+      ListTile(
+        title: const Text('Socks address'),
+        subtitle: Text(_serverAddress),
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (context) => TextInputPopup(
+                title: 'Socks address',
+                initialValue: _serverAddress,
+                onSaved: (String value) {
+                  prefs.setString('app.server.address', _serverAddress);
+                  setState(() {
+                    _serverAddress = value;
+                  });
+                }),
+          );
+        },
+      ),
+      ListTile(
+        title: const Text('Socks port'),
+        subtitle: Text(_socksPort.toString()),
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (context) => TextInputPopup(
+                title: 'Socks port',
+                initialValue: _socksPort.toString(),
+                onSaved: (String value) {
+                  final socksPort = int.parse(value);
+                  prefs.setInt('app.socks.port', socksPort);
+                  setState(() {
+                    _socksPort = socksPort;
+                  });
+                }),
+          );
+        },
+      ),
+      ListTile(
+        title: const Text('HTTP port'),
+        subtitle: Text(_httpPort.toString()),
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (context) => TextInputPopup(
+                title: 'HTTP port',
+                initialValue: _httpPort.toString(),
+                onSaved: (String value) {
+                  final httpPort = int.parse(value);
+                  prefs.setInt('app.http.port', httpPort);
+                  setState(() {
+                    _httpPort = httpPort;
+                  });
+                }),
+          );
+        },
       ),
     ];
 

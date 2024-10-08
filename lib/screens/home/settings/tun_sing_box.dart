@@ -10,7 +10,6 @@ import '../../../utils/platform_file_mananger.dart';
 import '../../../utils/prefs.dart';
 import '../../../utils/vpn_manager.dart';
 import '../../../widgets/popup/radio_list_selection.dart';
-import '../../../widgets/popup/text_input.dart';
 
 class TunSingBoxScreen extends StatefulWidget {
   const TunSingBoxScreen({
@@ -27,7 +26,6 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
   LogLevel _logLevel = LogLevel.values[prefs.getInt('tun.inject.log.level')!];
 
   bool _injectSocks = prefs.getBool('tun.inject.socks')!;
-  int _socksPort = prefs.getInt('inject.socks.port')!;
   bool _injectExcludeCorePath = prefs.getBool('tun.inject.excludeCorePath')!;
 
   @override
@@ -39,27 +37,35 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String injectSocksAddress = prefs.getString('app.server.address')!;
+    if (injectSocksAddress == "0.0.0.0") {
+      injectSocksAddress = "127.0.0.1";
+    }
     final fields = [
       ListTile(
         title: const Text("Enable tun"),
-        subtitle: const Text("""Enable tun2socks so a socks proxy works like a VPN
+        subtitle:
+            const Text("""Enable tun2socks so a socks proxy works like a VPN
 Requires elevation
 """),
         trailing: Switch(
           value: _tun,
-          onChanged: (value) {
-            prefs.setBool('tun', value);
+          onChanged: (shouldEnable) {
             setState(() {
-              _tun = value;
+              _tun = shouldEnable;
             });
-            trayMenu.updateContextMenu();
-            if (vPNMan.isCoreActiveRecord.isActive) {
-              if (value) {
-                vPNMan.startTun();
-              } else {
-                vPNMan.stopTun();
+            prefs.setBool('tun', shouldEnable).then((_){
+              trayMenu.updateContextMenu();
+            });
+            vPNMan.getIsCoreActive().then((isCoreActive) {
+              if (isCoreActive) {
+                if (shouldEnable) {
+                  vPNMan.startTun();
+                } else {
+                  vPNMan.stopTun();
+                }
               }
-            }
+            });
           },
         ),
       ),
@@ -115,8 +121,8 @@ Requires elevation
       ),
       ListTile(
         title: const Text("Inject socks outbound"),
-        subtitle: const Text(
-            "inject a socks outbound"),
+        subtitle:
+            Text("$injectSocksAddress:${prefs.getInt('app.socks.port')!}"),
         trailing: Switch(
           value: _injectSocks,
           onChanged: (value) {
@@ -126,26 +132,6 @@ Requires elevation
             });
           },
         ),
-      ),
-      ListTile(
-        title: const Text('Port'),
-        subtitle: Text(_socksPort.toString()),
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (context) => TextInputPopup(
-                title: 'Socks port',
-                initialValue: _socksPort.toString(),
-                onSaved: (String value) {
-                  final socksPort = int.parse(value);
-                  prefs.setInt('inject.socks.port', socksPort);
-                  setState(() {
-                    _socksPort = socksPort;
-                  });
-                }),
-          );
-        },
-        enabled: _injectSocks,
       ),
       const Divider(),
       Container(

@@ -23,7 +23,7 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
   LogLevel _logLevel = LogLevel.values[prefs.getInt('inject.log.level')!];
 
   bool _injectSocks = prefs.getBool('inject.socks')!;
-  int _socksPort = prefs.getInt('inject.socks.port')!;
+  bool _injectHttp = prefs.getBool('inject.http')!;
 
   bool _injectSendThrough = prefs.getBool('inject.sendThrough')!;
   String _bindingIp = prefs.getString('inject.sendThrough.bindingIp')!;
@@ -128,8 +128,8 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
       ),
       ListTile(
         title: const Text("Inject socks inbound"),
-        subtitle: const Text(
-            "inject a socks inbound"),
+        subtitle: Text(
+            "${prefs.getString('app.server.address')!}:${prefs.getInt('app.socks.port')!}"),
         trailing: Switch(
           value: _injectSocks,
           onChanged: (value) {
@@ -141,24 +141,18 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
         ),
       ),
       ListTile(
-        title: const Text('Port'),
-        subtitle: Text(_socksPort.toString()),
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (context) => TextInputPopup(
-                title: 'Socks port',
-                initialValue: _socksPort.toString(),
-                onSaved: (String value) {
-                  final socksPort = int.parse(value);
-                  prefs.setInt('inject.socks.port', socksPort);
-                  setState(() {
-                    _socksPort = socksPort;
-                  });
-                }),
-          );
-        },
-        enabled: _injectSocks,
+        title: const Text("Inject http inbound"),
+        subtitle: Text(
+            "${prefs.getString('app.server.address')!}:${prefs.getInt('app.http.port')!}"),
+        trailing: Switch(
+          value: _injectHttp,
+          onChanged: (value) {
+            prefs.setBool('inject.http', value);
+            setState(() {
+              _injectHttp = value;
+            });
+          },
+        ),
       ),
       const Divider(),
       Container(

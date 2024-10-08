@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:anyportal/utils/global.dart';
+import 'package:anyportal/utils/tray_menu.dart';
 import 'package:anyportal/utils/vpn_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -205,24 +206,36 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
         // SystemChannels.platform.invokeMethod('SystemNavigator.pop');
         exit(0);
       case 'toggle_all':
-        final shouldConnect = !menuItem.checked!;
-        menuItem.checked = shouldConnect;
-        if (shouldConnect) {
+        final shouldEnable = !menuItem.checked!;
+        menuItem.checked = shouldEnable;
+        if (shouldEnable) {
           vPNMan.start();
         } else {
           vPNMan.stop();
         }
       case 'toggle_tun':
-        final shouldTun = !menuItem.checked!;
-        menuItem.checked = shouldTun;
-        await prefs.setBool("tun", shouldTun);
-        if (vPNMan.isCoreActiveRecord.isActive) {
-          if (shouldTun) {
+        final shouldEnable = !menuItem.checked!;
+        menuItem.checked = shouldEnable;
+        await prefs.setBool("tun", shouldEnable);
+        if (await vPNMan.getIsCoreActive()) {
+          if (shouldEnable) {
             await vPNMan.startTun();
           } else {
             await vPNMan.stopTun();
           }
         }
+      case 'toggle_system_proxy':
+        final shouldEnable = !menuItem.checked!;
+        menuItem.checked = shouldEnable;
+        await prefs.setBool("systemProxy", shouldEnable);
+        if (await vPNMan.getIsCoreActive()) {
+          if (shouldEnable) {
+            await vPNMan.startSystemProxy();
+          } else {
+            await vPNMan.stopSystemProxy();
+          }
+        }
+        trayMenu.updateContextMenu();
     }
   }
 

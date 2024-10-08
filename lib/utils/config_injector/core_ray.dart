@@ -17,7 +17,7 @@ Future<Map<String, dynamic>> getInjectedConfig(Map<String, dynamic> cfg) async {
       LogLevel.values[prefs.getInt('inject.log.level')!];
   final apiPort = prefs.getInt('inject.api.port')!;
   final injectSocks = prefs.getBool('inject.socks')!;
-  final injectSocksPort = prefs.getInt('inject.socks.port')!;
+  final injectSocksPort = prefs.getInt('app.socks.port')!;
 
   final sendThroughBindingStratagy = SendThroughBindingStratagy.values[
       prefs.getInt('inject.sendThrough.bindingStratagy')!];

@@ -12,7 +12,13 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
   final injectLog = prefs.getBool('tun.inject.log')!;
   final logLevel = LogLevel.values[prefs.getInt('tun.inject.log.level')!];
   final injectSocks = prefs.getBool('tun.inject.socks')!;
-  final injectSocksPort = prefs.getInt('inject.socks.port')!;
+  final injectHttp = prefs.getBool('tun.inject.http')!;
+  String injectServerAddress = prefs.getString('app.server.address')!;
+  if (injectServerAddress == "0.0.0.0") {
+    injectServerAddress = "127.0.0.1";
+  }
+  final injectSocksPort = prefs.getInt('app.socks.port')!;
+  final injectHttpPort = prefs.getInt('app.http.port')!;
   final injectExcludeCore = prefs.getBool('tun.inject.excludeCorePath')!;
   final corePath = vPNMan.corePath!;
 
@@ -30,11 +36,20 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
     };
   }
 
+  if (injectHttp) {
+    cfg["outbounds"].insert(0, {
+      "type": "http",
+      "tag": "ot_http",
+      "server": injectServerAddress,
+      "server_port": injectHttpPort
+    });
+  }
+
   if (injectSocks) {
     cfg["outbounds"].insert(0, {
       "type": "socks",
       "tag": "ot_socks",
-      "server": "127.0.0.1",
+      "server": injectServerAddress,
       "server_port": injectSocksPort
     });
   }

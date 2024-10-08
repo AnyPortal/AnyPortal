@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:tray_manager/tray_manager.dart';
 
+import 'platform_system_proxy_user.dart';
 import 'prefs.dart';
 import 'vpn_manager.dart';
 
@@ -36,22 +37,24 @@ class TrayMenuManager {
   }
 
   updateContextMenu() async {
-    if (Platform.isAndroid || Platform.isIOS){
+    if (Platform.isAndroid || Platform.isIOS) {
       return;
     }
+    final systemProxyEnabled = await platformSystemProxyUser.isEnabled();
     menu = Menu(
       items: [
         MenuItem.checkbox(
           key: 'toggle_all',
           label: 'Connect',
-          checked: vPNMan.isCoreActiveRecord.isActive,
+          checked: await vPNMan.getIsCoreActive(),
         ),
         MenuItem.separator(),
-        // MenuItem.checkbox(
-        //   key: 'toggle_system_proxy',
-        //   label: 'System proxy',
-        //   checked: isSystemProxy,
-        // ),
+        MenuItem.checkbox(
+          disabled: systemProxyEnabled == null,
+          key: 'toggle_system_proxy',
+          label: 'System proxy',
+          checked: systemProxyEnabled,
+        ),
         MenuItem.checkbox(
           key: 'toggle_tun',
           label: 'Tun',

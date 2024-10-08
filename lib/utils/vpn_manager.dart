@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:anyportal/models/core.dart';
+import 'package:anyportal/utils/platform_system_proxy_user.dart';
 import 'package:anyportal/utils/tray_menu.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter/services.dart';
+import 'package:tuple/tuple.dart';
 
 import 'config_injector/core_ray.dart';
 import 'config_injector/tun_sing_box.dart';
@@ -40,10 +42,27 @@ abstract class VPNManager with ChangeNotifier {
   bool isTunActive = false;
   bool isExpectingActive = false;
 
-  Future<void> _startAll();
-  Future<void> _stopAll();
+  Future<void> startAll();
+  Future<void> stopAll();
+  Future<void> startCore();
+  Future<void> stopCore();
   Future<void> startTun();
   Future<void> stopTun();
+
+  startSystemProxy() async {
+    String serverAddress = prefs.getString('app.server.address')!;
+    if (serverAddress == "0.0.0.0") {
+      serverAddress = "127.0.0.1";
+    }
+    await platformSystemProxyUser.enable({
+      'socks': Tuple2(serverAddress, prefs.getInt("app.socks.port")!),
+      'http': Tuple2(serverAddress, prefs.getInt("app.http.port")!),
+    });
+  }
+
+  stopSystemProxy() async {
+    await platformSystemProxyUser.disable();
+  }
 
   Future<Null>? delayedTogglingChecker;
 
@@ -120,7 +139,7 @@ abstract class VPNManager with ChangeNotifier {
     await File(p.join(folder.path, 'log', 'core.log')).writeAsString("");
 
     /// start
-    await _startAll();
+    await startAll();
   }
 
   Future<void> stop() async {
@@ -136,7 +155,7 @@ abstract class VPNManager with ChangeNotifier {
     }
 
     /// stop
-    await _stopAll();
+    await stopAll();
   }
 
   int? _selectedProfileId;
@@ -338,7 +357,8 @@ class VPNManagerExec extends VPNManager {
     return false;
   }
 
-  _startCore() async {
+  @override
+  startCore() async {
     processCore = await Process.start(
       corePath!,
       _coreArgList,
@@ -347,7 +367,8 @@ class VPNManagerExec extends VPNManager {
     );
   }
 
-  _stopCore() async {
+  @override
+  stopCore() async {
     if (processCore != null) {
       processCore!.kill();
       processCore = null;
@@ -382,17 +403,19 @@ class VPNManagerExec extends VPNManager {
   }
 
   @override
-  _startAll() async {
-    await _startCore();
+  startAll() async {
+    await startCore();
     await startTun();
+    await startSystemProxy();
     await updateIsCoreActive();
     return;
   }
 
   @override
-  _stopAll() async {
+  stopAll() async {
+    await stopSystemProxy();
     await stopTun();
-    await _stopCore();
+    await stopCore();
     await updateIsCoreActive();
     return;
   }
@@ -440,12 +463,12 @@ class VPNManagerMC extends VPNManager {
   }
 
   @override
-  _startAll() async {
+  startAll() async {
     await platform.invokeMethod('vpn.startAll');
   }
 
   @override
-  _stopAll() async {
+  stopAll() async {
     await platform.invokeMethod('vpn.stopAll');
   }
 
@@ -457,6 +480,16 @@ class VPNManagerMC extends VPNManager {
   @override
   stopTun() async {
     await platform.invokeMethod('vpn.stopTun');
+  }
+
+  @override
+  startCore() async {
+    await platform.invokeMethod('vpn.startCore');
+  }
+
+  @override
+  stopCore() async {
+    await platform.invokeMethod('vpn.stopCore');
   }
 }
 

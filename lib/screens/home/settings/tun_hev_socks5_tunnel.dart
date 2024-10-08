@@ -21,8 +21,6 @@ class TunHevSocks5TunnelScreen extends StatefulWidget {
 class _TunHevSocks5TunnelScreenState extends State<TunHevSocks5TunnelScreen> {
   bool _tun = prefs.getBool('tun')!;
   bool _perAppProxy = prefs.getBool('tun.perAppProxy')!;
-  String _socksAddress = prefs.getString('tun.socks.address')!;
-  int _socksPort = prefs.getInt('inject.socks.port')!;
   String _socksUserName = prefs.getString('tun.socks.username')!;
   String _socksPassword = prefs.getString('tun.socks.password')!;
   String _dnsIpv4 = prefs.getString('tun.dns.ipv4')!;
@@ -50,12 +48,18 @@ class _TunHevSocks5TunnelScreenState extends State<TunHevSocks5TunnelScreen> {
     final passwordLine =
         _socksPassword == "" ? "" : "password: $_socksPassword";
 
+    final socksPort = prefs.getInt('app.socks.port')!;
+    String socksAddress = prefs.getString('app.server.address')!;
+    if (socksAddress == "0.0.0.0") {
+      socksAddress = "127.0.0.1";
+    }
+
     await file.writeAsString("""tunnel:
   mtu: 8500
 
 socks5:
-  port: $_socksPort
-  address: $_socksAddress
+  port: $socksPort
+  address: $socksAddress
   udp: 'udp'
   $usernameLine
   $passwordLine
@@ -78,7 +82,7 @@ misc:
             setState(() {
               _tun = value;
             });
-            if (vPNMan.isCoreActiveRecord.isActive) {
+            if (vPNMan.isCoreActive) {
               if (value) {
                 vPNMan.startTun();
               } else {
@@ -115,42 +119,6 @@ misc:
           "Advanced",
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
-      ),
-      ListTile(
-        title: const Text('Socks address'),
-        subtitle: Text(_socksAddress),
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (context) => TextInputPopup(
-                title: 'Socks address',
-                initialValue: _socksAddress,
-                onSaved: (value) {
-                  prefs.setString('tun.socks.address', value);
-                  setState(() {
-                    _socksAddress = value;
-                  });
-                }),
-          );
-        },
-      ),
-      ListTile(
-        title: const Text('Socks port'),
-        subtitle: Text("$_socksPort"),
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (context) => TextInputPopup(
-                title: 'Socks Port',
-                initialValue: "$_socksPort",
-                onSaved: (value) {
-                  prefs.setInt('inject.socks.port', int.parse(value));
-                  setState(() {
-                    _socksPort = int.parse(value);
-                  });
-                }),
-          );
-        },
       ),
       ListTile(
         title: const Text('Socks user name'),
