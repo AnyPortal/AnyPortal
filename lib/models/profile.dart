@@ -5,7 +5,7 @@ import 'package:anyportal/models/profile_group.dart';
 class Profile extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
-  IntColumn get coreTypeId => integer().references(CoreType, #id)();
+  IntColumn get coreTypeId => integer().references(CoreType, #id, onDelete: KeyAction.cascade)();
   TextColumn get coreCfg => text().withDefault(const Constant("{}"))();
   DateTimeColumn get updatedAt => dateTime()();
   IntColumn get type => integer().map(const ProfileTypeConverter())();
@@ -15,7 +15,7 @@ class Profile extends Table {
 
 // Separate table for local profiles (no additional fields)
 class ProfileLocal extends Table {
-  IntColumn get profileId => integer().references(Profile, #id)();
+  IntColumn get profileId => integer().references(Profile, #id, onDelete: KeyAction.cascade)();
   
   @override
   Set<Column<Object>>? get primaryKey => {profileId};
@@ -23,7 +23,7 @@ class ProfileLocal extends Table {
 
 // Separate table for remote profiles
 class ProfileRemote extends Table {
-  IntColumn get profileId => integer().references(Profile, #id)();
+  IntColumn get profileId => integer().references(Profile, #id, onDelete: KeyAction.cascade)();
   TextColumn get url => text()();
   IntColumn get autoUpdateInterval => integer()();
 

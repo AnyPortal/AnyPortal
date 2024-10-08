@@ -10,14 +10,14 @@ class Asset extends Table {
 }
 
 class AssetLocal extends Table {
-  IntColumn get assetId => integer().references(Asset, #id)();
+  IntColumn get assetId => integer().references(Asset, #id, onDelete: KeyAction.cascade)();
 
   @override
   Set<Column<Object>>? get primaryKey => {assetId};
 }
 
 class AssetRemote extends Table {
-  IntColumn get assetId => integer().references(Asset, #id)();
+  IntColumn get assetId => integer().references(Asset, #id, onDelete: KeyAction.cascade)();
   /// github://owner/repo/asset.ext/sub/path
   TextColumn get url => text()();
   TextColumn get meta => text().withDefault(const Constant("{}"))();
