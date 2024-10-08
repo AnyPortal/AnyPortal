@@ -23,9 +23,9 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
   bool _tun = prefs.getBool('tun')!;
   bool _injectLog = prefs.getBool('tun.inject.log')!;
   LogLevel _logLevel = LogLevel.values[prefs.getInt('tun.inject.log.level')!];
-
   bool _injectSocks = prefs.getBool('tun.inject.socks')!;
   bool _injectExcludeCorePath = prefs.getBool('tun.inject.excludeCorePath')!;
+  final String _elevatedUser = Platform.isWindows ? "Administrator" : "root";
 
   @override
   void initState() {
@@ -42,6 +42,7 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
     }
     final fields = [
       ListTile(
+        enabled: global.isElevated,
         title: const Text("Enable tun"),
         subtitle:
             const Text("""Enable tun2socks so a socks proxy works like a VPN
@@ -50,6 +51,16 @@ Requires elevation
         trailing: Switch(
           value: _tun,
           onChanged: (shouldEnable) {
+            if (!global.isElevated) {
+                final snackBar = SnackBar(
+                  content: Text(
+                      "You need to be $_elevatedUser to modify this setting"),
+                );
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
+                return;
+              }
             setState(() {
               _tun = shouldEnable;
             });

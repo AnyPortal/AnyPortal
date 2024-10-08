@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:tray_manager/tray_manager.dart';
 
+import 'global.dart';
 import 'platform_system_proxy_user.dart';
 import 'prefs.dart';
 import 'vpn_manager.dart';
@@ -56,6 +57,7 @@ class TrayMenuManager {
           checked: systemProxyEnabled,
         ),
         MenuItem.checkbox(
+          disabled: global.isElevated == false,
           key: 'toggle_tun',
           label: 'Tun',
           checked: prefs.getBool("tun"),
