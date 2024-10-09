@@ -217,7 +217,7 @@ tProxyConfInit() async {
     'conf',
     'tun.sing_box.gen.json',
   ));
-  if (!file.existsSync()) {
+  if (!await file.exists()) {
     await file.create(recursive: true);
     _TunSingBoxScreenState().writeTProxyConf();
   }

@@ -10,15 +10,26 @@ import 'global.dart';
 class LoggerManager {
   late Logger logger;
 
-  void init() {
+  void init() async {
+    final file = File(
+      p.join(
+        global.applicationSupportDirectory.path,
+        "log",
+        "app.log",
+      ),
+    );
+    if (!await file.exists()) {
+      await file.create(recursive: true);
+    }
+    file.create(recursive: true);
     logger = Logger(
       // printer: PrettyPrinter(),
       output: MultiOutput(
         [
           ConsoleOutput(),
           FileOutput(
-              file: File(p.join(
-                  global.applicationSupportDirectory.path, "log", "app.log"))),
+            file: file,
+          ),
         ],
       ),
       level: kDebugMode ? Level.all : Level.warning,

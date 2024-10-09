@@ -57,7 +57,7 @@ class RayToggleState extends State<RayToggle> {
       } else {
         await vPNMan.start();
       }
-    } on NoCorePathException catch (e) {
+    } on ExceptionInvalidCorePath catch (e) {
       err = e;
       if (mounted) {
         Navigator.push(
@@ -69,7 +69,7 @@ class RayToggleState extends State<RayToggle> {
         );
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
-    } on NoSelectedProfileException catch (e) {
+    } on ExceptionNoSelectedProfile catch (e) {
       err = e;
       widget.setHighlightSelectProfile();
     } on Exception catch (e) {

@@ -30,6 +30,9 @@ class DatabaseManager {
   void init() {
     final dbFolder = global.applicationDocumentsDirectory;
     final file = File(p.join(dbFolder.path, "AnyPortal", "db.sqlite"));
+    if (!file.existsSync()) {
+      file.createSync(recursive: true);
+    }
     _db = Database(_openConnection(file));
 
     _completer.complete(); // Signal that initialization is complete

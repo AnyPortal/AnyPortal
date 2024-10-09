@@ -19,22 +19,24 @@ import 'platform_process.dart';
 import 'prefs.dart';
 import 'db/update_profile_with_group_remote.dart';
 
-class NoCorePathException implements Exception {
+class ExceptionInvalidCorePath implements Exception {
   String message;
-  NoCorePathException(this.message);
+  ExceptionInvalidCorePath(this.message);
 }
 
-class NoSelectedProfileException implements Exception {
+class ExceptionNoSelectedProfile implements Exception {
   String message;
-  NoSelectedProfileException(this.message);
+  ExceptionNoSelectedProfile(this.message);
 }
 
-class InvalidSelectedProfileException implements Exception {
+class ExceptionInvalidSelectedProfile implements Exception {
   String message;
-  InvalidSelectedProfileException(this.message);
+  ExceptionInvalidSelectedProfile(this.message);
 }
 
 abstract class VPNManager with ChangeNotifier {
+  bool inited = false;
+
   bool isToggling = false;
   bool isCoreActive = false;
   bool isTunActive = false;
@@ -48,14 +50,16 @@ abstract class VPNManager with ChangeNotifier {
   Future<void> stopTun();
 
   startSystemProxy() async {
-    String serverAddress = prefs.getString('app.server.address')!;
-    if (serverAddress == "0.0.0.0") {
-      serverAddress = "127.0.0.1";
+    if (prefs.getBool("systemProxy")!) {
+      String serverAddress = prefs.getString('app.server.address')!;
+      if (serverAddress == "0.0.0.0") {
+        serverAddress = "127.0.0.1";
+      }
+      await platformSystemProxyUser.enable({
+        'socks': Tuple2(serverAddress, prefs.getInt("app.socks.port")!),
+        'http': Tuple2(serverAddress, prefs.getInt("app.http.port")!),
+      });
     }
-    await platformSystemProxyUser.enable({
-      'socks': Tuple2(serverAddress, prefs.getInt("app.socks.port")!),
-      'http': Tuple2(serverAddress, prefs.getInt("app.http.port")!),
-    });
   }
 
   stopSystemProxy() async {
@@ -186,13 +190,13 @@ abstract class VPNManager with ChangeNotifier {
     // get selectedProfile
     _selectedProfileId = prefs.getInt('app.selectedProfileId');
     if (_selectedProfileId == null) {
-      throw NoSelectedProfileException("Please select a profile first.");
+      throw ExceptionNoSelectedProfile("Please select a profile first.");
     }
     _selectedProfile = await (db.select(db.profile)
           ..where((p) => p.id.equals(_selectedProfileId!)))
         .getSingleOrNull();
     if (_selectedProfile == null) {
-      throw InvalidSelectedProfileException("Please select a profile first.");
+      throw ExceptionInvalidSelectedProfile("Please select a profile first.");
     }
 
     // check update
@@ -224,14 +228,15 @@ abstract class VPNManager with ChangeNotifier {
           ..where(db.core.coreTypeId.equals(coreTypeId)))
         .getSingleOrNull();
     if (core == null) {
-      throw Exception("No core of type specified by the profile is selected.");
+      throw ExceptionInvalidCorePath(
+          "No core of type specified by the profile is selected.");
     }
     _isExec = core.read(db.core.isExec)!;
     if (_isExec) {
       await prefs.setBool("core.useEmbedded", false);
       corePath = core.read(db.asset.path);
       if (corePath == null) {
-        throw Exception("Core path is null.");
+        throw ExceptionInvalidCorePath("Core path is null.");
       } else {
         prefs.setString('core.path', corePath!);
       }
@@ -242,10 +247,6 @@ abstract class VPNManager with ChangeNotifier {
 
     /// tun
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-      if (!global.isElevated) {
-        return;
-      }
-
       final coreTypeId = CoreTypeDefault.singBox.index;
       final core = await (db.select(db.coreTypeSelected).join([
         leftOuterJoin(
@@ -258,18 +259,18 @@ abstract class VPNManager with ChangeNotifier {
       ])
             ..where(db.core.coreTypeId.equals(coreTypeId)))
           .getSingleOrNull();
-      if (core == null) {
-        throw Exception("Tun needs a sing-box core.");
-      }
-      _isExec = core.read(db.core.isExec)!;
-      if (_isExec) {
-        _tunSingBoxCorePath = core.read(db.asset.path);
-        if (_tunSingBoxCorePath == null) {
-          throw Exception("sing-box path is null.");
+      if (prefs.getBool("tun")!) {
+        if (core == null) {
+          throw Exception("Tun needs a sing-box core.");
         } else {
-          prefs.setString('tun.singBox.core.path', _tunSingBoxCorePath!);
+          _tunSingBoxCorePath = core.read(db.asset.path);
+          if (_tunSingBoxCorePath == null) {
+            throw Exception("sing-box path is null.");
+          } else {
+            prefs.setString('tun.singBox.core.path', _tunSingBoxCorePath!);
+          }
+          _tunSingBoxWorkingDir ??= File(_tunSingBoxCorePath!).parent.path;
         }
-        _tunSingBoxWorkingDir ??= File(_tunSingBoxCorePath!).parent.path;
       }
 
       // gen config.json
@@ -306,6 +307,8 @@ abstract class VPNManager with ChangeNotifier {
 
     // get core args
     _coreArgList = ["run", "-c", config.path];
+
+    inited = true;
   }
 }
 
@@ -355,6 +358,10 @@ class VPNManagerExec extends VPNManager {
 
   @override
   startCore() async {
+    if (!inited) {
+      await init();
+    }
+    assert(inited);
     processCore = await Process.start(
       corePath!,
       _coreArgList,

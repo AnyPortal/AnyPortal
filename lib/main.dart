@@ -35,7 +35,9 @@ void main(List<String> args) async {
   DatabaseManager().init();
 
   VPNManManager().init();
-  await vPNMan.init();
+  try {
+    await vPNMan.init();
+  } catch (_) {}
 
   ///prefs
   CoreDataNotifierManager().init();
@@ -81,12 +83,14 @@ void main(List<String> args) async {
   await SystemTheme.accentColor.load();
 
   runApp(const AnyPortal());
-  /// find active core and tun
-  await Future.wait([
-    vPNMan.updateDetachedCore(),
-    vPNMan.updateDetachedTun(),
-  ]);
 
+  /// find active core and tun
+  try {
+    await Future.wait([
+      vPNMan.updateDetachedCore(),
+      vPNMan.updateDetachedTun(),
+    ]);
+  } catch (_) {}
 
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     /// connect at launch

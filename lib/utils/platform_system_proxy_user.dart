@@ -46,7 +46,8 @@ class PlatformSystemProxyUserWindows extends PlatformSystemProxyUser {
 // macOS-specific implementation
 class PlatformSystemProxyUserMacOS extends PlatformSystemProxyUser {
   final String networkService =
-      'Wi-Fi'; // Change if you use Ethernet or others.
+  /// todo: auto detect
+      'Ethernet'; // Change if you use Ethernet or others.
 
   @override
   Future<bool?> isEnabled() async {
