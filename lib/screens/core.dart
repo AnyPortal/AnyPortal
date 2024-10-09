@@ -33,6 +33,7 @@ class _CoreScreenState extends State<CoreScreen> {
   List<TypedResult> _assets = [];
   int _coreTypeId = CoreTypeDefault.v2ray.index;
   bool _coreIsExec = true;
+  String _workingDir = "";
   int? _assetId;
   String _args = "";
   String _envs = "{}";
@@ -70,6 +71,7 @@ class _CoreScreenState extends State<CoreScreen> {
       _coreIsExec = widget.core!.read(db.core.isExec)!;
       _coreTypeId = widget.core!.read(db.core.coreTypeId)!;
       _envs = widget.core!.read(db.core.envs)!;
+      _workingDir = widget.core!.read(db.core.workingDir)!;
       if (_coreIsExec) {
         _args = widget.core!.read(db.coreExec.args)!;
         _assetId = widget.core!.read(db.coreExec.assetId)!;
@@ -81,6 +83,7 @@ class _CoreScreenState extends State<CoreScreen> {
         _coreIsExec = _coreIsExec;
         _coreTypeId = _coreTypeId;
         _envsController.text = _envs;
+        _workingDirController.text = _workingDir;
         _argsController.text = _args;
         _assetId = _assetId;
       });
