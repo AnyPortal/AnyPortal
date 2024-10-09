@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../utils/global.dart';
 import '../../../utils/platform_launch_at_login.dart';
 import '../../../utils/prefs.dart';
+import '../../../utils/theme_manager.dart';
 import '../../../widgets/popup/text_input.dart';
 
 class GeneralScreen extends StatefulWidget {
@@ -24,6 +25,8 @@ class _GeneralScreenState extends State<GeneralScreen> {
   int _socksPort = prefs.getInt('app.socks.port')!;
   int _httpPort = prefs.getInt('app.http.port')!;
   String _serverAddress = prefs.getString('app.server.address')!;
+  bool _brightnessIsDark = prefs.getBool('app.brightness.dark')!;
+  bool _brightnessFollowSystem = prefs.getBool('app.brightness.followSystem')!;
 
   @override
   void initState() {
@@ -102,8 +105,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
               if (_launchAtLogin) {
                 bool ok = false;
                 await platformLaunchAtLogin.disable();
-                ok = await platformLaunchAtLogin.enable(
-                    isElevated: value);
+                ok = await platformLaunchAtLogin.enable(isElevated: value);
                 if (!ok) {
                   const snackBar = SnackBar(
                     content:
@@ -132,6 +134,42 @@ class _GeneralScreenState extends State<GeneralScreen> {
             setState(() {
               _connectAtLaunch = value;
             });
+          },
+        ),
+      ),
+      Container(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        child: Text(
+          "Theme settings",
+          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+        ),
+      ),
+      ListTile(
+        title: const Text("Follow system brightness"),
+        subtitle: const Text("Auto change brightness"),
+        trailing: Switch(
+          value: _brightnessFollowSystem,
+          onChanged: (value) async {
+            prefs.setBool('app.brightness.followSystem', value);
+            setState(() {
+              _brightnessFollowSystem = value;
+            });
+            themeManager.updateBrightness();
+          },
+        ),
+      ),
+      ListTile(
+        enabled: _brightnessFollowSystem == false,
+        title: const Text("Dark theme"),
+        subtitle: const Text("Use dark theme"),
+        trailing: Switch(
+          value: _brightnessIsDark,
+          onChanged: _brightnessFollowSystem == true ? null : (value) async {
+            prefs.setBool('app.brightness.dark', value);
+            setState(() {
+              _brightnessIsDark = value;
+            });
+            themeManager.updateBrightness();
           },
         ),
       ),

@@ -4,8 +4,6 @@ import 'package:anyportal/utils/global.dart';
 import 'package:anyportal/utils/tray_menu.dart';
 import 'package:anyportal/utils/vpn_manager.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:tray_manager/tray_manager.dart';
@@ -13,6 +11,7 @@ import 'package:window_manager/window_manager.dart';
 
 import '../utils/platform_system_proxy_user.dart';
 import '../utils/prefs.dart';
+import '../utils/theme_manager.dart';
 import 'home/logs.dart';
 import 'home/dashboard.dart';
 import 'home/profiles.dart';
@@ -375,11 +374,6 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    var dispatcher = SchedulerBinding.instance.platformDispatcher;
-    Window.setEffect(
-      effect: WindowEffect.mica,
-      dark: dispatcher.platformBrightness == Brightness.dark,
-    );
+    themeManager.updateBrightness();
   }
 }

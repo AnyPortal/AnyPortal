@@ -72,7 +72,7 @@
 
 - ^1. Require `api28` variant, not available for play store `apilatest` version
 - ^2. Require root / [Shizuku](https://github.com/RikkaApps/Shizuku)
-- *. iOS requires an apple developer license to even debug an app that uses Network Extension. Dev progress currently blocked and the app wound serve little purpose right now without tun.
+- *. iOS requires an apple developer license to even debug an app that uses Network Extension. Dev progress currently blocked and the app would serve little purpose right now without tun.
 
 - 💤 Not Planned: No plans for implementation or discontinued
 - 🔜 Planned: Planned for future development

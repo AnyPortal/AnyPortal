@@ -111,84 +111,91 @@ void main(List<String> args) async {
   }
 }
 
+final darkNotifier = ValueNotifier<bool>(false);
+
 class AnyPortal extends StatelessWidget {
   const AnyPortal({super.key});
+
+  ThemeData getPlatformThemeData() {
+    if (Platform.isWindows || Platform.isMacOS) {
+      return ThemeData(
+        colorSchemeSeed: SystemTheme.accentColor.accent,
+        useMaterial3: true,
+        scaffoldBackgroundColor: Colors.transparent,
+        cardTheme: const CardTheme(
+          color: Color.fromARGB(240, 255, 255, 255),
+          shadowColor: Color.fromARGB(172, 0, 0, 0),
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.transparent,
+        ),
+        navigationBarTheme: const NavigationBarThemeData(
+          backgroundColor: Colors.transparent,
+          indicatorColor: Color.fromARGB(240, 255, 255, 255),
+        ),
+        pageTransitionsTheme: const PageTransitionsTheme(builders: {
+          TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.linux: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+        }),
+      );
+    } else {
+      return ThemeData(
+        colorSchemeSeed: SystemTheme.accentColor.accent,
+        useMaterial3: true,
+      );
+    }
+  }
+
+  ThemeData getPlatformDarkThemeData() {
+    if (Platform.isWindows || Platform.isMacOS) {
+      return ThemeData(
+        brightness: Brightness.dark,
+        colorSchemeSeed: SystemTheme.accentColor.accent,
+        useMaterial3: true,
+        scaffoldBackgroundColor: Colors.transparent,
+        cardTheme: const CardTheme(
+          color: Color.fromARGB(16, 255, 255, 255),
+          shadowColor: Color.fromARGB(64, 0, 0, 0),
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.transparent,
+        ),
+        navigationBarTheme: const NavigationBarThemeData(
+          backgroundColor: Colors.transparent,
+          indicatorColor: Color.fromARGB(16, 255, 255, 255),
+        ),
+        pageTransitionsTheme: const PageTransitionsTheme(builders: {
+          TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.linux: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+        }),
+      );
+    } else {
+      return ThemeData(
+        brightness: Brightness.dark,
+        colorSchemeSeed: SystemTheme.accentColor.accent,
+        useMaterial3: true,
+      );
+    }
+  }
 
   /// This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    ThemeData getPlatformThemeData() {
-      if (Platform.isWindows || Platform.isMacOS) {
-        return ThemeData(
-          colorSchemeSeed: SystemTheme.accentColor.accent,
-          useMaterial3: true,
-          scaffoldBackgroundColor: Colors.transparent,
-          cardTheme: const CardTheme(
-            color: Color.fromARGB(240, 255, 255, 255),
-            shadowColor: Color.fromARGB(172, 0, 0, 0),
-          ),
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.transparent,
-          ),
-          navigationBarTheme: const NavigationBarThemeData(
-            backgroundColor: Colors.transparent,
-            indicatorColor: Color.fromARGB(240, 255, 255, 255),
-          ),
-          pageTransitionsTheme: const PageTransitionsTheme(builders: {
-            TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.linux: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-          }),
-        );
-      } else {
-        return ThemeData(
-          colorSchemeSeed: SystemTheme.accentColor.accent,
-          useMaterial3: true,
-        );
-      }
-    }
-
-    ThemeData getPlatformDarkThemeData() {
-      if (Platform.isWindows || Platform.isMacOS) {
-        return ThemeData(
-          brightness: Brightness.dark,
-          colorSchemeSeed: SystemTheme.accentColor.accent,
-          useMaterial3: true,
-          scaffoldBackgroundColor: Colors.transparent,
-          cardTheme: const CardTheme(
-            color: Color.fromARGB(16, 255, 255, 255),
-            shadowColor: Color.fromARGB(64, 0, 0, 0),
-          ),
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.transparent,
-          ),
-          navigationBarTheme: const NavigationBarThemeData(
-            backgroundColor: Colors.transparent,
-            indicatorColor: Color.fromARGB(16, 255, 255, 255),
-          ),
-          pageTransitionsTheme: const PageTransitionsTheme(builders: {
-            TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.linux: CupertinoPageTransitionsBuilder(),
-            TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-          }),
-        );
-      } else {
-        return ThemeData(
-          brightness: Brightness.dark,
-          colorSchemeSeed: SystemTheme.accentColor.accent,
-          useMaterial3: true,
-        );
-      }
-    }
-
-    return MaterialApp(
-      title: 'AnyPortal',
-      theme: getPlatformThemeData(),
-      darkTheme: getPlatformDarkThemeData(),
-      home: const HomePage(title: 'Flutter Demo Home Page'),
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-    );
+    return ValueListenableBuilder<bool>(
+        valueListenable: darkNotifier,
+        builder: (BuildContext context, bool isDark, Widget? child) {
+          return MaterialApp(
+            title: 'AnyPortal',
+            theme: getPlatformThemeData(),
+            darkTheme: getPlatformDarkThemeData(),
+            themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+            home: const HomePage(title: 'Flutter Demo Home Page'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          );
+        });
   }
 }
 
