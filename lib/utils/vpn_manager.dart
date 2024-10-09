@@ -157,7 +157,6 @@ abstract class VPNManager with ChangeNotifier {
   late bool _isExec;
   String? corePath;
   String? _workingDir;
-  String? _assetPath;
   late List<String> _coreArgList;
   Map<String, String>? _environment;
   late Map<String, dynamic> coreRawCfgMap;
@@ -239,14 +238,8 @@ abstract class VPNManager with ChangeNotifier {
       await prefs.setBool("core.useEmbedded", true);
     }
 
-    // get core asset
-    _assetPath = prefs.getString('core.assetPath') ?? "";
-    if (_assetPath != null) {
-      _environment = {
-        "v2ray.location.asset": _assetPath!,
-        "xray.location.asset": _assetPath!,
-      };
-    }
+    // get core env
+    _environment = jsonDecode(core.read(db.core.envs)!) as Map<String, String>;
 
     // get core args
     _coreArgList = ["run", "-c", config.path];

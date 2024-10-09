@@ -218,11 +218,8 @@ public class TProxyService extends VpnService {
         }
 
         /* asset location */
-        String assetPath = prefs.getString("flutter.core.assetPath", "");
-        if (assetPath.isEmpty()){
-            File assetFolder = new File(getFilesDir().getParent(), "files/asset");
-            assetPath = assetFolder.getAbsolutePath();
-        }
+        File assetFolder = new File(getFilesDir().getParent(), "files/asset");
+        String assetPath = assetFolder.getAbsolutePath();
         File config_file = new File(getFilesDir().getParent(), "files/conf/core.gen.json");
         
         /* core */
