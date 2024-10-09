@@ -156,7 +156,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
             setState(() {
               _brightnessFollowSystem = value;
             });
-            themeManager.updateBrightness();
+            themeManager.updateBrightness(notify: true);
           },
         ),
       ),
@@ -173,7 +173,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
                   setState(() {
                     _brightnessIsDark = value;
                   });
-                  themeManager.updateBrightness();
+                  themeManager.updateBrightness(notify: true);
                 },
         ),
       ),

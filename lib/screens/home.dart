@@ -380,8 +380,7 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    /// call updateBrightness here would cause loop
-    // themeManager.updateBrightness();
+    themeManager.updateBrightness();
     if (Platform.isWindows || Platform.isMacOS) {
       var isDark = themeManager.isDark;
       Window.setEffect(

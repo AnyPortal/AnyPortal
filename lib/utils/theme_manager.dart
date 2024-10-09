@@ -22,7 +22,7 @@ class ThemeManager with ChangeNotifier {
     _completer.complete(); // Signal that initialization is complete
   }
 
-  void updateBrightness() {
+  void updateBrightness({notify = false}) {
     var dispatcher = SchedulerBinding.instance.platformDispatcher;
     isDark = prefs.getBool('app.brightness.followSystem')!
         ? dispatcher.platformBrightness == Brightness.dark
@@ -33,8 +33,9 @@ class ThemeManager with ChangeNotifier {
     //   effect: WindowEffect.mica,
     //   dark: isDark,
     // );
-
-    notifyListeners();
+    if (notify){
+      notifyListeners();
+    }
   }
 }
 
