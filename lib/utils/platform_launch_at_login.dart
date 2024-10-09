@@ -71,7 +71,7 @@ class PlatformLaunchAtLoginGeneric extends PlatformLaunchAtLogin {
 
   @override
   Future<bool> disable() async {
-    return await launchAtStartup.enable();
+    return await launchAtStartup.disable();
   }
 }
 
