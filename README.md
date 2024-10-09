@@ -62,29 +62,29 @@
 
 ## Dev roadmap
 
-|              | Windows | Linux | macOS | Android | iOS |
-| ------------ | ------- | ----- | ----- | ------- | --- |
-| AnyPortal    | ✅       | ✅     | ✅     | ✅       | 🚧   |
-| core as exec | ✅       | ✅     | ✅     | 🚧^1     | 💤   |
-| core as lib  | 💤       | 💤     | 💤     | ✅       | 🧪   |
-| tun          | ✅       | 🧪     | 🧪     | ✅       | ❌*  |
-| system proxy | ✅       | 🧪     | 🧪     | 🚧^2     | 💤   |
+|                        | Windows | Linux | macOS | Android | iOS |
+| ---------------------- | ------- | ----- | ----- | ------- | --- |
+| AnyPortal              | 🟢       | 🟢     | 🟢     | 🟢       | 🟡   |
+| core as exec           | 🟢       | 🟢     | 🟢     | 🟡^1     | ⚫   |
+| core as lib            | ⚫       | ⚫     | ⚫     | 🟢       | 🟡   |
+| tun via root privilege | 🟢^2     | 🔵^3   | 🟢^4   | ⚫       | ⚫   |
+| tun via system vpn api | ⚫       | ⚫     | 🔴^5   | 🟢       | 🔴^5 |
+| system proxy           | 🟢       | 🔵     | 🟢     | 🟡^6     | ⚫   |
 
 - ^1. Require `api28` variant, not available for play store `apilatest` version
-- ^2. Require root / [Shizuku](https://github.com/RikkaApps/Shizuku)
-- *. iOS requires an apple developer license to even debug an app that uses Network Extension. Dev progress currently blocked and the app would serve little purpose right now without tun.
+- ^2. Require `Run as Administrator`, elevated user share configuration with original user
+- ^3. Require root, root DOES NOT share configuration with original user
+- ^4. Require root, root DOES NOT share configuration with original user. Move the app to Application folder and run `sudo /Applications/anyportal.app/Contents/MacOS/anyportal`.
+- ^5. Require an apple developer license to even debug an app that uses Network Extension. Dev progress currently blocked. The iOS app would serve little purpose right now without tun.
+- ^6. Require root / [Shizuku](https://github.com/RikkaApps/Shizuku)
 
-- 💤 Not Planned: No plans for implementation or discontinued
-- 🔜 Planned: Planned for future development
-- 🚧 In Progress: Partially implemented, but not fully functional yet
-- ✅ Working: Completed and functioning as expected
-- 🧪 Experimental: Under experimental implementation or testing
-- ❌ Not Working: Known issues, broken or currently non-functional
-<!-- - 🛠 Under Development: Actively being worked on -->
-<!-- - ⏳ Awaiting Review: Needs testing or review -->
-<!-- - 📝 Documenting: In the process of being documented -->
+- ⚫ Not Planned: impossible / no plans / discontinued
+- 🟡 Planned: planned / under development
+- 🔵 Experimental: experimental implementation / testing
+- 🟢 Working: functioning as expected
+- 🔴 Not Working: dev blocked / known issues / non-functional
 
-See planning [here](https://github.com/users/anyportal/projects/1/views/1). 
+See planning [here](https://github.com/users/anyportal/projects/1/views/1).
 
 ## Technical details for power users
 
