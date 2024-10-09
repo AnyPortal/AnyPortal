@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:anyportal/utils/global.dart';
 import 'package:anyportal/utils/logger.dart';
 import 'package:anyportal/utils/platform_elevation.dart';
+import 'package:anyportal/utils/theme_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
@@ -183,14 +184,14 @@ class AnyPortal extends StatelessWidget {
   /// This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<bool>(
-        valueListenable: darkNotifier,
-        builder: (BuildContext context, bool isDark, Widget? child) {
+    return ListenableBuilder(
+        listenable: themeManager,
+        builder: (BuildContext context, Widget? child) {
           return MaterialApp(
             title: 'AnyPortal',
             theme: getPlatformThemeData(),
             darkTheme: getPlatformDarkThemeData(),
-            themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+            themeMode: themeManager.isDark ? ThemeMode.dark : ThemeMode.light,
             home: const HomePage(title: 'Flutter Demo Home Page'),
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,

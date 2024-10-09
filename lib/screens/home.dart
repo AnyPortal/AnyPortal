@@ -4,6 +4,7 @@ import 'package:anyportal/utils/global.dart';
 import 'package:anyportal/utils/tray_menu.dart';
 import 'package:anyportal/utils/vpn_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:tray_manager/tray_manager.dart';
@@ -223,7 +224,8 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
                                   listenable: prefs,
                                   builder:
                                       (BuildContext context, Widget? child) {
-                                    bool systemProxyShouldEnable = prefs.getBool("systemProxy")!;
+                                    bool systemProxyShouldEnable =
+                                        prefs.getBool("systemProxy")!;
                                     return Switch(
                                       value: _systemProxyIsEnabled == null
                                           ? false
@@ -374,6 +376,12 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    themeManager.updateBrightness();
+    /// call updateBrightness here would cause loop
+    // themeManager.updateBrightness();
+    var isDark = themeManager.isDark;
+    Window.setEffect(
+      effect: WindowEffect.mica,
+      dark: isDark,
+    );
   }
 }

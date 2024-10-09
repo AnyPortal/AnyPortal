@@ -2,14 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_acrylic/flutter_acrylic.dart';
 
-import '../main.dart';
 import 'prefs.dart';
 
 class ThemeManager with ChangeNotifier {
   static final ThemeManager _instance = ThemeManager._internal();
   final Completer<void> _completer = Completer<void>();
+  bool isDark = true;
 
   // Private constructor
   ThemeManager._internal();
@@ -25,15 +24,17 @@ class ThemeManager with ChangeNotifier {
 
   void updateBrightness() {
     var dispatcher = SchedulerBinding.instance.platformDispatcher;
-    final isDark = prefs.getBool('app.brightness.followSystem')!
+    isDark = prefs.getBool('app.brightness.followSystem')!
         ? dispatcher.platformBrightness == Brightness.dark
         : prefs.getBool('app.brightness.dark')!;
-    Window.setEffect(
-      effect: WindowEffect.mica,
-      dark: isDark,
-    );
 
-    darkNotifier.value = isDark;
+    /// no need to change here as already defined in didChangeDependencies
+    // Window.setEffect(
+    //   effect: WindowEffect.mica,
+    //   dark: isDark,
+    // );
+
+    notifyListeners();
   }
 }
 
