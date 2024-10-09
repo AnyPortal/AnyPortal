@@ -69,7 +69,7 @@
 | core as lib            | ⚫       | ⚫     | ⚫     | 🟢       | 🟡   |
 | tun via root privilege | 🟢^2     | 🔵^3   | 🟢^4   | ⚫       | ⚫   |
 | tun via system vpn api | ⚫       | ⚫     | 🔴^5   | 🟢       | 🔴^5 |
-| system proxy           | 🟢       | 🔵     | 🟢     | 🟡^6     | ⚫   |
+| system proxy           | 🟢       | 🟢     | 🟢     | 🟡^6     | ⚫   |
 
 - ^1. Require `api28` variant, not available for play store `apilatest` version
 - ^2. Require `Run as Administrator`, elevated user share configuration with original user

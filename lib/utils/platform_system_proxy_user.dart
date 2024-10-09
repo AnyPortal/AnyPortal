@@ -23,14 +23,16 @@ class PlatformSystemProxyUserWindows extends PlatformSystemProxyUser {
   @override
   Future<void> enable(Map<String, Tuple2<String, int>> proxies) async {
     final shell = Shell();
-    await shell.run('reg add "$_registryPath" /v ProxyEnable /t REG_DWORD /d 1 /f');
+    await shell
+        .run('reg add "$_registryPath" /v ProxyEnable /t REG_DWORD /d 1 /f');
 
     for (var entry in proxies.entries) {
       String protocol = entry.key;
       if (protocol == "http") {
         Tuple2<String, int> hostPort = entry.value;
         String proxyAddress = '${hostPort.item1}:${hostPort.item2}';
-        await shell.run('reg add "$_registryPath" /v ProxyServer /t REG_SZ /d "$proxyAddress" /f');
+        await shell.run(
+            'reg add "$_registryPath" /v ProxyServer /t REG_SZ /d "$proxyAddress" /f');
       }
     }
   }
@@ -46,7 +48,8 @@ class PlatformSystemProxyUserWindows extends PlatformSystemProxyUser {
 // macOS-specific implementation
 class PlatformSystemProxyUserMacOS extends PlatformSystemProxyUser {
   final String networkService =
-  /// todo: auto detect
+
+      /// todo: auto detect
       'Ethernet'; // Change if you use Ethernet or others.
 
   @override
@@ -60,7 +63,8 @@ class PlatformSystemProxyUserMacOS extends PlatformSystemProxyUser {
   @override
   Future<void> enable(Map<String, Tuple2<String, int>> proxies) async {
     final shell = Shell();
-    await shell.run('networksetup -setsocksfirewallproxystate $networkService on');
+    await shell
+        .run('networksetup -setsocksfirewallproxystate $networkService on');
     await shell.run('networksetup -setwebproxystate $networkService on');
 
     for (var entry in proxies.entries) {
@@ -68,9 +72,11 @@ class PlatformSystemProxyUserMacOS extends PlatformSystemProxyUser {
       Tuple2<String, int> hostPort = entry.value;
 
       if (protocol.toLowerCase() == 'socks') {
-        await shell.run('networksetup -setsocksfirewallproxy $networkService ${hostPort.item1} ${hostPort.item2}');
+        await shell.run(
+            'networksetup -setsocksfirewallproxy $networkService ${hostPort.item1} ${hostPort.item2}');
       } else if (protocol.toLowerCase() == 'http') {
-        await shell.run('networksetup -setwebproxy $networkService ${hostPort.item1} ${hostPort.item2}');
+        await shell.run(
+            'networksetup -setwebproxy $networkService ${hostPort.item1} ${hostPort.item2}');
       } else {
         throw UnsupportedError("Unsupported protocol: $protocol");
       }
@@ -80,7 +86,8 @@ class PlatformSystemProxyUserMacOS extends PlatformSystemProxyUser {
   @override
   Future<void> disable() async {
     final shell = Shell();
-    await shell.run('networksetup -setsocksfirewallproxystate $networkService off');
+    await shell
+        .run('networksetup -setsocksfirewallproxystate $networkService off');
     await shell.run('networksetup -setwebproxystate $networkService off');
   }
 }
@@ -89,14 +96,17 @@ class PlatformSystemProxyUserMacOS extends PlatformSystemProxyUser {
 class PlatformSystemProxyUserLinux extends PlatformSystemProxyUser {
   // Detect GNOME, KDE, or fallback to CLI
   Future<String?> _detectGui() async {
-    final shell = Shell();
-    var result = await shell.run('echo \$XDG_CURRENT_DESKTOP');
-    String desktop = result.outText.trim().toLowerCase();
+    if (Platform.environment.containsKey("ORIGINAL_XDG_CURRENT_DESKTOP")) {
+      final desktop =
+          Platform.environment["ORIGINAL_XDG_CURRENT_DESKTOP"]!.toLowerCase();
 
-    if (desktop.contains('gnome')) {
-      return 'gnome';
-    } else if (desktop.contains('kde')) {
-      return 'kde';
+      if (desktop.contains('gnome')) {
+        return 'gnome';
+      } else if (desktop.contains('kde')) {
+        return 'kde';
+      } else {
+        return null;
+      }
     } else {
       return null;
     }
@@ -124,7 +134,7 @@ class PlatformSystemProxyUserLinux extends PlatformSystemProxyUser {
     String? desktop = await _detectGui();
     final shell = Shell();
 
-if (desktop == 'gnome') {
+    if (desktop == 'gnome') {
       await shell.run('gsettings set org.gnome.system.proxy mode "manual"');
 
       for (var entry in proxies.entries) {
@@ -132,11 +142,15 @@ if (desktop == 'gnome') {
         Tuple2<String, int> hostPort = entry.value;
 
         if (protocol.toLowerCase() == 'socks') {
-          await shell.run('gsettings set org.gnome.system.proxy.socks host "${hostPort.item1}"');
-          await shell.run('gsettings set org.gnome.system.proxy.socks port ${hostPort.item2}');
+          await shell.run(
+              'gsettings set org.gnome.system.proxy.socks host "${hostPort.item1}"');
+          await shell.run(
+              'gsettings set org.gnome.system.proxy.socks port ${hostPort.item2}');
         } else if (protocol.toLowerCase() == 'http') {
-          await shell.run('gsettings set org.gnome.system.proxy.http host "${hostPort.item1}"');
-          await shell.run('gsettings set org.gnome.system.proxy.http port ${hostPort.item2}');
+          await shell.run(
+              'gsettings set org.gnome.system.proxy.http host "${hostPort.item1}"');
+          await shell.run(
+              'gsettings set org.gnome.system.proxy.http port ${hostPort.item2}');
         } else {
           throw UnsupportedError("Unsupported protocol: $protocol");
         }
@@ -150,11 +164,15 @@ if (desktop == 'gnome') {
 
         if (protocol.toLowerCase() == 'socks') {
           hasSocks = true;
-          await shell.run('kwriteconfig5 --file kioslaverc --group "Proxy Settings" --key "ProxyType" 1');
-          await shell.run('kwriteconfig5 --file kioslaverc --group "Proxy Settings" --key "socksProxy" "${hostPort.item1}:${hostPort.item2}"');
+          await shell.run(
+              'kwriteconfig5 --file kioslaverc --group "Proxy Settings" --key "ProxyType" 1');
+          await shell.run(
+              'kwriteconfig5 --file kioslaverc --group "Proxy Settings" --key "socksProxy" "${hostPort.item1}:${hostPort.item2}"');
         } else if (protocol.toLowerCase() == 'http' && !hasSocks) {
-          await shell.run('kwriteconfig5 --file kioslaverc --group "Proxy Settings" --key "ProxyType" 2');
-          await shell.run('kwriteconfig5 --file kioslaverc --group "Proxy Settings" --key "httpProxy" "${hostPort.item1}:${hostPort.item2}"');
+          await shell.run(
+              'kwriteconfig5 --file kioslaverc --group "Proxy Settings" --key "ProxyType" 2');
+          await shell.run(
+              'kwriteconfig5 --file kioslaverc --group "Proxy Settings" --key "httpProxy" "${hostPort.item1}:${hostPort.item2}"');
         } else {
           throw UnsupportedError("Unsupported protocol: $protocol");
         }
