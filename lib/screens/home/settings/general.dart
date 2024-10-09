@@ -59,7 +59,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
         ListTile(
           title: const Text("Auto launch"),
           subtitle: Text(
-              "Auto launch (minimized to tray) at login, ${global.isElevated ? 'with' : 'without'} privilege"),
+              "Auto launch (minimized to tray) at login, ${_runElevated ? 'with' : 'without'} privilege"),
           trailing: Switch(
             value: _launchAtLogin,
             onChanged: (value) async {
