@@ -67,16 +67,17 @@
 | AnyPortal              | 🟢       | 🟢     | 🟢     | 🟢       | 🟡   |
 | core as exec           | 🟢       | 🟢     | 🟢     | 🟡^1     | ⚫   |
 | core as lib            | ⚫       | ⚫     | ⚫     | 🟢       | 🟡   |
-| tun via root privilege | 🟢^2     | 🔵^3   | 🟢^4   | ⚫       | ⚫   |
+| tun via root privilege | 🟢^2     | 🟢^3   | 🟢^4   | ⚫       | ⚫   |
 | tun via system vpn api | ⚫       | ⚫     | 🔴^5   | 🟢       | 🔴^5 |
-| system proxy           | 🟢       | 🟢     | 🟢     | 🟡^6     | ⚫   |
+| system proxy           | 🟢       | 🟢^6   | 🟢     | 🟡^7     | ⚫   |
 
 - ^1. Require `api28` variant, not available for play store `apilatest` version
 - ^2. Require `Run as Administrator`, elevated user share configuration with original user
 - ^3. Require root, root DOES NOT share configuration with original user
 - ^4. Require root, root DOES NOT share configuration with original user. Move the app to Application folder and run `sudo /Applications/anyportal.app/Contents/MacOS/anyportal`.
 - ^5. Require an apple developer license to even debug an app that uses Network Extension. Dev progress currently blocked. The iOS app would serve little purpose right now without tun.
-- ^6. Require root / [Shizuku](https://github.com/RikkaApps/Shizuku)
+- ^3. Tested on Ubuntu 24.04 with Gnome
+- ^7. Require root / [Shizuku](https://github.com/RikkaApps/Shizuku)
 
 - ⚫ Not Planned: impossible / no plans / discontinued
 - 🟡 Planned: planned / under development

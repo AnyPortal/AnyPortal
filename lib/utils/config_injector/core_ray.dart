@@ -13,14 +13,13 @@ Future<Map<String, dynamic>> getInjectedConfig(Map<String, dynamic> cfg) async {
   final injectLog = prefs.getBool('inject.log')!;
   final injectApi = prefs.getBool('inject.api')!;
   final injectSendThrough = prefs.getBool('inject.sendThrough')!;
-  final logLevel =
-      LogLevel.values[prefs.getInt('inject.log.level')!];
+  final logLevel = LogLevel.values[prefs.getInt('inject.log.level')!];
   final apiPort = prefs.getInt('inject.api.port')!;
   final injectSocks = prefs.getBool('inject.socks')!;
   final injectSocksPort = prefs.getInt('app.socks.port')!;
 
-  final sendThroughBindingStratagy = SendThroughBindingStratagy.values[
-      prefs.getInt('inject.sendThrough.bindingStratagy')!];
+  final sendThroughBindingStratagy = SendThroughBindingStratagy
+      .values[prefs.getInt('inject.sendThrough.bindingStratagy')!];
   String sendThrough = "0.0.0.0";
   switch (sendThroughBindingStratagy) {
     // case SendThroughBindingStratagy.internet:
@@ -31,7 +30,8 @@ Future<Map<String, dynamic>> getInjectedConfig(Map<String, dynamic> cfg) async {
     case SendThroughBindingStratagy.ip:
       sendThrough = prefs.getString('inject.sendThrough.bindingIp')!;
     case SendThroughBindingStratagy.interface:
-      final bindingInterface = prefs.getString('inject.sendThrough.bindingInterface')!;
+      final bindingInterface =
+          prefs.getString('inject.sendThrough.bindingInterface')!;
       final ip = await getIPv4OfInterface(bindingInterface);
       if (ip == null) {
         throw Exception('ip not found for binding interface $bindingInterface');
@@ -40,9 +40,11 @@ Future<Map<String, dynamic>> getInjectedConfig(Map<String, dynamic> cfg) async {
   }
 
   if (injectLog) {
-    final folder = global.applicationSupportDirectory;
-    final pathLogErr =
-        File(p.join(folder.path, 'log', 'core.log')).absolute.path;
+    final pathLogErr = File(p.join(
+      global.applicationSupportDirectory.path,
+      'log',
+      'core.log',
+    )).absolute.path;
     cfg["log"] = {
       "loglevel": logLevel.name,
       "error": pathLogErr,
@@ -56,7 +58,7 @@ Future<Map<String, dynamic>> getInjectedConfig(Map<String, dynamic> cfg) async {
       "services": ["HandlerService", "StatsService"]
     };
 
-    if (!cfg.containsKey("inbounds")){
+    if (!cfg.containsKey("inbounds")) {
       cfg["inbounds"] = [];
     }
 
@@ -70,11 +72,11 @@ Future<Map<String, dynamic>> getInjectedConfig(Map<String, dynamic> cfg) async {
       }
     ];
 
-    if (!cfg.containsKey("routing")){
+    if (!cfg.containsKey("routing")) {
       cfg["routing"] = {"rules": []};
     }
 
-    if (!cfg["routing"].containsKey("rules")){
+    if (!cfg["routing"].containsKey("rules")) {
       cfg["routing"]["rules"] = [];
     }
 
@@ -104,12 +106,8 @@ Future<Map<String, dynamic>> getInjectedConfig(Map<String, dynamic> cfg) async {
       "listen": "127.0.0.1",
       "port": injectSocksPort,
       "protocol": "socks",
-      "settings": {
-        "udp": true
-      },
-      "sniffing": {
-        "enabled": true
-      },
+      "settings": {"udp": true},
+      "sniffing": {"enabled": true},
       "tag": "anyportal_in_socks"
     });
   }

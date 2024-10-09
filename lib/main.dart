@@ -184,6 +184,10 @@ class AnyPortal extends StatelessWidget {
   /// This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    var dispatcher = SchedulerBinding.instance.platformDispatcher;
+    themeManager.isDark = prefs.getBool('app.brightness.followSystem')!
+        ? dispatcher.platformBrightness == Brightness.dark
+        : prefs.getBool('app.brightness.dark')!;
     return ListenableBuilder(
         listenable: themeManager,
         builder: (BuildContext context, Widget? child) {

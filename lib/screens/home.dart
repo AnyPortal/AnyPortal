@@ -62,8 +62,11 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
 
     _loadSystemProxyIsEnabled();
 
-    final logFile = File(
-        p.join(global.applicationSupportDirectory.path, 'log', 'core.log'));
+    final logFile = File(p.join(
+      global.applicationSupportDirectory.path,
+      'log',
+      'core.log',
+    ));
     logFile.exists().then((logFileExists) async {
       if (!logFileExists) {
         await logFile.create(recursive: true);

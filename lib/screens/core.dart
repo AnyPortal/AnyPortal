@@ -40,7 +40,7 @@ class _CoreScreenState extends State<CoreScreen> {
 
   final _workingDirController = TextEditingController(text: '');
   final _argsController =
-      TextEditingController(text: '["run", "-c", "{configFile}"}]');
+      TextEditingController(text: '["run", "-c", "{config.path}"}]');
   final _envsController = TextEditingController(text: '{}');
 
   Future<void> _loadCoreTypes() async {
@@ -289,7 +289,7 @@ class _CoreScreenState extends State<CoreScreen> {
           controller: _argsController,
           decoration: const InputDecoration(
             labelText: 'args',
-            hintText: '["run", "-c", "{configFile}"}]',
+            hintText: '["run", "-c", "{config.path}"}]',
             border: OutlineInputBorder(),
           ),
         ),

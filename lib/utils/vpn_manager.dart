@@ -155,24 +155,18 @@ abstract class VPNManager with ChangeNotifier {
   int? _selectedProfileId;
   ProfileData? _selectedProfile;
   late bool _isExec;
+
   String? corePath;
-  String? _workingDir;
   late List<String> _coreArgList;
-  Map<String, String>? _environment;
-  late Map<String, dynamic> coreRawCfgMap;
-  late Directory folder;
+  String? _coreWorkingDir;
+  Map<String, String>? _coreEnvs;
 
   String? _tunSingBoxCorePath;
-  String? _tunSingBoxWorkingDir;
-  final List<String> _tunSingBoxCoreArgList = [
-    "run",
-    "-c",
-    p.join(
-      global.applicationSupportDirectory.path,
-      'conf',
-      'tun.sing_box.gen.json',
-    )
-  ];
+  late List<String> _tunSingBoxCoreArgList;
+  String? _tunSingBoxCoreWorkingDir;
+  Map<String, String>? _tunSingBoxCoreEnvs;
+
+  late Map<String, dynamic> coreRawCfgMap;
 
   bool getIsTunExec() {
     return prefs.getBool("tun")! &&
@@ -196,8 +190,7 @@ abstract class VPNManager with ChangeNotifier {
     updateProfileWithGroupRemote(_selectedProfile!);
 
     // gen config.json
-    folder = global.applicationSupportDirectory;
-    final config = File(p.join(folder.path, 'conf', 'core.gen.json'));
+    final config = File(p.join(global.applicationSupportDirectory.path, 'conf', 'core.gen.json'));
     if (!await config.exists()) {
       await config.create(recursive: true);
     }
@@ -233,19 +226,39 @@ abstract class VPNManager with ChangeNotifier {
       } else {
         prefs.setString('core.path', corePath!);
       }
-      _workingDir ??= File(corePath!).parent.path;
+      _coreWorkingDir ??= File(corePath!).parent.path;
     } else {
       await prefs.setBool("core.useEmbedded", true);
     }
 
     // get core env
-    _environment = jsonDecode(core.read(db.core.envs)!) as Map<String, String>;
+    _coreEnvs = (jsonDecode(core.read(db.core.envs)!) as Map<String, dynamic>)
+        .map((k, v) => MapEntry(k, v as String));
 
     // get core args
-    _coreArgList = ["run", "-c", config.path];
+    final replacements = {
+      "{config.path}": config.path,
+    };
+    List<String> rawCoreArgList =
+        (jsonDecode(core.read(db.coreExec.args)!) as List<dynamic>)
+            .map((e) => e as String)
+            .toList();
+    if (rawCoreArgList.isEmpty) {
+      rawCoreArgList = ["run", "-c", "{config.path}"];
+    }
+    _coreArgList = rawCoreArgList;
+    for (int i = 0; i < _coreArgList.length; ++i) {
+      for (var entry in replacements.entries) {
+        _coreArgList[i] = _coreArgList[i].replaceAll(entry.key, entry.value);
+      }
+    }
 
     // clear core log
-    await File(p.join(folder.path, 'log', 'core.log')).writeAsString("");
+    await File(p.join(
+      global.applicationSupportDirectory.path,
+      'log',
+      'core.log',
+    )).writeAsString("");
   }
 
   Future<void> initTunExec() async {
@@ -273,31 +286,55 @@ abstract class VPNManager with ChangeNotifier {
           } else {
             prefs.setString('tun.singBox.core.path', _tunSingBoxCorePath!);
           }
-          _tunSingBoxWorkingDir ??= File(_tunSingBoxCorePath!).parent.path;
+          _tunSingBoxCoreWorkingDir ??= File(_tunSingBoxCorePath!).parent.path;
+        }
+
+        /// gen config.json
+        final tunSingBoxUserConfig = File(p.join(
+          global.applicationDocumentsDirectory.path,
+          'AnyPortal',
+          'conf',
+          'tun.sing_box.json',
+        ));
+        final tunSingBoxConfig = File(p.join(
+          global.applicationSupportDirectory.path,
+          'conf',
+          'tun.sing_box.gen.json',
+        ));
+        if (!await tunSingBoxConfig.exists()) {
+          await tunSingBoxConfig.create(recursive: true);
+        }
+        Map<String, dynamic> tunSingBoxRawCfgMap =
+            jsonDecode(await tunSingBoxUserConfig.readAsString())
+                as Map<String, dynamic>;
+        tunSingBoxRawCfgMap =
+            await getInjectedConfigTunSingBox(tunSingBoxRawCfgMap);
+        await tunSingBoxConfig.writeAsString(jsonEncode(tunSingBoxRawCfgMap));
+
+        // get core args
+        final replacements = {
+          "{config.path}": tunSingBoxConfig.path,
+        };
+
+        /// get core env
+        _tunSingBoxCoreEnvs =
+            (jsonDecode(core.read(db.core.envs)!) as Map<String, dynamic>)
+                .map((k, v) => MapEntry(k, v as String));
+        List<String> rawTunSingBoxArgList =
+            (jsonDecode(core.read(db.coreExec.args)!) as List<dynamic>)
+                .map((e) => e as String)
+                .toList();
+        if (rawTunSingBoxArgList.isEmpty) {
+          rawTunSingBoxArgList = ["run", "-c", "{config.path}"];
+        }
+        _tunSingBoxCoreArgList = rawTunSingBoxArgList;
+        for (int i = 0; i < _tunSingBoxCoreArgList.length; ++i) {
+          for (var entry in replacements.entries) {
+            _tunSingBoxCoreArgList[i] =
+                _tunSingBoxCoreArgList[i].replaceAll(entry.key, entry.value);
+          }
         }
       }
-
-      // gen config.json
-      final tunSingBoxUserConfig = File(p.join(
-        global.applicationDocumentsDirectory.path,
-        'AnyPortal',
-        'conf',
-        'tun.sing_box.json',
-      ));
-      final tunSingBoxConfig = File(p.join(
-        global.applicationSupportDirectory.path,
-        'conf',
-        'tun.sing_box.gen.json',
-      ));
-      if (!await tunSingBoxConfig.exists()) {
-        await tunSingBoxConfig.create(recursive: true);
-      }
-      Map<String, dynamic> tunSingBoxRawCfgMap =
-          jsonDecode(await tunSingBoxUserConfig.readAsString())
-              as Map<String, dynamic>;
-      tunSingBoxRawCfgMap =
-          await getInjectedConfigTunSingBox(tunSingBoxRawCfgMap);
-      await tunSingBoxConfig.writeAsString(jsonEncode(tunSingBoxRawCfgMap));
     }
   }
 }
@@ -352,8 +389,8 @@ class VPNManagerExec extends VPNManager {
     processCore = await Process.start(
       corePath!,
       _coreArgList,
-      workingDirectory: _workingDir,
-      environment: _environment,
+      workingDirectory: _coreWorkingDir,
+      environment: _coreEnvs,
     );
   }
 
@@ -380,7 +417,8 @@ class VPNManagerExec extends VPNManager {
       processTun = await Process.start(
         _tunSingBoxCorePath!,
         _tunSingBoxCoreArgList,
-        workingDirectory: _tunSingBoxWorkingDir,
+        workingDirectory: _tunSingBoxCoreWorkingDir,
+        environment: _tunSingBoxCoreEnvs,
       );
     }
   }

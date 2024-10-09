@@ -54,10 +54,12 @@ class _GeneralScreenState extends State<GeneralScreen> {
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
       ),
-      if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
+      if (Platform.isWindows ||
+          (!global.isElevated && (Platform.isLinux || Platform.isMacOS)))
         ListTile(
           title: const Text("Auto launch"),
-          subtitle: const Text("Auto launch (minimized to tray) at login"),
+          subtitle: Text(
+              "Auto launch (minimized to tray) at login, ${global.isElevated ? 'with' : 'without'} privilege"),
           trailing: Switch(
             value: _launchAtLogin,
             onChanged: (value) async {
@@ -84,7 +86,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
             },
           ),
         ),
-      if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
+      if (Platform.isWindows)
         ListTile(
           enabled: global.isElevated,
           title: Text("Run as $_elevatedUser"),
@@ -164,13 +166,15 @@ class _GeneralScreenState extends State<GeneralScreen> {
         subtitle: const Text("Use dark theme"),
         trailing: Switch(
           value: _brightnessIsDark,
-          onChanged: _brightnessFollowSystem == true ? null : (value) async {
-            prefs.setBool('app.brightness.dark', value);
-            setState(() {
-              _brightnessIsDark = value;
-            });
-            themeManager.updateBrightness();
-          },
+          onChanged: _brightnessFollowSystem == true
+              ? null
+              : (value) async {
+                  prefs.setBool('app.brightness.dark', value);
+                  setState(() {
+                    _brightnessIsDark = value;
+                  });
+                  themeManager.updateBrightness();
+                },
         ),
       ),
       Container(

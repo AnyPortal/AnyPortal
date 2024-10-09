@@ -96,17 +96,21 @@ class PlatformSystemProxyUserMacOS extends PlatformSystemProxyUser {
 class PlatformSystemProxyUserLinux extends PlatformSystemProxyUser {
   // Detect GNOME, KDE, or fallback to CLI
   Future<String?> _detectGui() async {
-    if (Platform.environment.containsKey("ORIGINAL_XDG_CURRENT_DESKTOP")) {
-      final desktop =
-          Platform.environment["ORIGINAL_XDG_CURRENT_DESKTOP"]!.toLowerCase();
+    // logger.w(Platform.environment.toString());
+    String? desktop;
 
-      if (desktop.contains('gnome')) {
-        return 'gnome';
-      } else if (desktop.contains('kde')) {
-        return 'kde';
-      } else {
-        return null;
-      }
+    if (Platform.environment.containsKey("ORIGINAL_XDG_CURRENT_DESKTOP")) {
+      desktop =
+          Platform.environment["ORIGINAL_XDG_CURRENT_DESKTOP"]!.toLowerCase();
+    } else if (Platform.environment.containsKey("XDG_CURRENT_DESKTOP")) {
+      desktop = Platform.environment["XDG_CURRENT_DESKTOP"]!.toLowerCase();
+    } else {
+      return null;
+    }
+    if (desktop.contains('gnome')) {
+      return 'gnome';
+    } else if (desktop.contains('kde')) {
+      return 'kde';
     } else {
       return null;
     }
