@@ -35,8 +35,6 @@ class ExceptionInvalidSelectedProfile implements Exception {
 }
 
 abstract class VPNManager with ChangeNotifier {
-  bool inited = false;
-
   bool isToggling = false;
   bool isCoreActive = false;
   bool isTunActive = false;
@@ -134,10 +132,6 @@ abstract class VPNManager with ChangeNotifier {
       return;
     }
 
-    /// prepare
-    await init();
-    await File(p.join(folder.path, 'log', 'core.log')).writeAsString("");
-
     /// start
     await startAll();
   }
@@ -181,12 +175,12 @@ abstract class VPNManager with ChangeNotifier {
     )
   ];
 
-  bool getIsExecTun() {
+  bool getIsTunExec() {
     return prefs.getBool("tun")! &&
         (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
   }
 
-  Future<void> init() async {
+  Future<void> initCore() async {
     // get selectedProfile
     _selectedProfileId = prefs.getInt('app.selectedProfileId');
     if (_selectedProfileId == null) {
@@ -245,7 +239,23 @@ abstract class VPNManager with ChangeNotifier {
       await prefs.setBool("core.useEmbedded", true);
     }
 
-    /// tun
+    // get core asset
+    _assetPath = prefs.getString('core.assetPath') ?? "";
+    if (_assetPath != null) {
+      _environment = {
+        "v2ray.location.asset": _assetPath!,
+        "xray.location.asset": _assetPath!,
+      };
+    }
+
+    // get core args
+    _coreArgList = ["run", "-c", config.path];
+
+    // clear core log
+    await File(p.join(folder.path, 'log', 'core.log')).writeAsString("");
+  }
+
+  Future<void> initTunExec() async {
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
       final coreTypeId = CoreTypeDefault.singBox.index;
       final core = await (db.select(db.coreTypeSelected).join([
@@ -259,6 +269,7 @@ abstract class VPNManager with ChangeNotifier {
       ])
             ..where(db.core.coreTypeId.equals(coreTypeId)))
           .getSingleOrNull();
+
       if (prefs.getBool("tun")!) {
         if (core == null) {
           throw Exception("Tun needs a sing-box core.");
@@ -295,20 +306,6 @@ abstract class VPNManager with ChangeNotifier {
           await getInjectedConfigTunSingBox(tunSingBoxRawCfgMap);
       await tunSingBoxConfig.writeAsString(jsonEncode(tunSingBoxRawCfgMap));
     }
-
-    // get core asset
-    _assetPath = prefs.getString('core.assetPath') ?? "";
-    if (_assetPath != null) {
-      _environment = {
-        "v2ray.location.asset": _assetPath!,
-        "xray.location.asset": _assetPath!,
-      };
-    }
-
-    // get core args
-    _coreArgList = ["run", "-c", config.path];
-
-    inited = true;
   }
 }
 
@@ -358,10 +355,7 @@ class VPNManagerExec extends VPNManager {
 
   @override
   startCore() async {
-    if (!inited) {
-      await init();
-    }
-    assert(inited);
+    await initCore();
     processCore = await Process.start(
       corePath!,
       _coreArgList,
@@ -388,7 +382,8 @@ class VPNManagerExec extends VPNManager {
 
   @override
   startTun() async {
-    if (getIsExecTun() && processTun == null) {
+    if (getIsTunExec() && processTun == null) {
+      await initTunExec();
       processTun = await Process.start(
         _tunSingBoxCorePath!,
         _tunSingBoxCoreArgList,
@@ -474,6 +469,7 @@ class VPNManagerMC extends VPNManager {
 
   @override
   startCore() async {
+    await initCore();
     await platform.invokeMethod('vpn.startCore');
   }
 

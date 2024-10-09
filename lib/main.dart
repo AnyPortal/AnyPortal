@@ -37,7 +37,7 @@ void main(List<String> args) async {
 
   VPNManManager().init();
   try {
-    await vPNMan.init();
+    await vPNMan.initCore();
   } catch (_) {}
 
   ///prefs
@@ -111,8 +111,6 @@ void main(List<String> args) async {
     }
   }
 }
-
-final darkNotifier = ValueNotifier<bool>(false);
 
 class AnyPortal extends StatelessWidget {
   const AnyPortal({super.key});
