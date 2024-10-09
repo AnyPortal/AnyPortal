@@ -68,12 +68,14 @@ void main(List<String> args) async {
     });
 
     /// transparent background
-    await Window.initialize();
-    var dispatcher = SchedulerBinding.instance.platformDispatcher;
-    await Window.setEffect(
-      effect: WindowEffect.mica,
-      dark: dispatcher.platformBrightness == Brightness.dark,
-    );
+    if (Platform.isWindows || Platform.isMacOS) {
+      await Window.initialize();
+      var dispatcher = SchedulerBinding.instance.platformDispatcher;
+      await Window.setEffect(
+        effect: WindowEffect.mica,
+        dark: dispatcher.platformBrightness == Brightness.dark,
+      );
+    }
 
     // copy assets
     await copyAssetsToDefaultLocation();
