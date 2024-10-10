@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:anyportal/utils/method_channel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -35,11 +36,12 @@ class LogViewerState extends State<LogViewer> {
 
   @override
   void dispose() {
+    super.dispose();
     _scrollController.dispose();
     if (_timer != null) {
       _timer!.cancel();
     }
-    super.dispose();
+    mCMan.removeHandler('onFileChange');
   }
 
   void _loadInitialLog() {
@@ -90,7 +92,7 @@ class LogViewerState extends State<LogViewer> {
     return lines.sublist(max(0, lines.length - widget.maxLines));
   }
 
-  onFileChange() async {
+  Future<void> onFileChange() async {
     if (!_logFile.existsSync()) {
       return;
     }
@@ -130,13 +132,8 @@ class LogViewerState extends State<LogViewer> {
 
   void _startFileMonitor() async {
     if (Platform.isAndroid) {
-      platform.invokeMethod('log.core.startWatching', {"filePath": widget.filePath});
-
-      platform.setMethodCallHandler((call) async {
-        if (call.method == 'onFileChange') {
-          onFileChange();
-        }
-      });
+      mCMan.methodChannel.invokeListMethod('log.core.startWatching', {"filePath": widget.filePath});
+      mCMan.addHandler('onFileChange', (_) async {onFileChange();});
     } else if (Platform.isLinux) {
       _logFile.watch().listen((e) {
         onFileChange();

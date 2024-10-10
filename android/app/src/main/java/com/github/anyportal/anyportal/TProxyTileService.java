@@ -94,11 +94,11 @@ public class TProxyTileService extends TileService {
         if (tile.getState() == Tile.STATE_ACTIVE) {
             tile.setState(Tile.STATE_UNAVAILABLE);
             notifyMainActivity(false);
-            tProxyService.stopAll();
+            tProxyService.tryStopAll();
         } else {
             tile.setState(Tile.STATE_UNAVAILABLE);
             notifyMainActivity(true);
-            tProxyService.startAll();
+            tProxyService.tryStartAll();
         }
 
         updateTileState();

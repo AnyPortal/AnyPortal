@@ -2,10 +2,18 @@ import 'dart:io';
 import 'package:process_run/shell.dart';
 import 'package:tuple/tuple.dart';
 
-abstract class PlatformSystemProxyUser {
-  Future<bool?> isEnabled();
-  Future<void> enable(Map<String, Tuple2<String, int>> proxies);
-  Future<void> disable();
+class PlatformSystemProxyUser {
+  Future<bool?> isEnabled() async {
+    return null;
+  }
+
+  Future<void> enable(Map<String, Tuple2<String, int>> proxies) async {
+    return;
+  }
+
+  Future<void> disable() async {
+    return;
+  }
 }
 
 // Windows-specific implementation
@@ -54,10 +62,13 @@ class PlatformSystemProxyUserMacOS extends PlatformSystemProxyUser {
 
   @override
   Future<bool?> isEnabled() async {
-    final shell = Shell();
-    final result =
-        await shell.run('networksetup -getsocksfirewallproxy $networkService');
-    return result.outText.contains('Enabled: Yes');
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      final shell = Shell();
+      final result = await shell
+          .run('networksetup -getsocksfirewallproxy $networkService');
+      return result.outText.contains('Enabled: Yes');
+    }
+    return null;
   }
 
   @override
@@ -202,4 +213,6 @@ final platformSystemProxyUser = Platform.isWindows
     ? PlatformSystemProxyUserWindows()
     : Platform.isLinux
         ? PlatformSystemProxyUserLinux()
-        : PlatformSystemProxyUserMacOS();
+        : Platform.isMacOS
+            ? PlatformSystemProxyUserMacOS()
+            : PlatformSystemProxyUser();

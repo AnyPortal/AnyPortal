@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.net.VpnService;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -27,6 +28,7 @@ public class TProxyService extends VpnService {
     public static native void TProxyStartService(String config_path, int fd);
     public static native void TProxyStopService();
     public static native long[] TProxyGetStats();
+    private static final String TAG = "TProxyService";
 
     static {
         System.loadLibrary("hev-socks5-tunnel");
@@ -85,9 +87,13 @@ public class TProxyService extends VpnService {
 
     /// Notify MainActivity of VPN status updates
     private void notifyMainActivity() {
+        Log.d(TAG, "start target: notifyMainActivity");
         if (statusListener != null) {
             statusListener.onStatusUpdate(isCoreActive);
+        } else {
+            Log.w(TAG, "statusListener == null");
         }
+        Log.d(TAG, "reached target: notifyMainActivity");
     }
 
 
@@ -100,7 +106,45 @@ public class TProxyService extends VpnService {
     public boolean isTunActive = false;
     private SharedPreferences prefs;
 
-    public void startAll() {
+    public void tryStartAll() {
+        try {
+            startAll();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    public void tryStopAll() {
+        try {
+            stopAll();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    public void tryStartTun() {
+        try {
+            startTun();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    public void tryStopTun() {
+        try {
+            stopTun();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    private void startAll() {
+        Log.d(TAG, "start target: startAll");
+
         startCore();
         isCoreActive = true;
 
@@ -110,9 +154,13 @@ public class TProxyService extends VpnService {
         }
 
         notifyMainActivity();
+
+        Log.d(TAG, "reached target: startAll");
     }
 
-    public void stopAll() {
+    private void stopAll() {
+        Log.d(TAG, "start target: stopAll");
+
         stopCore();
         isCoreActive = false;
 
@@ -122,9 +170,13 @@ public class TProxyService extends VpnService {
         }
 
         notifyMainActivity();
+
+        Log.d(TAG, "reached target: stopAll");
     }
 
-    public void startTun() {
+    private void startTun() {
+        Log.d(TAG, "start target: startTun");
+
         if (tunFd != null)
           return;
 
@@ -173,6 +225,7 @@ public class TProxyService extends VpnService {
                     builder.addAllowedApplication(appName);
                     disallowSelf = false;
                 } catch (NameNotFoundException e) {
+                    Log.w(TAG, e);
                 }
             }
             session += "/per-App";
@@ -182,6 +235,7 @@ public class TProxyService extends VpnService {
             try {
                 builder.addDisallowedApplication(selfName);
             } catch (NameNotFoundException e) {
+                Log.w(TAG, e);
             }
         }
         builder.setSession(session);
@@ -194,11 +248,15 @@ public class TProxyService extends VpnService {
         /* TProxy */
         File tproxy_file = new File(getFilesDir(), "conf/tun.hev_socks5_tunnel.gen.yaml");
         TProxyStartService(tproxy_file.getAbsolutePath(), tunFd.getFd());
+
+        Log.d(TAG, "reached target: startTun");
     }
 
-    public void stopTun(){
+    private void stopTun(){
+        Log.d(TAG, "start target: stopTun");
+
         if (tunFd != null){
-            stopForeground(true);
+            // stopForeground(true);
 
             /* TProxy */
             TProxyStopService();
@@ -210,9 +268,13 @@ public class TProxyService extends VpnService {
             }
             tunFd = null;
         }
+        
+        Log.d(TAG, "reached target: stopTun");
     }
 
     private void startCore(){
+        Log.d(TAG, "start target: stopCore");
+
         if (coreManager != null || coreProcess != null){
             return;
         }
@@ -243,9 +305,13 @@ public class TProxyService extends VpnService {
                 return;
             }
         }
+
+        Log.d(TAG, "reached target: startCore");
     }
 
     private void stopCore(){
+        Log.d(TAG, "start target: stopCore");
+
         if (coreProcess != null){
             coreProcess.destroy();
             coreProcess = null;
@@ -254,5 +320,7 @@ public class TProxyService extends VpnService {
             coreManager.stop();
             coreManager = null;
         }
+
+        Log.d(TAG, "reached target: stopCore");
     }
 }

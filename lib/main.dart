@@ -18,6 +18,7 @@ import 'screens/home/settings/tun_hev_socks5_tunnel.dart';
 import 'utils/core_data_notifier.dart';
 import 'utils/db.dart';
 import 'utils/launch_at_startup.dart';
+import 'utils/method_channel.dart';
 import 'utils/prefs.dart';
 import 'utils/tray_menu.dart';
 import 'utils/copy_assets.dart';
@@ -25,7 +26,6 @@ import 'utils/copy_assets.dart';
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  /// elevate
   await PrefsManager().init();
   await GlobalManager().init();
   if (prefs.getBool("app.runElevated")! && !global.isElevated) {
@@ -40,8 +40,8 @@ void main(List<String> args) async {
     await vPNMan.initCore();
   } catch (_) {}
 
-  ///prefs
   CoreDataNotifierManager().init();
+  MethodChannelManager().init();
 
   if (Platform.isAndroid || Platform.isIOS) {
     await tProxyConfInit();

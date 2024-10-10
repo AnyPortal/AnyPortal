@@ -15,6 +15,7 @@ import 'config_injector/tun_sing_box.dart';
 import 'db.dart';
 import 'global.dart';
 import 'logger.dart';
+import 'method_channel.dart';
 import 'platform_process.dart';
 import 'prefs.dart';
 import 'db/update_profile_with_group_remote.dart';
@@ -455,17 +456,15 @@ class VPNManagerMC extends VPNManager {
   static const platform = MethodChannel('com.github.anyportal.anyportal');
 
   VPNManagerMC() {
-    platform.setMethodCallHandler(_methodCallHandler);
+    mCMan.addHandler("onCoreToggled", (call) async {setIsCoreActive(call.arguments as bool);});
+    mCMan.addHandler("onTileToggled", (call) async {isExpectingActive = call.arguments as bool;});
   }
 
-  Future<void> _methodCallHandler(MethodCall call) async {
-    logger.d("_methodCallHandler: ${call.method}");
-    if (call.method == 'onCoreActivated' ||
-        call.method == 'onCoreDeactivated') {
-      setIsCoreActive(call.method == 'onCoreActivated');
-    } else if (call.method == 'onTileToggled') {
-      isExpectingActive = call.arguments as bool;
-    }
+  @override
+  void dispose() {
+    super.dispose();
+    mCMan.removeHandler("onCoreToggled");
+    mCMan.removeHandler("onTileToggled");
   }
 
   @override

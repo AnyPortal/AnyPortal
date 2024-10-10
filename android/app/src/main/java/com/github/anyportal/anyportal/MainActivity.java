@@ -12,6 +12,7 @@ import android.os.FileObserver;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Handler;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -23,6 +24,7 @@ import io.flutter.plugin.common.MethodChannel;
 public class MainActivity extends FlutterActivity {
     private static final String CHANNEL = "com.github.anyportal.anyportal";
     private static MethodChannel methodChannel;
+    private static final String TAG = "MainActivity";
 
     private BroadcastReceiver broadcastReceiver;
 
@@ -65,6 +67,11 @@ public class MainActivity extends FlutterActivity {
         if (fileObserver != null) {
             fileObserver.startWatching();
         }
+
+        if (serviceConnection != null) {
+            Intent intent = new Intent(this, TProxyService.class);
+            bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        }
     }
 
     @Override
@@ -73,16 +80,20 @@ public class MainActivity extends FlutterActivity {
         if (fileObserver != null) {
             fileObserver.stopWatching();
         }
+        if (serviceConnection != null) {
+            unbindService(serviceConnection);
+            serviceConnection = null;
+        }
     }
 
     @Override
     public void onDestroy() {
+        super.onDestroy();
         if (serviceConnection != null) {
             unbindService(serviceConnection);
             serviceConnection = null;
         }
         unregisterReceiver(broadcastReceiver);
-        super.onDestroy();
     }
 
     /// bind TProxyService
@@ -96,12 +107,9 @@ public class MainActivity extends FlutterActivity {
 
             // Set the status listener to receive updates
             tProxyService.setStatusUpdateListener(isCoreActive -> {
+                Log.d(TAG, "isCoreActive: " + isCoreActive);
                 // Handle VPN status update in MainActivity
-                if (isCoreActive){
-                    methodChannel.invokeMethod("onCoreActivated", null);
-                } else {
-                    methodChannel.invokeMethod("onCoreDeactivated", null);
-                }
+                methodChannel.invokeMethod("onCoreToggled", isCoreActive);
             });
         }
 
@@ -116,40 +124,56 @@ public class MainActivity extends FlutterActivity {
     private FileObserver fileObserver;
 
     private void onMethodCall(MethodCall call, MethodChannel.Result result) {
-        if (call.method.equals("vpn.startAll")){
-            tProxyService.startAll();
-            result.success(null);
-        } else if (call.method.equals("vpn.stopAll")){
-            tProxyService.stopAll();
-            result.success(null);
-        } else if (call.method.equals("vpn.startTun")){
-            tProxyService.startTun();
-            result.success(null);
-        } else if (call.method.equals("vpn.stopTun")){
-            tProxyService.stopTun();
-            result.success(null);
-        } else if (call.method.equals("vpn.isCoreActive")){
-            result.success(tProxyService.isCoreActive);
-        } else if (call.method.equals("vpn.isTunActive")){
-            result.success(tProxyService.isTunActive);
-        } else if (call.method.equals("log.core.startWatching")){
-            String filePath = call.argument("filePath");
-            fileObserver = new FileObserver(filePath) {
-                @Override
-                public void onEvent(int event, String path) {
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (event == FileObserver.MODIFY) {
-                                methodChannel.invokeMethod("onFileChange", null);
+        switch (call.method) {
+            case "vpn.startAll":
+                tProxyService.tryStartAll();
+                result.success(null);
+                break;
+        
+            case "vpn.stopAll":
+                tProxyService.tryStopAll();
+                result.success(null);
+                break;
+        
+            case "vpn.startTun":
+                tProxyService.tryStartTun();
+                result.success(null);
+                break;
+        
+            case "vpn.stopTun":
+                tProxyService.tryStopTun();
+                result.success(null);
+                break;
+        
+            case "vpn.isCoreActive":
+                result.success(tProxyService.isCoreActive);
+                break;
+        
+            case "vpn.isTunActive":
+                result.success(tProxyService.isTunActive);
+                break;
+        
+            case "log.core.startWatching":
+                String filePath = call.argument("filePath");
+                fileObserver = new FileObserver(filePath) {
+                    @Override
+                    public void onEvent(int event, String path) {
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (event == FileObserver.MODIFY) {
+                                    methodChannel.invokeMethod("onFileChange", null);
+                                }
                             }
-                        }
-                    });
-                }
-            };
-            fileObserver.startWatching();
-        } else {
-            result.notImplemented();
+                        });
+                    }
+                };
+                fileObserver.startWatching();
+                break;
+        
+            default:
+                result.notImplemented();
+                break;
         }
     }
     
