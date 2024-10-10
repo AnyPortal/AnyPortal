@@ -100,7 +100,7 @@ void main(List<String> args) async {
     Exception? err;
     if (prefs.getBool('app.connectAtLaunch')!) {
       try {
-        if (await vPNMan.getIsCoreActive()) {
+        if (!await vPNMan.getIsCoreActive()) {
           await vPNMan.start();
         }
       } on Exception catch (e) {
