@@ -28,7 +28,7 @@ class PlatformLaunchAtLoginWindows extends PlatformLaunchAtLogin {
     /// schtasks does not allow to set ExecutionTimeLimit
     final script = """
       \$currentUserId = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
-      \$action = New-ScheduledTaskAction -Execute "'${Platform.resolvedExecutable}' --minimized"
+      \$action = New-ScheduledTaskAction -Execute "${Platform.resolvedExecutable}" -Argument "--minimized"
       \$trigger = New-ScheduledTaskTrigger -AtLogOn -User \$currentUserId
       \$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit '00:00:00'
       \$principal = New-ScheduledTaskPrincipal -UserId \$currentUserId -LogonType 3 $runLevel
