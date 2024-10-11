@@ -1,14 +1,9 @@
-import 'dart:io';
-
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:path/path.dart' as p;
 
 import '../../utils/db.dart';
 import '../../models/asset.dart';
-import '../utils/global.dart';
-import '../utils/prefs.dart';
 import '../utils/asset_remote/github.dart';
 
 class AssetScreen extends StatefulWidget {
@@ -122,19 +117,12 @@ class _AssetScreenState extends State<AssetScreen> {
   }
 
   Future<void> _selectAssetPath() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    FilePickerResult? result =
+        await FilePicker.platform.pickFiles(allowMultiple: true);
     if (result == null) {
       return;
     }
     String assetPath = result.files.single.path!;
-    if (Platform.isAndroid) {
-      final folder = global.applicationSupportDirectory;
-      final dest = File(p.join(folder.path, 'asset')).path;
-      await File(assetPath).rename(dest);
-      await FilePicker.platform.clearTemporaryFiles();
-      assetPath = dest;
-    }
-    prefs.setString('asset.path', assetPath);
     setState(() {
       _assetPathController.text = assetPath;
     });

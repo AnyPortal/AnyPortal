@@ -65,19 +65,22 @@
 |                        | Windows | Linux | macOS | Android | iOS |
 | ---------------------- | ------- | ----- | ----- | ------- | --- |
 | AnyPortal              | 🟢       | 🟢     | 🟢     | 🟢       | 🟡   |
-| core as exec           | 🟢       | 🟢     | 🟢     | 🟡^1     | ⚫   |
-| core as lib            | ⚫       | ⚫     | ⚫     | 🟢       | 🟡   |
-| tun via root privilege | 🟢^2     | 🟢^3   | 🟢^4   | ⚫       | ⚫   |
-| tun via system vpn api | ⚫       | ⚫     | 🔴^5   | 🟢       | 🔴^5 |
-| system proxy           | 🟢       | 🟢^6   | 🟢     | 🟡^7     | ⚫   |
+| core as exec           | 🟢       | 🟢     | 🟢     | 🟢^1     | ⚫   |
+| core as lib            | ⚫       | ⚫     | ⚫     | 🟢^2     | 🟡   |
+| tun via root privilege | 🟢^3     | 🟢^4   | 🟢^5   | ⚫       | ⚫   |
+| tun via system vpn api | ⚫       | ⚫     | 🔴^6   | 🟢       | 🔴^6 |
+| system proxy           | 🟢       | 🟢^7   | 🟢     | ⚫       | ⚫   |
 
-- ^1. Require `api28` variant, not available for play store `apilatest` version
-- ^2. Require `Run as Administrator`, elevated user share configuration with original user
-- ^3. Require root, root DOES NOT share configuration with original user
-- ^4. Require root, root DOES NOT share configuration with original user. Move the app to Application folder and run `sudo /Applications/anyportal.app/Contents/MacOS/anyportal`.
-- ^5. Require an apple developer license to even debug an app that uses Network Extension. Dev progress currently blocked. The iOS app would serve little purpose right now without tun.
-- ^3. Tested on Ubuntu 24.04 with Gnome
-- ^7. Require root / [Shizuku](https://github.com/RikkaApps/Shizuku)
+- ^1. Require `api28` variant, not available for play store `apilatest` version.
+  - The core exec asset is copied to internal storage upon selection, so you MUST reselect the core if you want to update it.
+  - The `working directory` can not be set to a location without execution permission, e.g. the sdcard which has a FAT file system.
+  - You MUST manually specify the `envs` if the core needs it, e.g. `{"xray.location.asset" : "/storage/emulated/0/path/to/xray/assets"}`
+- ^2. Only latest xray-core is embedded for now.
+- ^3. Require `Run as Administrator`, elevated user share configuration with original user
+- ^4. Require root, root DOES NOT share configuration with original user
+- ^5. Require root, root DOES NOT share configuration with original user. Move the app to Application folder and run `sudo /Applications/anyportal.app/Contents/MacOS/anyportal`.
+- ^6. Require an apple developer license to even debug an app that uses Network Extension. Dev progress currently blocked. The iOS app would serve little purpose right now without tun.
+- ^7. Tested on Ubuntu 24.04 with Gnome
 
 - ⚫ Not Planned: impossible / no plans / discontinued
 - 🟡 Planned: planned / under development
@@ -108,9 +111,17 @@ All rights reserved until further notice (hopefully soon).
 
 ## Thanks
 
-- [v2fly/v2ray-core](https://github.com/v2fly/v2ray-core), [xtls/xray-core](https://github.com/xtls/xray-core)
-- [flutter](https://flutter.dev/) and all its awesome plugins
-- [heiher/hev-socks5-tunnel](https://github.com/heiher/hev-socks5-tunnel)
+### 3-rd party libs used in the project
+
+- [v2fly/v2ray-core](https://github.com/v2fly/v2ray-core), MIT
+- [xtls/xray-core](https://github.com/xtls/xray-core), MPL-2.0
+- [heiher/hev-socks5-tunnel](https://github.com/heiher/hev-socks5-tunnel), MIT
+- a full list of flutter dependency can be found in `./pubspec.yaml`
+
+### Inspired by, or related to, but not used in the project
+
+- [Qv2ray/Qv2ray](https://github.com/Qv2ray/Qv2ray), GPL-3.0
+- [SagerNet/sing-box](https://github.com/SagerNet/sing-box), GPL
 
 ## Support development
 

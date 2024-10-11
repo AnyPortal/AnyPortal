@@ -2,8 +2,11 @@ package com.github.anyportal.anyportal;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -208,15 +211,7 @@ public class TProxyService extends VpnService {
         }
         boolean disallowSelf = true;
         String selectedAppsString = prefs.getString("flutter.tun.selectedApps", "[]");
-        List<String> selectedApps = new ArrayList<>();
-        try {
-            JSONArray jsonArray = new JSONArray(selectedAppsString);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                selectedApps.add(jsonArray.getString(i));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        List<String> selectedApps = getStringListFromJsonString(selectedAppsString);
         if (!prefs.getBoolean("flutter.tun.perAppProxy", true)) {
             session += "/Global";
         } else {
@@ -252,6 +247,35 @@ public class TProxyService extends VpnService {
         Log.d(TAG, "reached target: startTun");
     }
 
+    private List<String> getStringListFromJsonString(String str){
+        List<String> res = new ArrayList<>();
+        try {
+            JSONArray jsonArray = new JSONArray(str);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                res.add(jsonArray.getString(i));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return res;
+    }
+
+    private Map<String, String> getStringStringMapFromJsonString(String str){
+        Map<String, String> res = new HashMap<String, String>();
+        try {
+            JSONObject jsonObject = new JSONObject(str);
+            Iterator<String> keys = jsonObject.keys();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                String value = jsonObject.getString(key); // Get the value as a string
+                res.put(key, value);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return res;
+    }
+
     private void stopTun(){
         Log.d(TAG, "start target: stopTun");
 
@@ -280,26 +304,33 @@ public class TProxyService extends VpnService {
         }
 
         /* asset location */
-        File assetFolder = new File(getFilesDir().getParent(), "files/asset");
-        String assetPath = assetFolder.getAbsolutePath();
+        File libAssetFolder = new File(getFilesDir().getParent(), "files/asset");
+        String libAssetPath = libAssetFolder.getAbsolutePath();
         File config_file = new File(getFilesDir().getParent(), "files/conf/core.gen.json");
         
         /* core */
-        boolean useEmbedded = prefs.getBoolean("flutter.core.useEmbedded", true);
+        boolean useEmbedded = prefs.getBoolean("flutter.cache.core.useEmbedded", true);
         if (useEmbedded){
             coreManager = new libv2raymobile.CoreManager();
-            Libv2raymobile.setEnv("v2ray.location.asset", assetPath);
-            Libv2raymobile.setEnv("xray.location.asset", assetPath);
+            Libv2raymobile.setEnv("v2ray.location.asset", libAssetPath);
+            Libv2raymobile.setEnv("xray.location.asset", libAssetPath);
             coreManager.runConfig(config_file.getAbsolutePath());
         } else {
-            String corePath = prefs.getString("flutter.core.path", "");
-            String[] args = {corePath, "run", "-c", config_file.getAbsolutePath()};
-            ProcessBuilder processBuilder = new ProcessBuilder(args);
-            Map<String, String> env = processBuilder.environment();
-            env.put("v2ray.location.asset", assetPath);
-            env.put("xray.location.asset", assetPath);
+            String corePath = prefs.getString("flutter.cache.core.path", "");
+            new File(corePath).setExecutable(true);
+            List<String> coreArgs = getStringListFromJsonString(prefs.getString("flutter.cache.core.args", "[]"));
+            String coreWorkingDir = prefs.getString("flutter.cache.core.workingDir", "");
+            Map<String, String> coreEnvs = getStringStringMapFromJsonString(prefs.getString("flutter.cache.core.envs", "{}"));
+            
+            coreArgs.add(0, corePath);
+            ProcessBuilder pb = new ProcessBuilder(coreArgs);
+            /// external storage can not be used as working dir !!
+            pb.directory(new File(coreWorkingDir));
+            Map<String, String> env = pb.environment();
+            env.putAll(coreEnvs);
+
             try {
-                coreProcess = processBuilder.start();
+                coreProcess = pb.start();
             } catch (Exception e) {
                 e.printStackTrace();
                 return;

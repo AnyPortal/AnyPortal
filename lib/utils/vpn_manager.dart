@@ -191,7 +191,8 @@ abstract class VPNManager with ChangeNotifier {
     updateProfileWithGroupRemote(_selectedProfile!);
 
     // gen config.json
-    final config = File(p.join(global.applicationSupportDirectory.path, 'conf', 'core.gen.json'));
+    final config = File(p.join(
+        global.applicationSupportDirectory.path, 'conf', 'core.gen.json'));
     if (!await config.exists()) {
       await config.create(recursive: true);
     }
@@ -218,41 +219,49 @@ abstract class VPNManager with ChangeNotifier {
       throw ExceptionInvalidCorePath(
           "No core of type specified by the profile is selected.");
     }
+
+    // get is exec
     _isExec = core.read(db.core.isExec)!;
     if (_isExec) {
-      await prefs.setBool("core.useEmbedded", false);
+      await prefs.setBool("cache.core.useEmbedded", false);
       corePath = core.read(db.asset.path);
       if (corePath == null) {
         throw ExceptionInvalidCorePath("Core path is null.");
       } else {
-        prefs.setString('core.path', corePath!);
+        prefs.setString('cache.core.path', corePath!);
       }
-      _coreWorkingDir ??= File(corePath!).parent.path;
+      _coreWorkingDir = core.read(db.core.workingDir)!;
+      if (_coreWorkingDir!.isEmpty){
+        _coreWorkingDir = File(corePath!).parent.path;
+      }
+      prefs.setString('cache.core.workingDir', _coreWorkingDir!);
+
+      // get core args
+      final replacements = {
+        "{config.path}": config.path,
+      };
+      List<String> rawCoreArgList =
+          (jsonDecode(core.read(db.coreExec.args)!) as List<dynamic>)
+              .map((e) => e as String)
+              .toList();
+      if (rawCoreArgList.isEmpty) {
+        rawCoreArgList = ["run", "-c", "{config.path}"];
+      }
+      _coreArgList = rawCoreArgList;
+      for (int i = 0; i < _coreArgList.length; ++i) {
+        for (var entry in replacements.entries) {
+          _coreArgList[i] = _coreArgList[i].replaceAll(entry.key, entry.value);
+        }
+      }
+      await prefs.setString('cache.core.args', jsonEncode(_coreArgList));
     } else {
-      await prefs.setBool("core.useEmbedded", true);
+      await prefs.setBool("cache.core.useEmbedded", true);
     }
 
     // get core env
     _coreEnvs = (jsonDecode(core.read(db.core.envs)!) as Map<String, dynamic>)
         .map((k, v) => MapEntry(k, v as String));
-
-    // get core args
-    final replacements = {
-      "{config.path}": config.path,
-    };
-    List<String> rawCoreArgList =
-        (jsonDecode(core.read(db.coreExec.args)!) as List<dynamic>)
-            .map((e) => e as String)
-            .toList();
-    if (rawCoreArgList.isEmpty) {
-      rawCoreArgList = ["run", "-c", "{config.path}"];
-    }
-    _coreArgList = rawCoreArgList;
-    for (int i = 0; i < _coreArgList.length; ++i) {
-      for (var entry in replacements.entries) {
-        _coreArgList[i] = _coreArgList[i].replaceAll(entry.key, entry.value);
-      }
-    }
+    await prefs.setString('cache.core.envs', jsonEncode(_coreEnvs));
 
     // clear core log
     await File(p.join(
@@ -287,7 +296,10 @@ abstract class VPNManager with ChangeNotifier {
           } else {
             prefs.setString('tun.singBox.core.path', _tunSingBoxCorePath!);
           }
-          _tunSingBoxCoreWorkingDir ??= File(_tunSingBoxCorePath!).parent.path;
+          _tunSingBoxCoreWorkingDir = core.read(db.core.workingDir)!;
+          if (_tunSingBoxCoreWorkingDir!.isEmpty){
+            _tunSingBoxCoreWorkingDir = File(corePath!).parent.path;
+          }
         }
 
         /// gen config.json
@@ -456,8 +468,12 @@ class VPNManagerMC extends VPNManager {
   static const platform = MethodChannel('com.github.anyportal.anyportal');
 
   VPNManagerMC() {
-    mCMan.addHandler("onCoreToggled", (call) async {setIsCoreActive(call.arguments as bool);});
-    mCMan.addHandler("onTileToggled", (call) async {isExpectingActive = call.arguments as bool;});
+    mCMan.addHandler("onCoreToggled", (call) async {
+      setIsCoreActive(call.arguments as bool);
+    });
+    mCMan.addHandler("onTileToggled", (call) async {
+      isExpectingActive = call.arguments as bool;
+    });
   }
 
   @override
@@ -479,6 +495,7 @@ class VPNManagerMC extends VPNManager {
 
   @override
   startAll() async {
+    await initCore();
     await platform.invokeMethod('vpn.startAll');
   }
 

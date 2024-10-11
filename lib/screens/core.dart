@@ -1,15 +1,10 @@
-import 'dart:io';
-
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:path/path.dart' as p;
 
 import '../../utils/db.dart';
 import '../../models/core.dart';
 import '../models/asset.dart';
-import '../utils/global.dart';
-import '../utils/prefs.dart';
 import 'asset.dart';
 import 'core_type.dart';
 
@@ -108,9 +103,8 @@ class _CoreScreenState extends State<CoreScreen> {
     try {
       if (_formKey.currentState?.validate() ?? false) {
         final oldCore = widget.core;
-        final _envs = _envsController.text;
-
-        String _workingDir = _workingDirController.text;
+        final workingDir = _workingDirController.text;
+        final envs = _envsController.text;
         int coreId;
         await db.transaction(() async {
           if (oldCore != null) {
@@ -120,16 +114,16 @@ class _CoreScreenState extends State<CoreScreen> {
                   coreTypeId: Value(_coreTypeId),
                   updatedAt: Value(DateTime.now()),
                   isExec: Value(_coreIsExec),
-                  workingDir: Value(_workingDir),
-                  envs: Value(_envsController.text),
+                  workingDir: Value(workingDir),
+                  envs: Value(envs),
                 ));
           } else {
             coreId = await db.into(db.core).insert(CoreCompanion(
                   coreTypeId: Value(_coreTypeId),
                   updatedAt: Value(DateTime.now()),
                   isExec: Value(_coreIsExec),
-                  workingDir: Value(_workingDir),
-                  envs: Value(_envs),
+                  workingDir: Value(workingDir),
+                  envs: Value(envs),
                 ));
           }
 
@@ -158,23 +152,12 @@ class _CoreScreenState extends State<CoreScreen> {
     }
   }
 
-  Future<void> _selectCorePath() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
-    if (result == null) {
+  Future<void> _selectWorkingDir() async {
+    String? workingDir = await FilePicker.platform.getDirectoryPath();
+    if (workingDir == null) {
       return;
     }
-    String corePath = result.files.single.path!;
-    if (Platform.isAndroid) {
-      final folder = global.applicationSupportDirectory;
-      final dest = File(p.join(folder.path, 'core')).path;
-      await File(corePath).rename(dest);
-      await FilePicker.platform.clearTemporaryFiles();
-      corePath = dest;
-    }
-    if (Platform.isAndroid) {
-      await Process.start("chmod", ["a+x", corePath]);
-    }
-    prefs.setString('core.path', corePath);
+    _workingDirController.text = workingDir;
   }
 
   String getAssetTitle(TypedResult asset) {
@@ -199,13 +182,11 @@ class _CoreScreenState extends State<CoreScreen> {
               items: _coreTypeDataList.map((e) {
                 return DropdownMenuItem<int>(value: e.id, child: Text(e.name));
               }).toList(),
-              onChanged: widget.core != null
-                  ? null
-                  : (value) {
-                      setState(() {
-                        _coreTypeId = value!;
-                      });
-                    },
+              onChanged: (value) {
+                setState(() {
+                  _coreTypeId = value!;
+                });
+              },
               value: _coreTypeId,
             ),
           ),
@@ -276,13 +257,23 @@ class _CoreScreenState extends State<CoreScreen> {
         maxLines: 3,
       ),
       if (_coreIsExec)
-        TextFormField(
-          controller: _workingDirController,
-          decoration: const InputDecoration(
-            labelText: 'working dir',
-            hintText: "use core's parent folder if leave empty",
-            border: OutlineInputBorder(),
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                controller: _workingDirController,
+                decoration: const InputDecoration(
+                  labelText: 'working dir',
+                  hintText: "use core's parent folder if leave empty",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.folder_open),
+              onPressed: _selectWorkingDir,
+            ),
+          ],
         ),
       if (_coreIsExec)
         TextFormField(
