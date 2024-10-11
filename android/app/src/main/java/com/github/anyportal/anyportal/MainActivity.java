@@ -67,11 +67,6 @@ public class MainActivity extends FlutterActivity {
         if (fileObserver != null) {
             fileObserver.startWatching();
         }
-
-        if (serviceConnection != null) {
-            Intent intent = new Intent(this, TProxyService.class);
-            bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-        }
     }
 
     @Override
@@ -79,10 +74,6 @@ public class MainActivity extends FlutterActivity {
         super.onPause();
         if (fileObserver != null) {
             fileObserver.stopWatching();
-        }
-        if (serviceConnection != null) {
-            unbindService(serviceConnection);
-            serviceConnection = null;
         }
     }
 
