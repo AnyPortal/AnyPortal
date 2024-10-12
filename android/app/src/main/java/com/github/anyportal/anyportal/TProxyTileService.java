@@ -106,15 +106,15 @@ public class TProxyTileService extends TileService {
             return;
         }
         
-        // Update tile subtitle with the selected profile
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // Get selected profile from shared preferences
-            SharedPreferences prefs = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE);
-            String selectedProfileName = prefs.getString("flutter.cache.app.selectedProfileName", "");
-            tile.setSubtitle(selectedProfileName);
+            tile.setLabel("AnyPortal");
         }
 
-        tile.setLabel("AnyPortal");
+        // Get selected profile from shared preferences
+        SharedPreferences prefs = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE);
+        String selectedProfileName = prefs.getString("flutter.cache.app.selectedProfileName", "AnyPortal");
+        // Update tile subtitle with the selected profile
+        tile.setSubtitle(selectedProfileName);
         tile.updateTile();
     }
 
