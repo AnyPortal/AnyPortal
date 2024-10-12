@@ -61,26 +61,25 @@
 > 2024-09-27
 
 ## Dev roadmap
-
 |                        | Windows | Linux | macOS | Android | iOS |
 | ---------------------- | ------- | ----- | ----- | ------- | --- |
 | AnyPortal              | 🟢       | 🟢     | 🟢     | 🟢       | 🟡   |
-| core as exec           | 🟢       | 🟢     | 🟢     | 🟢^1     | ⚫   |
-| core as lib            | ⚫       | ⚫     | ⚫     | 🟢^2     | 🟡   |
-| tun via root privilege | 🟢^3     | 🟢^4   | 🟢^5   | ⚫       | ⚫   |
-| tun via system vpn api | ⚫       | ⚫     | 🔴^6   | 🟢       | 🔴^6 |
-| system proxy           | 🟢       | 🟢^7   | 🟢     | ⚫       | ⚫   |
-
-- ^1. Require `api28` variant, not available for play store `apilatest` version.
-  - The core exec asset is copied to internal storage upon selection, so you MUST reselect the core if you want to update it.
-  - The `working directory` can not be set to a location without execution permission, e.g. the sdcard which has a FAT file system.
-  - You MUST manually specify the `envs` if the core needs it, e.g. `{"xray.location.asset" : "/storage/emulated/0/path/to/xray/assets"}`
-- ^2. Only latest xray-core is embedded for now.
-- ^3. Require `Run as Administrator`, elevated user share configuration with original user
-- ^4. Require root, root DOES NOT share configuration with original user
-- ^5. Require root, root DOES NOT share configuration with original user. Move the app to Application folder and run `sudo /Applications/anyportal.app/Contents/MacOS/anyportal`.
-- ^6. Require an apple developer license to even debug an app that uses Network Extension. Dev progress currently blocked. The iOS app would serve little purpose right now without tun.
-- ^7. Tested on Ubuntu 24.04 with Gnome
+| core as exec           | 🟢       | 🟢     | 🟢     | 🟢¹      | ⚫   |
+| core as lib            | ⚫       | ⚫     | ⚫     | 🟢²      | 🟡   |
+| tun via root privilege | 🟢³      | 🟢⁴    | 🟢⁵    | ⚫       | ⚫   |
+| tun via system vpn api | ⚫       | ⚫     | 🔴⁶    | 🟢       | 🔴⁶  |
+| system proxy           | 🟢       | 🟢⁷    | 🟢     | ⚫       | ⚫   |
+<!-- ⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ -->
+1. Require `api28` variant, not available for play store `apilatest` version.
+   - The core exec asset is copied to internal storage upon selection, so you MUST reselect the core if you want to update it.
+   - The `working directory` can not be set to a location without execution permission, e.g. the sdcard which has a FAT file system.
+   - You MUST manually specify the `envs` if the core needs it, e.g. `{"xray.location.asset" : "/storage/emulated/0/path/to/xray/assets"}`
+1. Only latest xray-core is embedded for now.
+1. Require `Run as Administrator`, elevated user share configuration with original user
+1. Require root, root DOES NOT share configuration with original user
+1. Require root, root DOES NOT share configuration with original user. Move the app to Application folder and run `sudo /Applications/anyportal.app/Contents/MacOS/anyportal`.
+1. Require an apple developer license to even debug an app that uses Network Extension. Dev progress currently blocked. The iOS app would serve little purpose right now without tun.
+1. Tested on Ubuntu 24.04 with Gnome
 
 - ⚫ Not Planned: impossible / no plans / discontinued
 - 🟡 Planned: planned / under development

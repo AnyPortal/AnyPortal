@@ -1,6 +1,10 @@
+import 'dart:io';
+
+import 'package:anyportal/utils/permission_manager.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../utils/db.dart';
 import '../../models/core.dart';
@@ -99,9 +103,24 @@ class _CoreScreenState extends State<CoreScreen> {
       _isSubmitting = true;
     });
     bool ok = false;
+    bool permitted = true;
+
+    if (Platform.isAndroid) {
+      if (context.mounted) {
+        final status = await permMan.requestPermission(
+          context,
+          Permission.storage,
+          "Storage permission is required for cores to load assets.",
+        );
+
+        if (status != PermissionStatus.granted) {
+          permitted = false;
+        }
+      }
+    }
 
     try {
-      if (_formKey.currentState?.validate() ?? false) {
+      if (permitted && (_formKey.currentState?.validate() ?? false)) {
         final oldCore = widget.core;
         final workingDir = _workingDirController.text;
         final envs = _envsController.text;
@@ -134,8 +153,8 @@ class _CoreScreenState extends State<CoreScreen> {
                 ));
           }
         });
+        ok = true;
       }
-      ok = true;
     } catch (e) {
       final snackBar = SnackBar(
         content: Text("$e"),
