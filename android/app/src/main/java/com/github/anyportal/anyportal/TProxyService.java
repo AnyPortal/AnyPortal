@@ -10,13 +10,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.SharedPreferences;
+import android.net.VpnService;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
-import android.content.Intent;
-import android.net.VpnService;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.SharedPreferences;
+import android.service.quicksettings.TileService;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -61,7 +63,11 @@ public class TProxyService extends VpnService {
         stopAll();
     }
     
-
+    // notify tile service
+    public void updateTile() {
+        ComponentName componentName = new ComponentName(this, TProxyTileService.class);
+        TileService.requestListeningState(this, componentName);
+    }
     
     /// bind MainActivity
     private final IBinder binder = new LocalBinder();
@@ -157,6 +163,7 @@ public class TProxyService extends VpnService {
         }
 
         notifyMainActivity();
+        updateTile();
 
         Log.d(TAG, "reached target: startAll");
     }
@@ -173,6 +180,7 @@ public class TProxyService extends VpnService {
         }
 
         notifyMainActivity();
+        updateTile();
 
         Log.d(TAG, "reached target: stopAll");
     }

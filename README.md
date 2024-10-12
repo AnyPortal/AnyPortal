@@ -102,7 +102,7 @@ See planning [here](https://github.com/users/anyportal/projects/1/views/1).
   - you can use anyportal with tun disabled on Android, and use external tools to redirect traffic to a socks port, just like on desktop
 - android api 29+ does not allow running binary directly
   - you can run custom cores (any version of v2ray, xray) with apk compiled with api target 28
-  - playsotore always requires recent api targets, way over 28 now, so you can only use an embedded core with playstore apk
+  - play store always requires recent api targets, way over 28 now, so you can only use an embedded core with playstore apk
 
 ## License
 
@@ -110,7 +110,7 @@ All rights reserved until further notice (hopefully soon).
 
 ## Thanks
 
-### 3-rd party libs used in the project
+### 3rd party libs used in the project
 
 - [v2fly/v2ray-core](https://github.com/v2fly/v2ray-core), MIT
 - [xtls/xray-core](https://github.com/xtls/xray-core), MPL-2.0
