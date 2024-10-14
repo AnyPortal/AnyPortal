@@ -17,7 +17,7 @@ class TrayMenuManager {
     if (Platform.isWindows) {
       await trayManager.setIcon('windows/runner/resources/app_icon.ico');
     } else if (Platform.isMacOS) {
-      await trayManager.setIcon('assets/icon/icon_w.png');
+      await trayManager.setIcon('assets/icon/icon_k.png', isTemplate: true);
     } else {
       await trayManager.setIcon('assets/icon/icon.png');
     }
