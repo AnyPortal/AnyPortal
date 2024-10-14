@@ -18,8 +18,12 @@
   <tbody align=left>
     <td>Android</td>
       <td>
-        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-api28.apk"><img src="https://img.shields.io/badge/APK-api28-044d29.svg?logo=android"></a><br>
-        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-apilatest.apk"><img src="https://img.shields.io/badge/APK-apilatest-168039.svg?logo=android"></a><br>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-api28-armeabi-v7a.apk"><img src="https://img.shields.io/badge/APK-api28_armeabi_v7a-044d29.svg?logo=android"></a><br>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-api28-arm64-v8a.apk"><img src="https://img.shields.io/badge/APK-api28_arm64_v8a-044d29.svg?logo=android"></a><br>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-api28-x86_64.apk"><img src="https://img.shields.io/badge/APK-api28_x86_64-044d29.svg?logo=android"></a><br>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-apilatest-armeabi-v7a.apk"><img src="https://img.shields.io/badge/APK-apilatest_armeabi_v7a-168039.svg?logo=android"></a><br>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-apilatest-arm64-v8a.apk"><img src="https://img.shields.io/badge/APK-apilatest_arm64_v8a-168039.svg?logo=android"></a><br>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-apilatest-x86_64.apk"><img src="https://img.shields.io/badge/APK-apilatest_x86_64-168039.svg?logo=android"></a><br>
       </td>
     </tr>
     <tr>
