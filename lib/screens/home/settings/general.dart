@@ -27,6 +27,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
   String _serverAddress = prefs.getString('app.server.address')!;
   bool _brightnessIsDark = prefs.getBool('app.brightness.dark')!;
   bool _brightnessFollowSystem = prefs.getBool('app.brightness.followSystem')!;
+  bool _skipTaskbar = prefs.getBool('app.window.skipTaskbar')!;
 
   @override
   void initState() {
@@ -59,7 +60,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
         ListTile(
           title: const Text("Auto launch"),
           subtitle: Text(
-              "Auto launch (minimized to tray) at login, ${_runElevated ? 'with' : 'without'} privilege"),
+              "Auto launch at login, ${_runElevated ? 'with' : 'without'} privilege"),
           trailing: Switch(
             value: _launchAtLogin,
             onChanged: (value) async {
@@ -122,6 +123,20 @@ class _GeneralScreenState extends State<GeneralScreen> {
               prefs.setBool('app.runElevated', value);
               setState(() {
                 _runElevated = value;
+              });
+            },
+          ),
+        ),
+      if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
+        ListTile(
+          title: const Text("Minimize to tray"),
+          subtitle: const Text("Hide taskbar icon when minimized"),
+          trailing: Switch(
+            value: _skipTaskbar,
+            onChanged: (value) async {
+              prefs.setBool('app.window.skipTaskbar', value);
+              setState(() {
+                _skipTaskbar = value;
               });
             },
           ),

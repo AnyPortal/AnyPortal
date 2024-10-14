@@ -23,6 +23,7 @@ class PrefsManager {
     'app.window.size.width': 1280.0,
     'app.window.size.height': 720.0,
     'app.window.isMaximized': false,
+    'app.window.skipTaskbar': Platform.isWindows || Platform.isLinux,
     'app.brightness.dark': true,
     'app.brightness.followSystem': true,
     'inject.api': true,
