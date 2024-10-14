@@ -135,6 +135,18 @@ public class MainActivity extends FlutterActivity {
                 tProxyService.tryStopTun();
                 result.success(null);
                 break;
+
+            case "vpn.startSystemProxy":
+                result.success(tProxyService.tryStartSystemProxy());
+                break;
+        
+            case "vpn.stopSystemProxy":
+                result.success(tProxyService.tryStopSystemProxy());
+                break;
+
+            case "vpn.getIsSystemProxyEnabled":
+                result.success(tProxyService.tryGetIsSystemProxyEnabled());
+                break;
         
             case "vpn.isCoreActive":
                 result.success(tProxyService.isCoreActive);

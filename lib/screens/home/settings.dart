@@ -116,7 +116,7 @@ class _SettingListState extends State<SettingList> {
                     MaterialPageRoute(builder: (context) => const TunSingBoxScreen()),
                   );
                 }),
-          if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
+          if (Platform.isWindows || Platform.isLinux || Platform.isMacOS || Platform.isAndroid)
             ListTile(
                 title: const Text("System proxy"),
                 subtitle: Text("Provided by ${Platform.operatingSystem}, not all apps respect this setting"),

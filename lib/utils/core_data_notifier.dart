@@ -124,8 +124,9 @@ class CoreDataNotifier with ChangeNotifier {
 
 
   start() async {
-    final apiPort = prefs.getInt('inject.api.port') ?? 15490;
-    final v2ApiServer = V2ApiServer("localhost", apiPort);
+    final serverAddress = prefs.getString('app.server.address')!;
+    final apiPort = prefs.getInt('inject.api.port')!;
+    final v2ApiServer = V2ApiServer(serverAddress, apiPort);
     timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       try {
         sysStats = await v2ApiServer.getSysStats();

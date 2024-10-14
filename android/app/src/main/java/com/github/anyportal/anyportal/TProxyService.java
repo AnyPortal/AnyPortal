@@ -25,8 +25,12 @@ import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 import libv2raymobile.Libv2raymobile;
+
+// import dev.rikka.shizuku.Shizuku;
 
 /// despite name TProxyServiced (bind to hev-socks5-tunnel), this class should be counter part of vpn_manager.dart
 public class TProxyService extends VpnService {
@@ -113,6 +117,7 @@ public class TProxyService extends VpnService {
     private libv2raymobile.CoreManager coreManager = null;
     public boolean isCoreActive = false;
     public boolean isTunActive = false;
+    public boolean isSystemProxyActive = false;
     private SharedPreferences prefs;
 
     public void tryStartAll() {
@@ -148,6 +153,33 @@ public class TProxyService extends VpnService {
         } catch (Exception e) {
             e.printStackTrace();
             return;
+        }
+    }
+
+    public int tryStartSystemProxy() {
+        try {
+            return startSystemProxy();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public int tryStopSystemProxy() {
+        try {
+            return stopSystemProxy();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public boolean tryGetIsSystemProxyEnabled() {
+        try {
+            return getIsSystemProxyEnabled();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -361,5 +393,78 @@ public class TProxyService extends VpnService {
         }
 
         Log.d(TAG, "reached target: stopCore");
+    }
+
+    private int startSystemProxy(){
+        Log.d(TAG, "start target: startSystemProxy");
+
+        // if (!Shizuku.isPreV23() && Shizuku.checkSelfPermission() != PackageManager.PERMISSION_GRANTED) {
+        //     Shizuku.requestPermission(0);
+        // }
+
+        String serverAddress = prefs.getString("flutter.app.server.address", "127.0.0.1");
+        long httpPort = prefs.getLong("flutter.app.http.port", 15492);
+
+        String cmd = String.format("settings put global http_proxy %s:%d", serverAddress, httpPort);
+
+        // int process = Shizuku.newProcess(new String[]{"sh", "-c", cmd}, null, null).waitFor();
+
+        ProcessBuilder pb = new ProcessBuilder(new String[]{"su", "-c", cmd});
+        int exitCode = -1;
+        try {
+            exitCode = pb.start().waitFor();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Log.d(TAG, "reached target: startSystemProxy");
+        return exitCode;
+    }
+
+    private int stopSystemProxy(){
+        Log.d(TAG, "start target: stopSystemProxy");
+
+        String cmd = "settings put global http_proxy :0";
+        // int process = Shizuku.newProcess(new String[]{"sh", "-c", cmd}, null, null).waitFor();
+        ProcessBuilder pb = new ProcessBuilder(new String[]{"su", "-c", cmd});
+        int exitCode = -1;
+        try {
+            exitCode = pb.start().waitFor();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Log.d(TAG, "reached target: stopSystemProxy");
+        return exitCode;
+    }
+
+    private boolean getIsSystemProxyEnabled(){
+        Log.d(TAG, "start target: getIsSystemProxyEnabled");
+
+        String cmd = "settings get global http_proxy";
+        // int process = Shizuku.newProcess(new String[]{"sh", "-c", cmd}, null, null).waitFor();
+        ProcessBuilder pb = new ProcessBuilder(new String[]{"su", "-c", cmd});
+        int exitCode = -1;
+        try {
+            java.lang.Process process = pb.start();
+            // Read the command's output
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            StringBuilder output = new StringBuilder();
+
+            while ((line = reader.readLine()) != null) {
+                output.append(line.trim());  // trim() to remove any surrounding whitespace
+            }
+
+            reader.close();
+
+            // Check if the output is ":0"
+            return output.toString().equals(":0");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Log.d(TAG, "reached target: getIsSystemProxyEnabled");
+        return false;
     }
 }

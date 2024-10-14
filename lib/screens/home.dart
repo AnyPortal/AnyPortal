@@ -216,7 +216,8 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
                       ),
                       if (Platform.isWindows ||
                           Platform.isLinux ||
-                          Platform.isMacOS)
+                          Platform.isMacOS ||
+                          Platform.isAndroid)
                         ListTile(
                             dense: true,
                             title: const Text("System proxy"),

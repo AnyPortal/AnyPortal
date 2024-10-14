@@ -68,7 +68,7 @@
 | core as lib            | ⚫       | ⚫     | ⚫     | 🟢²      | 🟡   |
 | tun via root privilege | 🟢³      | 🟢⁴    | 🟢⁵    | ⚫       | ⚫   |
 | tun via system vpn api | ⚫       | ⚫     | 🔴⁶    | 🟢       | 🔴⁶  |
-| system proxy           | 🟢       | 🟢⁷    | 🟢     | ⚫       | ⚫   |
+| system proxy           | 🟢       | 🟢⁷    | 🟢     | 🟢⁸      | ⚫   |
 <!-- ⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ -->
 1. Require `api28` variant, not available for play store `apilatest` version.
    - The core exec asset is copied to internal storage upon selection, so you MUST reselect the core if you want to update it.
@@ -80,6 +80,7 @@
 1. Require root, root DOES NOT share configuration with original user. Move the app to Application folder and run `sudo /Applications/anyportal.app/Contents/MacOS/anyportal`.
 1. Require an apple developer license to even debug an app that uses Network Extension. Dev progress currently blocked. The iOS app would serve little purpose right now without tun.
 1. Tested on Ubuntu 24.04 with Gnome
+1. Require root
 
 - ⚫ Not Planned: impossible / no plans / discontinued
 - 🟡 Planned: planned / under development

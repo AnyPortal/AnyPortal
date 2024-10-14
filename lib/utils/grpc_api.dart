@@ -14,7 +14,7 @@ class V2ApiServer{
 
   V2ApiServer(String address, int port){
     channel = ClientChannel(
-      'localhost',
+      address,
       port: port,
       options: ChannelOptions(
         credentials: const ChannelCredentials.insecure(),

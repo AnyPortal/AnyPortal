@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/services.dart';
 import 'package:process_run/shell.dart';
 import 'package:tuple/tuple.dart';
 
@@ -209,10 +210,33 @@ class PlatformSystemProxyUserLinux extends PlatformSystemProxyUser {
   }
 }
 
+class PlatformSystemProxyUserAndroid extends PlatformSystemProxyUser {
+  static const platform = MethodChannel('com.github.anyportal.anyportal');
+  
+  @override
+  Future<bool?> isEnabled() async {
+    return await platform.invokeMethod('vpn.getIsSystemProxyEnabled') as bool;
+  }
+
+  @override
+  Future<void> enable(Map<String, Tuple2<String, int>> proxies) async {
+    await platform.invokeMethod('vpn.startSystemProxy') as int;
+    return;
+  }
+
+  @override
+  Future<void> disable() async {
+    await platform.invokeMethod('vpn.stopSystemProxy') as int;
+    return;
+  }
+}
+
 final platformSystemProxyUser = Platform.isWindows
     ? PlatformSystemProxyUserWindows()
     : Platform.isLinux
         ? PlatformSystemProxyUserLinux()
         : Platform.isMacOS
             ? PlatformSystemProxyUserMacOS()
-            : PlatformSystemProxyUser();
+            : Platform.isAndroid
+              ? PlatformSystemProxyUserAndroid()
+              : PlatformSystemProxyUser();
