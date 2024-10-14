@@ -4,6 +4,7 @@ import 'package:anyportal/models/core.dart';
 import '../models/profile.dart';
 import '../utils/db.dart';
 import '../utils/db/update_profile.dart';
+import '../utils/json.dart';
 
 class ProfileScreen extends StatefulWidget {
   final ProfileData? profile;
@@ -43,7 +44,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (widget.profile != null) {
       _nameController.text = widget.profile!.name;
       _profileType = widget.profile!.type;
-      _coreCfgController.text = widget.profile!.coreCfg;
+      _coreCfgController.text = prettyPrintJson(widget.profile!.coreCfg);
       _coreTypeId = widget.profile!.coreTypeId;
       final profileId = widget.profile!.id;
       switch (_profileType) {
@@ -82,7 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           url: _urlController.text,
           autoUpdateInterval: int.parse(_autoUpdateIntervalController.text),
           coreTypeId: _coreTypeId,
-          coreCfg: _coreCfgController.text,
+          coreCfg: minifyJson(_coreCfgController.text),
         );
       }
       ok = true;
