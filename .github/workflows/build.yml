@@ -110,9 +110,9 @@ jobs:
     - name: Create DMG with Applications shortcut
       run: |
         mkdir -p dmg-temp
-        cp -R build/macos/Build/Products/Release/anyportal.app dmg-temp/
+        cp -R build/macos/Build/Products/Release/AnyPortal.app dmg-temp/
         ln -s /Applications dmg-temp/Applications
-        hdiutil create -volname "anyportal" \
+        hdiutil create -volname "AnyPortal" \
           -srcfolder dmg-temp \
           -ov -format UDZO \
           build/macos/Build/Products/Release/anyportal-macos.dmg
