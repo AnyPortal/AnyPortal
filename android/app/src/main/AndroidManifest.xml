@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:tools="http://schemas.android.com/tools">
     <application
-        android:label="anyportal"
+        android:label="AnyPortal"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <service android:name=".TProxyService"
