@@ -164,26 +164,14 @@ jobs:
     - name: Decode android/key.properties
       run: echo "${{ secrets.KEY_PROPERTIES_PROD }}" | base64 --decode > android/key.properties
 
-    - name: Build Android APK api28
+    - name: Build Android APK 
       run: flutter build apk --release --split-per-abi --flavor api28
 
     - name: Upload Android APK
       uses: actions/upload-artifact@v4
       with:
         name: anyportal-android-api28
-        path: build/app/outputs/flutter-apk/app-armeabi-v7a-api28-release.apk
-
-    - name: Upload Android APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: anyportal-android-api28
-        path: build/app/outputs/flutter-apk/app-arm64-v8a-api28-release.apk
-      
-    - name: Upload Android APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: anyportal-android-api28
-        path: build/app/outputs/flutter-apk/app-x86_64-api28-release.apk
+        path: build/app/outputs/flutter-apk
 
   # Build for Android apilatest
   android-apilatest:
@@ -231,20 +219,8 @@ jobs:
     - name: Upload Android APK
       uses: actions/upload-artifact@v4
       with:
-        name: anyportal-android-api28
-        path: build/app/outputs/flutter-apk/app-armeabi-v7a-apilatest-release.apk
-
-    - name: Upload Android APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: anyportal-android-api28
-        path: build/app/outputs/flutter-apk/app-arm64-v8a-apilatest-release.apk
-      
-    - name: Upload Android APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: anyportal-android-api28
-        path: build/app/outputs/flutter-apk/app-x86_64-apilatest-release.apk
+        name: anyportal-android-apilatest
+        path: build/app/outputs/flutter-apk
 
   # # Build for iOS (requires macOS)
   # ios:
