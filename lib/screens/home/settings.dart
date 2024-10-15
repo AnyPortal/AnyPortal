@@ -6,6 +6,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'settings/about.dart';
 import 'settings/assets.dart';
+import 'settings/connectivity_basic.dart';
 import 'settings/cores.dart';
 import 'settings/general.dart';
 import 'settings/profile_override.dart';
@@ -45,6 +46,53 @@ class _SettingListState extends State<SettingList> {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             child: Text(
+              "Connectivity",
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
+          ),
+          ListTile(
+              title: const Text("Socks and HTTP"),
+              subtitle: const Text("Either to match predefined profile or for profile injection"),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ConnectivityBasicScreen()),
+                );
+              }),
+          if (Platform.isWindows || Platform.isLinux || Platform.isMacOS || Platform.isAndroid)
+            ListTile(
+                title: const Text("System proxy"),
+                subtitle: const Text("Provided by OS, not all apps respect this setting"),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SystemProxyScreen()),
+                  );
+                }),
+          if (Platform.isAndroid || Platform.isIOS)
+            ListTile(
+                title: const Text("Tun"),
+                subtitle: const Text("Vitual network adaptor"),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const TunHevSocks5TunnelScreen()),
+                  );
+                }),
+          if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
+            ListTile(
+                title: const Text("Tun"),
+                subtitle: const Text("Vitual network adaptor"),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const TunSingBoxScreen()),
+                  );
+                }),
+          const Divider(),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: Text(
               "Assets",
               style: TextStyle(color: Theme.of(context).colorScheme.primary),
             ),
@@ -79,7 +127,7 @@ class _SettingListState extends State<SettingList> {
           ),
           ListTile(
             title: const Text("Profile override"),
-            subtitle: const Text("Inject configuration into v2ray profile"),
+            subtitle: const Text("Inject configuration into v2ray/xray profile"),
             onTap: () {
               Navigator.push(
                 context,
@@ -88,44 +136,6 @@ class _SettingListState extends State<SettingList> {
               );
             },
           ),
-          const Divider(),
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            child: Text(
-              "Connection",
-              style: TextStyle(color: Theme.of(context).colorScheme.primary),
-            ),
-          ),
-          if (Platform.isAndroid || Platform.isIOS)
-            ListTile(
-                title: const Text("Tun"),
-                subtitle: const Text("Vitual network adaptor to direct all traffic"),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const TunHevSocks5TunnelScreen()),
-                  );
-                }),
-          if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
-            ListTile(
-                title: const Text("Tun"),
-                subtitle: const Text("Vitual network adaptor to direct all traffic"),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const TunSingBoxScreen()),
-                  );
-                }),
-          if (Platform.isWindows || Platform.isLinux || Platform.isMacOS || Platform.isAndroid)
-            ListTile(
-                title: const Text("System proxy"),
-                subtitle: Text("Provided by ${Platform.operatingSystem}, not all apps respect this setting"),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SystemProxyScreen()),
-                  );
-                }),
           const Divider(),
           Container(
             padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),

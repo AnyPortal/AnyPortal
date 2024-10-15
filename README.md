@@ -81,7 +81,7 @@
 1. Only latest xray-core is embedded for now.
 1. Require `Run as Administrator`, elevated user share configuration with original user
 1. Require root, root DOES NOT share configuration with original user
-1. Require root, root DOES NOT share configuration with original user. Move the app to Application folder and run `sudo /Applications/anyportal.app/Contents/MacOS/anyportal`.
+1. Require root, root DOES NOT share configuration with original user. Move the app to Application folder and run `sudo /Applications/AnyPortal.app/Contents/MacOS/AnyPortal`.
 1. Require an apple developer license to even debug an app that uses Network Extension. Dev progress currently blocked. The iOS app would serve little purpose right now without tun.
 1. Tested on Ubuntu 24.04 with Gnome
 1. Require root

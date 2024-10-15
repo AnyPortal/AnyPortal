@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 import '../../../utils/platform_system_proxy_user.dart';
@@ -40,8 +38,8 @@ class _SystemProxyScreenState extends State<SystemProxyScreen> {
       ListTile(
         enabled: _systemProxyIsEnabled != null,
         title: const Text("Enable system proxy"),
-        subtitle: Text(
-            "Provided by ${Platform.operatingSystem}, not all apps respect this setting"),
+        subtitle: const Text(
+            "Provided by OS, not all apps respect this setting"),
         trailing: Switch(
           value: _systemProxyIsEnabled == null ? false : _systemProxyShouldEnable,
           onChanged: (bool shouldEnable) {
