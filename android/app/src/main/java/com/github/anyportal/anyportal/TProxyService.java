@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 
 import libv2raymobile.Libv2raymobile;
 
@@ -114,6 +115,7 @@ public class TProxyService extends VpnService {
     /// vpn
     private ParcelFileDescriptor tunFd = null;
     private java.lang.Process coreProcess = null;
+    private java.lang.Process tunSingBoxCoreProcess = null;
     private libv2raymobile.CoreManager coreManager = null;
     public boolean isCoreActive = false;
     public boolean isTunActive = false;
@@ -217,11 +219,12 @@ public class TProxyService extends VpnService {
         Log.d(TAG, "reached target: stopAll");
     }
 
-    private void startTun() {
-        Log.d(TAG, "start target: startTun");
+    private void startTunEmbedded() {
+        Log.d(TAG, "start target: startTunEmbedded");
 
-        if (tunFd != null)
-          return;
+        if (tunFd != null){
+            return;
+        }
 
         String session = "";
         VpnService.Builder builder = new VpnService.Builder();
@@ -233,8 +236,9 @@ public class TProxyService extends VpnService {
             String dns = prefs.getString("flutter.tun.dns.ipv4", "1.1.1.1");
             builder.addAddress(addr, prefix);
             builder.addRoute("0.0.0.0", 0);
-            if (!dns.isEmpty())
-              builder.addDnsServer(dns);
+            if (!dns.isEmpty()){
+                builder.addDnsServer(dns);
+            }
             session += "IPv4";
         }
         if (prefs.getBoolean("flutter.tun.ipv6", true)) {
@@ -243,10 +247,12 @@ public class TProxyService extends VpnService {
             String dns = prefs.getString("flutter.tun.dns.ipv6", "2606:4700:4700::1111");
             builder.addAddress(addr, prefix);
             builder.addRoute("::", 0);
-            if (!dns.isEmpty())
-              builder.addDnsServer(dns);
-            if (!session.isEmpty())
-              session += " + ";
+            if (!dns.isEmpty()){
+                builder.addDnsServer(dns);
+            }
+            if (!session.isEmpty()){
+                session += " + ";
+            }
             session += "IPv6";
         }
         boolean disallowSelf = true;
@@ -283,6 +289,46 @@ public class TProxyService extends VpnService {
         /* TProxy */
         File tproxy_file = new File(getFilesDir(), "conf/tun.hev_socks5_tunnel.gen.yaml");
         TProxyStartService(tproxy_file.getAbsolutePath(), tunFd.getFd());
+        Log.d(TAG, "reached target: startTunEmbedded");
+    }
+
+    private void startTunExec() {
+        Log.d(TAG, "start target: startTunExec");
+        String corePath = prefs.getString("flutter.cache.tun.singBox.core.path", "");
+        new File(corePath).setExecutable(true);
+        List<String> coreArgs = getStringListFromJsonString(prefs.getString("flutter.cache.tun.singBox.core.args", "[]"));
+        String coreWorkingDir = prefs.getString("flutter.cache.tun.singBox.core.workingDir", "");
+        Map<String, String> coreEnvs = getStringStringMapFromJsonString(prefs.getString("flutter.tun.singBox.cache.core.envs", "{}"));
+        
+        coreArgs.add(0, corePath);
+        ProcessBuilder pb = new ProcessBuilder("su");
+        /// external storage can not be used as working dir !!
+        if (!coreWorkingDir.isEmpty()){
+            pb.directory(new File(coreWorkingDir));
+        }
+        Map<String, String> env = pb.environment();
+        env.putAll(coreEnvs);
+
+        try {
+            tunSingBoxCoreProcess = pb.start();
+            OutputStream os = tunSingBoxCoreProcess.getOutputStream();
+            os.write((String.join(" ", coreArgs) + "\n").getBytes());
+            os.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        Log.d(TAG, "reached target: startTunExec");
+    }
+
+    private void startTun() {
+        Log.d(TAG, "start target: startTun");
+        boolean useEmbedded = prefs.getBoolean("flutter.tun.useEmbedded", true);
+        if (useEmbedded){
+            startTunEmbedded();
+        } else {
+            startTunExec();
+        }
 
         Log.d(TAG, "reached target: startTun");
     }
@@ -332,6 +378,11 @@ public class TProxyService extends VpnService {
             }
             tunFd = null;
         }
+
+        if (tunSingBoxCoreProcess != null){
+            tunSingBoxCoreProcess.destroy();
+            tunSingBoxCoreProcess = null;
+        }
         
         Log.d(TAG, "reached target: stopTun");
     }
@@ -365,7 +416,9 @@ public class TProxyService extends VpnService {
             coreArgs.add(0, corePath);
             ProcessBuilder pb = new ProcessBuilder(coreArgs);
             /// external storage can not be used as working dir !!
-            pb.directory(new File(coreWorkingDir));
+            if (!coreWorkingDir.isEmpty()){
+                pb.directory(new File(coreWorkingDir));
+            }
             Map<String, String> env = pb.environment();
             env.putAll(coreEnvs);
 

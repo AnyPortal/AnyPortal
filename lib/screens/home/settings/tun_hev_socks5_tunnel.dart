@@ -20,6 +20,7 @@ class TunHevSocks5TunnelScreen extends StatefulWidget {
 
 class _TunHevSocks5TunnelScreenState extends State<TunHevSocks5TunnelScreen> {
   bool _tun = prefs.getBool('tun')!;
+  bool _tunUseEmbedded = prefs.getBool('tun.useEmbedded')!;
   bool _perAppProxy = prefs.getBool('tun.perAppProxy')!;
   String _socksUserName = prefs.getString('tun.socks.username')!;
   String _socksPassword = prefs.getString('tun.socks.password')!;
@@ -73,17 +74,21 @@ misc:
   Widget build(BuildContext context) {
     final fields = [
       ListTile(
-        title: const Text("Enable tun"),
+        title: const Text("Enable tun (via platform api)"),
         subtitle: const Text("Enable tun2socks so a socks proxy works like a VPN"),
         trailing: Switch(
-          value: _tun,
-          onChanged: (value) {
-            prefs.setWithNotification('tun', value);
+          value: _tun && _tunUseEmbedded,
+          onChanged: (shouldEnable) {
+            prefs.setWithNotification('tun', shouldEnable);
             setState(() {
-              _tun = value;
+              _tun = shouldEnable;
+              if (shouldEnable) {
+                _tunUseEmbedded = true;
+                prefs.setBool('tun.useEmbedded', true);
+              }
             });
             if (vPNMan.isCoreActive) {
-              if (value) {
+              if (shouldEnable) {
                 vPNMan.startTun();
               } else {
                 vPNMan.stopTun();

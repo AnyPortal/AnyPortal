@@ -8,6 +8,9 @@ class PlatformElevation {
     } else if (Platform.isMacOS || Platform.isLinux) {
       ProcessResult result = await Process.run('id', ['-u']);
       return result.stdout.trim() == '0';
+    } else if (Platform.isAndroid) {
+      ProcessResult result = await Process.run('su', ['-c', 'echo 0']);
+      return result.stdout.trim() == '0';
     }
     return false; // Unsupported platforms
   }

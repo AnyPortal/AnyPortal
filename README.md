@@ -65,26 +65,26 @@
 > 2024-09-27
 
 ## Dev roadmap
-|                        | Windows | Linux | macOS | Android | iOS |
-| ---------------------- | ------- | ----- | ----- | ------- | --- |
-| AnyPortal              | 🟢       | 🟢     | 🟢     | 🟢       | 🟡   |
-| core as exec           | 🟢       | 🟢     | 🟢     | 🟢¹      | ⚫   |
-| core as lib            | ⚫       | ⚫     | ⚫     | 🟢²      | 🟡   |
-| tun via root privilege | 🟢³      | 🟢⁴    | 🟢⁵    | ⚫       | ⚫   |
-| tun via system vpn api | ⚫       | ⚫     | 🔴⁶    | 🟢       | 🔴⁶  |
-| system proxy           | 🟢       | 🟢⁷    | 🟢     | 🟢⁸      | ⚫   |
-<!-- ⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ -->
+|              |                  | Windows | Linux | macOS | Android | iOS |
+| ------------ | ---------------- | ------- | ----- | ----- | ------- | --- |
+| AnyPortal    |                  | 🟢       | 🟢     | 🟢     | 🟢       | 🟡   |
+| core         | of exec          | 🟢       | 🟢     | 🟢     | 🟢¹      | ⚫   |
+|              | of lib           | ⚫       | ⚫     | ⚫     | 🟢²      | 🟡   |
+| tun          | via root         | 🟢³      | 🟢⁴    | 🟢⁵    | 🟢¹      | ⚫   |
+|              | via platform api | ⚫       | ⚫     | 🔴⁶    | 🟢       | 🔴⁶  |
+| system proxy |                  | 🟢       | 🟢⁷    | 🟢     | 🟢⁸      | ⚫   |
+<!-- ⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ ⸴ -->
 1. Require `api28` variant, not available for play store `apilatest` version.
    - The core exec asset is copied to internal storage upon selection, so you MUST reselect the core if you want to update it.
    - The `working directory` can not be set to a location without execution permission, e.g. the sdcard which has a FAT file system.
    - You MUST manually specify the `envs` if the core needs it, e.g. `{"xray.location.asset" : "/storage/emulated/0/path/to/xray/assets"}`
-1. Only latest xray-core is embedded for now.
-1. Require `Run as Administrator`, elevated user share configuration with original user
-1. Require root, root DOES NOT share configuration with original user
-1. Require root, root DOES NOT share configuration with original user. Move the app to Application folder and run `sudo /Applications/AnyPortal.app/Contents/MacOS/AnyPortal`.
-1. Require an apple developer license to even debug an app that uses Network Extension. Dev progress currently blocked. The iOS app would serve little purpose right now without tun.
-1. Tested on Ubuntu 24.04 with Gnome
-1. Require root
+2. Only xray-core 1.8.24 is embedded for now. Latest xray-core has stability issues
+3. Require `Run as Administrator`, elevated user share configuration with original user
+4. Require root, root DOES NOT share configuration with original user
+5. Require root, root DOES NOT share configuration with original user. Move the app to Application folder and run `sudo /Applications/AnyPortal.app/Contents/MacOS/AnyPortal`.
+6. Require an apple developer license to even debug an app that uses Network Extension. Dev progress currently blocked. The iOS app would serve little purpose right now without tun.
+7. Tested on Ubuntu 24.04 with Gnome
+8. Require root
 
 - ⚫ Not Planned: impossible / no plans / discontinued
 - 🟡 Planned: planned / under development
@@ -108,6 +108,8 @@ See planning [here](https://github.com/users/anyportal/projects/1/views/1).
 - android api 29+ does not allow running binary directly
   - you can run custom cores (any version of v2ray, xray) with apk compiled with api target 28
   - play store always requires recent api targets, way over 28 now, so you can only use an embedded core with playstore apk
+- why do I need tun via root or system proxy on Android?
+  - there are apps actively detecting if you are using VPN
 
 ## License
 

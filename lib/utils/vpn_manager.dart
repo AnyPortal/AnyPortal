@@ -169,7 +169,7 @@ abstract class VPNManager with ChangeNotifier {
 
   late Map<String, dynamic> coreRawCfgMap;
 
-  bool getIsTunExec() {
+  bool getIsTunProcess() {
     return prefs.getBool("tun")! &&
         (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
   }
@@ -272,7 +272,7 @@ abstract class VPNManager with ChangeNotifier {
   }
 
   Future<void> initTunExec() async {
-    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS || Platform.isAndroid) {
       final coreTypeId = CoreTypeDefault.singBox.index;
       final core = await (db.select(db.coreTypeSelected).join([
         leftOuterJoin(
@@ -294,12 +294,13 @@ abstract class VPNManager with ChangeNotifier {
           if (_tunSingBoxCorePath == null) {
             throw Exception("sing-box path is null.");
           } else {
-            prefs.setString('tun.singBox.core.path', _tunSingBoxCorePath!);
+            prefs.setString('cache.tun.singBox.core.path', _tunSingBoxCorePath!);
           }
           _tunSingBoxCoreWorkingDir = core.read(db.core.workingDir)!;
           if (_tunSingBoxCoreWorkingDir!.isEmpty){
-            _tunSingBoxCoreWorkingDir = File(corePath!).parent.path;
+            _tunSingBoxCoreWorkingDir = File(_tunSingBoxCorePath!).parent.path;
           }
+          prefs.setString('cache.tun.singBox.core.workingDir', _tunSingBoxCoreWorkingDir!);
         }
 
         /// gen config.json
@@ -333,6 +334,7 @@ abstract class VPNManager with ChangeNotifier {
         _tunSingBoxCoreEnvs =
             (jsonDecode(core.read(db.core.envs)!) as Map<String, dynamic>)
                 .map((k, v) => MapEntry(k, v as String));
+        await prefs.setString('cache.tun.singBox.core.envs', jsonEncode(_tunSingBoxCoreEnvs));
         List<String> rawTunSingBoxArgList =
             (jsonDecode(core.read(db.coreExec.args)!) as List<dynamic>)
                 .map((e) => e as String)
@@ -347,6 +349,7 @@ abstract class VPNManager with ChangeNotifier {
                 _tunSingBoxCoreArgList[i].replaceAll(entry.key, entry.value);
           }
         }
+        prefs.setString('cache.tun.singBox.core.args', jsonEncode(_tunSingBoxCoreArgList));
       }
     }
   }
@@ -425,7 +428,7 @@ class VPNManagerExec extends VPNManager {
 
   @override
   startTun() async {
-    if (getIsTunExec() && processTun == null) {
+    if (getIsTunProcess() && processTun == null) {
       await initTunExec();
       processTun = await Process.start(
         _tunSingBoxCorePath!,
@@ -496,6 +499,9 @@ class VPNManagerMC extends VPNManager {
   @override
   startAll() async {
     await initCore();
+    if (!prefs.getBool("tun.useEmbedded")!){
+      await initTunExec();
+    }
     await platform.invokeMethod('vpn.startAll');
   }
 
@@ -506,6 +512,9 @@ class VPNManagerMC extends VPNManager {
 
   @override
   startTun() async {
+    if (!prefs.getBool("tun.useEmbedded")!){
+      await initTunExec();
+    }
     await platform.invokeMethod('vpn.startTun');
   }
 

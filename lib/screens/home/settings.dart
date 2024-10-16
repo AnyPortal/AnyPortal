@@ -71,7 +71,7 @@ class _SettingListState extends State<SettingList> {
                 }),
           if (Platform.isAndroid || Platform.isIOS)
             ListTile(
-                title: const Text("Tun"),
+                title: const Text("Tun (via platform api)"),
                 subtitle: const Text("Vitual network adaptor"),
                 onTap: () {
                   Navigator.push(
@@ -79,9 +79,9 @@ class _SettingListState extends State<SettingList> {
                     MaterialPageRoute(builder: (context) => const TunHevSocks5TunnelScreen()),
                   );
                 }),
-          if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
+          if (Platform.isWindows || Platform.isLinux || Platform.isMacOS || Platform.isAndroid)
             ListTile(
-                title: const Text("Tun"),
+                title: const Text("Tun (via root)"),
                 subtitle: const Text("Vitual network adaptor"),
                 onTap: () {
                   Navigator.push(

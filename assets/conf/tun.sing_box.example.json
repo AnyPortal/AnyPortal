@@ -7,8 +7,8 @@
   "dns": {
     "servers": [
       {
-        "tag": "dn_dhcp_auto",
-        "address": "dhcp://auto",
+        "tag": "dn_cloudflare",
+        "address": "1.1.1.1",
         "detour": "ot_direct"
       },
       {

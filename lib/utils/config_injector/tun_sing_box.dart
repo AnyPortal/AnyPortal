@@ -20,7 +20,7 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
   final injectSocksPort = prefs.getInt('app.socks.port')!;
   final injectHttpPort = prefs.getInt('app.http.port')!;
   final injectExcludeCore = prefs.getBool('tun.inject.excludeCorePath')!;
-  final corePath = vPNMan.corePath!;
+  final corePath = vPNMan.corePath;
 
   if (injectLog) {
     final pathLog = File(p.join(
@@ -56,10 +56,19 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
 
   if (injectExcludeCore) {
     final route = cfg["route"] as Map<String, dynamic>;
-    route["rules"].insert(0, {
-      "process_path": [corePath],
-      "outbound": "ot_direct"
-    });
+    if (corePath != null) {
+      route["rules"].insert(0, {
+        "process_path": [corePath],
+        "outbound": "ot_direct"
+      });
+    }
+
+    if (Platform.isAndroid) {
+      route["rules"].insert(0, {
+        "package_name": "com.github.anyportal.anyportal",
+        "outbound": "ot_direct"
+      });
+    }
   }
 
   return cfg;

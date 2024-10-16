@@ -13,7 +13,6 @@ class PrefsManager {
     // 'core.xray.path',
     // 'core.sing-box.path',
     // 'core.v2ray.assetPath',
-    'core.useEmbedded': Platform.isAndroid || Platform.isIOS,
     // 'app.selectedProfileId': 1,
     'app.connectAtLaunch': Platform.isWindows || Platform.isLinux || Platform.isMacOS,
     'app.runElevated': false,
@@ -51,6 +50,7 @@ class PrefsManager {
     'tun.inject.http': true,
     'tun.inject.socks': true,
     'tun.inject.excludeCorePath': true,
+    'tun.useEmbedded': Platform.isAndroid || Platform.isIOS,
   };
 
   static final PrefsManager _instance = PrefsManager._internal();

@@ -21,6 +21,7 @@ class TunSingBoxScreen extends StatefulWidget {
 
 class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
   bool _tun = prefs.getBool('tun')!;
+  bool _tunUseEmbedded = prefs.getBool('tun.useEmbedded')!;
   bool _injectLog = prefs.getBool('tun.inject.log')!;
   LogLevel _logLevel = LogLevel.values[prefs.getInt('tun.inject.log.level')!];
   bool _injectSocks = prefs.getBool('tun.inject.socks')!;
@@ -43,26 +44,30 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
     final fields = [
       ListTile(
         enabled: global.isElevated,
-        title: const Text("Enable tun"),
+        title: const Text("Enable tun (via root)"),
         subtitle:
             const Text("""Enable tun2socks so a socks proxy works like a VPN
 Requires elevation
 """),
         trailing: Switch(
-          value: _tun,
+          value: _tun && !_tunUseEmbedded,
           onChanged: (shouldEnable) {
             if (!global.isElevated) {
-                final snackBar = SnackBar(
-                  content: Text(
-                      "You need to be $_elevatedUser to modify this setting"),
-                );
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                }
-                return;
+              final snackBar = SnackBar(
+                content: Text(
+                    "You need to be $_elevatedUser to modify this setting"),
+              );
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
               }
+              return;
+            }
             setState(() {
               _tun = shouldEnable;
+              if (shouldEnable) {
+                _tunUseEmbedded = false;
+                prefs.setBool('tun.useEmbedded', false);
+              }
             });
             prefs.setWithNotification('tun', shouldEnable);
             vPNMan.getIsCoreActive().then((isCoreActive) {
@@ -173,7 +178,8 @@ Requires elevation
       ),
       ListTile(
         title: const Text("Edit config"),
-        subtitle: const Text("sing-box config"),
+        subtitle: Text(p.join(global.applicationDocumentsDirectory.path,
+            "AnyPortal", "conf", "tun.sing_box.json")),
         trailing: const Icon(Icons.folder_open),
         onTap: () {
           PlatformFileMananger.highlightFileInFolder(p.join(

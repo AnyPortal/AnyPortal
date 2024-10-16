@@ -77,10 +77,11 @@ void main(List<String> args) async {
         dark: dispatcher.platformBrightness == Brightness.dark,
       );
     }
-
-    // copy assets
-    await copyAssetsToDefaultLocation();
   }
+
+
+  // copy assets
+  await copyAssetsToDefaultLocation();
 
   /// theme color
   SystemTheme.fallbackColor = const Color.fromARGB(82, 0, 140, 255);
