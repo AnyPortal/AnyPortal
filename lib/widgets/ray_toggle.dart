@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:anyportal/models/core.dart';
 import 'package:flutter/material.dart';
 import 'package:anyportal/utils/core_data_notifier.dart';
 
@@ -24,7 +25,7 @@ class RayToggleState extends State<RayToggle> {
 
   Future<void> syncCoreDataNotifier() async {
     final isCoreActive = await vPNMan.getIsCoreActive();
-    if (isCoreActive && !coreDataNotifier.on) {
+    if (isCoreActive && !coreDataNotifier.on && vPNMan.coreTypeId <= CoreTypeDefault.xray.index) {
       try {
         coreDataNotifier.loadCfg(vPNMan.coreRawCfgMap);
         // should do atomic check

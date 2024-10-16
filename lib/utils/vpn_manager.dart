@@ -157,6 +157,7 @@ abstract class VPNManager with ChangeNotifier {
   ProfileData? _selectedProfile;
   late bool _isExec;
 
+  late int coreTypeId;
   String? corePath;
   late List<String> _coreArgList;
   String? _coreWorkingDir;
@@ -205,7 +206,7 @@ abstract class VPNManager with ChangeNotifier {
     await config.writeAsString(jsonEncode(coreRawCfgMap));
 
     // check core path
-    final coreTypeId = _selectedProfile!.coreTypeId;
+    coreTypeId = _selectedProfile!.coreTypeId;
     final core = await (db.select(db.coreTypeSelected).join([
       leftOuterJoin(db.core, db.coreTypeSelected.coreId.equalsExp(db.core.id)),
       leftOuterJoin(db.coreExec, db.core.id.equalsExp(db.coreExec.coreId)),
