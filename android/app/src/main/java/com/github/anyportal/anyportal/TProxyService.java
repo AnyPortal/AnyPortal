@@ -10,18 +10,24 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.SharedPreferences;
 import android.net.VpnService;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.service.quicksettings.TileService;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +37,8 @@ import java.io.OutputStream;
 
 import libv2raymobile.Libv2raymobile;
 
+import com.github.anyportal.anyportal.R;
+
 // import dev.rikka.shizuku.Shizuku;
 
 /// despite name TProxyServiced (bind to hev-socks5-tunnel), this class should be counter part of vpn_manager.dart
@@ -39,6 +47,8 @@ public class TProxyService extends VpnService {
     public static native void TProxyStopService();
     public static native long[] TProxyGetStats();
     private static final String TAG = "TProxyService";
+    private static final String CHANNEL_ID = "vpn_channel_id";
+    private static final int NOTIFICATION_ID = 1;
 
     static {
         System.loadLibrary("hev-socks5-tunnel");
@@ -49,6 +59,41 @@ public class TProxyService extends VpnService {
         // android.os.Debug.waitForDebugger();
         return START_STICKY;
     }
+
+    private void createNotificationChannel() {
+        Log.d(TAG, "start target: createNotificationChannel");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Log.d(TAG, "NotificationChannel");
+            NotificationChannel channel = new NotificationChannel(
+                CHANNEL_ID,
+                "VPN Service Channel",
+                NotificationManager.IMPORTANCE_DEFAULT
+            );
+            channel.setDescription("Notification channel for VPN service");
+
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            if (manager != null) {
+                manager.createNotificationChannel(channel);
+            }
+        }
+    }
+
+    private Notification createNotification() {
+        // Intent to launch main activity
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+            this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE
+        );
+
+        // Build the notification
+        return new NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("AnyPortal VPN Service")
+            .setContentText("The VPN service is running")
+            // .setSmallIcon(R.drawable.launcher_icon) // Replace with your icon
+            .setContentIntent(pendingIntent)
+            .build();
+    }
+
 
     @Override
     public void onCreate() {
@@ -123,6 +168,10 @@ public class TProxyService extends VpnService {
     private SharedPreferences prefs;
 
     public void tryStartAll() {
+        // createNotificationChannel();
+        // Notification notification = createNotification();
+        // startForeground(NOTIFICATION_ID, notification);
+
         try {
             startAll();
         } catch (Exception e) {
@@ -282,6 +331,7 @@ public class TProxyService extends VpnService {
         builder.setSession(session);
         tunFd = builder.establish();
         if (tunFd == null) {
+            Log.w(TAG, "tunFd == null");
             stopSelf();
             return;
         }

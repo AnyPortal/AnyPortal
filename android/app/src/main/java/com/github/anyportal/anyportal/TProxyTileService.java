@@ -1,8 +1,10 @@
 package com.github.anyportal.anyportal;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.IBinder;
@@ -11,7 +13,7 @@ import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 
 public class TProxyTileService extends TileService {
-    public static final String ACTION_TILE_TOGGLED = "com.github.anyportal.anyportal.TILE_TOGGLED";
+    public static final String ACTION_TILE_TOGGLED = "com.github.anyportal.anyportal.ACTION_TILE_TOGGLED";
     public static final String EXTRA_IS_ACTIVE = "is_active";
 
     /// bind TProxyService
@@ -63,6 +65,20 @@ public class TProxyTileService extends TileService {
     }
 
     public void onClick() {
+        super.onClick();
+
+        // Register a receiver to listen for the signal from TProxyTileActivity
+        IntentFilter filter = new IntentFilter(TProxyTileActivity.ACTION_DUMMY_ACTIVITY_LAUNCHED);
+        registerReceiver(tProxyTileActivityLaunchedReceiver, filter);
+
+        // Launch the TProxyTileActivity
+        Intent intent = new Intent(this, TProxyTileActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        // startActivityAndCollapse(intent);  // startActivityAndCollapse minimizes the quick settings panel
+        startActivity(intent);
+    }
+
+    private void stoggleTProxyService() {
         if (tProxyService != null) {
             toggleTile(tProxyService);
         } else {
@@ -83,6 +99,18 @@ public class TProxyTileService extends TileService {
             bindTProxyService(serviceConnection);
         }
     }
+
+    // Define the BroadcastReceiver to listen for the start signal
+    private final BroadcastReceiver tProxyTileActivityLaunchedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Start the VPN service here
+            stoggleTProxyService();
+
+            // Unregister the receiver after handling the signal
+            unregisterReceiver(this);
+        }
+    };
 
     public void notifyMainActivity(boolean isExpectingActive) {
         // Send broadcast to notify MainActivity

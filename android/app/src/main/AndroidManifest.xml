@@ -5,14 +5,14 @@
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <service android:name=".TProxyService"
-				android:permission="android.permission.BIND_VPN_SERVICE"
-				android:exported="true"
-				android:foregroundServiceType="specialUse">
-			<intent-filter>
-				<action android:name="android.net.VpnService"/>
-			</intent-filter>
-			<property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-				android:value="VPN service"/>
+            android:permission="android.permission.BIND_VPN_SERVICE"
+            android:exported="true"
+            android:foregroundServiceType="specialUse">
+        <intent-filter>
+            <action android:name="android.net.VpnService"/>
+        </intent-filter>
+        <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+            android:value="VPN service"/>
 		</service>
         <service
             android:name=".TProxyTileService"
@@ -53,6 +53,9 @@
                 <action android:name="com.github.anyportal.anyportal.DISCONNECTED"/>
                 <action android:name="com.github.anyportal.anyportal.TILE_TOGGLED"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".TProxyTileActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

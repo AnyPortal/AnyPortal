@@ -107,15 +107,27 @@ class _CoreScreenState extends State<CoreScreen> {
 
     if (Platform.isAndroid) {
       if (context.mounted) {
-        final status = await permMan.requestPermission(
+        await permMan.requestPermission(
           context,
           Permission.storage,
           "Storage permission is required for cores to load assets.",
-        );
+        ).then((status){
+          if (status != PermissionStatus.granted) {
+            permitted = false;
+          }
+        });
+      }
 
-        if (status != PermissionStatus.granted) {
-          permitted = false;
-        }
+      if (context.mounted) {
+        await permMan.requestPermission(
+          context,
+          Permission.notification,
+          "Notification permission is required for quick tiles to work properly",
+        ).then((status){
+          if (status != PermissionStatus.granted) {
+            permitted = false;
+          }
+        });
       }
     }
 
