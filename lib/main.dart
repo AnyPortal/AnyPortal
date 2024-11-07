@@ -26,22 +26,30 @@ import 'utils/copy_assets.dart';
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await PrefsManager().init();
-  await GlobalManager().init();
+  await Future.wait([
+    PrefsManager().init(),
+    GlobalManager().init(),
+    MethodChannelManager().init(),
+  ]);
+
   if (prefs.getBool("app.runElevated")! && !global.isElevated) {
     await PlatformElevation.elevate();
     exit(0);
   }
-  LoggerManager().init();
-  DatabaseManager().init();
 
-  VPNManManager().init();
+  await Future.wait([
+    LoggerManager().init(),
+    DatabaseManager().init(),
+  ]);
+
+  await Future.wait([
+    VPNManManager().init(),
+    CoreDataNotifierManager().init(),
+  ]);
+
   try {
     await vPNMan.initCore();
   } catch (_) {}
-
-  CoreDataNotifierManager().init();
-  MethodChannelManager().init();
 
   if (Platform.isAndroid || Platform.isIOS) {
     await tProxyConfInit();

@@ -549,7 +549,7 @@ class VPNManManager {
   }
 
   // Async initializer (call once at app startup)
-  void init() {
+  Future<void> init() async {
     _vPNMan = Platform.isAndroid || Platform.isIOS
         ? VPNManagerMC()
         : VPNManagerExec();

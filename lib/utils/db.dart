@@ -27,7 +27,7 @@ class DatabaseManager {
   }
 
   // Async initializer (call once at app startup)
-  void init() {
+  Future<void> init() async {
     final dbFolder = global.applicationDocumentsDirectory;
     final file = File(p.join(dbFolder.path, "AnyPortal", "db.sqlite"));
     if (!file.existsSync()) {
