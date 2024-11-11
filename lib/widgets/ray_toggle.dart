@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:anyportal/utils/core_data_notifier.dart';
 
 import '../screens/home/settings/cores.dart';
+import '../utils/logger.dart';
 import '../utils/vpn_manager.dart';
 
 // ignore: must_be_immutable
@@ -31,6 +32,7 @@ class RayToggleState extends State<RayToggle> {
         // should do atomic check
         if (!coreDataNotifier.on) coreDataNotifier.start();
       } catch (e) {
+        logger.e("$e");
         final snackBar = SnackBar(
           content: Text("syncCoreDataNotifier: $e"),
         );

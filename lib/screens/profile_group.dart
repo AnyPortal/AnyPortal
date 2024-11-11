@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/profile_group.dart';
 import '../utils/db.dart';
 import '../utils/db/update_profile_group.dart';
+import '../utils/logger.dart';
 
 class ProfileGroupScreen extends StatefulWidget {
   final ProfileGroupData? profileGroup;
@@ -73,6 +74,7 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
       }
       ok = true;
     } catch (e) {
+      logger.e("$e");
       final snackBar = SnackBar(
         content: Text("$e"),
       );

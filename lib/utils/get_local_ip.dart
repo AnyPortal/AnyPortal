@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'logger.dart';
+
 Future<String?> getIPAddr() async {
   try {
     final process = await Process.run('python', [
@@ -8,6 +10,7 @@ Future<String?> getIPAddr() async {
     ]);
     return process.stdout.toString();
   } catch (e) {
+    logger.e("$e");
     return null;
   }
 }

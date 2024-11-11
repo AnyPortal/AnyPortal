@@ -9,6 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../utils/db.dart';
 import '../../models/core.dart';
 import '../models/asset.dart';
+import '../utils/logger.dart';
 import 'asset.dart';
 import 'core_type.dart';
 
@@ -168,6 +169,7 @@ class _CoreScreenState extends State<CoreScreen> {
         ok = true;
       }
     } catch (e) {
+      logger.e("$e");
       final snackBar = SnackBar(
         content: Text("$e"),
       );

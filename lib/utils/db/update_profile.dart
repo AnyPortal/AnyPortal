@@ -76,6 +76,7 @@ Future<bool> updateProfile({
               updatedAt: drift.Value(DateTime.now()),
               coreCfg: drift.Value(coreCfg!),
               type: drift.Value(profileType),
+              coreTypeId: drift.Value(coreTypeId!),
             ));
         await db.into(db.profileLocal).insertOnConflictUpdate(
             ProfileLocalCompanion(profileId: drift.Value(profileId)));

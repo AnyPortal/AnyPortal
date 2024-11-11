@@ -114,6 +114,7 @@ void main(List<String> args) async {
           await vPNMan.start();
         }
       } on Exception catch (e) {
+        logger.e("$e");
         err = e;
       } finally {
         if (err != null) {

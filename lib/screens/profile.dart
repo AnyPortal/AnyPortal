@@ -5,6 +5,7 @@ import '../models/profile.dart';
 import '../utils/db.dart';
 import '../utils/db/update_profile.dart';
 import '../utils/json.dart';
+import '../utils/logger.dart';
 
 class ProfileScreen extends StatefulWidget {
   final ProfileData? profile;
@@ -88,6 +89,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
       ok = true;
     } catch (e) {
+      logger.e("$e");
       final snackBar = SnackBar(
         content: Text("$e"),
       );

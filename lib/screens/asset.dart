@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import '../../utils/db.dart';
 import '../../models/asset.dart';
 import '../utils/asset_remote/github.dart';
+import '../utils/logger.dart';
 
 class AssetScreen extends StatefulWidget {
   final TypedResult? asset;
@@ -101,6 +102,7 @@ class _AssetScreenState extends State<AssetScreen> {
       }
       ok = true;
     } catch (e) {
+      logger.e("$e");
       final snackBar = SnackBar(
         content: Text("$e"),
       );

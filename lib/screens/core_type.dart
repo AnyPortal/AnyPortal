@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/db.dart';
+import '../utils/logger.dart';
 
 class CoreTypeScreen extends StatefulWidget {
   final CoreTypeData? coreType;
@@ -58,6 +59,7 @@ class _CoreTypeScreenState extends State<CoreTypeScreen> {
       }
       ok = true;
     } catch (e) {
+      logger.e("$e");
       final snackBar = SnackBar(
         content: Text("$e"),
       );
