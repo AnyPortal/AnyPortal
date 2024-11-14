@@ -48,10 +48,12 @@ public class MainActivity extends FlutterActivity {
 		super.onCreate(savedInstanceState);
 
 		/* Request VPN permission */
-		Intent intent = VpnService.prepare(MainActivity.this);
-		if (intent != null) {
-            startActivityForResult(intent, 0);
+		Intent intentVPNServicePrepare = VpnService.prepare(MainActivity.this);
+		if (intentVPNServicePrepare != null) {
+            Log.d(TAG, "intentVPNServicePrepare ok");
+            startActivityForResult(intentVPNServicePrepare, 0);
         } else {
+            Log.d(TAG, "intentVPNServicePrepare == null");
             onActivityResult(0, RESULT_OK, null);
         }
         // Copy geoip.dat and geosite.dat to the documents directory if needed

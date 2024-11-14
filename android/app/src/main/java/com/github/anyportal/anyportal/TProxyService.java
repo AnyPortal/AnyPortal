@@ -15,6 +15,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.SharedPreferences;
@@ -91,6 +92,7 @@ public class TProxyService extends VpnService {
             // .setContentText("The VPN service is running")
             .setSmallIcon(R.drawable.ic_launcher_monochrome)
             .setContentIntent(pendingIntent)
+            .setOngoing(true)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .build();
     }
@@ -307,9 +309,14 @@ public class TProxyService extends VpnService {
             return;
         }
 
-        Intent i = VpnService.prepare(getApplicationContext());
-        if (i != null) {
-            getApplicationContext().startActivity(i);
+        Context ctx = getApplicationContext();
+        Intent intentVPNServicePrepare = VpnService.prepare(ctx);
+        if (intentVPNServicePrepare != null) {
+            Log.d(TAG, "intentVPNServicePrepare ok");
+            intentVPNServicePrepare.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            ctx.startActivity(intentVPNServicePrepare);
+        } else {
+            Log.d(TAG, "intentVPNServicePrepare == null");
         }
 
         String session = "";

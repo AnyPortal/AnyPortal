@@ -27,13 +27,6 @@ public class BootReceiver extends BroadcastReceiver {
         prefs = context.getSharedPreferences("FlutterSharedPreferences", context.MODE_PRIVATE);
 
         if (prefs.getBoolean("flutter.app.connectAtStartup", true)){
-            // Register a receiver to listen for the signal from MinActivity
-            // must prepare VpnService for subsequent VpnService.Builder().establish() to work properly
-            Intent i = VpnService.prepare(context.getApplicationContext());
-            if (i != null) {
-                context.startActivity(i);
-            }
-
             launchTProxyService(context);
         }
     }

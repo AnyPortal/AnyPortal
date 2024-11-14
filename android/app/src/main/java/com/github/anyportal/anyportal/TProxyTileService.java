@@ -66,16 +66,7 @@ public class TProxyTileService extends TileService {
 
     public void onClick() {
         super.onClick();
-
-        // Register a receiver to listen for the signal from MinActivity
-        IntentFilter filter = new IntentFilter(MinActivity.ACTION_MIN_ACTIVITY_LAUNCHED);
-        registerReceiver(MinActivityLaunchedReceiver, filter);
-
-        // Launch the MinActivity
-        Intent intent = new Intent(this, MinActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        // startActivityAndCollapse(intent);  // startActivityAndCollapse minimizes the quick settings panel
-        startActivity(intent);
+        toggleTProxyService();
     }
 
     private void toggleTProxyService() {
@@ -99,18 +90,6 @@ public class TProxyTileService extends TileService {
             bindTProxyService(serviceConnection);
         }
     }
-
-    // Define the BroadcastReceiver to listen for the start signal
-    private final BroadcastReceiver MinActivityLaunchedReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // Start the VPN service here
-            toggleTProxyService();
-
-            // Unregister the receiver after handling the signal
-            unregisterReceiver(this);
-        }
-    };
 
     public void notifyMainActivity(boolean isExpectingActive) {
         // Send broadcast to notify MainActivity
