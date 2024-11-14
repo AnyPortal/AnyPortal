@@ -47,6 +47,8 @@ abstract class VPNManager with ChangeNotifier {
   Future<void> stopCore();
   Future<void> startTun();
   Future<void> stopTun();
+  Future<void> startNotificationForeground() async {}
+  Future<void> stopNotificationForeground() async {}
 
   startSystemProxy() async {
     if (prefs.getBool("systemProxy")!) {
@@ -533,6 +535,16 @@ class VPNManagerMC extends VPNManager {
   @override
   stopCore() async {
     await platform.invokeMethod('vpn.stopCore');
+  }
+
+  @override
+  startNotificationForeground() async {
+    await platform.invokeMethod('vpn.startNotificationForeground');
+  }
+
+  @override
+  stopNotificationForeground() async {
+    await platform.invokeMethod('vpn.stopNotificationForeground');
   }
 }
 

@@ -87,10 +87,11 @@ public class TProxyService extends VpnService {
 
         // Build the notification
         return new NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("AnyPortal VPN Service")
-            .setContentText("The VPN service is running")
-            // .setSmallIcon(R.drawable.launcher_icon) // Replace with your icon
+            .setContentTitle("AnyPortal")
+            // .setContentText("The VPN service is running")
+            .setSmallIcon(R.drawable.ic_launcher_monochrome)
             .setContentIntent(pendingIntent)
+            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .build();
     }
 
@@ -168,10 +169,6 @@ public class TProxyService extends VpnService {
     private SharedPreferences prefs;
 
     public void tryStartAll() {
-        // createNotificationChannel();
-        // Notification notification = createNotification();
-        // startForeground(NOTIFICATION_ID, notification);
-
         try {
             startAll();
         } catch (Exception e) {
@@ -183,6 +180,24 @@ public class TProxyService extends VpnService {
     public void tryStopAll() {
         try {
             stopAll();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    public void tryStartNotificationForeground() {
+        try {
+            startNotificationForeground();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    public void tryStopNotificationForeground() {
+        try {
+            stopNotificationForeground();
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -237,6 +252,10 @@ public class TProxyService extends VpnService {
     private void startAll() {
         Log.d(TAG, "start target: startAll");
 
+        if (prefs.getBoolean("flutter.app.notification.foreground", true)){
+            startNotificationForeground();
+        }
+
         startCore();
         isCoreActive = true;
 
@@ -265,7 +284,20 @@ public class TProxyService extends VpnService {
         notifyMainActivity();
         updateTile();
 
+        stopNotificationForeground();
+
         Log.d(TAG, "reached target: stopAll");
+    }
+
+    private void startNotificationForeground() {
+        createNotificationChannel();
+        Notification notification = createNotification();
+        notification.flags |= Notification.FLAG_NO_CLEAR;
+        startForeground(NOTIFICATION_ID, notification);
+    }
+
+    private void stopNotificationForeground() {
+        stopForeground(true);
     }
 
     private void startTunEmbedded() {
@@ -416,8 +448,6 @@ public class TProxyService extends VpnService {
         Log.d(TAG, "start target: stopTun");
 
         if (tunFd != null){
-            // stopForeground(true);
-
             /* TProxy */
             TProxyStopService();
 

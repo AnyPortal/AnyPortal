@@ -19,6 +19,7 @@ class PrefsManager {
     'app.server.address': "127.0.0.1",
     'app.socks.port': 15491,
     'app.http.port': 15492,
+    'app.notification.foreground': Platform.isAndroid,
     'app.window.size.width': 1280.0,
     'app.window.size.height': 720.0,
     'app.window.isMaximized': false,

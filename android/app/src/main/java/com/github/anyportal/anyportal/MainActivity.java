@@ -125,6 +125,16 @@ public class MainActivity extends FlutterActivity {
                 tProxyService.tryStopAll();
                 result.success(null);
                 break;
+
+            case "vpn.startNotificationForeground":
+                tProxyService.tryStartNotificationForeground();
+                result.success(null);
+                break;
+        
+            case "vpn.stopNotificationForeground":
+                tProxyService.tryStopNotificationForeground();
+                result.success(null);
+                break;
         
             case "vpn.startTun":
                 tProxyService.tryStartTun();

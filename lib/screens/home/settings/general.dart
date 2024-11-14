@@ -6,6 +6,7 @@ import '../../../utils/global.dart';
 import '../../../utils/platform_launch_at_login.dart';
 import '../../../utils/prefs.dart';
 import '../../../utils/theme_manager.dart';
+import '../../../utils/vpn_manager.dart';
 
 class GeneralScreen extends StatefulWidget {
   const GeneralScreen({
@@ -24,6 +25,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
   bool _brightnessIsDark = prefs.getBool('app.brightness.dark')!;
   bool _brightnessFollowSystem = prefs.getBool('app.brightness.followSystem')!;
   bool _skipTaskbar = prefs.getBool('app.window.skipTaskbar')!;
+  bool _notificationForeground = prefs.getBool('app.notification.foreground')!;
 
   @override
   void initState() {
@@ -188,6 +190,35 @@ class _GeneralScreenState extends State<GeneralScreen> {
                 },
         ),
       ),
+      Container(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        child: Text(
+          "Notification",
+          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+        ),
+      ),
+      if (Platform.isAndroid)
+        ListTile(
+          title: const Text("Foreground"),
+          subtitle: const Text(
+              "Runs the service in foreground (less likely be killed by system). A notification must show"),
+          trailing: Switch(
+            value: _notificationForeground,
+            onChanged: (shouldEnable) async {
+              prefs.setBool('app.notification.foreground', shouldEnable);
+              setState(() {
+                _notificationForeground = shouldEnable;
+              });
+              if (vPNMan.isCoreActive) {
+                if (shouldEnable) {
+                  vPNMan.startNotificationForeground();
+                } else {
+                  vPNMan.stopNotificationForeground();
+                }
+              }
+            },
+          ),
+        ),
     ];
 
     return Scaffold(
