@@ -15,6 +15,7 @@ class PrefsManager {
     // 'core.v2ray.assetPath',
     // 'app.selectedProfileId': 1,
     'app.connectAtLaunch': Platform.isWindows || Platform.isLinux || Platform.isMacOS,
+    'app.connectAtStartup': false,
     'app.runElevated': false,
     'app.server.address': "127.0.0.1",
     'app.socks.port': 15491,

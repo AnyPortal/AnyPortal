@@ -307,6 +307,11 @@ public class TProxyService extends VpnService {
             return;
         }
 
+        Intent i = VpnService.prepare(getApplicationContext());
+        if (i != null) {
+            getApplicationContext().startActivity(i);
+        }
+
         String session = "";
         VpnService.Builder builder = new VpnService.Builder();
         builder.setBlocking(false);

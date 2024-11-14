@@ -19,6 +19,7 @@ class GeneralScreen extends StatefulWidget {
 
 class _GeneralScreenState extends State<GeneralScreen> {
   bool _launchAtLogin = false;
+  bool _connectAtStartup = prefs.getBool('app.connectAtStartup')!;
   bool _connectAtLaunch = prefs.getBool('app.connectAtLaunch')!;
   bool _runElevated = prefs.getBool('app.runElevated')!;
   final String _elevatedUser = Platform.isWindows ? "Administrator" : "root";
@@ -139,19 +140,34 @@ class _GeneralScreenState extends State<GeneralScreen> {
             },
           ),
         ),
-      ListTile(
-        title: const Text("Auto connect"),
-        subtitle: const Text("Auto connect selected profile at app launch"),
-        trailing: Switch(
-          value: _connectAtLaunch,
-          onChanged: (value) async {
-            prefs.setBool('app.connectAtLaunch', value);
-            setState(() {
-              _connectAtLaunch = value;
-            });
-          },
+      if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
+        ListTile(
+          title: const Text("Auto connect at app launch"),
+          subtitle: const Text("Auto connect selected profile at app launch"),
+          trailing: Switch(
+            value: _connectAtLaunch,
+            onChanged: (value) async {
+              prefs.setBool('app.connectAtLaunch', value);
+              setState(() {
+                _connectAtLaunch = value;
+              });
+            },
+          ),
         ),
-      ),
+      if (Platform.isAndroid)
+        ListTile(
+          title: const Text("Auto connect at device boot"),
+          subtitle: const Text("Auto connect selected profile at device boot"),
+          trailing: Switch(
+            value: _connectAtStartup,
+            onChanged: (value) async {
+              prefs.setBool('app.connectAtStartup', value);
+              setState(() {
+                _connectAtStartup = value;
+              });
+            },
+          ),
+        ),
       Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Text(
