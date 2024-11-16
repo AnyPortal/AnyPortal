@@ -39,6 +39,12 @@ android {
 				arguments "APP_LDFLAGS+=-Wl,--build-id=none"
 			}
 		}
+
+        project.android.applicationVariants.all { variant ->
+            variant.outputs.each { output ->
+                output.versionCodeOverride = flutter.versionCode
+            }
+        }
     }
 
     flavorDimensions "target"
