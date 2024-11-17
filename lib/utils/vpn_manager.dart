@@ -353,6 +353,13 @@ abstract class VPNManager with ChangeNotifier {
           }
         }
         prefs.setString('cache.tun.singBox.core.args', jsonEncode(_tunSingBoxCoreArgList));
+
+        // clear core log
+        await File(p.join(
+          global.applicationSupportDirectory.path,
+          'log',
+          'tun.sing_box.log',
+        )).writeAsString("");
       }
     }
   }
