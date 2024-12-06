@@ -9,8 +9,12 @@ class PlatformElevation {
       ProcessResult result = await Process.run('id', ['-u']);
       return result.stdout.trim() == '0';
     } else if (Platform.isAndroid) {
-      ProcessResult result = await Process.run('su', ['-c', 'echo 0']);
-      return result.stdout.trim() == '0';
+      try {
+        ProcessResult result = await Process.run('su', ['-c', 'echo 0']);
+        return result.stdout.trim() == '0';
+      } catch (_) {
+        return false;
+      }
     }
     return false; // Unsupported platforms
   }
