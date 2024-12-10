@@ -26,6 +26,7 @@ class PrefsManager {
     'app.window.isMaximized': false,
     'app.window.skipTaskbar': Platform.isWindows || Platform.isLinux,
     'app.brightness.dark': true,
+    'app.brightness.dark.black': false,
     'app.brightness.followSystem': true,
     'inject.api': true,
     'inject.api.port': 15490,

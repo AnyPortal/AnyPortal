@@ -160,22 +160,23 @@ class AnyPortal extends StatelessWidget {
   }
 
   ThemeData getPlatformDarkThemeData() {
+    final isBlackDark = prefs.getBool("app.brightness.dark.black")!;
     if (Platform.isWindows || Platform.isMacOS) {
       return ThemeData(
         brightness: Brightness.dark,
         colorSchemeSeed: SystemTheme.accentColor.accent,
         useMaterial3: true,
-        scaffoldBackgroundColor: Colors.transparent,
+        scaffoldBackgroundColor: isBlackDark ? Colors.black : Colors.transparent,
         cardTheme: const CardTheme(
           color: Color.fromARGB(16, 255, 255, 255),
           shadowColor: Color.fromARGB(64, 0, 0, 0),
         ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.transparent,
+        appBarTheme: AppBarTheme(
+          backgroundColor: isBlackDark ? Colors.black : Colors.transparent,
         ),
-        navigationBarTheme: const NavigationBarThemeData(
-          backgroundColor: Colors.transparent,
-          indicatorColor: Color.fromARGB(16, 255, 255, 255),
+        navigationBarTheme: NavigationBarThemeData(
+          backgroundColor: isBlackDark ? Colors.black : Colors.transparent,
+          indicatorColor: const Color.fromARGB(16, 255, 255, 255),
         ),
         pageTransitionsTheme: const PageTransitionsTheme(builders: {
           TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
@@ -188,6 +189,13 @@ class AnyPortal extends StatelessWidget {
         brightness: Brightness.dark,
         colorSchemeSeed: SystemTheme.accentColor.accent,
         useMaterial3: true,
+        scaffoldBackgroundColor: isBlackDark ? Colors.black : null,
+        appBarTheme: AppBarTheme(
+          backgroundColor: isBlackDark ? Colors.black : null,
+        ),
+        navigationBarTheme: NavigationBarThemeData(
+          backgroundColor: isBlackDark ? const Color.fromARGB(16, 255, 255, 255) : null,
+        ),
       );
     }
   }

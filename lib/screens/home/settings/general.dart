@@ -24,6 +24,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
   bool _runElevated = prefs.getBool('app.runElevated')!;
   final String _elevatedUser = Platform.isWindows ? "Administrator" : "root";
   bool _brightnessIsDark = prefs.getBool('app.brightness.dark')!;
+  bool _isBlackDark = prefs.getBool('app.brightness.dark.black')!;
   bool _brightnessFollowSystem = prefs.getBool('app.brightness.followSystem')!;
   bool _skipTaskbar = prefs.getBool('app.window.skipTaskbar')!;
   bool _notificationForeground = prefs.getBool('app.notification.foreground')!;
@@ -204,6 +205,20 @@ class _GeneralScreenState extends State<GeneralScreen> {
                   });
                   themeManager.updateBrightness(notify: true);
                 },
+        ),
+      ),
+      ListTile(
+        title: const Text("Black dark"),
+        subtitle: const Text("Use black background in dark theme"),
+        trailing: Switch(
+          value: _isBlackDark,
+          onChanged: (value) async {
+            prefs.setBool('app.brightness.dark.black', value);
+            setState(() {
+              _isBlackDark = value;
+            });
+            themeManager.updateBrightness(notify: true);
+          },
         ),
       ),
       Container(
