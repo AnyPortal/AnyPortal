@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'logger.dart';
+
 class PlatformElevation {
   static Future<bool> isElevated() async {
     if (Platform.isWindows) {
@@ -33,5 +35,6 @@ class PlatformElevation {
         Platform.resolvedExecutable, // Replace with your app's path
       ]);
     }
+    logger.w("reached target: PlatformElevation.elevate");
   }
 }

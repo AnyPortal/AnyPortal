@@ -5,6 +5,7 @@ import 'package:anyportal/models/log_level.dart';
 import 'package:anyportal/models/send_through_binding_stratagy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'logger.dart';
 import 'shared_preferences_with_defaults.dart';
 
 class PrefsManager {
@@ -74,6 +75,7 @@ class PrefsManager {
     final sharedPreferences = await SharedPreferences.getInstance();
     _prefs = SharedPreferencesWithDefaults(sharedPreferences, defaults);
     _completer.complete(); // Signal that initialization is complete
+    logger.d("reached target: PrefsManager.init");
   }
 }
 

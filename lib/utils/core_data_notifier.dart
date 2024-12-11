@@ -165,6 +165,7 @@ class CoreDataNotifierManager {
   Future<void> init() async {
     _coreDataNotifier = CoreDataNotifier();
     _completer.complete(); // Signal that initialization is complete
+    logger.d("reached target: CoreDataNotifierManager.init");
   }
 }
 

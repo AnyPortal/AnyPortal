@@ -59,7 +59,7 @@ dependencies:
   flutter_fancy_tree_view: ^1.6.0
   animated_tree_view: ^2.3.0
   flutter_acrylic: ^1.1.4
-  system_theme: ^3.1.1
+  system_theme: ^3.1.2
   archive: ^3.6.1
   logger: ^2.4.0
   process_run: ^1.2.0+3

@@ -3,6 +3,8 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
+import 'logger.dart';
+
 // import 'logger.dart';
 
 class MethodChannelManager {
@@ -13,6 +15,7 @@ class MethodChannelManager {
     methodChannel = const MethodChannel('com.github.anyportal.anyportal');
     methodChannel.setMethodCallHandler(methodCallHandler);
     _completer.complete(); // Signal that initialization is complete
+    logger.d("reached target: MethodChannelManager.init");
   }
 
   static final MethodChannelManager _instance = MethodChannelManager._internal();

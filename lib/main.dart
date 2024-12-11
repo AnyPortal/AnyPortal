@@ -26,6 +26,8 @@ import 'utils/copy_assets.dart';
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await LoggerManager().init();
+
   await Future.wait([
     PrefsManager().init(),
     GlobalManager().init(),
@@ -37,10 +39,7 @@ void main(List<String> args) async {
     exit(0);
   }
 
-  await Future.wait([
-    LoggerManager().init(),
-    DatabaseManager().init(),
-  ]);
+  await DatabaseManager().init();
 
   await Future.wait([
     VPNManManager().init(),

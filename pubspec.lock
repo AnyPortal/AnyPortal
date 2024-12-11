@@ -1027,10 +1027,10 @@ packages:
     dependency: "direct main"
     description:
       name: system_theme
-      sha256: "9396b69e74cdd1524daf26c0c33f4968d5ada1ff948a31f031cf6398869b589f"
+      sha256: "5f93485401689601d4636a695f99f7c70a30873ee68c1d95025d908a3386be7e"
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.1"
+    version: "3.1.2"
   system_theme_web:
     dependency: transitive
     description:

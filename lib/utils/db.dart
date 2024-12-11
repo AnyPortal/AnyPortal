@@ -10,6 +10,7 @@ import '../models/core.dart';
 import '../models/profile.dart';
 import '../models/profile_group.dart';
 import 'global.dart';
+import 'logger.dart';
 
 part 'db.g.dart';
 
@@ -36,6 +37,7 @@ class DatabaseManager {
     _db = Database(_openConnection(file));
 
     _completer.complete(); // Signal that initialization is complete
+    logger.d("reached target: DatabaseManager.init");
   }
 
   static QueryExecutor _openConnection(File file) {

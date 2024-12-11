@@ -573,7 +573,9 @@ class VPNManManager {
         ? VPNManagerMC()
         : VPNManagerExec();
     _completer.complete(); // Signal that initialization is complete
+    logger.d("reached target: VPNManManager.init");
   }
+
 }
 
 final vPNMan = VPNManManager()._vPNMan;

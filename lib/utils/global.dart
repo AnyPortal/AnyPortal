@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
 
+import 'logger.dart';
 import 'platform_elevation.dart';
 
 class GlobalManager {
@@ -18,6 +19,7 @@ class GlobalManager {
       setIsElevated(),
     ]);
     _completer.complete(); // Signal that initialization is complete
+    logger.d("reached target: GlobalManager.init");
   }
 
   Future<void> setAapplicationDocumentsDirectory() async {

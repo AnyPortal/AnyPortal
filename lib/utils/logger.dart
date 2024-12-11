@@ -4,19 +4,18 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:path/path.dart' as p;
-// import 'package:path_provider/path_provider.dart';
+import 'package:path_provider/path_provider.dart';
 
-import 'global.dart';
+import 'logger/printer.dart';
 
 class LoggerManager {
   late Logger logger;
 
   Future<void> init() async {
-    // var applicationSupportDirectory = await getApplicationSupportDirectory();
+    final applicationSupportDirectory = await getApplicationSupportDirectory();
     final file = File(
       p.join(
-        // applicationSupportDirectory.path,
-        global.applicationSupportDirectory.path,
+        applicationSupportDirectory.path,
         "log",
         "app.log",
       ),
@@ -27,9 +26,7 @@ class LoggerManager {
     await file.create(recursive: true);
     file.create(recursive: true);
     logger = Logger(
-      printer: PrettyPrinter(
-        dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
-      ),
+      printer: CustomLogPrinter(),
       output: MultiOutput(
         [
           ConsoleOutput(),
@@ -41,6 +38,7 @@ class LoggerManager {
       level: kDebugMode ? Level.all : Level.warning,
     );
     _completer.complete(); // Signal that initialization is complete
+    logger.d("reached target: LoggerManager.init");
   }
 
   static final LoggerManager _instance = LoggerManager._internal();
