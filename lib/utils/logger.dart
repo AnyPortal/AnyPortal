@@ -6,12 +6,24 @@ import 'package:logger/logger.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import 'logger/filter.dart';
 import 'logger/printer.dart';
 
 class LoggerManager {
   late Logger logger;
 
-  Future<void> init() async {
+  Level getLevelByName(String? name) {
+    return Level.values.firstWhere(
+      (level) => level.name == name,
+      orElse: () => Level.off,
+    );
+  }
+
+  Future<void> init(
+    {String? logLevelName}
+  ) async {
+    final logLevel = getLevelByName(logLevelName);
+
     final applicationSupportDirectory = await getApplicationSupportDirectory();
     final file = File(
       p.join(
@@ -35,10 +47,11 @@ class LoggerManager {
           ),
         ],
       ),
-      level: kDebugMode ? Level.all : Level.warning,
+      level: kDebugMode ? Level.all : logLevel,
+      filter: CustomFilter()
     );
     _completer.complete(); // Signal that initialization is complete
-    logger.d("reached target: LoggerManager.init");
+    logger.d("started: LoggerManager.init");
   }
 
   static final LoggerManager _instance = LoggerManager._internal();

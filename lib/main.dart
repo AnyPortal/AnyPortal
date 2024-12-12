@@ -1,6 +1,5 @@
 import 'dart:io';
 
-// import 'package:flutter/cupertino.dart';
 import 'package:anyportal/utils/global.dart';
 import 'package:anyportal/utils/logger.dart';
 import 'package:anyportal/utils/platform_elevation.dart';
@@ -15,10 +14,12 @@ import 'package:window_manager/window_manager.dart';
 
 import 'screens/home.dart';
 import 'screens/home/settings/tun_hev_socks5_tunnel.dart';
+import 'utils/arg_parser.dart';
 import 'utils/core_data_notifier.dart';
 import 'utils/db.dart';
 import 'utils/launch_at_startup.dart';
 import 'utils/method_channel.dart';
+import 'utils/platform_theme.dart';
 import 'utils/prefs.dart';
 import 'utils/tray_menu.dart';
 import 'utils/copy_assets.dart';
@@ -26,7 +27,8 @@ import 'utils/copy_assets.dart';
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await LoggerManager().init();
+  await ArgParserManager().init(args);
+  await LoggerManager().init(logLevelName: cliArg.option("log-level"));
 
   await Future.wait([
     PrefsManager().init(),
@@ -48,7 +50,9 @@ void main(List<String> args) async {
 
   try {
     await vPNMan.initCore();
-  } catch (_) {}
+  } catch (e) {
+    logger.w("vPNMan.initCore: ${e.toString()}");
+  }
 
   if (Platform.isAndroid || Platform.isIOS) {
     await tProxyConfInit();
@@ -68,33 +72,37 @@ void main(List<String> args) async {
       skipTaskbar: skipTaskbar,
     );
     await windowManager.waitUntilReadyToShow(windowOptions, () async {
-      if (!args.contains("--minimized")) {
+      if (!cliArg.flag("minimized")) {
         await windowManager.show();
         await windowManager.focus();
         if (isMaximized!) await windowManager.maximize();
       }
     });
 
+    bool isTransparentBG = getIsTransparentBG();
+
     /// transparent background
     if (Platform.isWindows || Platform.isMacOS) {
       await Window.initialize();
       var dispatcher = SchedulerBinding.instance.platformDispatcher;
       await Window.setEffect(
-        effect: WindowEffect.mica,
+        effect: isTransparentBG ? WindowEffect.mica : WindowEffect.solid,
         dark: dispatcher.platformBrightness == Brightness.dark,
       );
     }
   }
 
-
-  // copy assets
+  /// copy assets
   await copyAssetsToDefaultLocation();
 
   /// theme color
   SystemTheme.fallbackColor = const Color.fromARGB(82, 0, 140, 255);
   await SystemTheme.accentColor.load();
 
+  /// app
+  logger.d("starting: runApp");
   runApp(const AnyPortal());
+  logger.d("started: runApp");
 
   /// find active core and tun
   try {
@@ -102,7 +110,9 @@ void main(List<String> args) async {
       vPNMan.updateDetachedCore(),
       vPNMan.updateDetachedTun(),
     ]);
-  } catch (_) {}
+  } catch (e) {
+    logger.w("vPNMan.initCore: ${e.toString()}");
+  }
 
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     /// connect at launch
@@ -113,7 +123,7 @@ void main(List<String> args) async {
           await vPNMan.start();
         }
       } on Exception catch (e) {
-        logger.e("$e");
+        logger.w("$e");
         err = e;
       } finally {
         if (err != null) {
@@ -126,78 +136,6 @@ void main(List<String> args) async {
 
 class AnyPortal extends StatelessWidget {
   const AnyPortal({super.key});
-
-  ThemeData getPlatformThemeData() {
-    if (Platform.isWindows || Platform.isMacOS) {
-      return ThemeData(
-        colorSchemeSeed: SystemTheme.accentColor.accent,
-        useMaterial3: true,
-        scaffoldBackgroundColor: Colors.transparent,
-        cardTheme: const CardTheme(
-          color: Color.fromARGB(240, 255, 255, 255),
-          shadowColor: Color.fromARGB(172, 0, 0, 0),
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.transparent,
-        ),
-        navigationBarTheme: const NavigationBarThemeData(
-          backgroundColor: Colors.transparent,
-          indicatorColor: Color.fromARGB(240, 255, 255, 255),
-        ),
-        pageTransitionsTheme: const PageTransitionsTheme(builders: {
-          TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
-          TargetPlatform.linux: CupertinoPageTransitionsBuilder(),
-          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-        }),
-      );
-    } else {
-      return ThemeData(
-        colorSchemeSeed: SystemTheme.accentColor.accent,
-        useMaterial3: true,
-      );
-    }
-  }
-
-  ThemeData getPlatformDarkThemeData() {
-    final isBlackDark = prefs.getBool("app.brightness.dark.black")!;
-    if (Platform.isWindows || Platform.isMacOS) {
-      return ThemeData(
-        brightness: Brightness.dark,
-        colorSchemeSeed: SystemTheme.accentColor.accent,
-        useMaterial3: true,
-        scaffoldBackgroundColor: isBlackDark ? Colors.black : Colors.transparent,
-        cardTheme: const CardTheme(
-          color: Color.fromARGB(16, 255, 255, 255),
-          shadowColor: Color.fromARGB(64, 0, 0, 0),
-        ),
-        appBarTheme: AppBarTheme(
-          backgroundColor: isBlackDark ? Colors.black : Colors.transparent,
-        ),
-        navigationBarTheme: NavigationBarThemeData(
-          backgroundColor: isBlackDark ? Colors.black : Colors.transparent,
-          indicatorColor: const Color.fromARGB(16, 255, 255, 255),
-        ),
-        pageTransitionsTheme: const PageTransitionsTheme(builders: {
-          TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
-          TargetPlatform.linux: CupertinoPageTransitionsBuilder(),
-          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-        }),
-      );
-    } else {
-      return ThemeData(
-        brightness: Brightness.dark,
-        colorSchemeSeed: SystemTheme.accentColor.accent,
-        useMaterial3: true,
-        scaffoldBackgroundColor: isBlackDark ? Colors.black : null,
-        appBarTheme: AppBarTheme(
-          backgroundColor: isBlackDark ? Colors.black : null,
-        ),
-        navigationBarTheme: NavigationBarThemeData(
-          backgroundColor: isBlackDark ? const Color.fromARGB(16, 255, 255, 255) : null,
-        ),
-      );
-    }
-  }
 
   /// This widget is the root of your application.
   @override
@@ -221,87 +159,3 @@ class AnyPortal extends StatelessWidget {
         });
   }
 }
-
-// class AnyPortal extends StatefulWidget {
-//   const AnyPortal({super.key});
-
-//   @override
-//   State<AnyPortal> createState() => _AnyPortalState();
-// }
-
-// class _AnyPortalState extends State<AnyPortal> {
-//   ThemeMode? themeMode = ThemeMode.system; // initial brightness
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final materialLightTheme = ThemeData(
-//       colorSchemeSeed: const Color.fromARGB(82, 0, 140, 255),
-//       useMaterial3: true,
-//     );
-//     final materialDarkTheme = ThemeData(
-//       brightness: Brightness.dark,
-//       colorSchemeSeed: const Color.fromARGB(82, 0, 140, 255),
-//       useMaterial3: true,
-//     );
-
-//     const darkDefaultCupertinoTheme =
-//         CupertinoThemeData(brightness: Brightness.dark);
-//     final cupertinoDarkTheme = MaterialBasedCupertinoThemeData(
-//       materialTheme: materialDarkTheme.copyWith(
-//         cupertinoOverrideTheme: CupertinoThemeData(
-//           brightness: Brightness.dark,
-//           barBackgroundColor: darkDefaultCupertinoTheme.barBackgroundColor,
-//           textTheme: CupertinoTextThemeData(
-//             primaryColor: Colors.white,
-//             navActionTextStyle:
-//                 darkDefaultCupertinoTheme.textTheme.navActionTextStyle.copyWith(
-//               color: const Color(0xF0F9F9F9),
-//             ),
-//             navLargeTitleTextStyle: darkDefaultCupertinoTheme
-//                 .textTheme.navLargeTitleTextStyle
-//                 .copyWith(color: const Color(0xF0F9F9F9)),
-//           ),
-//         ),
-//       ),
-//     );
-//     final cupertinoLightTheme =
-//         MaterialBasedCupertinoThemeData(materialTheme: materialLightTheme);
-
-//     return PlatformProvider(
-//       settings: PlatformSettingsData(
-//         iosUsesMaterialWidgets: true,
-//         iosUseZeroPaddingForAppbarPlatformIcon: true,
-//       ),
-//       builder: (context) => PlatformTheme(
-//         themeMode: themeMode,
-//         materialLightTheme: materialLightTheme,
-//         materialDarkTheme: materialDarkTheme,
-//         cupertinoLightTheme: cupertinoLightTheme,
-//         cupertinoDarkTheme: cupertinoDarkTheme,
-//         matchCupertinoSystemChromeBrightness: true,
-//         onThemeModeChanged: (themeMode) {
-//           this.themeMode = themeMode; /* you can save to storage */
-//         },
-//         builder: (context) => const PlatformApp(
-//           // localizationsDelegates: <LocalizationsDelegate<dynamic>>[
-//           //   AppLocalizations.delegate,
-//           //   DefaultMaterialLocalizations.delegate,
-//           //   DefaultWidgetsLocalizations.delegate,
-//           //   DefaultCupertinoLocalizations.delegate,
-//           // ],
-//           // supportedLocales: [
-//           //   Locale('en'),
-//           //   Locale('zh'),
-//           // ],
-//           localizationsDelegates: AppLocalizations.localizationsDelegates,
-//           supportedLocales: AppLocalizations.supportedLocales,
-//           title: 'Flutter Platform Widgets',
-//           home: HomePage(
-//             title: '',
-//           ),
-//         ),
-//       ),
-//       // ),
-//     );
-//   }
-// }

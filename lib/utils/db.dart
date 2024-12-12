@@ -29,6 +29,7 @@ class DatabaseManager {
 
   // Async initializer (call once at app startup)
   Future<void> init() async {
+    logger.d("starting: DatabaseManager.init");
     final dbFolder = global.applicationDocumentsDirectory;
     final file = File(p.join(dbFolder.path, "AnyPortal", "db.sqlite"));
     if (!file.existsSync()) {
@@ -37,7 +38,7 @@ class DatabaseManager {
     _db = Database(_openConnection(file));
 
     _completer.complete(); // Signal that initialization is complete
-    logger.d("reached target: DatabaseManager.init");
+    logger.d("started: DatabaseManager.init");
   }
 
   static QueryExecutor _openConnection(File file) {

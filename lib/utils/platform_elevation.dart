@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'logger.dart';
-
 class PlatformElevation {
   static Future<bool> isElevated() async {
     if (Platform.isWindows) {
@@ -22,6 +20,7 @@ class PlatformElevation {
   }
 
   static Future<void> elevate() async {
+    final args = Platform.executableArguments;
     if (Platform.isWindows) {
       await Process.run('powershell',
           ['-noprofile', 'Start-Process', Platform.resolvedExecutable, '-Verb', 'runAs']);
@@ -32,9 +31,8 @@ class PlatformElevation {
       ]);
     } else if (Platform.isLinux) {
       await Process.run('pkexec', [
-        Platform.resolvedExecutable, // Replace with your app's path
-      ]);
+        Platform.resolvedExecutable, ...args], // Replace with your app's path
+      );
     }
-    logger.w("reached target: PlatformElevation.elevate");
   }
 }

@@ -72,10 +72,11 @@ class PrefsManager {
 
   // Async initializer (call once at app startup)
   Future<void> init() async {
+    logger.d("starting: PrefsManager.init");
     final sharedPreferences = await SharedPreferences.getInstance();
     _prefs = SharedPreferencesWithDefaults(sharedPreferences, defaults);
     _completer.complete(); // Signal that initialization is complete
-    logger.d("reached target: PrefsManager.init");
+    logger.d("started: PrefsManager.init");
   }
 }
 

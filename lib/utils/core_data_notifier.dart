@@ -163,9 +163,10 @@ class CoreDataNotifierManager {
 
   // Async initializer (call once at app startup)
   Future<void> init() async {
+    logger.d("starting: CoreDataNotifierManager.init");
     _coreDataNotifier = CoreDataNotifier();
     _completer.complete(); // Signal that initialization is complete
-    logger.d("reached target: CoreDataNotifierManager.init");
+    logger.d("started: CoreDataNotifierManager.init");
   }
 }
 

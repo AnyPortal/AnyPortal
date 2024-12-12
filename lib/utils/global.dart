@@ -13,13 +13,14 @@ class GlobalManager {
   late bool isElevated;
 
   Future<void> init() async {
+    logger.d("starting: GlobalManager.init");
     await Future.wait([
       setAapplicationDocumentsDirectory(),
       setApplicationsupportDirectory(),
       setIsElevated(),
     ]);
     _completer.complete(); // Signal that initialization is complete
-    logger.d("reached target: GlobalManager.init");
+    logger.d("started: GlobalManager.init");
   }
 
   Future<void> setAapplicationDocumentsDirectory() async {

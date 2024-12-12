@@ -62,7 +62,7 @@ public class TProxyService extends VpnService {
     }
 
     private void createNotificationChannel() {
-        Log.d(TAG, "start target: createNotificationChannel");
+        Log.d(TAG, "starting: createNotificationChannel");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Log.d(TAG, "NotificationChannel");
             NotificationChannel channel = new NotificationChannel(
@@ -149,13 +149,13 @@ public class TProxyService extends VpnService {
 
     /// Notify MainActivity of VPN status updates
     private void notifyMainActivity() {
-        Log.d(TAG, "start target: notifyMainActivity");
+        Log.d(TAG, "starting: notifyMainActivity");
         if (statusListener != null) {
             statusListener.onStatusUpdate(isCoreActive);
         } else {
             Log.w(TAG, "statusListener == null");
         }
-        Log.d(TAG, "reached target: notifyMainActivity");
+        Log.d(TAG, "started: notifyMainActivity");
     }
 
 
@@ -252,7 +252,7 @@ public class TProxyService extends VpnService {
     }
 
     private void startAll() {
-        Log.d(TAG, "start target: startAll");
+        Log.d(TAG, "starting: startAll");
 
         if (prefs.getBoolean("flutter.app.notification.foreground", true)){
             startNotificationForeground();
@@ -269,11 +269,11 @@ public class TProxyService extends VpnService {
         notifyMainActivity();
         updateTile();
 
-        Log.d(TAG, "reached target: startAll");
+        Log.d(TAG, "started: startAll");
     }
 
     private void stopAll() {
-        Log.d(TAG, "start target: stopAll");
+        Log.d(TAG, "starting: stopAll");
 
         stopCore();
         isCoreActive = false;
@@ -288,7 +288,7 @@ public class TProxyService extends VpnService {
 
         stopNotificationForeground();
 
-        Log.d(TAG, "reached target: stopAll");
+        Log.d(TAG, "started: stopAll");
     }
 
     private void startNotificationForeground() {
@@ -303,7 +303,7 @@ public class TProxyService extends VpnService {
     }
 
     private void startTunEmbedded() {
-        Log.d(TAG, "start target: startTunEmbedded");
+        Log.d(TAG, "starting: startTunEmbedded");
 
         if (tunFd != null){
             return;
@@ -383,11 +383,11 @@ public class TProxyService extends VpnService {
         /* TProxy */
         File tproxy_file = new File(getFilesDir(), "conf/tun.hev_socks5_tunnel.gen.yaml");
         TProxyStartService(tproxy_file.getAbsolutePath(), tunFd.getFd());
-        Log.d(TAG, "reached target: startTunEmbedded");
+        Log.d(TAG, "started: startTunEmbedded");
     }
 
     private void startTunExec() {
-        Log.d(TAG, "start target: startTunExec");
+        Log.d(TAG, "starting: startTunExec");
         String corePath = prefs.getString("flutter.cache.tun.singBox.core.path", "");
         new File(corePath).setExecutable(true);
         List<String> coreArgs = getStringListFromJsonString(prefs.getString("flutter.cache.tun.singBox.core.args", "[]"));
@@ -412,11 +412,11 @@ public class TProxyService extends VpnService {
             e.printStackTrace();
             return;
         }
-        Log.d(TAG, "reached target: startTunExec");
+        Log.d(TAG, "started: startTunExec");
     }
 
     private void startTun() {
-        Log.d(TAG, "start target: startTun");
+        Log.d(TAG, "starting: startTun");
         boolean useEmbedded = prefs.getBoolean("flutter.tun.useEmbedded", true);
         if (useEmbedded){
             startTunEmbedded();
@@ -424,7 +424,7 @@ public class TProxyService extends VpnService {
             startTunExec();
         }
 
-        Log.d(TAG, "reached target: startTun");
+        Log.d(TAG, "started: startTun");
     }
 
     private List<String> getStringListFromJsonString(String str){
@@ -457,7 +457,7 @@ public class TProxyService extends VpnService {
     }
 
     private void stopTun(){
-        Log.d(TAG, "start target: stopTun");
+        Log.d(TAG, "starting: stopTun");
 
         if (tunFd != null){
             /* TProxy */
@@ -476,11 +476,11 @@ public class TProxyService extends VpnService {
             tunSingBoxCoreProcess = null;
         }
         
-        Log.d(TAG, "reached target: stopTun");
+        Log.d(TAG, "started: stopTun");
     }
 
     private void startCore(){
-        Log.d(TAG, "start target: stopCore");
+        Log.d(TAG, "starting: stopCore");
 
         if (coreManager != null || coreProcess != null){
             return;
@@ -522,11 +522,11 @@ public class TProxyService extends VpnService {
             }
         }
 
-        Log.d(TAG, "reached target: startCore");
+        Log.d(TAG, "started: startCore");
     }
 
     private void stopCore(){
-        Log.d(TAG, "start target: stopCore");
+        Log.d(TAG, "starting: stopCore");
 
         if (coreProcess != null){
             coreProcess.destroy();
@@ -537,11 +537,11 @@ public class TProxyService extends VpnService {
             coreManager = null;
         }
 
-        Log.d(TAG, "reached target: stopCore");
+        Log.d(TAG, "started: stopCore");
     }
 
     private int startSystemProxy(){
-        Log.d(TAG, "start target: startSystemProxy");
+        Log.d(TAG, "starting: startSystemProxy");
 
         // if (!Shizuku.isPreV23() && Shizuku.checkSelfPermission() != PackageManager.PERMISSION_GRANTED) {
         //     Shizuku.requestPermission(0);
@@ -562,12 +562,12 @@ public class TProxyService extends VpnService {
             e.printStackTrace();
         }
 
-        Log.d(TAG, "reached target: startSystemProxy");
+        Log.d(TAG, "started: startSystemProxy");
         return exitCode;
     }
 
     private int stopSystemProxy(){
-        Log.d(TAG, "start target: stopSystemProxy");
+        Log.d(TAG, "starting: stopSystemProxy");
 
         String cmd = "settings put global http_proxy :0";
         // int process = Shizuku.newProcess(new String[]{"sh", "-c", cmd}, null, null).waitFor();
@@ -579,12 +579,12 @@ public class TProxyService extends VpnService {
             e.printStackTrace();
         }
 
-        Log.d(TAG, "reached target: stopSystemProxy");
+        Log.d(TAG, "started: stopSystemProxy");
         return exitCode;
     }
 
     private boolean getIsSystemProxyEnabled(){
-        Log.d(TAG, "start target: getIsSystemProxyEnabled");
+        Log.d(TAG, "starting: getIsSystemProxyEnabled");
 
         String cmd = "settings get global http_proxy";
         // int process = Shizuku.newProcess(new String[]{"sh", "-c", cmd}, null, null).waitFor();
@@ -609,7 +609,7 @@ public class TProxyService extends VpnService {
             e.printStackTrace();
         }
 
-        Log.d(TAG, "reached target: getIsSystemProxyEnabled");
+        Log.d(TAG, "started: getIsSystemProxyEnabled");
         return false;
     }
 }

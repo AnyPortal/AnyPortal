@@ -12,10 +12,11 @@ class MethodChannelManager {
   Map<String, Function(MethodCall)> handlers = {};
 
   Future<void> init() async {
+    logger.d("starting: MethodChannelManager.init");
     methodChannel = const MethodChannel('com.github.anyportal.anyportal');
     methodChannel.setMethodCallHandler(methodCallHandler);
     _completer.complete(); // Signal that initialization is complete
-    logger.d("reached target: MethodChannelManager.init");
+    logger.d("started: MethodChannelManager.init");
   }
 
   static final MethodChannelManager _instance = MethodChannelManager._internal();

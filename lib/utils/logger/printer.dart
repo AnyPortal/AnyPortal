@@ -27,7 +27,7 @@ class CustomLogPrinter extends LogPrinter {
 
   final bool colors;
 
-  CustomLogPrinter({this.colors = true});
+  CustomLogPrinter({this.colors = false});
 
   @override
   List<String> log(LogEvent event) {

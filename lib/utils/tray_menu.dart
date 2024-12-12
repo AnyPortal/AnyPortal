@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:anyportal/utils/logger.dart';
 import 'package:tray_manager/tray_manager.dart';
 
 import 'global.dart';
@@ -14,6 +15,7 @@ class TrayMenuManager {
   Menu menu = Menu();
 
   Future<void> init() async {
+    logger.d("starting: TrayMenuManager.init");
     if (Platform.isWindows) {
       await trayManager.setIcon('windows/runner/resources/app_icon.ico');
     } else if (Platform.isMacOS) {
@@ -24,6 +26,7 @@ class TrayMenuManager {
 
     await updateContextMenu();
     _completer.complete(); // Signal that initialization is complete
+    logger.d("started: TrayMenuManager.init");
   }
 
   static final TrayMenuManager _instance = TrayMenuManager._internal();

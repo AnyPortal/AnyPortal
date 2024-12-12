@@ -161,12 +161,12 @@ abstract class VPNManager with ChangeNotifier {
 
   late int coreTypeId;
   String? corePath;
-  late List<String> _coreArgList;
+  List<String> _coreArgList = [];
   String? _coreWorkingDir;
   Map<String, String>? _coreEnvs;
 
   String? _tunSingBoxCorePath;
-  late List<String> _tunSingBoxCoreArgList;
+  List<String> _tunSingBoxCoreArgList = [];
   String? _tunSingBoxCoreWorkingDir;
   Map<String, String>? _tunSingBoxCoreEnvs;
 
@@ -569,11 +569,12 @@ class VPNManManager {
 
   // Async initializer (call once at app startup)
   Future<void> init() async {
+    logger.d("starting: VPNManManager.init");
     _vPNMan = Platform.isAndroid || Platform.isIOS
         ? VPNManagerMC()
         : VPNManagerExec();
     _completer.complete(); // Signal that initialization is complete
-    logger.d("reached target: VPNManManager.init");
+    logger.d("started: VPNManManager.init");
   }
 
 }
