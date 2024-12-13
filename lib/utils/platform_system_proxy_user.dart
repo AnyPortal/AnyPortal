@@ -103,7 +103,7 @@ class PlatformSystemProxyUserMacOS extends PlatformSystemProxyUser {
       final result = await shell.run('networksetup -listnetworkserviceorder');
 
       // Extract relevant lines with regex
-      final regex = RegExp(r'\(\d+\)\s(.+?)\n\s+.+\((.+?)\)');
+      final regex = RegExp(r'\(\d+\)\s(.+?)\n\(.+,\sDevice:\s(.+?)\)');
       for (final match in regex.allMatches(result.outText)) {
         final service = match.group(1)?.trim();
         final device = match.group(2)?.trim();
