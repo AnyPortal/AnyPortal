@@ -15,23 +15,23 @@ class GlobalManager {
   Future<void> init() async {
     logger.d("starting: GlobalManager.init");
     await Future.wait([
-      setAapplicationDocumentsDirectory(),
-      setApplicationsupportDirectory(),
-      setIsElevated(),
+      updateAapplicationDocumentsDirectory(),
+      updateApplicationsupportDirectory(),
+      updateIsElevated(),
     ]);
     _completer.complete(); // Signal that initialization is complete
     logger.d("started: GlobalManager.init");
   }
 
-  Future<void> setAapplicationDocumentsDirectory() async {
+  Future<void> updateAapplicationDocumentsDirectory() async {
     applicationDocumentsDirectory = await getApplicationDocumentsDirectory();
   }
 
-  Future<void> setApplicationsupportDirectory() async {
+  Future<void> updateApplicationsupportDirectory() async {
     applicationSupportDirectory = await getApplicationSupportDirectory();
   }
 
-  Future<void> setIsElevated() async {
+  Future<void> updateIsElevated() async {
     isElevated = await PlatformElevation.isElevated();
   }
   static final GlobalManager _instance = GlobalManager._internal();
