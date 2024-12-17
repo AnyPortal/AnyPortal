@@ -20,9 +20,9 @@ class _InstalledAppListState extends State<InstalledAppList> {
     _loadSettings();
     _listInstalledApps();
   }
-  
+
   Set<String> _selectApps = {};
-  
+
   Future<void> _loadSettings() async {
     final selectedAppString = prefs.getString('tun.selectedApps') ?? "[]";
     final selectedAppStringDecoded = jsonDecode(selectedAppString);
@@ -52,8 +52,11 @@ class _InstalledAppListState extends State<InstalledAppList> {
       if (_query == "") {
         _filteredApps = _allApps;
       } else {
+        final queryLowerCase = _query.toLowerCase();
         _filteredApps = _allApps
-            .where((e) => e.name.toLowerCase().contains(_query.toLowerCase()))
+            .where((e) =>
+                e.name.toLowerCase().contains(queryLowerCase) ||
+                e.packageName.toLowerCase().contains(queryLowerCase))
             .toList();
       }
     });
@@ -94,7 +97,8 @@ class _InstalledAppListState extends State<InstalledAppList> {
                                 _selectApps.remove(app.packageName);
                               }
                             });
-                            prefs.setString('tun.selectedApps', jsonEncode(_selectApps.toList()));
+                            prefs.setString('tun.selectedApps',
+                                jsonEncode(_selectApps.toList()));
                           }),
                     );
                   }))
