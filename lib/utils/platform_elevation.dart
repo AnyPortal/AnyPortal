@@ -22,7 +22,7 @@ class PlatformElevation {
   static Future<void> elevate() async {
     final args = Platform.executableArguments;
     if (Platform.isWindows) {
-      await Process.run('powershell',
+      await Process.run('C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe',
           ['-noprofile', 'Start-Process', Platform.resolvedExecutable, '-Verb', 'runAs']);
     } else if (Platform.isMacOS) {
       await Process.run('osascript', [

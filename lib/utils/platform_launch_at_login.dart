@@ -28,7 +28,7 @@ class PlatformLaunchAtLoginWindows extends PlatformLaunchAtLogin {
     /// schtasks does not allow to set ExecutionTimeLimit
     final script = """
       \$currentUserId = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
-      \$action = New-ScheduledTaskAction -Execute "${Platform.resolvedExecutable}" -Argument "--minimized"
+      \$action = New-ScheduledTaskAction -Execute '${Platform.resolvedExecutable}' -Argument '--minimized'
       \$trigger = New-ScheduledTaskTrigger -AtLogOn -User \$currentUserId
       \$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit '00:00:00'
       \$principal = New-ScheduledTaskPrincipal -UserId \$currentUserId -LogonType 3 $runLevel
@@ -52,7 +52,7 @@ class PlatformLaunchAtLoginWindows extends PlatformLaunchAtLogin {
 
   Future<bool> _runPowerShellScript(String script) async {
     ProcessResult result =
-        await Process.run('powershell', ['-noprofile', '-Command', script]);
+        await Process.run('C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe', ['-noprofile', '-Command', script]);
 
     return result.exitCode == 0;
   }
