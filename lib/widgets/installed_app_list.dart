@@ -1,14 +1,14 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:installed_apps/installed_apps.dart';
 import 'package:installed_apps/app_info.dart';
 
-import '../utils/prefs.dart';
-
 class InstalledAppList extends StatefulWidget {
-  const InstalledAppList({super.key});
+  final Set<String> selectedApps;
 
+  const InstalledAppList({
+    super.key,
+    required this.selectedApps,
+  });
   @override
   State<InstalledAppList> createState() => _InstalledAppListState();
 }
@@ -17,18 +17,7 @@ class _InstalledAppListState extends State<InstalledAppList> {
   @override
   void initState() {
     super.initState();
-    _loadSettings();
     _listInstalledApps();
-  }
-
-  Set<String> _selectApps = {};
-
-  Future<void> _loadSettings() async {
-    final selectedAppString = prefs.getString('tun.selectedApps') ?? "[]";
-    final selectedAppStringDecoded = jsonDecode(selectedAppString);
-    setState(() {
-      _selectApps = List<String>.from(selectedAppStringDecoded).toSet();
-    });
   }
 
   bool _allAppsLoaded = false;
@@ -88,17 +77,16 @@ class _InstalledAppListState extends State<InstalledAppList> {
                       title: Text(app.name),
                       subtitle: Text(app.packageName),
                       trailing: Checkbox(
-                          value: _selectApps.contains(app.packageName),
+                          value: widget.selectedApps.contains(app.packageName),
                           onChanged: (selected) {
                             setState(() {
                               if (selected!) {
-                                _selectApps.add(app.packageName);
+                                widget.selectedApps.add(app.packageName);
                               } else {
-                                _selectApps.remove(app.packageName);
+                                widget.selectedApps.remove(app.packageName);
                               }
                             });
-                            prefs.setString('tun.selectedApps',
-                                jsonEncode(_selectApps.toList()));
+
                           }),
                     );
                   }))

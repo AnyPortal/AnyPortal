@@ -2,9 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:anyportal/widgets/installed_app_list.dart';
 
 class InstalledAppScreen extends StatefulWidget {
-  const InstalledAppScreen({
+  late final Set<String> selectedApps;
+  final void Function(Set<String>)? handleSelectedApps;
+  late final String title;
+
+  InstalledAppScreen({
     super.key,
-  });
+    selectedApps,
+    this.handleSelectedApps,
+    title,
+  }){
+    this.selectedApps = selectedApps ?? {};
+    this.title = title ?? "Installed apps";
+  }
 
   @override
   State<InstalledAppScreen> createState() => _InstalledAppScreenState();
@@ -13,12 +23,26 @@ class InstalledAppScreen extends StatefulWidget {
 class _InstalledAppScreenState extends State<InstalledAppScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        // Use the selected tab's label for the AppBar title
-        title: const Text("Installed apps"),
-              ),
-      body: const InstalledAppList(),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, Object? result) {
+        if (didPop) {
+          return;
+        }
+        if (widget.handleSelectedApps != null) {
+          widget.handleSelectedApps!(widget.selectedApps);
+        }
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          // Use the selected tab's label for the AppBar title
+          title: Text(widget.title),
+        ),
+        body: InstalledAppList(selectedApps: widget.selectedApps),
+      ),
     );
   }
 }

@@ -42,7 +42,6 @@ class PrefsManager {
     'systemProxy': false,
     'tun': Platform.isAndroid || Platform.isIOS,
     'tun.perAppProxy': false,
-    'tun.selectedApps': "[]",
     'tun.socks.username': "",
     'tun.socks.password': "",
     'tun.dns.ipv4': "1.1.1.1",
@@ -55,6 +54,10 @@ class PrefsManager {
     'tun.inject.socks': true,
     'tun.inject.excludeCorePath': true,
     'tun.useEmbedded': Platform.isAndroid || Platform.isIOS,
+
+    'android.tun.perAppProxy.allowed': true,
+    'android.tun.allowedApplications': "[]",
+    'android.tun.disallowedApplications': "[]",
   };
 
   static final PrefsManager _instance = PrefsManager._internal();

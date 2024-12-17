@@ -349,20 +349,33 @@ public class TProxyService extends VpnService {
             session += "IPv6";
         }
         boolean disallowSelf = true;
-        String selectedAppsString = prefs.getString("flutter.tun.selectedApps", "[]");
-        List<String> selectedApps = getStringListFromJsonString(selectedAppsString);
+        
         if (!prefs.getBoolean("flutter.tun.perAppProxy", true)) {
             session += "/Global";
         } else {
-            for (String appName : selectedApps) {
-                try {
-                    builder.addAllowedApplication(appName);
-                    disallowSelf = false;
-                } catch (NameNotFoundException e) {
-                    Log.w(TAG, e);
+            session += "/per-App";
+            if (prefs.getBoolean("flutter.android.tun.perAppProxy.allowed", true)) {
+                String selectedAppsString = prefs.getString("flutter.android.tun.allowedApplications", "[]");
+                List<String> selectedApps = getStringListFromJsonString(selectedAppsString);
+                for (String appName : selectedApps) {
+                    try {
+                        builder.addAllowedApplication(appName);
+                    } catch (NameNotFoundException e) {
+                        Log.w(TAG, e);
+                    }
+                }
+                disallowSelf = false;
+            } else {
+                String selectedAppsString = prefs.getString("flutter.android.tun.disAllowedApplications", "[]");
+                List<String> selectedApps = getStringListFromJsonString(selectedAppsString);
+                for (String appName : selectedApps) {
+                    try {
+                        builder.addDisallowedApplication(appName);
+                    } catch (NameNotFoundException e) {
+                        Log.w(TAG, e);
+                    }
                 }
             }
-            session += "/per-App";
         }
         if (disallowSelf) {
             String selfName = getApplicationContext().getPackageName();
