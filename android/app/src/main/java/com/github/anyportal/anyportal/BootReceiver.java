@@ -26,7 +26,7 @@ public class BootReceiver extends BroadcastReceiver {
 
         prefs = context.getSharedPreferences("FlutterSharedPreferences", context.MODE_PRIVATE);
 
-        if (prefs.getBoolean("flutter.app.connectAtStartup", true)){
+        if (prefs.getBoolean("flutter.app.connectAtStartup", false)){
             launchTProxyService(context);
         }
     }
