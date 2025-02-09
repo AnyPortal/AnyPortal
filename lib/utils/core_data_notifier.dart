@@ -16,7 +16,11 @@ enum TrafficStatType {
 }
 
 class CoreDataNotifier with ChangeNotifier {
-  static const protocolDirect = {"freedom"};
+  static const protocolDirect = {
+    "freedom",
+    "loopback",
+    "blackhole",
+  };
   static const protocolProxy = {
     "dns",
     "http",
@@ -25,7 +29,7 @@ class CoreDataNotifier with ChangeNotifier {
     "socks",
     "vmess",
     "vless",
-    "trojan"
+    "trojan",
   };
 
   final limitCount = 60;
@@ -88,7 +92,10 @@ class CoreDataNotifier with ChangeNotifier {
             TrafficStatType.directUp;
         apiItemTrafficStatType["outbound>>>$tag>>>traffic>>>downlink"] =
             TrafficStatType.directDn;
-      } else if (protocolProxy.contains(protocol)) {
+      } else {
+        if (!protocolProxy.contains(protocol)){
+          logger.w('unknown protocol treated as proxy protocol: $protocol');
+        }
         apiItemTrafficStatType["outbound>>>$tag>>>traffic>>>uplink"] =
             TrafficStatType.proxyUp;
         apiItemTrafficStatType["outbound>>>$tag>>>traffic>>>downlink"] =
