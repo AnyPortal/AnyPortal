@@ -8,7 +8,7 @@
     "servers": [
       {
         "tag": "dn_cloudflare",
-        "address": "1.1.1.1",
+        "address": "https://1.1.1.1/dns-query",
         "detour": "ot_direct"
       },
       {
@@ -22,7 +22,7 @@
           "A",
           "AAAA"
         ],
-        "server": "dn_fakeip"
+        "server": "dn_cloudflare"
       }
     ],
     "independent_cache": true,

@@ -33,7 +33,9 @@ class LoggerManager {
       ),
     );
     if (await file.exists()) {
-      await file.delete();
+      try {
+        await file.delete();
+      } catch (_) {}
     }
     await file.create(recursive: true);
     file.create(recursive: true);
