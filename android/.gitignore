@@ -12,4 +12,6 @@ key.properties
 **/*.keystore
 **/*.jks
 
-/build
+/app/.cxx
+/app/build
+/app/src/main/jniLibs

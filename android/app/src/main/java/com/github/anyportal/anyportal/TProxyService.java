@@ -215,6 +215,24 @@ public class TProxyService extends VpnService {
         }
     }
 
+    public void tryStopCore() {
+        try {
+            stopCore();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
+    public void tryStartCore() {
+        try {
+            startCore();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+    }
+
     public void tryStopTun() {
         try {
             stopTun();

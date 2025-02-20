@@ -30,15 +30,16 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
-        ndk {
-			// abiFilters "armeabi-v7a", "arm64-v8a",'x86','x86_64'
-		}
-		externalNativeBuild {
-			ndkBuild {
-				arguments "APP_CFLAGS+=-DPKGNAME=com/github/anyportal/anyportal -ffile-prefix-map=${rootDir}=."
-				arguments "APP_LDFLAGS+=-Wl,--build-id=none"
-			}
-		}
+        /// will not work since android.externalNativeBuild is not enabled
+        // ndk {
+		// 	// abiFilters "armeabi-v7a", "arm64-v8a",'x86','x86_64'
+		// }
+		// externalNativeBuild {
+		// 	ndkBuild {
+		// 		arguments "APP_CFLAGS+=-DPKGNAME=com/github/anyportal/anyportal -ffile-prefix-map=${rootDir}=."
+		// 		arguments "APP_LDFLAGS+=-Wl,--build-id=none"
+		// 	}
+		// }
 
         project.android.applicationVariants.all { variant ->
             variant.outputs.each { output ->
@@ -91,13 +92,15 @@ android {
         }
     }
 
-    externalNativeBuild {
-		ndkBuild {
-			path "src/main/jni/Android.mk"
-		}
-	}
+    /// this is the original and native method, but would cause "[CXX1400] More than one externalNativeBuild path specified"
+    /// see runNdkBuild at the end of the file for current alternative
+    // externalNativeBuild {
+    //     ndkBuild {
+    //         path "src/main/jni/Android.mk"
+    //     }
+    // }
 
-    lintOptions {
+    lint {
         disable 'ExpiredTargetSdkVersion'
     }
 }
@@ -110,3 +113,22 @@ dependencies {
     implementation (name:'libv2raymobile', ext:'aar')
     // implementation 'dev.rikka.shizuku:api:13.1.5'
 }
+
+// https://emunix.org/en/post/android-ndk-cmake-and-ndkbuild/
+task runNdkBuild(type: Exec) {
+    def os = System.getProperty("os.name").toLowerCase()
+    def ndkBuildExec = os.contains("win") ? "ndk-build.cmd" : "ndk-build"
+    def ndkDir = android.ndkDirectory
+    executable = "$ndkDir/$ndkBuildExec"
+    args = [
+        'NDK_PROJECT_PATH=build/intermediates/ndk',
+        'NDK_LIBS_OUT=src/main/jniLibs',
+        'APP_BUILD_SCRIPT=src/main/jni/Android.mk',
+        'NDK_APPLICATION_MK=src/main/jni/Application.mk',
+        
+        "APP_CFLAGS=-DPKGNAME=com/github/anyportal/anyportal -ffile-prefix-map=${rootDir}=.",
+        "APP_LDFLAGS=-Wl,--build-id=none",
+    ]
+}
+
+preBuild.dependsOn runNdkBuild

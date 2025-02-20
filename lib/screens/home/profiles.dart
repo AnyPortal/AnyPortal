@@ -309,6 +309,7 @@ class _ProfileListState extends State<ProfileList> {
                         },
                         title: Text(profile.name.toString()),
                         subtitle: Text('${profile.updatedAt}'),
+                        dense: true,
                         secondary: PopupMenuButton<ProfileAction>(
                           onSelected: (value) =>
                               handleProfileAction(profile, value),

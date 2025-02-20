@@ -48,7 +48,12 @@ dependencies:
   http: ^1.2.2
   sqlite3_flutter_libs: ^0.5.24
   fl_chart: ^0.69.0
-  installed_apps: ^1.5.0
+  # installed_apps: ^1.5.2
+  # https://github.com/sharmadhiraj/installed_apps/issues/50
+  installed_apps:
+    git:
+      url: https://github.com/shatanikmahanty/installed_apps.git
+      ref: master 
   smooth_highlight: ^0.1.2
   launch_at_startup: ^0.3.1
   package_info_plus: ^8.0.2
