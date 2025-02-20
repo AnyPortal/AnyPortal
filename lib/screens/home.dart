@@ -325,6 +325,7 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
     switch (menuItem.key) {
       case 'exit':
         // SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+        await vPNMan.stopAll();
         exit(0);
       case 'toggle_all':
         final shouldEnable = !menuItem.checked!;

@@ -4,6 +4,7 @@ import 'package:anyportal/utils/logger.dart';
 
 class PlatformProcess {
   static Future<int?> getProcessPid(String commandLine) async {
+    logger.d("getProcessPid: $commandLine");
     try {
       if (Platform.isWindows) {
         return await _getProcessPidWindows(commandLine);
@@ -17,24 +18,25 @@ class PlatformProcess {
   }
 
   static Future<int?> _getProcessPidWindows(String commandLine) async {
-    // Use 'wmic' to get the list of processes
-    final result = await Process.run('wmic', ['process', 'list', 'full']);
-    if (result.exitCode == 0) {
-      // Split the output into lines
-      final lines = result.stdout.toString().split('\n');
-      for (var i = 0; i < lines.length; i++) {
-        if (lines[i].contains(commandLine)) {
-          // PID will usually be a few lines below the matching command
-          for (var j = i; j < lines.length; j++) {
-            if (lines[j].startsWith('ProcessId=')) {
-              final pid = int.tryParse(lines[j].split('=')[1].trim());
-              return pid;
-            }
-          }
-        }
+    try {
+      // Run the PowerShell command
+      final result = await Process.run('powershell', [
+        'Get-WmiObject Win32_Process | Where-Object { \$_.CommandLine -like "*$commandLine*" } | Select-Object -ExpandProperty ProcessId'
+      ]);
+
+      // If the result is not empty, parse the PID
+      if (result.stdout.isNotEmpty) {
+        final pid = int.tryParse(result.stdout.trim());
+        logger.d("_getProcessPidWindows: $pid");
+        return pid;
+      } else {
+        logger.d("_getProcessPidWindows: null");
+        return null; // No process found with the matching command line
       }
+    } catch (e) {
+      logger.e("Error: $e");
+      return null;
     }
-    return null;
   }
 
   static Future<int?> _getProcessPidUnix(String commandLine) async {
@@ -48,11 +50,46 @@ class PlatformProcess {
           final parts = line.trim().split(RegExp(r'\s+'));
           if (parts.length > 1) {
             final pid = int.tryParse(parts[1]);
+            logger.d("_getProcessPidUnix: $pid");
             return pid;
           }
         }
       }
     }
     return null;
+  }
+
+  static Future<bool> killProcess(int pid) async {
+    String command;
+    List<String> arguments;
+
+    // Determine the platform and set appropriate command and arguments
+    if (Platform.isWindows) {
+      command = 'taskkill';
+      arguments = ['/F', '/PID', pid.toString()]; // /F forces the termination
+    } else {
+      command = 'kill';
+      arguments = [
+        '-9',
+        pid.toString()
+      ]; // -9 forces termination on Unix-based systems
+    }
+
+    try {
+      // Run the process to kill it
+      ProcessResult result = await Process.run(command, arguments);
+
+      // Check if the exit code is 0, indicating success
+      if (result.exitCode == 0) {
+        logger.d('killProcess: Process $pid killed successfully');
+        return true;
+      } else {
+        logger.d('killProcess: Failed to kill process $pid: ${result.stderr}');
+        return false;
+      }
+    } catch (e) {
+      logger.e('killProcess: Error killing process $pid: $e');
+      return false;
+    }
   }
 }

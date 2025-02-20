@@ -1,4 +1,5 @@
 import 'package:animated_tree_view/animated_tree_view.dart';
+import 'package:anyportal/utils/vpn_manager.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -276,13 +277,35 @@ class _ProfileListState extends State<ProfileList> {
                     return RadioListTile(
                         value: profile.id,
                         groupValue: _selectedProfileId,
-                        onChanged: (value) {
+                        onChanged: (value) async {
                           prefs.setInt('app.selectedProfileId', value!);
                           prefs.setString(
                               'cache.app.selectedProfileName', profile.name);
                           setState(() {
                             _selectedProfileId = value;
                           });
+                          if (await vPNMan.getIsCoreActive()){
+                            const snackBar = SnackBar(
+                              content: Text("Reconnecting"),
+                            );
+                            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                            
+                            await vPNMan.stopCore();
+                            final res = await vPNMan.startCore();
+
+                            String msg = "";
+                            if (res) {
+                              msg = "Reconnected";
+                            } else {
+                              msg = "Failed to reconnect";
+                            }
+                            final snackBar2 = SnackBar(
+                              content: Text(msg),
+                            );
+                            if (context.mounted) ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(snackBar2);
+                            
+                          }
                         },
                         title: Text(profile.name.toString()),
                         subtitle: Text('${profile.updatedAt}'),

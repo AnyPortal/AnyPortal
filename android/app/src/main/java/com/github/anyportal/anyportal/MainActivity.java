@@ -120,32 +120,32 @@ public class MainActivity extends FlutterActivity {
         switch (call.method) {
             case "vpn.startAll":
                 tProxyService.tryStartAll();
-                result.success(null);
+                result.success(true);
                 break;
         
             case "vpn.stopAll":
                 tProxyService.tryStopAll();
-                result.success(null);
+                result.success(true);
                 break;
 
             case "vpn.startNotificationForeground":
                 tProxyService.tryStartNotificationForeground();
-                result.success(null);
+                result.success(true);
                 break;
         
             case "vpn.stopNotificationForeground":
                 tProxyService.tryStopNotificationForeground();
-                result.success(null);
+                result.success(true);
                 break;
         
             case "vpn.startTun":
                 tProxyService.tryStartTun();
-                result.success(null);
+                result.success(true);
                 break;
         
             case "vpn.stopTun":
                 tProxyService.tryStopTun();
-                result.success(null);
+                result.success(true);
                 break;
 
             case "vpn.startSystemProxy":

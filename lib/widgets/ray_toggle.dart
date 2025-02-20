@@ -1,11 +1,8 @@
 import 'dart:async';
 
-import 'package:anyportal/models/core.dart';
 import 'package:flutter/material.dart';
-import 'package:anyportal/utils/core_data_notifier.dart';
 
 import '../screens/home/settings/cores.dart';
-import '../utils/logger.dart';
 import '../utils/vpn_manager.dart';
 
 // ignore: must_be_immutable
@@ -24,30 +21,9 @@ class RayToggleState extends State<RayToggle> {
   StreamSubscription<String>? _stdoutSubscription;
   Timer? timer;
 
-  Future<void> syncCoreDataNotifier() async {
-    final isCoreActive = await vPNMan.getIsCoreActive();
-    if (isCoreActive && !coreDataNotifier.on && vPNMan.coreTypeId <= CoreTypeDefault.xray.index) {
-      try {
-        coreDataNotifier.loadCfg(vPNMan.coreRawCfgMap);
-        // should do atomic check
-        if (!coreDataNotifier.on) coreDataNotifier.start();
-      } catch (e) {
-        logger.e("$e");
-        final snackBar = SnackBar(
-          content: Text("syncCoreDataNotifier: $e"),
-        );
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      }
-    } else if (!isCoreActive && coreDataNotifier.on) {
-      // should do atomic check
-      coreDataNotifier.stop();
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    syncCoreDataNotifier();
   }
 
   void _toggle() async {
@@ -86,8 +62,6 @@ class RayToggleState extends State<RayToggle> {
         if (mounted) ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     }
-
-    syncCoreDataNotifier();
   }
 
   @override
@@ -101,7 +75,6 @@ class RayToggleState extends State<RayToggle> {
     return ListenableBuilder(
         listenable: vPNMan,
         builder: (BuildContext context, Widget? child) {
-          syncCoreDataNotifier();
           return FloatingActionButton(
               onPressed: vPNMan.isToggling ? null : _toggle,
               tooltip: vPNMan.isCoreActive
