@@ -26,7 +26,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
   bool _brightnessIsDark = prefs.getBool('app.brightness.dark')!;
   bool _isBlackDark = prefs.getBool('app.brightness.dark.black')!;
   bool _brightnessFollowSystem = prefs.getBool('app.brightness.followSystem')!;
-  bool _skipTaskbar = prefs.getBool('app.window.skipTaskbar')!;
+  bool _closeToTray = prefs.getBool('app.window.closeToTray')!;
   bool _notificationForeground = prefs.getBool('app.notification.foreground')!;
 
   @override
@@ -129,14 +129,14 @@ class _GeneralScreenState extends State<GeneralScreen> {
         ),
       if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
         ListTile(
-          title: const Text("Minimize to tray"),
-          subtitle: const Text("Hide taskbar icon when minimized"),
+          title: const Text("Close to tray"),
+          subtitle: const Text("Dock to tray instead when app window is closed"),
           trailing: Switch(
-            value: _skipTaskbar,
+            value: _closeToTray,
             onChanged: (value) async {
-              prefs.setBool('app.window.skipTaskbar', value);
+              prefs.setBool('app.window.closeToTray', value);
               setState(() {
-                _skipTaskbar = value;
+                _closeToTray = value;
               });
             },
           ),

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:anyportal/utils/logger.dart';
@@ -17,27 +18,31 @@ class PlatformProcess {
     return null;
   }
 
-  static Future<int?> _getProcessPidWindows(String commandLine) async {
-    try {
-      // Run the PowerShell command
-      final result = await Process.run('powershell', [
-        'Get-WmiObject Win32_Process | Where-Object { \$_.CommandLine -like "*$commandLine*" } | Select-Object -ExpandProperty ProcessId'
-      ]);
+static Future<int?> _getProcessPidWindows(String commandLine) async {
+  try {
+    // Run the PowerShell command to get all processes and their command lines in JSON format
+    final result = await Process.run('C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe', [
+      'Get-WmiObject Win32_Process | Select-Object ProcessId, CommandLine | ConvertTo-Json'
+    ]);
 
-      // If the result is not empty, parse the PID
-      if (result.stdout.isNotEmpty) {
-        final pid = int.tryParse(result.stdout.trim());
+    // Parse the JSON result into a List of dynamic (Map) objects
+    final List<dynamic> processes = jsonDecode(result.stdout);
+
+    // Search through the processes for an exact match on the command line
+    for (var process in processes) {
+      if (process['CommandLine'] == commandLine) {
+        final pid =  process['ProcessId'];
         logger.d("_getProcessPidWindows: $pid");
-        return pid;
-      } else {
-        logger.d("_getProcessPidWindows: null");
-        return null; // No process found with the matching command line
+        return pid; // Return the PID
       }
-    } catch (e) {
-      logger.e("Error: $e");
-      return null;
     }
+    logger.d("_getProcessPidWindows: null");
+    return null; // No matching process found
+  } catch (e) {
+    logger.e("Error: $e");
+    return null;
   }
+}
 
   static Future<int?> _getProcessPidUnix(String commandLine) async {
     // Use 'ps' to list processes and search for the commandLine
@@ -69,10 +74,7 @@ class PlatformProcess {
       arguments = ['/F', '/PID', pid.toString()]; // /F forces the termination
     } else {
       command = 'kill';
-      arguments = [
-        '-9',
-        pid.toString()
-      ]; // -9 forces termination on Unix-based systems
+      arguments = ['-9', pid.toString()]; // -9 forces termination on Unix-based systems
     }
 
     try {

@@ -299,11 +299,6 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
   // }
 
   @override
-  void onWindowMinimize() async {
-    windowManager.setSkipTaskbar(prefs.getBool("app.window.skipTaskbar")!);
-  }
-
-  @override
   void onWindowClose() async {
     windowManager.hide();
   }
