@@ -25,7 +25,7 @@ class PrefsManager {
     'app.window.size.width': 1280.0,
     'app.window.size.height': 720.0,
     'app.window.isMaximized': false,
-    'app.window.closeToTray': Platform.isWindows || Platform.isLinux,
+    'app.window.closeToTray': Platform.isWindows || Platform.isLinux || Platform.isMacOS,
     'app.brightness.dark': true,
     'app.brightness.dark.black': false,
     'app.brightness.followSystem': true,

@@ -23,7 +23,8 @@ jobs:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: 3.24.3
+        channel: stable
+        flutter-version: 3.29.0
 
     - name: Install dependencies
       run: flutter pub get
@@ -57,7 +58,8 @@ jobs:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: 3.24.3
+        channel: stable
+        flutter-version: 3.29.0
 
     - name: Install dependencie
       run: flutter pub get
@@ -91,7 +93,8 @@ jobs:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: 3.24.3
+        channel: stable
+        flutter-version: 3.29.0
 
     - name: Install dependencies
       run: flutter pub get
@@ -136,7 +139,8 @@ jobs:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: 3.24.3
+        channel: stable
+        flutter-version: 3.29.0
 
     - name: Install dependencies
       run: flutter pub get
@@ -185,7 +189,8 @@ jobs:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: 3.24.3
+        channel: stable
+        flutter-version: 3.29.0
 
     - name: Install dependencies
       run: flutter pub get
@@ -234,7 +239,8 @@ jobs:
   #   - name: Set up Flutter
   #     uses: subosito/flutter-action@v2
   #     with:
-  #       flutter-version: 3.24.3
+  #       channel: stable
+  #       flutter-version: 3.29.0
 
   #   - name: Install dependencies
   #     run: flutter pub get
