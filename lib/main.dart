@@ -70,6 +70,8 @@ void main(List<String> args) async {
       size: Size(width!, height!),
       skipTaskbar: false,
     );
+    // override the default close handler
+    await windowManager.setPreventClose(true);
     await windowManager.waitUntilReadyToShow(windowOptions, () async {
       if (!cliArg.flag("minimized")) {
         await windowManager.show();
