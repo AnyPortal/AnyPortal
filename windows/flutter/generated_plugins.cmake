@@ -5,7 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   flutter_acrylic
   permission_handler_windows
-  screen_retriever
+  screen_retriever_windows
   sqlite3_flutter_libs
   system_theme
   tray_manager
