@@ -311,7 +311,7 @@ class _CoresScreenState extends State<CoresScreen> {
                         },
                         title: Text(getCoreTitle(core)),
                         subtitle: Text(
-                            'last updated: ${core.read(db.core.updatedAt)}'),
+                            '${core.read(db.core.updatedAt)}'),
                         secondary: PopupMenuButton<CoreAction>(
                           onSelected: (value) => handleCoreAction(core, value),
                           itemBuilder: (context) => CoreAction.values

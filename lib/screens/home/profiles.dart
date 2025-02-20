@@ -285,7 +285,7 @@ class _ProfileListState extends State<ProfileList> {
                           });
                         },
                         title: Text(profile.name.toString()),
-                        subtitle: Text('last updated: ${profile.updatedAt}'),
+                        subtitle: Text('${profile.updatedAt}'),
                         secondary: PopupMenuButton<ProfileAction>(
                           onSelected: (value) =>
                               handleProfileAction(profile, value),
