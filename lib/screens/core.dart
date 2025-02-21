@@ -104,6 +104,8 @@ class _CoreScreenState extends State<CoreScreen> {
       _isSubmitting = true;
     });
     bool ok = false;
+    String? status;
+    int? coreId;
     bool permitted = true;
 
     if (Platform.isAndroid) {
@@ -137,18 +139,18 @@ class _CoreScreenState extends State<CoreScreen> {
         final oldCore = widget.core;
         final workingDir = _workingDirController.text;
         final envs = _envsController.text;
-        int coreId;
         await db.transaction(() async {
           if (oldCore != null) {
             coreId = oldCore.read(db.core.id)!;
             await db.into(db.core).insertOnConflictUpdate(CoreCompanion(
-                  id: Value(coreId),
+                  id: Value(coreId!),
                   coreTypeId: Value(_coreTypeId),
                   updatedAt: Value(DateTime.now()),
                   isExec: Value(_coreIsExec),
                   workingDir: Value(workingDir),
                   envs: Value(envs),
                 ));
+            status = "updated";
           } else {
             coreId = await db.into(db.core).insert(CoreCompanion(
                   coreTypeId: Value(_coreTypeId),
@@ -157,11 +159,12 @@ class _CoreScreenState extends State<CoreScreen> {
                   workingDir: Value(workingDir),
                   envs: Value(envs),
                 ));
+            status = "inserted";
           }
 
           if (_coreIsExec) {
             await db.into(db.coreExec).insertOnConflictUpdate(CoreExecCompanion(
-                  coreId: Value(coreId),
+                  coreId: Value(coreId!),
                   assetId: Value(_assetId!),
                 ));
           }
@@ -180,8 +183,13 @@ class _CoreScreenState extends State<CoreScreen> {
       _isSubmitting = false;
     });
 
-    if (ok) {
-      if (mounted) Navigator.pop(context, {'ok': true});
+    if (mounted) {
+      Navigator.pop(context, {
+        'ok': ok,
+        'status': status,
+        'coreId': coreId,
+        'coreTypeId': _coreTypeId,
+      });
     }
   }
 
@@ -267,8 +275,15 @@ class _CoreScreenState extends State<CoreScreen> {
                 context,
                 MaterialPageRoute(builder: (context) => const AssetScreen()),
               ).then((res) {
-                if (res != null && res['ok'] == true) {
-                  _loadAssets();
+                if (res != null) {
+                  if (res['ok'] == true){
+                    _loadAssets();
+                  }
+                  if (res['status'] == 'inserted'){
+                    setState(() {
+                      _assetId = res['id'];
+                    });
+                  }
                 }
               });
             },

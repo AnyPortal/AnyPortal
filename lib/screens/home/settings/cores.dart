@@ -74,8 +74,15 @@ class _CoresScreenState extends State<CoresScreen> {
       context,
       MaterialPageRoute(builder: (context) => const CoreScreen()),
     ).then((res) {
-      if (res != null && res['ok'] == true) {
-        _loadCores();
+      if (res != null) {
+        if (res['ok'] == true){
+          _loadCores();
+        }
+        if (res['status'] == 'inserted'){
+          final coreTypeId = res['coreTypeId'];
+          final coreId = res['coreId'];
+          setCoreTypeIdCoreId(coreTypeId, coreId);
+        }
       }
     });
   }
@@ -229,12 +236,24 @@ class _CoresScreenState extends State<CoresScreen> {
     return coreType.read(db.coreType.name)!;
   }
 
+  int? getCoreIdOfCoreTypeId(int coreTypeId) {
+    if (_coreTypeSeclectedId.containsKey(coreTypeId)) {
+      return _coreTypeSeclectedId[coreTypeId];
+    } else {
+      return null;
+    }
+  }
+
   String getCoreTypeSubTitle(TypedResult coreType) {
     final coreTypeId = coreType.read(db.coreType.id)!;
     if (_coreTypeSeclectedId.containsKey(coreTypeId)) {
       final selectedCoreId = _coreTypeSeclectedId[coreTypeId];
       final selectedCore = _cores[selectedCoreId];
-      return getCoreTitle(selectedCore!);
+      if (selectedCore == null){
+        return "No core selected!";
+      } else {
+        return getCoreTitle(selectedCore);
+      }
     } else {
       return "No core selected!";
     }
@@ -250,6 +269,18 @@ class _CoresScreenState extends State<CoresScreen> {
     } else {
       return "embedded";
     }
+  }
+
+  setCoreTypeIdCoreId(int coreTypeId, int coreId) {
+    db
+        .into(db.coreTypeSelected)
+        .insertOnConflictUpdate(CoreTypeSelectedCompanion(
+          coreTypeId: Value(coreTypeId),
+          coreId: Value(coreId),
+        ));
+    setState(() {
+      _coreTypeSeclectedId[coreTypeId] = coreId;
+    });
   }
 
   @override
@@ -297,17 +328,9 @@ class _CoresScreenState extends State<CoresScreen> {
                     return RadioListTile(
                         value: coreId,
                         groupValue: _coreTypeSeclectedId[coreTypeId],
-                        onChanged: (value) {
+                        onChanged: (_) {
                           // prefs.setInt('app.selectedCoreId', value!);
-                          db
-                              .into(db.coreTypeSelected)
-                              .insertOnConflictUpdate(CoreTypeSelectedCompanion(
-                                coreTypeId: Value(coreTypeId),
-                                coreId: Value(coreId),
-                              ));
-                          setState(() {
-                            _coreTypeSeclectedId[coreTypeId] = value!;
-                          });
+                          setCoreTypeIdCoreId(coreTypeId, coreId);
                         },
                         title: Text(getCoreTitle(core)),
                         subtitle: Text(

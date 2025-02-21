@@ -64,6 +64,8 @@ class _AssetScreenState extends State<AssetScreen> {
       _isSubmitting = true;
     });
     bool ok = false;
+    String? status;
+    int? id;
 
     try {
       if (_formKey.currentState?.validate() ?? false) {
@@ -91,12 +93,15 @@ class _AssetScreenState extends State<AssetScreen> {
                   path: Value(assetPath),
                   updatedAt: Value(DateTime.now()),
                 ));
+            status = "updated";
+            id = assetId;
           } else {
-            await db.into(db.asset).insertOnConflictUpdate(AssetCompanion(
+            id = await db.into(db.asset).insertOnConflictUpdate(AssetCompanion(
                   type: Value(_assetType),
                   path: Value(assetPath),
                   updatedAt: Value(DateTime.now()),
                 ));
+            status = "inserted";
           }
         }
       }
@@ -113,8 +118,12 @@ class _AssetScreenState extends State<AssetScreen> {
       _isSubmitting = false;
     });
 
-    if (ok) {
-      if (mounted) Navigator.pop(context, {'ok': true});
+    if (mounted) {
+      Navigator.pop(context, {
+        'ok': ok,
+        'status': status,
+        'id': id,
+      });
     }
   }
 
