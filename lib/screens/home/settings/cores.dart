@@ -5,6 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:anyportal/models/asset.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
+import '../../../models/edit_status.dart';
 import '../../../screens/core.dart';
 import '../../../utils/db.dart';
 import '../../core_type.dart';
@@ -35,13 +36,13 @@ extension ToLCString on CoresAction {
 }
 
 enum CoreAction {
-  delete,
   edit,
+  delete,
 }
 
 enum CoreTypeAction {
-  delete,
   edit,
+  delete,
 }
 
 class _CoresScreenState extends State<CoresScreen> {
@@ -78,7 +79,7 @@ class _CoresScreenState extends State<CoresScreen> {
         if (res['ok'] == true){
           _loadCores();
         }
-        if (res['status'] == 'inserted'){
+        if (res['status'] == EditStatus.inserted){
           final coreTypeId = res['coreTypeId'];
           final coreId = res['coreId'];
           setCoreTypeIdCoreId(coreTypeId, coreId);

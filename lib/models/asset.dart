@@ -45,5 +45,3 @@ class AssetTypeConverter extends TypeConverter<AssetType, int> {
     return value.index;
   }
 }
-
-

@@ -37,13 +37,13 @@ extension ToLCString on ProfilesAction {
 }
 
 enum ProfileAction {
-  delete,
   edit,
+  delete,
 }
 
 enum ProfileGroupAction {
-  delete,
   edit,
+  delete,
 }
 
 class _ProfileListState extends State<ProfileList> {

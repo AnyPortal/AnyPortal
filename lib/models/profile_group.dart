@@ -60,4 +60,3 @@ class ProfileGroupFormatConverter extends TypeConverter<ProfileGroupRemoteFormat
     return value.index;
   }
 }
-

@@ -30,13 +30,13 @@ extension ToLCString on AssetsAction {
 }
 
 enum AssetAction {
-  delete,
   edit,
+  delete,
 }
 
 enum AssetTypeAction {
-  delete,
   edit,
+  delete,
 }
 
 class _AssetsScreenState extends State<AssetsScreen> {

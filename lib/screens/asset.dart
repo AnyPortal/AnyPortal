@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 
 import '../../utils/db.dart';
 import '../../models/asset.dart';
+import '../models/edit_status.dart';
 import '../utils/asset_remote/github.dart';
 import '../utils/logger.dart';
 
@@ -64,7 +67,7 @@ class _AssetScreenState extends State<AssetScreen> {
       _isSubmitting = true;
     });
     bool ok = false;
-    String? status;
+    EditStatus? status;
     int? id;
 
     try {
@@ -93,7 +96,7 @@ class _AssetScreenState extends State<AssetScreen> {
                   path: Value(assetPath),
                   updatedAt: Value(DateTime.now()),
                 ));
-            status = "updated";
+            status = EditStatus.updated;
             id = assetId;
           } else {
             id = await db.into(db.asset).insertOnConflictUpdate(AssetCompanion(
@@ -101,7 +104,7 @@ class _AssetScreenState extends State<AssetScreen> {
                   path: Value(assetPath),
                   updatedAt: Value(DateTime.now()),
                 ));
-            status = "inserted";
+            status = EditStatus.inserted;
           }
         }
       }
@@ -162,9 +165,9 @@ class _AssetScreenState extends State<AssetScreen> {
             Expanded(
               child: TextFormField(
                 controller: _assetPathController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'asset path',
-                  hintText: '/path/to/asset_excutable',
+                  hintText: Platform.isWindows ? "e.g. C:\\path\\to\\v2ray.exe" : "e.g. /path/to/v2ray",
                   border: OutlineInputBorder(),
                 ),
               ),

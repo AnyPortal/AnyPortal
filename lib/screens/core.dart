@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:anyportal/models/edit_status.dart';
 import 'package:anyportal/utils/permission_manager.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
@@ -104,7 +105,7 @@ class _CoreScreenState extends State<CoreScreen> {
       _isSubmitting = true;
     });
     bool ok = false;
-    String? status;
+    EditStatus? status;
     int? coreId;
     bool permitted = true;
 
@@ -150,7 +151,7 @@ class _CoreScreenState extends State<CoreScreen> {
                   workingDir: Value(workingDir),
                   envs: Value(envs),
                 ));
-            status = "updated";
+            status = EditStatus.updated;
           } else {
             coreId = await db.into(db.core).insert(CoreCompanion(
                   coreTypeId: Value(_coreTypeId),
@@ -159,7 +160,7 @@ class _CoreScreenState extends State<CoreScreen> {
                   workingDir: Value(workingDir),
                   envs: Value(envs),
                 ));
-            status = "inserted";
+            status = EditStatus.inserted;
           }
 
           if (_coreIsExec) {
@@ -251,7 +252,7 @@ class _CoreScreenState extends State<CoreScreen> {
           Expanded(
             child: DropdownButtonFormField<int>(
               decoration: const InputDecoration(
-                labelText: 'core asset',
+                labelText: 'core executable',
                 border: OutlineInputBorder(),
               ),
               items: _assets.map((e) {
@@ -279,7 +280,7 @@ class _CoreScreenState extends State<CoreScreen> {
                   if (res['ok'] == true){
                     _loadAssets();
                   }
-                  if (res['status'] == 'inserted'){
+                  if (res['status'] == EditStatus.inserted){
                     setState(() {
                       _assetId = res['id'];
                     });
