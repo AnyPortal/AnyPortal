@@ -58,7 +58,7 @@ abstract class VPNManager with ChangeNotifier {
         // should do atomic check
         if (!coreDataNotifier.on) coreDataNotifier.start();
       } catch (e) {
-        logger.e("$e");
+        logger.e("notifyCoreDataNotifier: $e");
       }
     } else if (!isCoreActive && coreDataNotifier.on) {
       // should do atomic check

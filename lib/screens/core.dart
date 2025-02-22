@@ -173,7 +173,7 @@ class _CoreScreenState extends State<CoreScreen> {
         ok = true;
       }
     } catch (e) {
-      logger.e("$e");
+      logger.e("_submitForm: $e");
       final snackBar = SnackBar(
         content: Text("$e"),
       );

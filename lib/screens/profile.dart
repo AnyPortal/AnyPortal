@@ -89,7 +89,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
       ok = true;
     } catch (e) {
-      logger.e("$e");
+      logger.e("_submitForm: $e");
       final snackBar = SnackBar(
         content: Text("$e"),
       );

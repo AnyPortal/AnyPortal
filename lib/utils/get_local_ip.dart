@@ -10,7 +10,7 @@ Future<String?> getIPAddr() async {
     ]);
     return process.stdout.toString();
   } catch (e) {
-    logger.e("$e");
+    logger.e("getIPAddr: $e");
     return null;
   }
 }

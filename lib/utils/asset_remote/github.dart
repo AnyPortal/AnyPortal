@@ -4,13 +4,15 @@ import 'dart:io';
 
 import 'package:anyportal/utils/asset_remote/protocol.dart';
 import 'package:drift/drift.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_socks_proxy/socks_proxy.dart';
 import 'package:path/path.dart' as p;
 
 import '../../models/asset.dart';
 import '../db.dart';
 import '../extract.dart';
 import '../global.dart';
+import '../logger.dart';
+import '../prefs.dart';
 
 class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
   final String url;
@@ -47,28 +49,36 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
   }
 
   String? _newMeta;
+  final serverAddress = prefs.getString('app.server.address')!;
+  final socksPort = prefs.getInt('app.socks.port')!;
 
   Future<bool> isUpdated(
     TypedResult? oldAsset,
   ) async {
     final metaUrl = "https://api.github.com/repos/$owner/$repo/releases/latest";
-    final response = await http.get(Uri.parse(metaUrl));
+
+    final client = createProxyHttpClient()
+      ..findProxy = (url) => 'SOCKS5 $serverAddress:$socksPort';
+    final request = await client.getUrl(Uri.parse(metaUrl));
+    final response = await request.close();
+    client.close();
+
     if (response.statusCode == 200) {
-      _newMeta = response.body;
+      _newMeta = await utf8.decodeStream(response);
+
+      if (oldAsset == null) {
+        return false;
+      } else {
+        final oldCreatedAt = (jsonDecode(oldAsset.read(db.assetRemote.meta)!)
+            as Map<String, dynamic>)["created_at"];
+        final newCreatedAt =
+            (jsonDecode(_newMeta!) as Map<String, dynamic>)["created_at"];
+
+        return oldCreatedAt == newCreatedAt;
+      }
     } else {
       throw Exception(
           "${response.statusCode} when accessing $metaUrl. If using shared ip address/exceeding api limit consider add a github token");
-    }
-
-    if (oldAsset == null) {
-      return false;
-    } else {
-      final oldCreatedAt = (jsonDecode(oldAsset.read(db.assetRemote.meta)!)
-          as Map<String, dynamic>)["created_at"];
-      final newCreatedAt =
-          (jsonDecode(response.body) as Map<String, dynamic>)["created_at"];
-
-      return oldCreatedAt == newCreatedAt;
     }
   }
 
@@ -78,10 +88,11 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     int autoUpdateInterval = 0,
   }) async {
     if (await isUpdated(oldAsset)) {
+      logger.d("isUpdated");
       return;
     } else {
-      final assetList = (jsonDecode(_newMeta!)
-          as Map<String, dynamic>)["assets"];
+      final assetList =
+          (jsonDecode(_newMeta!) as Map<String, dynamic>)["assets"];
       String? downloadUrl;
       for (final asset in assetList) {
         final assetMap = asset as Map<String, dynamic>;
@@ -96,16 +107,17 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
       final folder = global.applicationSupportDirectory;
       final file =
           File(p.join(folder.path, 'asset', 'github', owner, repo, assetName));
+      String path = file.path;
 
-      var client = http.Client();
-      var request = http.Request("GET", Uri.parse(downloadUrl));
-      var response = await client.send(request);
+      final client = createProxyHttpClient()
+        ..findProxy = (url) => 'SOCKS5 $serverAddress:$socksPort';
+      final request = await client.getUrl(Uri.parse(downloadUrl));
+      final response = await request.close();
       await file.create(recursive: true);
       var sink = file.openWrite();
-      await response.stream.pipe(sink);
+      await response.pipe(sink);
       sink.close();
 
-      String path = file.path;
       if (path.toLowerCase().endsWith(".zip")) {
         extractAsFolder(path);
         file.delete();
@@ -135,7 +147,9 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
                     updatedAt: Value(DateTime.now()),
                   ));
         }
-        await db.into(db.assetRemote).insertOnConflictUpdate(AssetRemoteCompanion(
+        await db
+            .into(db.assetRemote)
+            .insertOnConflictUpdate(AssetRemoteCompanion(
               assetId: Value(assetId),
               url: Value(url),
               meta: Value(_newMeta!),
