@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
 
-import 'package:anyportal/utils/asset_remote/protocol.dart';
-import 'package:anyportal/utils/vpn_manager.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter_socks_proxy/socks_proxy.dart';
 import 'package:http/http.dart' as http;
@@ -15,6 +13,8 @@ import '../extract.dart';
 import '../global.dart';
 import '../logger.dart';
 import '../prefs.dart';
+import '../vpn_manager.dart';
+import 'protocol.dart';
 
 class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
   final String url;
@@ -160,7 +160,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     }
   }
 
-  Future<void> recordAsset(
+  Future<int> postDownload(
     File downloadedFile,
     TypedResult? oldAsset,
     String newMeta,
@@ -173,7 +173,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
       final subPathList = subPath!.split('/');
       assetPath = File(p.joinAll([assetPath, ...subPathList])).path;
     }
-    int assetId;
+    late int assetId;
     await db.transaction(() async {
       if (oldAsset != null) {
         /// update old asset record
@@ -199,8 +199,11 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
             url: Value(url),
             meta: Value(newMeta),
             autoUpdateInterval: Value(autoUpdateInterval),
+            downloadedFilePath: Value(downloadedFile.path),
           ));
     });
+
+    return assetId;
   }
 
   Future<bool> install(
@@ -210,7 +213,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
 
     if (path.toLowerCase().endsWith(".zip")) {
       bool ok = await extractAsFolder(path);
-      if (ok){
+      if (ok) {
         try {
           downloadedFile.delete();
         } catch (e) {
@@ -224,12 +227,23 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     return true;
   }
 
+  Future<bool> postInstall(int assetId) async {
+    /// remove pending install status
+    await (db.update(db.assetRemote)..where((e) => e.assetId.equals(assetId)))
+    .write(AssetRemoteCompanion(
+          assetId: Value(assetId),
+          downloadedFilePath: Value(null),
+        ));
+
+    return true;
+  }
+
   bool canInstallNow(TypedResult? oldAsset) {
-    if (oldAsset == null){
+    if (oldAsset == null) {
       return true;
     }
     final assetPath = oldAsset.read(db.asset.path);
-    return assetPath == vPNMan.corePath && vPNMan.isCoreActive;
+    return !(assetPath == vPNMan.corePath && vPNMan.isCoreActive);
   }
 
   @override
@@ -246,7 +260,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     if (isUpdated(newMeta, oldMeta)) {
       logger.d("already updated: $url");
       return;
-    } 
+    }
 
     /// get download url
     logger.d("need update: $url");
@@ -264,25 +278,25 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
       return;
     }
     logger.d("downloaded: $downloadUrl");
-    recordAsset(
+    final assetId = await postDownload(
       downloadedFile,
       oldAsset,
       newMeta,
       autoUpdateInterval,
     );
 
-    /// todo: record pending install status
     if (canInstallNow(oldAsset)) {
       /// install only if not using
-      logger.d("installing: $downloadUrl");
+      logger.d("installing: $url");
       final installOk = await install(downloadedFile);
-      if (installOk){
-        /// todo: remove pending install status
+      if (installOk) {
+        await postInstall(assetId);
         logger.d("installed: $url");
+      } else {
+        logger.w("install failed: $url");
       }
     } else {
       logger.d("pending install: $url");
-      /// todo: notify scheduler to install (e.g. before next connection)
     }
     return;
   }

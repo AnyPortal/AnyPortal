@@ -229,6 +229,7 @@ class PlatformSystemProxyUserLinux extends PlatformSystemProxyUser {
 
   @override
   Future<bool?> isEnabled() async {
+    desktop = await _detectGui();
     try {
       final shell = Shell();
 

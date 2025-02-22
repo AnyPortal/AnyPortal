@@ -10,6 +10,7 @@ import 'package:path/path.dart' as p;
 import 'package:flutter/services.dart';
 import 'package:tuple/tuple.dart';
 
+import 'asset_remote/github.dart';
 import 'config_injector/core_ray.dart';
 import 'config_injector/tun_sing_box.dart';
 import 'core_data_notifier.dart';
@@ -52,7 +53,9 @@ abstract class VPNManager with ChangeNotifier {
   Future<void> stopNotificationForeground() async {}
 
   Future<void> notifyCoreDataNotifier() async {
-    if (isCoreActive && !coreDataNotifier.on && vPNMan.coreTypeId <= CoreTypeDefault.xray.index) {
+    if (isCoreActive &&
+        !coreDataNotifier.on &&
+        vPNMan.coreTypeId <= CoreTypeDefault.xray.index) {
       try {
         coreDataNotifier.loadCfg(vPNMan.coreRawCfgMap);
         // should do atomic check
@@ -251,7 +254,7 @@ abstract class VPNManager with ChangeNotifier {
         prefs.setString('cache.core.path', corePath!);
       }
       _coreWorkingDir = core.read(db.core.workingDir)!;
-      if (_coreWorkingDir!.isEmpty){
+      if (_coreWorkingDir!.isEmpty) {
         _coreWorkingDir = File(corePath!).parent.path;
       }
       prefs.setString('cache.core.workingDir', _coreWorkingDir!);
@@ -292,7 +295,10 @@ abstract class VPNManager with ChangeNotifier {
   }
 
   Future<void> initTunExec() async {
-    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS || Platform.isAndroid) {
+    if (Platform.isWindows ||
+        Platform.isLinux ||
+        Platform.isMacOS ||
+        Platform.isAndroid) {
       final coreTypeId = CoreTypeDefault.singBox.index;
       final core = await (db.select(db.coreTypeSelected).join([
         leftOuterJoin(
@@ -314,13 +320,15 @@ abstract class VPNManager with ChangeNotifier {
           if (_tunSingBoxCorePath == null) {
             throw Exception("sing-box path is null.");
           } else {
-            prefs.setString('cache.tun.singBox.core.path', _tunSingBoxCorePath!);
+            prefs.setString(
+                'cache.tun.singBox.core.path', _tunSingBoxCorePath!);
           }
           _tunSingBoxCoreWorkingDir = core.read(db.core.workingDir)!;
-          if (_tunSingBoxCoreWorkingDir!.isEmpty){
+          if (_tunSingBoxCoreWorkingDir!.isEmpty) {
             _tunSingBoxCoreWorkingDir = File(_tunSingBoxCorePath!).parent.path;
           }
-          prefs.setString('cache.tun.singBox.core.workingDir', _tunSingBoxCoreWorkingDir!);
+          prefs.setString(
+              'cache.tun.singBox.core.workingDir', _tunSingBoxCoreWorkingDir!);
         }
 
         /// gen config.json
@@ -354,7 +362,8 @@ abstract class VPNManager with ChangeNotifier {
         _tunSingBoxCoreEnvs =
             (jsonDecode(core.read(db.core.envs)!) as Map<String, dynamic>)
                 .map((k, v) => MapEntry(k, v as String));
-        await prefs.setString('cache.tun.singBox.core.envs', jsonEncode(_tunSingBoxCoreEnvs));
+        await prefs.setString(
+            'cache.tun.singBox.core.envs', jsonEncode(_tunSingBoxCoreEnvs));
         List<String> rawTunSingBoxArgList =
             (jsonDecode(core.read(db.coreExec.args)!) as List<dynamic>)
                 .map((e) => e as String)
@@ -369,7 +378,8 @@ abstract class VPNManager with ChangeNotifier {
                 _tunSingBoxCoreArgList[i].replaceAll(entry.key, entry.value);
           }
         }
-        prefs.setString('cache.tun.singBox.core.args', jsonEncode(_tunSingBoxCoreArgList));
+        prefs.setString(
+            'cache.tun.singBox.core.args', jsonEncode(_tunSingBoxCoreArgList));
 
         // clear core log
         await File(p.join(
@@ -377,6 +387,30 @@ abstract class VPNManager with ChangeNotifier {
           'log',
           'tun.sing_box.log',
         )).writeAsString("");
+      }
+    }
+  }
+
+  installPendingAssetRemote() async {
+    final assets = await (db.select(db.asset).join([
+      leftOuterJoin(
+          db.assetRemote, db.asset.id.equalsExp(db.assetRemote.assetId)),
+    ])
+          ..where(db.assetRemote.downloadedFilePath.isNotNull()))
+        .get();
+    for (var asset in assets) {
+      final assetUrl = asset.read(db.assetRemote.url)!;
+      final assetId = asset.read(db.assetRemote.assetId)!;
+      final assetRemoteProtocolGithub =
+          AssetRemoteProtocolGithub.fromUrl(assetUrl)!;
+      logger.d("installing: $assetUrl");
+      final installOk = await assetRemoteProtocolGithub
+          .install(File(asset.read(db.assetRemote.downloadedFilePath)!));
+      if (installOk) {
+        await assetRemoteProtocolGithub.postInstall(assetId);
+        logger.d("installed: $assetUrl");
+      } else {
+        logger.w("install failed: $assetUrl");
       }
     }
   }
@@ -421,6 +455,7 @@ class VPNManagerExec extends VPNManager {
   @override
   startCore() async {
     logger.d("startCore: start");
+    await installPendingAssetRemote();
     await initCore();
     final processCore = await Process.start(
       corePath!,
@@ -450,8 +485,6 @@ class VPNManagerExec extends VPNManager {
       return false;
     }
   }
-
-
 
   @override
   startTun() async {
@@ -534,11 +567,12 @@ class VPNManagerMC extends VPNManager {
   @override
   startAll() async {
     await initCore();
-    if (!prefs.getBool("tun.useEmbedded")!){
+    await installPendingAssetRemote();
+    if (!prefs.getBool("tun.useEmbedded")!) {
       await initTunExec();
     }
     final res = await platform.invokeMethod('vpn.startAll') as bool;
-    if (res == true){
+    if (res == true) {
       await setIsCoreActive(true);
     }
   }
@@ -546,14 +580,14 @@ class VPNManagerMC extends VPNManager {
   @override
   stopAll() async {
     final res = await platform.invokeMethod('vpn.stopAll') as bool;
-    if (res == true){
+    if (res == true) {
       await setIsCoreActive(false);
     }
   }
 
   @override
   startTun() async {
-    if (!prefs.getBool("tun.useEmbedded")!){
+    if (!prefs.getBool("tun.useEmbedded")!) {
       await initTunExec();
     }
     await platform.invokeMethod('vpn.startTun');
@@ -567,8 +601,9 @@ class VPNManagerMC extends VPNManager {
   @override
   startCore() async {
     await initCore();
+    await installPendingAssetRemote();
     final res = await platform.invokeMethod('vpn.startCore') as bool;
-    if (res == true){
+    if (res == true) {
       await setIsCoreActive(true);
     }
     return res;
@@ -577,7 +612,7 @@ class VPNManagerMC extends VPNManager {
   @override
   stopCore() async {
     final res = await platform.invokeMethod('vpn.stopCore') as bool;
-    if (res == true){
+    if (res == true) {
       await setIsCoreActive(false);
     }
     return res;
@@ -615,7 +650,6 @@ class VPNManManager {
     _completer.complete(); // Signal that initialization is complete
     logger.d("started: VPNManManager.init");
   }
-
 }
 
 final vPNMan = VPNManManager()._vPNMan;

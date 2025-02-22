@@ -9,6 +9,7 @@ import '../models/asset.dart';
 import '../models/core.dart';
 import '../models/profile.dart';
 import '../models/profile_group.dart';
+import 'db.steps.dart';
 import 'global.dart';
 import 'logger.dart';
 
@@ -75,7 +76,7 @@ class Database extends _$Database {
   Database(super.e);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -98,8 +99,8 @@ class Database extends _$Database {
           }
           // android embedded core
           if (Platform.isAndroid) {
-            final coreId = await into(core)
-                .insertOnConflictUpdate(CoreCompanion(
+            final coreId =
+                await into(core).insertOnConflictUpdate(CoreCompanion(
               coreTypeId: Value(CoreTypeDefault.xray.index),
               version: const Value("libv2raymobile"),
               updatedAt: Value(DateTime.now()),
@@ -114,6 +115,12 @@ class Database extends _$Database {
             ));
           }
         },
+        onUpgrade: stepByStep(
+          from1To2: (m, schema) async {
+            await m.addColumn(
+                schema.assetRemote, schema.assetRemote.downloadedFilePath);
+          },
+        ),
       );
 }
 
