@@ -182,7 +182,7 @@ class LogViewerState extends State<LogViewer> {
 Widget colorizeLogLine(String logline) {
   // Regular expression to capture datetime, protocol, IP, ports, and other parts.
   final RegExp regex = RegExp(
-      r'(\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}\.\d{6}) from (tcp:|udp:)?(.+):(\d+) accepted (tcp:|udp:)?(.+):(\d+) (.*)');
+      r'(\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}(?:\.\d{6})?)(?: from)? (tcp:|udp:)?(.+):(\d+) accepted (tcp:|udp:)?(.+):(\d+) (.*)');
   final match = regex.firstMatch(logline);
 
   if (match == null) {

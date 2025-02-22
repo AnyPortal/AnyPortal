@@ -420,6 +420,7 @@ class VPNManagerExec extends VPNManager {
 
   @override
   startCore() async {
+    logger.d("startCore: start");
     await initCore();
     final processCore = await Process.start(
       corePath!,

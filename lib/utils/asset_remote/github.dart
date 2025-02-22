@@ -3,8 +3,10 @@ import 'dart:core';
 import 'dart:io';
 
 import 'package:anyportal/utils/asset_remote/protocol.dart';
+import 'package:anyportal/utils/vpn_manager.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter_socks_proxy/socks_proxy.dart';
+import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 
 import '../../models/asset.dart';
@@ -45,41 +47,189 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
         subPath: match.group(4), // Nullable
       );
     }
+    logger.w("match failed: $url");
     return null;
   }
 
-  String? _newMeta;
   final serverAddress = prefs.getString('app.server.address')!;
   final socksPort = prefs.getInt('app.socks.port')!;
 
-  Future<bool> isUpdated(
-    TypedResult? oldAsset,
-  ) async {
+  Future<String?> getNewMeta({bool useSocks = true}) async {
     final metaUrl = "https://api.github.com/repos/$owner/$repo/releases/latest";
-
-    final client = createProxyHttpClient()
-      ..findProxy = (url) => 'SOCKS5 $serverAddress:$socksPort';
-    final request = await client.getUrl(Uri.parse(metaUrl));
-    final response = await request.close();
-    client.close();
-
-    if (response.statusCode == 200) {
-      _newMeta = await utf8.decodeStream(response);
-
-      if (oldAsset == null) {
-        return false;
+    if (useSocks) {
+      final client = createProxyHttpClient()
+        ..findProxy = (url) => 'SOCKS5 $serverAddress:$socksPort';
+      final request = await client.getUrl(Uri.parse(metaUrl));
+      final response = await request.close();
+      if (response.statusCode == 200) {
+        return await utf8.decodeStream(response);
       } else {
-        final oldCreatedAt = (jsonDecode(oldAsset.read(db.assetRemote.meta)!)
-            as Map<String, dynamic>)["created_at"];
-        final newCreatedAt =
-            (jsonDecode(_newMeta!) as Map<String, dynamic>)["created_at"];
-
-        return oldCreatedAt == newCreatedAt;
+        logger.w(
+            "${response.statusCode} when accessing $metaUrl. If using shared ip address/exceeding api limit consider add a github token");
+        return null;
       }
     } else {
-      throw Exception(
-          "${response.statusCode} when accessing $metaUrl. If using shared ip address/exceeding api limit consider add a github token");
+      final response = await http.get(Uri.parse(metaUrl));
+      if (response.statusCode == 200) {
+        return response.body;
+      } else {
+        logger.w(
+            "${response.statusCode} when accessing $metaUrl. If using shared ip address/exceeding api limit consider add a github token");
+        return null;
+      }
     }
+  }
+
+  String? getOldMeta({
+    TypedResult? oldAsset,
+  }) {
+    return oldAsset?.read(db.assetRemote.meta);
+  }
+
+  bool isUpdated(
+    String? newMeta,
+    String? oldMeta,
+  ) {
+    if (newMeta == null) {
+      logger.w("isUpdated: failed to get newMeta");
+      return true;
+    }
+
+    if (oldMeta == null) {
+      return false;
+    }
+
+    final oldCreatedAt =
+        (jsonDecode(oldMeta) as Map<String, dynamic>)["created_at"];
+    final newCreatedAt =
+        (jsonDecode(newMeta) as Map<String, dynamic>)["created_at"];
+
+    return oldCreatedAt == newCreatedAt;
+  }
+
+  String? getDownloadUrl(String meta) {
+    /// getDownloadUrl
+    final assetList = (jsonDecode(meta) as Map<String, dynamic>)["assets"];
+    for (final asset in assetList) {
+      final assetMap = asset as Map<String, dynamic>;
+      if (assetMap["name"] == assetName) {
+        return assetMap["browser_download_url"];
+      }
+    }
+    return null;
+  }
+
+  Future<File?> download(
+    String downloadUrl, {
+    bool useSocks = true,
+  }) async {
+    /// prepare file
+    final folder = global.applicationSupportDirectory;
+    final file =
+        File(p.join(folder.path, 'asset', 'github', owner, repo, assetName));
+    if (await file.exists()) {
+      try {
+        await file.delete();
+      } catch (e) {
+        logger.w("failed to delete ${file.path}");
+        return null;
+      }
+    }
+
+    if (useSocks) {
+      final client = createProxyHttpClient()
+        ..findProxy = (url) => 'SOCKS5 $serverAddress:$socksPort';
+      final request = await client.getUrl(Uri.parse(downloadUrl));
+      final response = await request.close();
+
+      await file.create(recursive: true);
+      final sink = file.openWrite();
+      await response.pipe(sink);
+      sink.close();
+      return file;
+    } else {
+      final client = http.Client();
+      final request = http.Request("GET", Uri.parse(downloadUrl));
+      final response = await client.send(request);
+
+      await file.create(recursive: true);
+      final sink = file.openWrite();
+      await response.stream.pipe(sink);
+      sink.close();
+      return file;
+    }
+  }
+
+  Future<void> recordAsset(
+    File downloadedFile,
+    TypedResult? oldAsset,
+    String newMeta,
+    int autoUpdateInterval,
+  ) async {
+    /// if everythings fine, record to db
+    String assetPath = downloadedFile.path;
+    if (assetPath.toLowerCase().endsWith(".zip") && subPath != null) {
+      assetPath = assetPath.substring(0, assetPath.length - 4);
+      final subPathList = subPath!.split('/');
+      assetPath = File(p.joinAll([assetPath, ...subPathList])).path;
+    }
+    int assetId;
+    await db.transaction(() async {
+      if (oldAsset != null) {
+        /// update old asset record
+        assetId = oldAsset.read(db.assetRemote.assetId)!;
+        await db.into(db.asset).insertOnConflictUpdate(AssetCompanion(
+              id: Value(oldAsset.read(db.assetRemote.assetId)!),
+              type: const Value(AssetType.remote),
+              path: Value(assetPath),
+              updatedAt: Value(DateTime.now()),
+            ));
+      } else {
+        /// insert new asset record
+        assetId = await db.into(db.asset).insertOnConflictUpdate(AssetCompanion(
+              type: const Value(AssetType.remote),
+              path: Value(assetPath),
+              updatedAt: Value(DateTime.now()),
+            ));
+      }
+
+      /// update or insert assetRemote record
+      await db.into(db.assetRemote).insertOnConflictUpdate(AssetRemoteCompanion(
+            assetId: Value(assetId),
+            url: Value(url),
+            meta: Value(newMeta),
+            autoUpdateInterval: Value(autoUpdateInterval),
+          ));
+    });
+  }
+
+  Future<bool> install(
+    File downloadedFile,
+  ) async {
+    String path = downloadedFile.path;
+
+    if (path.toLowerCase().endsWith(".zip")) {
+      bool ok = await extractAsFolder(path);
+      if (ok){
+        try {
+          downloadedFile.delete();
+        } catch (e) {
+          logger.e("failed to delete $path");
+          return false;
+        }
+        return true;
+      }
+    }
+
+    return true;
+  }
+
+  bool canInstallNow(TypedResult? oldAsset) {
+    if (oldAsset == null){
+      return true;
+    }
+    final assetPath = oldAsset.read(db.asset.path);
+    return assetPath == vPNMan.corePath && vPNMan.isCoreActive;
   }
 
   @override
@@ -87,77 +237,53 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     TypedResult? oldAsset,
     int autoUpdateInterval = 0,
   }) async {
-    if (await isUpdated(oldAsset)) {
-      logger.d("isUpdated");
+    /// todo: report progress
+
+    /// check if need to update
+    logger.d("to update: $url");
+    final oldMeta = getOldMeta(oldAsset: oldAsset);
+    final newMeta = await getNewMeta();
+    if (isUpdated(newMeta, oldMeta)) {
+      logger.d("already updated: $url");
       return;
-    } else {
-      final assetList =
-          (jsonDecode(_newMeta!) as Map<String, dynamic>)["assets"];
-      String? downloadUrl;
-      for (final asset in assetList) {
-        final assetMap = asset as Map<String, dynamic>;
-        if (assetMap["name"] == assetName) {
-          downloadUrl = assetMap["browser_download_url"];
-        }
-      }
-      if (downloadUrl == null) {
-        throw Exception("asset not found");
-      }
+    } 
 
-      final folder = global.applicationSupportDirectory;
-      final file =
-          File(p.join(folder.path, 'asset', 'github', owner, repo, assetName));
-      String path = file.path;
-
-      final client = createProxyHttpClient()
-        ..findProxy = (url) => 'SOCKS5 $serverAddress:$socksPort';
-      final request = await client.getUrl(Uri.parse(downloadUrl));
-      final response = await request.close();
-      await file.create(recursive: true);
-      var sink = file.openWrite();
-      await response.pipe(sink);
-      sink.close();
-
-      if (path.toLowerCase().endsWith(".zip")) {
-        extractAsFolder(path);
-        file.delete();
-        path = path.substring(0, path.length - 4);
-      }
-      if (subPath != null) {
-        final subPathList = subPath!.split('/');
-        path = File(p.joinAll([path, ...subPathList])).path;
-      }
-
-      /// if everythings fine, record to db
-      int assetId;
-      await db.transaction(() async {
-        if (oldAsset != null) {
-          assetId = oldAsset.read(db.assetRemote.assetId)!;
-          await db.into(db.asset).insertOnConflictUpdate(AssetCompanion(
-                id: Value(oldAsset.read(db.assetRemote.assetId)!),
-                type: const Value(AssetType.remote),
-                path: Value(path),
-                updatedAt: Value(DateTime.now()),
-              ));
-        } else {
-          assetId =
-              await db.into(db.asset).insertOnConflictUpdate(AssetCompanion(
-                    type: const Value(AssetType.remote),
-                    path: Value(path),
-                    updatedAt: Value(DateTime.now()),
-                  ));
-        }
-        await db
-            .into(db.assetRemote)
-            .insertOnConflictUpdate(AssetRemoteCompanion(
-              assetId: Value(assetId),
-              url: Value(url),
-              meta: Value(_newMeta!),
-              autoUpdateInterval: Value(autoUpdateInterval),
-            ));
-      });
-
+    /// get download url
+    logger.d("need update: $url");
+    final downloadUrl = getDownloadUrl(newMeta!);
+    if (downloadUrl == null) {
+      logger.w("downloadUrl == null: $url");
       return;
     }
+
+    /// download
+    logger.d("downloading: $downloadUrl");
+    final downloadedFile = await download(downloadUrl);
+    if (downloadedFile == null) {
+      logger.w("download failed: $downloadUrl");
+      return;
+    }
+    logger.d("downloaded: $downloadUrl");
+    recordAsset(
+      downloadedFile,
+      oldAsset,
+      newMeta,
+      autoUpdateInterval,
+    );
+
+    /// todo: record pending install status
+    if (canInstallNow(oldAsset)) {
+      /// install only if not using
+      logger.d("installing: $downloadUrl");
+      final installOk = await install(downloadedFile);
+      if (installOk){
+        /// todo: remove pending install status
+        logger.d("installed: $url");
+      }
+    } else {
+      logger.d("pending install: $url");
+      /// todo: notify scheduler to install (e.g. before next connection)
+    }
+    return;
   }
 }

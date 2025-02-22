@@ -8,6 +8,7 @@ import 'package:smooth_highlight/smooth_highlight.dart';
 import '../../../models/edit_status.dart';
 import '../../../screens/core.dart';
 import '../../../utils/db.dart';
+import '../../../utils/logger.dart';
 import '../../core_type.dart';
 
 class CoresScreen extends StatefulWidget {
@@ -265,7 +266,12 @@ class _CoresScreenState extends State<CoresScreen> {
       if (core.readWithConverter(db.asset.type) == AssetType.local) {
         return core.read(db.asset.path)!;
       } else {
-        return core.read(db.assetRemote.url)!;
+        try {
+          return core.read(db.assetRemote.url)!;
+        } catch (e) {
+          logger.e("getCoreTitle: $e");
+          return "invalid url";
+        }
       }
     } else {
       return "embedded";

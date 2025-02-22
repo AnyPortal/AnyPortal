@@ -183,7 +183,7 @@ class _AssetScreenState extends State<AssetScreen> {
           controller: _urlController,
           decoration: const InputDecoration(
             labelText: 'url',
-            hintText: 'github://owner/repo/asset.ext[/sub/path]',
+            hintText: 'e.g. github://v2fly/v2ray-core/v2ray-windows-64.zip/v2ray.exe',
             border: OutlineInputBorder(),
           ),
         ),

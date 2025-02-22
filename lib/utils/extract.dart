@@ -2,14 +2,25 @@ import 'dart:io';
 
 import 'package:archive/archive_io.dart';
 import 'package:path/path.dart' as p;
+
+import 'logger.dart';
 // ...
 // Use an InputFileStream to access the zip file without storing it in memory.
 
-void extractAsFolder(String path){
-  extractTo(path, p.withoutExtension(path));
+Future<bool> extractAsFolder(String path) async {
+  return await extractTo(path, p.withoutExtension(path));
 }
 
-void extractTo(String path, String destDir) {
+Future<bool> extractTo(String path, String destDir) async {
+  if (await File(destDir).exists()){
+    try {
+      File(destDir).delete(recursive: true);
+    } catch (e) {
+      logger.e("failed to delete $destDir");
+      return false;
+    }
+  }
+
   // Read the Zip file from disk.
   final bytes = File(path).readAsBytesSync();
 
@@ -29,4 +40,6 @@ void extractTo(String path, String destDir) {
       Directory(dest).createSync(recursive: true);
     }
   }
+
+  return true;
 }

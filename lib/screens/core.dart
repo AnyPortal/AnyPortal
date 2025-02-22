@@ -210,6 +210,36 @@ class _CoreScreenState extends State<CoreScreen> {
     }
   }
 
+  List<DropdownMenuItem<int>> getDropdownMenuItems() {
+    final dropdownMenuItems =_assets.map((e) {
+      int? assetId = -1;
+      assetId = e.read(db.asset.id);
+      return DropdownMenuItem<int>(
+        value: assetId,
+        child: Text(getAssetTitle(e)),
+      );
+    }).toList();
+
+    // e.g. if asset is deleted, _assetId not in dropdownMenuItems would cause problems
+    bool isAssetIdValid = false;
+    for (DropdownMenuItem item in dropdownMenuItems){
+      if (item.value == _assetId){
+        isAssetIdValid = true;
+        break;
+      }
+    }
+    if (!isAssetIdValid){
+      dropdownMenuItems.add(
+        DropdownMenuItem<int>(
+          value: _assetId,
+          child: Text("invalid asset"),
+        )
+      );
+    }
+
+    return dropdownMenuItems;
+  }
+
   @override
   Widget build(BuildContext context) {
     final fields = [
@@ -255,12 +285,7 @@ class _CoreScreenState extends State<CoreScreen> {
                 labelText: 'core executable',
                 border: OutlineInputBorder(),
               ),
-              items: _assets.map((e) {
-                return DropdownMenuItem<int>(
-                  value: e.read(db.asset.id),
-                  child: Text(getAssetTitle(e)),
-                );
-              }).toList(),
+              items: getDropdownMenuItems(),
               onChanged: (e) {
                 setState(() {
                   _assetId = e;
