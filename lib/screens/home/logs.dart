@@ -182,7 +182,7 @@ class LogViewerState extends State<LogViewer> {
 Widget colorizeLogLine(String logline) {
   // Regular expression to capture datetime, protocol, IP, ports, and other parts.
   final RegExp regex = RegExp(
-      r'(\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}) (tcp:|udp:)?(.+):(\d+) accepted (tcp:|udp:)?(.+):(\d+) (.*)');
+      r'(\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}\.\d{6}) from (tcp:|udp:)?(.+):(\d+) accepted (tcp:|udp:)?(.+):(\d+) (.*)');
   final match = regex.firstMatch(logline);
 
   if (match == null) {
@@ -207,8 +207,12 @@ Widget colorizeLogLine(String logline) {
           text: '$datetime ', // DateTime part
           style: const TextStyle(color: Color(0xff90c4f9)),
         ),
+        const TextSpan(
+          text: 'from ', // Accepted text
+          style: TextStyle(color: Colors.grey),
+        ),
         TextSpan(
-          text: '$protocol1:$ip1:$port1 ', // First protocol, IP, and port
+          text: '$protocol1$ip1:$port1 ', // First protocol, IP, and port
           style: const TextStyle(color: Color(0xfffb9d51)),
         ),
         const TextSpan(
@@ -217,7 +221,7 @@ Widget colorizeLogLine(String logline) {
         ),
         TextSpan(
           text:
-              '$protocol2:$address2:$port2 ', // Second protocol, address, and port
+              '$protocol2$address2:$port2 ', // Second protocol, address, and port
           style: const TextStyle(color: Color(0xfffb9d51)),
         ),
         TextSpan(
