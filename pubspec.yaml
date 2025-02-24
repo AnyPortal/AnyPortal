@@ -140,7 +140,9 @@ flutter:
   # see https://flutter.dev/to/font-from-package
 
   assets:
-    - assets/
+    - assets/icon/
+    - assets/conf/
+    - assets/script/
     - windows/runner/resources/
   
   generate: true
