@@ -15,10 +15,12 @@ import 'package:window_manager/window_manager.dart';
 import 'screens/home.dart';
 import 'screens/home/settings/tun_hev_socks5_tunnel.dart';
 import 'utils/arg_parser.dart';
+// import 'utils/asset_remote/app.dart';
 import 'utils/core_data_notifier.dart';
 import 'utils/db.dart';
 import 'utils/launch_at_startup.dart';
 import 'utils/method_channel.dart';
+import 'utils/platform_task_scheduler.dart';
 import 'utils/platform_theme.dart';
 import 'utils/prefs.dart';
 import 'utils/tray_menu.dart';
@@ -46,6 +48,7 @@ void main(List<String> args) async {
   await Future.wait([
     VPNManManager().init(),
     CoreDataNotifierManager().init(),
+    PlatformTaskSchedulerManager().init(),
   ]);
 
   try {
@@ -131,6 +134,9 @@ void main(List<String> args) async {
           vPNMan.setIsToggling(false);
         }
       }
+
+      // final assetRemoteProtocolApp = AssetRemoteProtocolApp.init();
+      // await assetRemoteProtocolApp.update();
     }
   }
 }

@@ -9,7 +9,8 @@ import 'package:path/path.dart' as p;
 
 import '../../models/asset.dart';
 import '../db.dart';
-import '../extract.dart';
+import '../undmg.dart';
+import '../unzip.dart';
 import '../global.dart';
 import '../logger.dart';
 import '../prefs.dart';
@@ -17,48 +18,39 @@ import '../vpn_manager.dart';
 import 'protocol.dart';
 
 class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
-  final String url;
-  final String protocol = "github";
-  final String owner;
-  final String repo;
-  final String assetName;
-  final String? subPath;
+  late String url;
+  late String protocol = "github";
+  late String owner;
+  late String repo;
+  late String assetName;
+  String? subPath;
 
-  AssetRemoteProtocolGithub({
-    required this.url,
-    required this.owner,
-    required this.repo,
-    required this.assetName,
-    this.subPath,
-  });
+  AssetRemoteProtocolGithub();
 
-  static AssetRemoteProtocolGithub? fromUrl(String url) {
+  AssetRemoteProtocolGithub.fromUrl(String url) {
     final regex = RegExp(
       r'^github:\/\/([^\/]+)\/([^\/]+)\/([^\/]+)?(?:\/(.+))?$',
     );
 
     final match = regex.firstMatch(url);
     if (match != null) {
-      return AssetRemoteProtocolGithub(
-        url: url,
-        owner: match.group(1)!,
-        repo: match.group(2)!,
-        assetName: match.group(3)!,
-        subPath: match.group(4), // Nullable
-      );
+      this.url = url;
+      owner = match.group(1)!;
+      repo = match.group(2)!;
+      assetName = match.group(3)!;
+      subPath = match.group(4); // Nullable
+    } else {
+      logger.w("match failed: $url");
+      throw Exception();
     }
-    logger.w("match failed: $url");
-    return null;
   }
-
-  final serverAddress = prefs.getString('app.server.address')!;
-  final socksPort = prefs.getInt('app.socks.port')!;
 
   Future<String?> getNewMeta({bool useSocks = true}) async {
     final metaUrl = "https://api.github.com/repos/$owner/$repo/releases/latest";
     if (useSocks) {
       final client = createProxyHttpClient()
-        ..findProxy = (url) => 'SOCKS5 $serverAddress:$socksPort';
+        ..findProxy = (url) =>
+            'SOCKS5 ${prefs.getString('app.server.address')!}:${prefs.getInt('app.socks.port')!}';
       final request = await client.getUrl(Uri.parse(metaUrl));
       final response = await request.close();
       if (response.statusCode == 200) {
@@ -138,7 +130,8 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
 
     if (useSocks) {
       final client = createProxyHttpClient()
-        ..findProxy = (url) => 'SOCKS5 $serverAddress:$socksPort';
+        ..findProxy = (url) =>
+            'SOCKS5 ${prefs.getString('app.server.address')!}:${prefs.getInt('app.socks.port')!}';
       final request = await client.getUrl(Uri.parse(downloadUrl));
       final response = await request.close();
 
@@ -160,13 +153,13 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     }
   }
 
+  /// if everythings fine, record to db
   Future<int> postDownload(
     File downloadedFile,
     TypedResult? oldAsset,
     String newMeta,
     int autoUpdateInterval,
   ) async {
-    /// if everythings fine, record to db
     String assetPath = downloadedFile.path;
     if (assetPath.toLowerCase().endsWith(".zip") && subPath != null) {
       assetPath = assetPath.substring(0, assetPath.length - 4);
@@ -211,17 +204,20 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
   ) async {
     String path = downloadedFile.path;
 
+    bool extractOK = false;
     if (path.toLowerCase().endsWith(".zip")) {
-      bool ok = await extractAsFolder(path);
-      if (ok) {
-        try {
-          downloadedFile.delete();
-        } catch (e) {
-          logger.e("failed to delete $path");
-          return false;
-        }
-        return true;
+      extractOK = await unzipThere(path);
+    } else if (path.toLowerCase().endsWith(".dmg")) {
+      extractOK = await undmgThere(path, subPath!);
+    }
+    if (extractOK) {
+      try {
+        downloadedFile.delete();
+      } catch (e) {
+        logger.e("failed to delete $path");
+        return false;
       }
+      return true;
     }
 
     return true;
@@ -230,10 +226,10 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
   Future<bool> postInstall(int assetId) async {
     /// remove pending install status
     await (db.update(db.assetRemote)..where((e) => e.assetId.equals(assetId)))
-    .write(AssetRemoteCompanion(
-          assetId: Value(assetId),
-          downloadedFilePath: Value(null),
-        ));
+        .write(AssetRemoteCompanion(
+      assetId: Value(assetId),
+      downloadedFilePath: Value(null),
+    ));
 
     return true;
   }
@@ -256,7 +252,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     /// check if need to update
     logger.d("to update: $url");
     final oldMeta = getOldMeta(oldAsset: oldAsset);
-    final newMeta = await getNewMeta();
+    final newMeta = await getNewMeta(useSocks: vPNMan.isCoreActive);
     if (isUpdated(newMeta, oldMeta)) {
       logger.d("already updated: $url");
       return;
@@ -272,7 +268,10 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
 
     /// download
     logger.d("downloading: $downloadUrl");
-    final downloadedFile = await download(downloadUrl);
+    final downloadedFile = await download(
+      downloadUrl,
+      useSocks: vPNMan.isCoreActive,
+    );
     if (downloadedFile == null) {
       logger.w("download failed: $downloadUrl");
       return;

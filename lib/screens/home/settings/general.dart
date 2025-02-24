@@ -18,6 +18,7 @@ class GeneralScreen extends StatefulWidget {
 }
 
 class _GeneralScreenState extends State<GeneralScreen> {
+  bool _autoUpdate= false;
   bool _launchAtLogin = false;
   bool _connectAtStartup = prefs.getBool('app.connectAtStartup')!;
   bool _connectAtLaunch = prefs.getBool('app.connectAtLaunch')!;
@@ -48,6 +49,21 @@ class _GeneralScreenState extends State<GeneralScreen> {
   @override
   Widget build(BuildContext context) {
     final fields = [
+      if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
+        ListTile(
+          title: const Text("Auto update"),
+          subtitle: const Text("DO NOT put anything under app folder! Will be deleted on update!"),
+          trailing: Switch(
+            value: _autoUpdate,
+            onChanged: (value) async {
+              prefs.setBool('app.autoUpdate', value);
+              setState(() {
+                _autoUpdate = value;
+              });
+            },
+          ),
+        ),
+
       Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Text(

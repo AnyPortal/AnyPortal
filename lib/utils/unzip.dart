@@ -7,11 +7,11 @@ import 'logger.dart';
 // ...
 // Use an InputFileStream to access the zip file without storing it in memory.
 
-Future<bool> extractAsFolder(String path) async {
-  return await extractTo(path, p.withoutExtension(path));
+Future<bool> unzipThere(String path) async {
+  return await unzip(path, p.withoutExtension(path));
 }
 
-Future<bool> extractTo(String path, String destDir) async {
+Future<bool> unzip(String path, String destDir) async {
   if (await File(destDir).exists()){
     try {
       File(destDir).delete(recursive: true);

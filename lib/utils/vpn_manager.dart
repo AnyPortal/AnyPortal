@@ -402,7 +402,7 @@ abstract class VPNManager with ChangeNotifier {
       final assetUrl = asset.read(db.assetRemote.url)!;
       final assetId = asset.read(db.assetRemote.assetId)!;
       final assetRemoteProtocolGithub =
-          AssetRemoteProtocolGithub.fromUrl(assetUrl)!;
+          AssetRemoteProtocolGithub.fromUrl(assetUrl);
       logger.d("installing: $assetUrl");
       final installOk = await assetRemoteProtocolGithub
           .install(File(asset.read(db.assetRemote.downloadedFilePath)!));

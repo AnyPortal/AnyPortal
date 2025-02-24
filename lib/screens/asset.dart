@@ -79,14 +79,10 @@ class _AssetScreenState extends State<AssetScreen> {
         if (_assetType == AssetType.remote) {
           final assetRemote =
               AssetRemoteProtocolGithub.fromUrl(_urlController.text);
-          if (assetRemote == null) {
-            throw Exception("invalid url");
-          } else {
-            await assetRemote.update(
-              oldAsset: oldAsset,
-              autoUpdateInterval: int.parse(autoUpdateInterval),
-            );
-          }
+          await assetRemote.update(
+            oldAsset: oldAsset,
+            autoUpdateInterval: int.parse(autoUpdateInterval),
+          );
         } else if (_assetType == AssetType.local) {
           if (oldAsset != null) {
             final assetId = oldAsset.read(db.asset.id)!;
@@ -167,7 +163,9 @@ class _AssetScreenState extends State<AssetScreen> {
                 controller: _assetPathController,
                 decoration: InputDecoration(
                   labelText: 'asset path',
-                  hintText: Platform.isWindows ? "e.g. C:\\path\\to\\v2ray.exe" : "e.g. /path/to/v2ray",
+                  hintText: Platform.isWindows
+                      ? "e.g. C:\\path\\to\\v2ray.exe"
+                      : "e.g. /path/to/v2ray",
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -183,7 +181,8 @@ class _AssetScreenState extends State<AssetScreen> {
           controller: _urlController,
           decoration: const InputDecoration(
             labelText: 'url',
-            hintText: 'e.g. github://v2fly/v2ray-core/v2ray-windows-64.zip/v2ray.exe',
+            hintText:
+                'e.g. github://v2fly/v2ray-core/v2ray-windows-64.zip/v2ray.exe',
             border: OutlineInputBorder(),
           ),
         ),
