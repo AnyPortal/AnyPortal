@@ -11,6 +11,7 @@ import 'shared_preferences_with_defaults.dart';
 class PrefsManager {
   Map<String, dynamic> defaults = {
     // 'app.selectedProfileId': 1,
+    'app.autoUpdate': false,
     'app.brightness.dark': true,
     'app.brightness.dark.black': false,
     'app.brightness.followSystem': true,

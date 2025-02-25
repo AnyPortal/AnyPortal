@@ -18,7 +18,7 @@ class GeneralScreen extends StatefulWidget {
 }
 
 class _GeneralScreenState extends State<GeneralScreen> {
-  bool _autoUpdate= false;
+  bool _autoUpdate= prefs.getBool('app.autoUpdate')!;
   bool _launchAtLogin = false;
   bool _connectAtStartup = prefs.getBool('app.connectAtStartup')!;
   bool _connectAtLaunch = prefs.getBool('app.connectAtLaunch')!;

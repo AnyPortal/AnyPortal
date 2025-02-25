@@ -75,11 +75,22 @@ jobs:
     - name: Build Windows
       run: flutter build windows
 
+    - name: Compile .ISS to .EXE Installer
+      uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+      with:
+        path: scripts/windows/setup.iss
+
     - name: Upload Windows artifacts
       uses: actions/upload-artifact@v4
       with:
         name: anyportal-windows
         path: build/windows/x64/runner/Release
+
+    - name: Upload Windows setup artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: anyportal-windows-setup
+        path: scripts/windows/Output/mysetup.exe
 
   # Build for macOS
   macos:
@@ -295,6 +306,12 @@ jobs:
       with:
         name: anyportal-windows
         path: anyportal-windows
+    
+    - name: Download Windows setup artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: anyportal-windows-setup
+        path: anyportal-windows-setup
 
     - name: Download macOS artifacts
       uses: actions/download-artifact@v4
@@ -352,6 +369,16 @@ jobs:
         asset_path: anyportal-windows.zip
         asset_name: anyportal-windows.zip
         asset_content_type: application/zip
+    
+    - name: Upload Windows setup artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: anyportal-windows-setup
+        asset_name: anyportal-windows-setup.exe
+        asset_content_type: application/vnd.microsoft.portable-executable
 
     - name: Upload macOS artifact
       uses: actions/upload-release-asset@v1
