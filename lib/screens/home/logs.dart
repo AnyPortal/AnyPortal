@@ -182,7 +182,7 @@ class LogViewerState extends State<LogViewer> {
 Widget colorizeLogLine(String logline) {
   // Regular expression to capture datetime, protocol, IP, ports, and other parts.
   final RegExp regex = RegExp(
-      r'(\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}(?:\.\d{6})?)(?: from)? (tcp:|udp:)?(.+):(\d+) accepted (tcp:|udp:)?(.+):(\d+) (.*)');
+      r'(\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}(?:\.\d{6})?)(?: from)? ([^\s]+):(\d+) accepted ([^\s]+):(\d+) (.*)');
   final match = regex.firstMatch(logline);
 
   if (match == null) {
@@ -192,13 +192,11 @@ Widget colorizeLogLine(String logline) {
 
   // Extract matched groups
   final datetime = match.group(1); // e.g. 2024/09/06 20:48:34
-  final protocol1 = match.group(2); // e.g. tcp or udp
-  final ip1 = match.group(3); // e.g. 127.0.0.1
-  final port1 = match.group(4); // e.g. 36214
-  final protocol2 = match.group(5); // e.g. tcp or udp
-  final address2 = match.group(6); // e.g. alive.github.com
-  final port2 = match.group(7); // e.g. 443
-  final extra = match.group(8); // e.g. in_9511 -> ot_lp_bl_29_57_25_cf.vultr
+  final address1 = match.group(2); // e.g. tcp:127.0.0.1
+  final port1 = match.group(3); // e.g. 36214
+  final address2 = match.group(4); // e.g. tcp:alive.github.com
+  final port2 = match.group(5); // e.g. 443
+  final extra = match.group(6); // e.g. in_9511 -> ot_lp_bl_29_57_25_cf.vultr
 
   return RichText(
     text: TextSpan(
@@ -212,7 +210,7 @@ Widget colorizeLogLine(String logline) {
           style: TextStyle(color: Colors.grey),
         ),
         TextSpan(
-          text: '$protocol1$ip1:$port1 ', // First protocol, IP, and port
+          text: '$address1:$port1 ', // First protocol, IP, and port
           style: const TextStyle(color: Color(0xfffb9d51)),
         ),
         const TextSpan(
@@ -221,7 +219,7 @@ Widget colorizeLogLine(String logline) {
         ),
         TextSpan(
           text:
-              '$protocol2$address2:$port2 ', // Second protocol, address, and port
+              '$address2:$port2 ', // Second protocol, address, and port
           style: const TextStyle(color: Color(0xfffb9d51)),
         ),
         TextSpan(
