@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:anyportal/utils/asset_remote/app.dart';
 import 'package:anyportal/utils/global.dart';
 import 'package:anyportal/utils/logger.dart';
 import 'package:anyportal/utils/platform_elevation.dart';
@@ -41,6 +42,15 @@ void main(List<String> args) async {
   if (prefs.getBool("app.runElevated")! && !global.isElevated) {
     await PlatformElevation.elevate();
     exit(0);
+  }
+
+  if (prefs.getBool("app.autoUpdate")!){
+    String? downloadedFilePath = prefs.getString("app.github.downloadedFilePath");
+    if (downloadedFilePath != null) {
+      prefs.remove("app.github.downloadedFilePath");
+      await AssetRemoteProtocolApp.init().install(File(downloadedFilePath));
+      exit(0);
+    }
   }
 
   await DatabaseManager().init();
@@ -134,9 +144,6 @@ void main(List<String> args) async {
           vPNMan.setIsToggling(false);
         }
       }
-
-      // final assetRemoteProtocolApp = AssetRemoteProtocolApp.init();
-      // await assetRemoteProtocolApp.update();
     }
   }
 }

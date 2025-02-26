@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:anyportal/utils/db.dart';
@@ -6,15 +7,18 @@ import 'package:drift/drift.dart';
 import 'package:workmanager/workmanager.dart';
 import 'package:cron/cron.dart';
 
+import 'asset_remote/app.dart';
 import 'asset_remote/github.dart';
 import 'db/update_profile.dart';
 import 'db/update_profile_group.dart';
 import 'logger.dart';
+import 'prefs.dart';
 
 void checkAllRemotes(){
   checkAllAssetRemotes();
   checkAllProfileGroupRemotes();
   checkAllProfileRemotes();
+  checkAppRemote();
 }
 
 @pragma(
@@ -87,6 +91,19 @@ Future<bool> checkAllProfileRemotes() async {
       await updateProfile(
         oldProfile: profileRemote.readTable(db.profile),
       );
+    }
+  }
+  return true;
+}
+
+Future<bool> checkAppRemote() async {
+  if (prefs.getBool("app.autoUpdate")!){
+    final autoUpdateInterval = 86400;
+    final meta = prefs.getString("app.github.meta")!;
+    final createdAtSecond = (jsonDecode(meta) as Map<String, dynamic>)["created_at"] as int;
+    final createdAt = DateTime.fromMillisecondsSinceEpoch(createdAtSecond * 1000);
+    if (createdAt.add(Duration(seconds: autoUpdateInterval)).isAfter(DateTime.now())){
+      await AssetRemoteProtocolApp.init().update();
     }
   }
   return true;

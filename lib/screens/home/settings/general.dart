@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
 
 import '../../../utils/global.dart';
 import '../../../utils/platform_launch_at_login.dart';
@@ -18,7 +19,7 @@ class GeneralScreen extends StatefulWidget {
 }
 
 class _GeneralScreenState extends State<GeneralScreen> {
-  bool _autoUpdate= prefs.getBool('app.autoUpdate')!;
+  bool _autoUpdate = prefs.getBool('app.autoUpdate')!;
   bool _launchAtLogin = false;
   bool _connectAtStartup = prefs.getBool('app.connectAtStartup')!;
   bool _connectAtLaunch = prefs.getBool('app.connectAtLaunch')!;
@@ -46,13 +47,24 @@ class _GeneralScreenState extends State<GeneralScreen> {
     }
   }
 
+  bool getCanAutoUpdate() {
+    if (Platform.isWindows) {
+      return File(p.join(
+        File(Platform.resolvedExecutable).parent.path,
+        "unins000.exe", // created by inno setup
+      )).existsSync();
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final fields = [
-      if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
+      if (getCanAutoUpdate())
         ListTile(
           title: const Text("Auto update"),
-          subtitle: const Text("DO NOT put anything under app folder! Will be deleted on update!"),
+          subtitle: const Text(
+              "Auto download installer and update on next app launch"),
           trailing: Switch(
             value: _autoUpdate,
             onChanged: (value) async {
@@ -63,7 +75,6 @@ class _GeneralScreenState extends State<GeneralScreen> {
             },
           ),
         ),
-
       Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Text(
@@ -146,7 +157,8 @@ class _GeneralScreenState extends State<GeneralScreen> {
       if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
         ListTile(
           title: const Text("Close to tray"),
-          subtitle: const Text("Dock to tray instead when app window is closed"),
+          subtitle:
+              const Text("Dock to tray instead when app window is closed"),
           trailing: Switch(
             value: _closeToTray,
             onChanged: (value) async {

@@ -14,6 +14,9 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
     owner = "anyportal";
     repo = "anyportal";
     assetName = "anyportal-${Platform.operatingSystem}.zip";
+    if (Platform.isWindows) {
+      assetName = "anyportal-windows-setup.exe";
+    }
     url = "github://$owner/$repo/$assetName";
   }
 
@@ -47,11 +50,18 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
     return 0;
   }
 
-  void exitUpdateRestart() {
-    // String downloadedSrc = prefs.getString("app.github.downloadedFilePath")!;
-    // String pathDest = File(Platform.resolvedExecutable).parent.path;
-    // if (Platform.isWindows) {
-    // } else if (Platform.isLinux) {
-    // } else if (Platform.isMacOS) {}
+  @override
+  bool canInstallNow(TypedResult? oldAsset) {
+    return false;
+  }
+
+  @override
+  Future<bool> install(File downloadedFile) async {
+    await Process.run(
+      downloadedFile.path,
+      [],
+      runInShell: true,
+    );
+    return true;
   }
 }
