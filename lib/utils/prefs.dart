@@ -12,6 +12,7 @@ class PrefsManager {
   Map<String, dynamic> defaults = {
     // 'app.selectedProfileId': 1,
     'app.autoUpdate': false,
+    'app.autoUpdate.checkedAt': 0,
     'app.brightness.dark': true,
     'app.brightness.dark.black': false,
     'app.brightness.followSystem': true,

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:anyportal/utils/db.dart';
@@ -14,7 +13,7 @@ import 'db/update_profile_group.dart';
 import 'logger.dart';
 import 'prefs.dart';
 
-void checkAllRemotes(){
+void checkAllRemotes() {
   checkAllAssetRemotes();
   checkAllProfileGroupRemotes();
   checkAllProfileRemotes();
@@ -32,8 +31,7 @@ void workmanagerCallbackDispatcher() {
 
 Future<bool> checkAllAssetRemotes() async {
   final assetRemotes = await (db.select(db.asset).join([
-    innerJoin(
-        db.assetRemote, db.asset.id.equalsExp(db.assetRemote.assetId)),
+    innerJoin(db.assetRemote, db.asset.id.equalsExp(db.assetRemote.assetId)),
   ])).get();
   for (var assetRemote in assetRemotes) {
     final autoUpdateInterval =
@@ -77,8 +75,8 @@ Future<bool> checkAllProfileGroupRemotes() async {
 
 Future<bool> checkAllProfileRemotes() async {
   final profileRemotes = await (db.select(db.profile).join([
-    innerJoin(db.profileRemote,
-        db.profile.id.equalsExp(db.profileRemote.profileId)),
+    innerJoin(
+        db.profileRemote, db.profile.id.equalsExp(db.profileRemote.profileId)),
   ])).get();
   for (var profileRemote in profileRemotes) {
     final autoUpdateInterval =
@@ -97,13 +95,14 @@ Future<bool> checkAllProfileRemotes() async {
 }
 
 Future<bool> checkAppRemote() async {
-  if (prefs.getBool("app.autoUpdate")!){
+  if (prefs.getBool("app.autoUpdate")!) {
     final autoUpdateInterval = 86400;
-    final meta = prefs.getString("app.github.meta")!;
-    final createdAtSecond = (jsonDecode(meta) as Map<String, dynamic>)["created_at"] as int;
-    final createdAt = DateTime.fromMillisecondsSinceEpoch(createdAtSecond * 1000);
-    if (createdAt.add(Duration(seconds: autoUpdateInterval)).isAfter(DateTime.now())){
+    final checkedAt = prefs.getInt("app.autoUpdate.checkedAt")!;
+    if (checkedAt + autoUpdateInterval >
+        DateTime.now().millisecondsSinceEpoch / 1000) {
       await AssetRemoteProtocolApp.init().update();
+      prefs.setInt("app.autoUpdate.checkedAt",
+          (DateTime.now().millisecondsSinceEpoch / 1000).toInt());
     }
   }
   return true;
