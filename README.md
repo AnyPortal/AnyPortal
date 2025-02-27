@@ -1,6 +1,6 @@
 # AnyPortal
 
-<img src="docs/image/android.gif" height= "320"/> <img src="docs/image/windows.gif" height= "320"/>
+<img src="docs/image/windows.gif" width="624"/> <img src="docs/image/android.gif" height="351"/>
 
 - v2ray, xray, ... GUI for Windows, macOS, Linux, Android, (iOS currently blocked).
 - Typically used in combination with a core (v2ray-core, xray-core, etc)
