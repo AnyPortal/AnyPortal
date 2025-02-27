@@ -51,6 +51,7 @@ class _ConnectivityBasicScreenState extends State<ConnectivityBasicScreen> {
             context: context,
             builder: (context) => TextInputPopup(
                 title: 'Socks port',
+                text: 'You may want to check `Settings` -> `Profile override` -> `Inject socks inbound`',
                 initialValue: _socksPort.toString(),
                 onSaved: (String value) {
                   final socksPort = int.parse(value);
@@ -70,6 +71,7 @@ class _ConnectivityBasicScreenState extends State<ConnectivityBasicScreen> {
             context: context,
             builder: (context) => TextInputPopup(
                 title: 'HTTP port',
+                text: 'You may want to check `Settings` -> `Profile override` -> `Inject http inbound`',
                 initialValue: _httpPort.toString(),
                 onSaved: (String value) {
                   final httpPort = int.parse(value);

@@ -122,14 +122,14 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
       Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Text(
-          "Inbound config: socks",
+          "Inbound config",
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
       ),
       ListTile(
         title: const Text("Inject socks inbound"),
         subtitle: Text(
-            "${prefs.getString('app.server.address')!}:${prefs.getInt('app.socks.port')!}"),
+            "${prefs.getString('app.server.address')!}:${prefs.getInt('app.socks.port')!}, see `Settings` -> `Connectivity`"),
         trailing: Switch(
           value: _injectSocks,
           onChanged: (value) {
@@ -143,7 +143,7 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
       ListTile(
         title: const Text("Inject http inbound"),
         subtitle: Text(
-            "${prefs.getString('app.server.address')!}:${prefs.getInt('app.http.port')!}"),
+            "${prefs.getString('app.server.address')!}:${prefs.getInt('app.http.port')!}, see `Settings` -> `Connectivity`"),
         trailing: Switch(
           value: _injectHttp,
           onChanged: (value) {

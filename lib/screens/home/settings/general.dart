@@ -249,13 +249,14 @@ class _GeneralScreenState extends State<GeneralScreen> {
           },
         ),
       ),
-      Container(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-        child: Text(
-          "Notification",
-          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+      if (Platform.isAndroid)
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          child: Text(
+            "Notification",
+            style: TextStyle(color: Theme.of(context).colorScheme.primary),
+          ),
         ),
-      ),
       if (Platform.isAndroid)
         ListTile(
           title: const Text("Foreground"),

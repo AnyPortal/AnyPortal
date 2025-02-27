@@ -4,6 +4,7 @@ class TextInputPopup extends StatefulWidget {
   final String title;
   final String initialValue;
   final Function(String) onSaved;
+  final String? text;
   final InputDecoration? decoration;
 
   const TextInputPopup({
@@ -11,6 +12,7 @@ class TextInputPopup extends StatefulWidget {
     required this.title,
     required this.initialValue,
     required this.onSaved,
+    this.text,
     this.decoration,
   });
 
@@ -30,17 +32,22 @@ class TextInputPopupState extends State<TextInputPopup> {
   @override
   void dispose() {
     _textController.dispose();
-    super.dispose(); 
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(widget.title),
-      content: TextField(
-        controller: _textController,
-        autofocus: true,
-        decoration: widget.decoration ?? const InputDecoration(),
+      content: Wrap(
+        children: [
+          if (widget.text != null) Text(widget.text!),
+          TextField(
+            controller: _textController,
+            autofocus: true,
+            decoration: widget.decoration ?? const InputDecoration(),
+          ),
+        ],
       ),
       actions: [
         TextButton(

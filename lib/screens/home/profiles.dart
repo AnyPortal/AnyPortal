@@ -167,9 +167,9 @@ class _ProfileListState extends State<ProfileList> {
       if (profiles != null) {
         _root.add(TreeNode(
           data: profileGroupId,
-          key: "$profileGroupId",
+          key: "profileGroupId-$profileGroupId",
         )..addAll(profiles.map((profile) {
-            return TreeNode(data: profile, key: "${profile.id}");
+            return TreeNode(data: profile, key: "profileId-${profile.id}");
           }).toList()));
       }
     }

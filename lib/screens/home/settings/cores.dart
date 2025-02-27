@@ -186,9 +186,9 @@ class _CoresScreenState extends State<CoresScreen> {
       if (cores != null) {
         _root.add(TreeNode(
           data: coreTypeId,
-          key: "$coreTypeId",
+          key: "coreTypeId-$coreTypeId",
         )..addAll(cores.map((core) {
-            return TreeNode(data: core, key: "${core.read(db.core.id)!}");
+            return TreeNode(data: core, key: "coreId-${core.read(db.core.id)!}");
           }).toList()));
       }
     }

@@ -18,19 +18,19 @@
   <tbody align=left>
     <td>Android</td>
       <td>
-        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-api28-armeabi-v7a.apk"><img src="https://img.shields.io/badge/APK-api28_armeabi_v7a-044d29.svg?logo=android"></a><br>
-        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-api28-arm64-v8a.apk"><img src="https://img.shields.io/badge/APK-api28_arm64_v8a-044d29.svg?logo=android"></a><br>
-        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-api28-x86_64.apk"><img src="https://img.shields.io/badge/APK-api28_x86_64-044d29.svg?logo=android"></a><br>
-        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-apilatest-armeabi-v7a.apk"><img src="https://img.shields.io/badge/APK-apilatest_armeabi_v7a-168039.svg?logo=android"></a><br>
-        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-apilatest-arm64-v8a.apk"><img src="https://img.shields.io/badge/APK-apilatest_arm64_v8a-168039.svg?logo=android"></a><br>
-        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-apilatest-x86_64.apk"><img src="https://img.shields.io/badge/APK-apilatest_x86_64-168039.svg?logo=android"></a><br>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-api28-armeabi-v7a.apk"><img src="https://img.shields.io/badge/APK-api28_armeabi_v7a-044d29.svg?logo=android&logoColor=ffffff"></a><br>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-api28-arm64-v8a.apk"><img src="https://img.shields.io/badge/APK-api28_arm64_v8a-044d29.svg?logo=android&logoColor=ffffff"></a><br>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-api28-x86_64.apk"><img src="https://img.shields.io/badge/APK-api28_x86_64-044d29.svg?logo=android&logoColor=ffffff"></a><br>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-apilatest-armeabi-v7a.apk"><img src="https://img.shields.io/badge/APK-apilatest_armeabi_v7a-168039.svg?logo=android&logoColor=ffffff"></a><br>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-apilatest-arm64-v8a.apk"><img src="https://img.shields.io/badge/APK-apilatest_arm64_v8a-168039.svg?logo=android&logoColor=ffffff"></a><br>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-apilatest-x86_64.apk"><img src="https://img.shields.io/badge/APK-apilatest_x86_64-168039.svg?logo=android&logoColor=ffffff"></a><br>
       </td>
     </tr>
     <tr>
       <td>Windows</td>
       <td>
-        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-windows-setup.exe"><img src="https://img.shields.io/badge/Installer-x64-0078d7.svg?logo=windows"></a><br>
-        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-windows.zip"><img src="https://img.shields.io/badge/Portable-x64-0078d7.svg?logo=windows"></a><br>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-windows-setup.exe"><img src="https://img.shields.io/badge/Installer-x64-0078d7.svg?logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0ODc1IDQ4NzUiPjxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik0wIDBoMjMxMXYyMzEwSDB6bTI1NjQgMGgyMzExdjIzMTBIMjU2NHpNMCAyNTY0aDIzMTF2MjMxMUgwem0yNTY0IDBoMjMxMXYyMzExSDI1NjQiLz48L3N2Zz4="></a><br>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-windows.zip"><img src="https://img.shields.io/badge/Portable-x64-0078d7.svg?logo=data:image/svg%2bxml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0ODc1IDQ4NzUiPjxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik0wIDBoMjMxMXYyMzEwSDB6bTI1NjQgMGgyMzExdjIzMTBIMjU2NHpNMCAyNTY0aDIzMTF2MjMxMUgwem0yNTY0IDBoMjMxMXYyMzExSDI1NjQiLz48L3N2Zz4="></a><br>
       </td>
     </tr>
     <tr>
@@ -42,7 +42,7 @@
     <tr>
       <td>Linux</td>
       <td>
-        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-linux.zip"><img src="https://img.shields.io/badge/Portable-x64-f84e29.svg?logo=linux"> </a><br>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-linux.zip"><img src="https://img.shields.io/badge/Portable-x64-f84e29.svg?logo=linux&logoColor=ffffff"> </a><br>
       </td>
     </tr>
     <tr>
