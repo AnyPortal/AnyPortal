@@ -173,7 +173,7 @@ class CoreDataNotifierManager {
     logger.d("starting: CoreDataNotifierManager.init");
     _coreDataNotifier = CoreDataNotifier();
     _completer.complete(); // Signal that initialization is complete
-    logger.d("started: CoreDataNotifierManager.init");
+    logger.d("finished: CoreDataNotifierManager.init");
   }
 }
 

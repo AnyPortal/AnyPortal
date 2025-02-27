@@ -1,5 +1,5 @@
 import 'dart:core';
 
 abstract class AssetRemoteProtocol {
-  Future<void> update();
+  Future<bool> update();
 }

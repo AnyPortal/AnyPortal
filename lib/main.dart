@@ -116,7 +116,7 @@ void main(List<String> args) async {
   /// app
   logger.d("starting: runApp");
   runApp(const AnyPortal());
-  logger.d("started: runApp");
+  logger.d("finished: runApp");
 
   /// find active core and tun
   try {

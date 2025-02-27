@@ -155,7 +155,7 @@ public class TProxyService extends VpnService {
         } else {
             Log.w(TAG, "statusListener == null");
         }
-        Log.d(TAG, "started: notifyMainActivity");
+        Log.d(TAG, "finished: notifyMainActivity");
     }
 
 
@@ -287,7 +287,7 @@ public class TProxyService extends VpnService {
         notifyMainActivity();
         updateTile();
 
-        Log.d(TAG, "started: startAll");
+        Log.d(TAG, "finished: startAll");
     }
 
     private void stopAll() {
@@ -306,7 +306,7 @@ public class TProxyService extends VpnService {
 
         stopNotificationForeground();
 
-        Log.d(TAG, "started: stopAll");
+        Log.d(TAG, "finished: stopAll");
     }
 
     private void startNotificationForeground() {
@@ -414,7 +414,7 @@ public class TProxyService extends VpnService {
         /* TProxy */
         File tproxy_file = new File(getFilesDir(), "conf/tun.hev_socks5_tunnel.gen.yaml");
         TProxyStartService(tproxy_file.getAbsolutePath(), tunFd.getFd());
-        Log.d(TAG, "started: startTunEmbedded");
+        Log.d(TAG, "finished: startTunEmbedded");
     }
 
     private void startTunExec() {
@@ -443,7 +443,7 @@ public class TProxyService extends VpnService {
             e.printStackTrace();
             return;
         }
-        Log.d(TAG, "started: startTunExec");
+        Log.d(TAG, "finished: startTunExec");
     }
 
     private void startTun() {
@@ -455,7 +455,7 @@ public class TProxyService extends VpnService {
             startTunExec();
         }
 
-        Log.d(TAG, "started: startTun");
+        Log.d(TAG, "finished: startTun");
     }
 
     private List<String> getStringListFromJsonString(String str){
@@ -507,7 +507,7 @@ public class TProxyService extends VpnService {
             tunSingBoxCoreProcess = null;
         }
         
-        Log.d(TAG, "started: stopTun");
+        Log.d(TAG, "finished: stopTun");
     }
 
     private void startCore(){
@@ -553,7 +553,7 @@ public class TProxyService extends VpnService {
             }
         }
 
-        Log.d(TAG, "started: startCore");
+        Log.d(TAG, "finished: startCore");
     }
 
     private void stopCore(){
@@ -568,7 +568,7 @@ public class TProxyService extends VpnService {
             coreManager = null;
         }
 
-        Log.d(TAG, "started: stopCore");
+        Log.d(TAG, "finished: stopCore");
     }
 
     private int startSystemProxy(){
@@ -593,7 +593,7 @@ public class TProxyService extends VpnService {
             e.printStackTrace();
         }
 
-        Log.d(TAG, "started: startSystemProxy");
+        Log.d(TAG, "finished: startSystemProxy");
         return exitCode;
     }
 
@@ -610,7 +610,7 @@ public class TProxyService extends VpnService {
             e.printStackTrace();
         }
 
-        Log.d(TAG, "started: stopSystemProxy");
+        Log.d(TAG, "finished: stopSystemProxy");
         return exitCode;
     }
 
@@ -640,7 +640,7 @@ public class TProxyService extends VpnService {
             e.printStackTrace();
         }
 
-        Log.d(TAG, "started: getIsSystemProxyEnabled");
+        Log.d(TAG, "finished: getIsSystemProxyEnabled");
         return false;
     }
 }

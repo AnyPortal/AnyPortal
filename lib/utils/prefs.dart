@@ -19,7 +19,7 @@ class PrefsManager {
     'app.connectAtLaunch': Platform.isWindows || Platform.isLinux || Platform.isMacOS,
     'app.connectAtStartup': false,
     // 'app.github.downloadedFilePath': null,
-    'app.github.meta': "{created_at: 0}",
+    'app.github.meta': '{"created_at": 0}',
     'app.http.port': 15492,
     'app.notification.foreground': Platform.isAndroid,
     'app.window.size.width': 1280.0,
@@ -79,7 +79,7 @@ class PrefsManager {
     final sharedPreferences = await SharedPreferences.getInstance();
     _prefs = SharedPreferencesWithDefaults(sharedPreferences, defaults);
     _completer.complete(); // Signal that initialization is complete
-    logger.d("started: PrefsManager.init");
+    logger.d("finished: PrefsManager.init");
   }
 }
 

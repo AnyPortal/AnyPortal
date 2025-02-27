@@ -53,7 +53,7 @@ class LoggerManager {
       filter: CustomFilter()
     );
     _completer.complete(); // Signal that initialization is complete
-    logger.d("started: LoggerManager.init");
+    logger.d("finished: LoggerManager.init");
   }
 
   static final LoggerManager _instance = LoggerManager._internal();

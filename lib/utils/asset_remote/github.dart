@@ -243,7 +243,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
   }
 
   @override
-  Future<void> update({
+  Future<bool> update({
     TypedResult? oldAsset,
     int autoUpdateInterval = 0,
   }) async {
@@ -255,7 +255,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     final newMeta = await getNewMeta(useSocks: vPNMan.isCoreActive);
     if (isUpdated(newMeta, oldMeta)) {
       logger.d("already updated: $url");
-      return;
+      return true;
     }
 
     /// get download url
@@ -263,7 +263,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     final downloadUrl = getDownloadUrl(newMeta!);
     if (downloadUrl == null) {
       logger.w("downloadUrl == null: $url");
-      return;
+      return true;
     }
 
     /// download
@@ -274,7 +274,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     );
     if (downloadedFile == null) {
       logger.w("download failed: $downloadUrl");
-      return;
+      return false;
     }
     logger.d("downloaded: $downloadUrl");
     final assetId = await postDownload(
@@ -297,6 +297,6 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     } else {
       logger.d("pending install: $url");
     }
-    return;
+    return true;
   }
 }

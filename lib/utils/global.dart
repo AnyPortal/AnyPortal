@@ -20,7 +20,7 @@ class GlobalManager {
       updateIsElevated(),
     ]);
     _completer.complete(); // Signal that initialization is complete
-    logger.d("started: GlobalManager.init");
+    logger.d("finished: GlobalManager.init");
   }
 
   Future<void> updateAapplicationDocumentsDirectory() async {

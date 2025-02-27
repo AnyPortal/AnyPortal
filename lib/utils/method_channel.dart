@@ -16,7 +16,7 @@ class MethodChannelManager {
     methodChannel = const MethodChannel('com.github.anyportal.anyportal');
     methodChannel.setMethodCallHandler(methodCallHandler);
     _completer.complete(); // Signal that initialization is complete
-    logger.d("started: MethodChannelManager.init");
+    logger.d("finished: MethodChannelManager.init");
   }
 
   static final MethodChannelManager _instance = MethodChannelManager._internal();

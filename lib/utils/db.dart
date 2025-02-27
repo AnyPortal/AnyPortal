@@ -39,7 +39,7 @@ class DatabaseManager {
     _db = Database(_openConnection(file));
 
     _completer.complete(); // Signal that initialization is complete
-    logger.d("started: DatabaseManager.init");
+    logger.d("finished: DatabaseManager.init");
   }
 
   static QueryExecutor _openConnection(File file) {

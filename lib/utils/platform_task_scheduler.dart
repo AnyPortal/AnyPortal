@@ -14,10 +14,12 @@ import 'logger.dart';
 import 'prefs.dart';
 
 void checkAllRemotes() {
+  logger.d("starting: checkAllRemotes");
   checkAllAssetRemotes();
   checkAllProfileGroupRemotes();
   checkAllProfileRemotes();
   checkAppRemote();
+  logger.d("finished: checkAllRemotes");
 }
 
 @pragma(
@@ -98,11 +100,13 @@ Future<bool> checkAppRemote() async {
   if (prefs.getBool("app.autoUpdate")!) {
     final autoUpdateInterval = 86400;
     final checkedAt = prefs.getInt("app.autoUpdate.checkedAt")!;
-    if (checkedAt + autoUpdateInterval >
+    if (checkedAt + autoUpdateInterval <
         DateTime.now().millisecondsSinceEpoch / 1000) {
-      await AssetRemoteProtocolApp.init().update();
-      prefs.setInt("app.autoUpdate.checkedAt",
-          (DateTime.now().millisecondsSinceEpoch / 1000).toInt());
+      final ok = await AssetRemoteProtocolApp.init().update();
+      if (ok) {
+        prefs.setInt("app.autoUpdate.checkedAt",
+            (DateTime.now().millisecondsSinceEpoch / 1000).toInt());
+      }
     }
   }
   return true;
@@ -123,7 +127,9 @@ class PlatformTaskScheduler {
             networkType: NetworkType.connected,
           ));
     } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      final delayedMinutes = DateTime.now().minute % 15;
       cron.schedule(Schedule.parse('*/15 * * * *'), () async {
+        await Future.delayed(Duration(minutes: delayedMinutes));
         checkAllRemotes();
       });
     }
@@ -138,7 +144,7 @@ class PlatformTaskSchedulerManager {
     taskScheduler = PlatformTaskScheduler();
     taskScheduler.init();
     _completer.complete();
-    logger.d("started: PlatformTaskSchedulerManager.init");
+    logger.d("finished: PlatformTaskSchedulerManager.init");
   }
 
   static final PlatformTaskSchedulerManager _instance =

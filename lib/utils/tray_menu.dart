@@ -26,7 +26,7 @@ class TrayMenuManager {
 
     await updateContextMenu();
     _completer.complete(); // Signal that initialization is complete
-    logger.d("started: TrayMenuManager.init");
+    logger.d("finished: TrayMenuManager.init");
   }
 
   static final TrayMenuManager _instance = TrayMenuManager._internal();
