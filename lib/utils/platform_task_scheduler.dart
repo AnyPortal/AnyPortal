@@ -127,6 +127,7 @@ class PlatformTaskScheduler {
             networkType: NetworkType.connected,
           ));
     } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      // checkAllRemotes();
       final delayedMinutes = DateTime.now().minute % 15;
       cron.schedule(Schedule.parse('*/15 * * * *'), () async {
         await Future.delayed(Duration(minutes: delayedMinutes));

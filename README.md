@@ -29,6 +29,7 @@
     <tr>
       <td>Windows</td>
       <td>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-windows-setup.exe"><img src="https://img.shields.io/badge/Installer-x64-0078d7.svg?logo=windows"></a><br>
         <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-windows.zip"><img src="https://img.shields.io/badge/Portable-x64-0078d7.svg?logo=windows"></a><br>
       </td>
     </tr>
@@ -60,9 +61,9 @@
 > 2024-09-27
 
 > [!IMPORTANT]
-> iOS development is currently blocked. iOS app using Network Extension requires a paid Apple Developer Program membership ($99/year) to debug even on our own devices, which is not available for the developers right now.
+> iOS support for this project is paused indefinitely due to the financial and policy-related constraints associated with iOS development, including mandatory paid membership for access to essential tools such as Network Extensions. We are actively exploring alternative, financially sustainable models to continue supporting iOS in the future.
 >
-> 2024-09-27
+> 2025-02-27
 
 ## Dev roadmap
 |              |                  | Windows | Linux | macOS | Android | iOS |
@@ -122,12 +123,17 @@ All rights reserved until further notice (hopefully soon).
 - [v2fly/v2ray-core](https://github.com/v2fly/v2ray-core), MIT
 - [xtls/xray-core](https://github.com/xtls/xray-core), MPL-2.0
 - [heiher/hev-socks5-tunnel](https://github.com/heiher/hev-socks5-tunnel), MIT
-- a full list of flutter dependency can be found in `./pubspec.yaml`
 
 ### Inspired by, or related to, but not used in the project
 
 - [Qv2ray/Qv2ray](https://github.com/Qv2ray/Qv2ray), GPL-3.0
 - [SagerNet/sing-box](https://github.com/SagerNet/sing-box), GPL
+
+### Toolchains
+
+- [flutter/flutter](https://github.com/flutter/flutter), BSD-3-Clause
+  - a full list of flutter dependency can be found in `./pubspec.yaml`
+- [jrsoftware/issrc](https://github.com/jrsoftware/issrc)
 
 ## Support development
 
