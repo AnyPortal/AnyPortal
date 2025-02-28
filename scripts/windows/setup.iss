@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "AnyPortal"
-#define MyAppVersion "0.4.4+42"
+#define MyAppVersion ""
 #define MyAppPublisher "AnyPortal"
 #define MyAppURL "https://github.com/AnyPortal/AnyPortal"
 #define MyAppExeName "anyportal.exe"
@@ -12,8 +12,9 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{A6A3479C-23C5-49A3-AB3F-1E0E5B243487}
 AppName={#MyAppName}
-AppVersion={#MyAppVersion}
+;AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
+AppVerName={#MyAppName}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
@@ -40,6 +41,7 @@ WizardStyle=modern
 Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
+Name: "chinesesimplified"; MessagesFile: "..\..\third_party\Inno-Setup-Chinese-Simplified-Translation\ChineseSimplified.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked

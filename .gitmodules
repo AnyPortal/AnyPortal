@@ -7,3 +7,6 @@
 [submodule "third_party/libv2raymobile"]
 	path = third_party/libv2raymobile
 	url = git@github.com:anyportal/libv2raymobile
+[submodule "third_party/Inno-Setup-Chinese-Simplified-Translation"]
+	path = third_party/Inno-Setup-Chinese-Simplified-Translation
+	url = git@github.com:kira-96/Inno-Setup-Chinese-Simplified-Translation.git

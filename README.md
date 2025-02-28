@@ -123,6 +123,7 @@ All rights reserved until further notice (hopefully soon).
 - [v2fly/v2ray-core](https://github.com/v2fly/v2ray-core), MIT
 - [xtls/xray-core](https://github.com/xtls/xray-core), MPL-2.0
 - [heiher/hev-socks5-tunnel](https://github.com/heiher/hev-socks5-tunnel), MIT
+- [kira-96/Inno-Setup-Chinese-Simplified-Translation](https://github.com/kira-96/Inno-Setup-Chinese-Simplified-Translation), MIT
 
 ### Inspired by, or related to, but not used in the project
 
