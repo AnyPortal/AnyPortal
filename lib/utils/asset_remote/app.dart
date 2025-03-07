@@ -46,7 +46,7 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
 
     final createdAt =
         (jsonDecode(newMeta) as Map<String, dynamic>)["created_at"];
-    prefs.setString("app.github.meta", "{created_at: $createdAt}");
+    prefs.setString("app.github.meta", "{\"created_at\": \"$createdAt}\"");
     return 0;
   }
 

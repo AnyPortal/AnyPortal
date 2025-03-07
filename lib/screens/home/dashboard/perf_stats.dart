@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import 'package:anyportal/utils/core_data_notifier.dart';
+import 'package:anyportal/extensions/localization.dart';
 
 import '../../../utils/format_byte.dart';
 
@@ -42,22 +44,22 @@ class _PerfStatsState extends State<PerfStats> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             keyValueRow(
-                "uptime",
+                context.loc.uptime,
                 coreDataNotifier.sysStats != null
                     ? coreDataNotifier.sysStats!.uptime.toString()
                     : "0"),
             keyValueRow(
-                "memory",
+                context.loc.memory,
                 coreDataNotifier.sysStats != null
                     ? formatBytes(coreDataNotifier.sysStats!.alloc.toInt())
                     : formatBytes(0)),
             keyValueRow(
-                "go coroutines",
+                context.loc.go_coroutines,
                 coreDataNotifier.sysStats != null
                     ? coreDataNotifier.sysStats!.numGC.toString()
                     : "0"),
             keyValueRow(
-                "live objects",
+                context.loc.live_objects,
                 coreDataNotifier.sysStats != null
                     ? coreDataNotifier.sysStats!.liveObjects .toString()
                     : "0"),

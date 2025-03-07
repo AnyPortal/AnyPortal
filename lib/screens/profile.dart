@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import 'package:anyportal/models/core.dart';
+import 'package:anyportal/extensions/localization.dart';
 
 import '../models/profile.dart';
 import '../utils/db.dart';
@@ -110,14 +112,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final fields = [
       TextFormField(
         controller: _nameController,
-        decoration: const InputDecoration(
-          labelText: 'name',
+        decoration: InputDecoration(
+          labelText: context.loc.name,
           border: OutlineInputBorder(),
         ),
       ),
       DropdownButtonFormField<int>(
-        decoration: const InputDecoration(
-          labelText: 'core type',
+        decoration: InputDecoration(
+          labelText: context.loc.core_type,
           border: OutlineInputBorder(),
         ),
         items: _coreTypeDataList.map((e) {
@@ -133,8 +135,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         value: _coreTypeId,
       ),
       DropdownButtonFormField<ProfileType>(
-        decoration: const InputDecoration(
-          labelText: 'profile type',
+        decoration: InputDecoration(
+          labelText: context.loc.profile_type,
           border: OutlineInputBorder(),
         ),
         items: ProfileType.values.map((ProfileType t) {
@@ -152,8 +154,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (_profileType == ProfileType.remote)
         TextFormField(
           controller: _urlController,
-          decoration: const InputDecoration(
-            labelText: 'url',
+          decoration: InputDecoration(
+            labelText: context.loc.url,
             hintText: 'https://url/to/config/json/',
             border: OutlineInputBorder(),
           ),
@@ -161,8 +163,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (_profileType == ProfileType.remote)
         TextFormField(
           controller: _autoUpdateIntervalController,
-          decoration: const InputDecoration(
-            labelText: 'auto update interval (seconds), 0 to disable',
+          decoration: InputDecoration(
+            labelText: context.loc.auto_update_interval_seconds_0_to_disable,
             border: OutlineInputBorder(),
           ),
           keyboardType: TextInputType.number,
@@ -182,7 +184,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
           ),
-          child: const Text('Save and update'),
+          child: Text(context.loc.save_and_update),
         ),
       ),
     ];
@@ -190,7 +192,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         // Use the selected tab's label for the AppBar title
-        title: const Text("Edit profile"),
+        title: Text(context.loc.edit_profile),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

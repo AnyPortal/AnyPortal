@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:anyportal/extensions/localization.dart';
+
 import '../../../utils/prefs.dart';
 import '../../../widgets/popup/text_input.dart';
 
@@ -26,13 +28,13 @@ class _ConnectivityBasicScreenState extends State<ConnectivityBasicScreen> {
   Widget build(BuildContext context) {
     final fields = [
       ListTile(
-        title: const Text('Server address'),
+        title: Text(context.loc.server_address),
         subtitle: Text(_serverAddress),
         onTap: () {
           showDialog(
             context: context,
             builder: (context) => TextInputPopup(
-                title: 'Server address',
+                title: context.loc.server_address,
                 initialValue: _serverAddress,
                 onSaved: (String value) {
                   prefs.setString('app.server.address', _serverAddress);
@@ -44,14 +46,14 @@ class _ConnectivityBasicScreenState extends State<ConnectivityBasicScreen> {
         },
       ),
       ListTile(
-        title: const Text('Socks port'),
+        title: Text(context.loc.socks_port),
         subtitle: Text(_socksPort.toString()),
         onTap: () {
           showDialog(
             context: context,
             builder: (context) => TextInputPopup(
-                title: 'Socks port',
-                text: 'You may want to check `Settings` -> `Profile override` -> `Inject socks inbound`',
+                title: context.loc.socks_port,
+                text: context.loc.you_may_want_to_check_settings_profile_override_inject_socks_inbound,
                 initialValue: _socksPort.toString(),
                 onSaved: (String value) {
                   final socksPort = int.parse(value);
@@ -64,14 +66,14 @@ class _ConnectivityBasicScreenState extends State<ConnectivityBasicScreen> {
         },
       ),
       ListTile(
-        title: const Text('HTTP port'),
+        title: Text(context.loc.http_port),
         subtitle: Text(_httpPort.toString()),
         onTap: () {
           showDialog(
             context: context,
             builder: (context) => TextInputPopup(
-                title: 'HTTP port',
-                text: 'You may want to check `Settings` -> `Profile override` -> `Inject http inbound`',
+                title: context.loc.http_port,
+                text: context.loc.you_may_want_to_check_settings_profile_override_inject_http_inbound,
                 initialValue: _httpPort.toString(),
                 onSaved: (String value) {
                   final httpPort = int.parse(value);
@@ -88,7 +90,7 @@ class _ConnectivityBasicScreenState extends State<ConnectivityBasicScreen> {
     return Scaffold(
       appBar: AppBar(
         // Use the selected tab's label for the AppBar title
-        title: const Text("Connectivity basic settings"),
+        title: Text(context.loc.connectivity_basic_settings),
       ),
       body: ListView.builder(
         itemCount: fields.length,

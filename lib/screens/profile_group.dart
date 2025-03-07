@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:anyportal/extensions/localization.dart';
+
 import '../models/profile_group.dart';
 import '../utils/db.dart';
 import '../utils/db/update_profile_group.dart';
@@ -97,14 +99,14 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
     final fields = [
       TextFormField(
         controller: _nameController,
-        decoration: const InputDecoration(
-          labelText: 'name',
+        decoration: InputDecoration(
+          labelText: context.loc.name,
           border: OutlineInputBorder(),
         ),
       ),
       DropdownButtonFormField<ProfileGroupType>(
-        decoration: const InputDecoration(
-          labelText: 'type',
+        decoration: InputDecoration(
+          labelText: context.loc.type,
           border: OutlineInputBorder(),
         ),
         items: ProfileGroupType.values.map((ProfileGroupType t) {
@@ -123,8 +125,8 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
       if (_profileGroupType == ProfileGroupType.remote)
         TextFormField(
           controller: _urlController,
-          decoration: const InputDecoration(
-            labelText: 'url',
+          decoration: InputDecoration(
+            labelText: context.loc.url,
             hintText: 'https://url/to/config/json/',
             border: OutlineInputBorder(),
           ),
@@ -132,8 +134,8 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
       if (_profileGroupType == ProfileGroupType.remote)
         TextFormField(
           controller: _autoUpdateIntervalController,
-          decoration: const InputDecoration(
-            labelText: 'auto update interval (seconds), 0 to disable',
+          decoration: InputDecoration(
+            labelText: context.loc.auto_update_interval_seconds_0_to_disable,
             border: OutlineInputBorder(),
           ),
           keyboardType: TextInputType.number,
@@ -144,7 +146,7 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
           ),
-          child: const Text('Save and update'),
+          child: Text(context.loc.save_and_update),
         ),
       ),
     ];
@@ -152,7 +154,7 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
     return Scaffold(
       appBar: AppBar(
         // Use the selected tab's label for the AppBar title
-        title: const Text("Edit Profile Group"),
+        title: Text(context.loc.edit_profile_group),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

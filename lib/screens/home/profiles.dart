@@ -2,7 +2,7 @@ import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:anyportal/utils/vpn_manager.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:anyportal/extensions/localization.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
 import '../../models/profile_group.dart';
@@ -25,13 +25,13 @@ enum ProfilesAction {
   addProfileGroup,
 }
 
-extension ToLCString on ProfilesAction {
-  String toShortString(context) {
+extension ProfilesActionToLCString on ProfilesAction {
+  String toLCString(context) {
     switch (this) {
       case ProfilesAction.addProfile:
-        return AppLocalizations.of(context)!.addProfile;
+        return context.loc.add_profile;
       case ProfilesAction.addProfileGroup:
-        return AppLocalizations.of(context)!.addProfileGroup;
+        return context.loc.add_profile_group;
     }
   }
 }
@@ -41,9 +41,31 @@ enum ProfileAction {
   delete,
 }
 
+extension ProfileActionToLCString on ProfileAction {
+  String toLCString(context) {
+    switch (this) {
+      case ProfileAction.edit:
+        return context.loc.edit;
+      case ProfileAction.delete:
+        return context.loc.delete;
+    }
+  }
+}
+
 enum ProfileGroupAction {
   edit,
   delete,
+}
+
+extension ProfileGroupActionToLCString on ProfileGroupAction {
+  String toLCString(context) {
+    switch (this) {
+      case ProfileGroupAction.edit:
+        return context.loc.edit;
+      case ProfileGroupAction.delete:
+        return context.loc.delete;
+    }
+  }
 }
 
 class _ProfileListState extends State<ProfileList> {
@@ -219,17 +241,17 @@ class _ProfileListState extends State<ProfileList> {
 
   String getProfileGroupTitle(ProfileGroupData profileGroup) {
     if (profileGroup.id == 1) {
-      return "Standalone";
+      return context.loc.standalone;
     }
     return profileGroup.name;
   }
 
   String getProfileGroupSubTitle(ProfileGroupData profileGroup) {
     if (profileGroup.id == 1) {
-      return "Manually created profiles";
+      return context.loc.manually_created_profiles;
     }
     if (profileGroup.type == ProfileGroupType.local) {
-      return "Local profile group";
+      return context.loc.local_profile_group;
     }
     return "${profileGroup.updatedAt}";
   }
@@ -239,7 +261,7 @@ class _ProfileListState extends State<ProfileList> {
     return Scaffold(
         appBar: AppBar(
           title: Stack(children: [
-            Text(AppLocalizations.of(context)!.profiles),
+            Text(context.loc.profiles),
             Align(
                 alignment: Alignment.topRight,
                 child: SmoothHighlight(
@@ -249,7 +271,7 @@ class _ProfileListState extends State<ProfileList> {
                       itemBuilder: (context) => ProfilesAction.values
                           .map((action) => PopupMenuItem(
                                 value: action,
-                                child: Text(action.toShortString(context)),
+                                child: Text(action.toLCString(context)),
                               ))
                           .toList(),
                       onSelected: (value) => handleProfilesAction(value),
@@ -295,9 +317,9 @@ class _ProfileListState extends State<ProfileList> {
 
                             String msg = "";
                             if (res) {
-                              msg = "Reconnected";
+                              msg = context.loc.info_reconnected;
                             } else {
-                              msg = "Failed to reconnect";
+                              msg = context.loc.warning_failed_to_reconnect;
                             }
                             final snackBar2 = SnackBar(
                               content: Text(msg),

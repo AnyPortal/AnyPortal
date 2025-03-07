@@ -1,7 +1,13 @@
 import 'dart:io';
 
+import 'package:anyportal/utils/locale_manager.dart';
+import 'package:anyportal/widgets/popup/radio_list_selection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:path/path.dart' as p;
+import 'package:flutter_localized_locales/flutter_localized_locales.dart';
+
+import 'package:anyportal/extensions/localization.dart';
 
 import '../../../utils/global.dart';
 import '../../../utils/platform_launch_at_login.dart';
@@ -24,12 +30,14 @@ class _GeneralScreenState extends State<GeneralScreen> {
   bool _connectAtStartup = prefs.getBool('app.connectAtStartup')!;
   bool _connectAtLaunch = prefs.getBool('app.connectAtLaunch')!;
   bool _runElevated = prefs.getBool('app.runElevated')!;
-  final String _elevatedUser = Platform.isWindows ? "Administrator" : "root";
+      
   bool _brightnessIsDark = prefs.getBool('app.brightness.dark')!;
   bool _isBlackDark = prefs.getBool('app.brightness.dark.black')!;
   bool _brightnessFollowSystem = prefs.getBool('app.brightness.followSystem')!;
   bool _closeToTray = prefs.getBool('app.window.closeToTray')!;
   bool _notificationForeground = prefs.getBool('app.notification.foreground')!;
+  late Locale _locale = localeManager.locale;
+  bool _localeFollowSystem = prefs.getBool('app.locale.followSystem')!;
 
   @override
   void initState() {
@@ -57,14 +65,73 @@ class _GeneralScreenState extends State<GeneralScreen> {
     return false;
   }
 
+  String getLanguageName(String localeCode) {
+    // return LocaleNames.of(context)?.nameOf(localeCode) ?? localeCode;
+    return LocaleNamesLocalizationsDelegate.nativeLocaleNames[localeCode] ?? localeCode;
+  }
+
   @override
   Widget build(BuildContext context) {
     final fields = [
+      Container(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        child: Text(
+          context.loc.language_settings,
+          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+        ),
+      ),
+      ListTile(
+        title: Text(context.loc.follow_system_locale),
+        subtitle:
+            Text(context.loc.auto_change_language_based_on_system_settings),
+        trailing: Switch(
+          value: _localeFollowSystem,
+          onChanged: (value) async {
+            prefs.setBool('app.locale.followSystem', value);
+            setState(() {
+              _localeFollowSystem = value;
+            });
+            localeManager.update(notify: true);
+            setState(() {
+              _locale = localeManager.locale;
+            });
+          },
+        ),
+      ),
+      ListTile(
+        title: Text(context.loc.language),
+        subtitle: Text(getLanguageName(_locale.toString())),
+        enabled: !_localeFollowSystem,
+        onTap: () {
+          showDialog(
+              context: context,
+              builder: (context) => RadioListSelectionPopup<Locale>(
+                    title: context.loc.language,
+                    items: AppLocalizations.supportedLocales,
+                    initialValue: _locale,
+                    onSaved: (value) {
+                      prefs.setString('app.locale', value.toString());
+                      localeManager.update(notify: true);
+                      setState(() {
+                        _locale = value;
+                      });
+                    },
+                    itemToString: (e) => getLanguageName(e.toString()),
+                  ));
+        },
+      ),
+      Container(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        child: Text(
+          context.loc.launch_settings,
+          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+        ),
+      ),
       if (getCanAutoUpdate())
         ListTile(
-          title: const Text("Auto update"),
-          subtitle: const Text(
-              "Auto download installer and update on next app launch"),
+          title: Text(context.loc.auto_update),
+          subtitle: Text(context
+              .loc.auto_download_installer_and_update_on_next_app_launch),
           trailing: Switch(
             value: _autoUpdate,
             onChanged: (value) async {
@@ -75,19 +142,12 @@ class _GeneralScreenState extends State<GeneralScreen> {
             },
           ),
         ),
-      Container(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-        child: Text(
-          "Launch settings",
-          style: TextStyle(color: Theme.of(context).colorScheme.primary),
-        ),
-      ),
       if (Platform.isWindows ||
           (!global.isElevated && (Platform.isLinux || Platform.isMacOS)))
         ListTile(
-          title: const Text("Auto launch"),
+          title: Text(context.loc.auto_launch),
           subtitle: Text(
-              "Auto launch at login, ${_runElevated ? 'with' : 'without'} privilege"),
+              context.loc.auto_launch_at_login),
           trailing: Switch(
             value: _launchAtLogin,
             onChanged: (value) async {
@@ -104,8 +164,9 @@ class _GeneralScreenState extends State<GeneralScreen> {
                 });
               } else {
                 final snackBar = SnackBar(
-                  content: Text(
-                      "Failed. If you enabled auto launch as $_elevatedUser, you need to be $_elevatedUser to disable it."),
+                  content: Text(context.loc
+                      .warning_you_need_to_be_elevated_user_to_modify_this_setting(
+                          Platform.isWindows ? context.loc.administrator : "root")),
                 );
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -117,15 +178,16 @@ class _GeneralScreenState extends State<GeneralScreen> {
       if (Platform.isWindows)
         ListTile(
           enabled: global.isElevated,
-          title: Text("Run as $_elevatedUser"),
-          subtitle: const Text("Typically required by Tun"),
+          title: Text(context.loc.run_as_elevated_user(Platform.isWindows ? context.loc.administrator : "root")),
+          subtitle: Text(context.loc.typically_required_by_tun),
           trailing: Switch(
             value: _runElevated,
             onChanged: (value) async {
               if (!global.isElevated) {
                 final snackBar = SnackBar(
-                  content: Text(
-                      "You need to be $_elevatedUser to modify this setting"),
+                  content: Text(context.loc
+                      .warning_you_need_to_be_elevated_user_to_modify_this_setting(
+                          Platform.isWindows ? context.loc.administrator : "root")),
                 );
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -137,11 +199,11 @@ class _GeneralScreenState extends State<GeneralScreen> {
                 await platformLaunchAtLogin.disable();
                 ok = await platformLaunchAtLogin.enable(isElevated: value);
                 if (!ok) {
-                  const snackBar = SnackBar(
-                    content:
-                        Text("Failed due to unable to update launchAtLogin"),
-                  );
                   if (context.mounted) {
+                    final snackBar = SnackBar(
+                      content: Text(context.loc
+                          .warning_failed_due_to_unable_to_update_launch_at_login),
+                    );
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   }
                   return;
@@ -156,9 +218,9 @@ class _GeneralScreenState extends State<GeneralScreen> {
         ),
       if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
         ListTile(
-          title: const Text("Close to tray"),
+          title: Text(context.loc.close_to_tray),
           subtitle:
-              const Text("Dock to tray instead when app window is closed"),
+              Text(context.loc.dock_to_tray_instead_when_app_window_is_closed),
           trailing: Switch(
             value: _closeToTray,
             onChanged: (value) async {
@@ -171,8 +233,9 @@ class _GeneralScreenState extends State<GeneralScreen> {
         ),
       if (Platform.isWindows || Platform.isLinux || Platform.isMacOS)
         ListTile(
-          title: const Text("Auto connect at app launch"),
-          subtitle: const Text("Auto connect selected profile at app launch"),
+          title: Text(context.loc.auto_connect_at_app_launch),
+          subtitle:
+              Text(context.loc.auto_connect_selected_profile_at_app_launch),
           trailing: Switch(
             value: _connectAtLaunch,
             onChanged: (value) async {
@@ -185,8 +248,9 @@ class _GeneralScreenState extends State<GeneralScreen> {
         ),
       if (Platform.isAndroid)
         ListTile(
-          title: const Text("Auto connect at device boot"),
-          subtitle: const Text("Auto connect selected profile at device boot"),
+          title: Text(context.loc.auto_connect_at_device_boot),
+          subtitle:
+              Text(context.loc.auto_connect_selected_profile_at_device_boot),
           trailing: Switch(
             value: _connectAtStartup,
             onChanged: (value) async {
@@ -200,13 +264,14 @@ class _GeneralScreenState extends State<GeneralScreen> {
       Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Text(
-          "Theme settings",
+          context.loc.theme_settings,
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
       ),
       ListTile(
-        title: const Text("Follow system brightness"),
-        subtitle: const Text("Auto change brightness"),
+        title: Text(context.loc.follow_system_brightness),
+        subtitle:
+            Text(context.loc.auto_change_brightness_based_on_system_settings),
         trailing: Switch(
           value: _brightnessFollowSystem,
           onChanged: (value) async {
@@ -214,14 +279,14 @@ class _GeneralScreenState extends State<GeneralScreen> {
             setState(() {
               _brightnessFollowSystem = value;
             });
-            themeManager.updateBrightness(notify: true);
+            themeManager.update(notify: true);
           },
         ),
       ),
       ListTile(
         enabled: _brightnessFollowSystem == false,
-        title: const Text("Dark theme"),
-        subtitle: const Text("Use dark theme"),
+        title: Text(context.loc.dark_theme),
+        subtitle: Text(context.loc.use_dark_theme),
         trailing: Switch(
           value: _brightnessIsDark,
           onChanged: _brightnessFollowSystem == true
@@ -231,13 +296,13 @@ class _GeneralScreenState extends State<GeneralScreen> {
                   setState(() {
                     _brightnessIsDark = value;
                   });
-                  themeManager.updateBrightness(notify: true);
+                  themeManager.update(notify: true);
                 },
         ),
       ),
       ListTile(
-        title: const Text("Black dark"),
-        subtitle: const Text("Use black background in dark theme"),
+        title: Text(context.loc.black_dark),
+        subtitle: Text(context.loc.use_black_background_in_dark_theme),
         trailing: Switch(
           value: _isBlackDark,
           onChanged: (value) async {
@@ -245,7 +310,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
             setState(() {
               _isBlackDark = value;
             });
-            themeManager.updateBrightness(notify: true);
+            themeManager.update(notify: true);
           },
         ),
       ),
@@ -253,15 +318,15 @@ class _GeneralScreenState extends State<GeneralScreen> {
         Container(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           child: Text(
-            "Notification",
+            context.loc.notification,
             style: TextStyle(color: Theme.of(context).colorScheme.primary),
           ),
         ),
       if (Platform.isAndroid)
         ListTile(
-          title: const Text("Foreground"),
-          subtitle: const Text(
-              "Runs the service in foreground (less likely be killed by system). A notification must show"),
+          title: Text(context.loc.foreground),
+          subtitle: Text(context.loc
+              .runs_the_service_in_foreground_less_likely_be_killed_by_system_a_notification_must_show),
           trailing: Switch(
             value: _notificationForeground,
             onChanged: (shouldEnable) async {
@@ -284,7 +349,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
     return Scaffold(
       appBar: AppBar(
         // Use the selected tab's label for the AppBar title
-        title: const Text("General settings"),
+        title: Text(context.loc.general_settings),
       ),
       body: ListView.builder(
         itemCount: fields.length,

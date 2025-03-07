@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
+import 'logger.dart';
 import 'prefs.dart';
 
 class ThemeManager with ChangeNotifier {
@@ -19,10 +20,13 @@ class ThemeManager with ChangeNotifier {
   }
 
   Future<void> init() async {
+    logger.d("starting: ThemeManager.init");
+    update();
     _completer.complete(); // Signal that initialization is complete
+    logger.d("starting: ThemeManager.init");
   }
 
-  void updateBrightness({notify = false}) {
+  void update({notify = false}) {
     var dispatcher = SchedulerBinding.instance.platformDispatcher;
     isDark = prefs.getBool('app.brightness.followSystem')!
         ? dispatcher.platformBrightness == Brightness.dark

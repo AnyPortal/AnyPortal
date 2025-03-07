@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:anyportal/extensions/localization.dart';
 import 'package:anyportal/utils/core_data_notifier.dart';
 
 class SpeedChart extends StatefulWidget {
@@ -91,7 +92,7 @@ class _SpeedChartState extends State<SpeedChart> {
                   ),
                 ),
               ),
-              const Positioned(
+              Positioned(
                 left: 44,
                 top: 0,
                 child: Column(
@@ -99,28 +100,28 @@ class _SpeedChartState extends State<SpeedChart> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      "Proxy ↑ ┄┄",
+                      "${context.loc.proxy} ↑ ┄┄",
                       style: TextStyle(
                         color: Colors.blue,
                         fontSize: 10,
                       ),
                     ),
                     Text(
-                      "Proxy ↓ ──",
+                      "${context.loc.proxy} ↓ ──",
                       style: TextStyle(
                         color: Colors.blue,
                         fontSize: 10,
                       ),
                     ),
                     Text(
-                      "Direct ↑ ┄┄",
+                      "${context.loc.direct} ↑ ┄┄",
                       style: TextStyle(
                         color: Colors.orange,
                         fontSize: 10,
                       ),
                     ),
                     Text(
-                      "Direct ↓ ──",
+                      "${context.loc.direct} ↓ ──",
                       style: TextStyle(
                         color: Colors.orange,
                         fontSize: 10,

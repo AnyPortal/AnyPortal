@@ -5,11 +5,13 @@ import 'package:anyportal/utils/global.dart';
 import 'package:anyportal/utils/logger.dart';
 import 'package:anyportal/utils/platform_elevation.dart';
 import 'package:anyportal/utils/theme_manager.dart';
+import 'package:anyportal/utils/locale_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:anyportal/utils/vpn_manager.dart';
+import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:system_theme/system_theme.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -53,7 +55,11 @@ void main(List<String> args) async {
     }
   }
 
-  await DatabaseManager().init();
+  await Future.wait([
+    DatabaseManager().init(),
+    ThemeManager().init(),
+    LocaleManager().init(),
+  ]);
 
   await Future.wait([
     VPNManManager().init(),
@@ -154,20 +160,20 @@ class AnyPortal extends StatelessWidget {
   /// This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    var dispatcher = SchedulerBinding.instance.platformDispatcher;
-    themeManager.isDark = prefs.getBool('app.brightness.followSystem')!
-        ? dispatcher.platformBrightness == Brightness.dark
-        : prefs.getBool('app.brightness.dark')!;
     return ListenableBuilder(
-        listenable: themeManager,
+        listenable: Listenable.merge([themeManager, localeManager]),
         builder: (BuildContext context, Widget? child) {
           return MaterialApp(
             title: 'AnyPortal',
             theme: getPlatformThemeData(),
+            locale: localeManager.locale,
             darkTheme: getPlatformDarkThemeData(),
             themeMode: themeManager.isDark ? ThemeMode.dark : ThemeMode.light,
-            home: const HomePage(title: 'Flutter Demo Home Page'),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            home: const HomePage(title: 'AnyPortal'),
+            localizationsDelegates: [
+              LocaleNamesLocalizationsDelegate(),
+              ...AppLocalizations.localizationsDelegates,
+            ],
             supportedLocales: AppLocalizations.supportedLocales,
           );
         });

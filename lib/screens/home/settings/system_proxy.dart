@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:anyportal/extensions/localization.dart';
+
 import '../../../utils/platform_system_proxy_user.dart';
 import '../../../utils/prefs.dart';
 import '../../../utils/vpn_manager.dart';
@@ -37,9 +39,9 @@ class _SystemProxyScreenState extends State<SystemProxyScreen> {
     final fields = [
       ListTile(
         enabled: _systemProxyIsEnabled != null,
-        title: const Text("Enable system proxy"),
-        subtitle: const Text(
-            "Provided by OS, not all apps respect this setting"),
+        title: Text(context.loc.enable_system_proxy),
+        subtitle: Text(
+            context.loc.provided_by_os_not_all_apps_respect_this_setting),
         trailing: Switch(
           value: _systemProxyIsEnabled == null ? false : _systemProxyShouldEnable,
           onChanged: (bool shouldEnable) {
@@ -63,7 +65,7 @@ class _SystemProxyScreenState extends State<SystemProxyScreen> {
     return Scaffold(
         appBar: AppBar(
           // Use the selected tab's label for the AppBar title
-          title: const Text("SystemProxy"),
+          title: Text(context.loc.system_proxy),
         ),
         body: ListView.builder(
           itemCount: fields.length,

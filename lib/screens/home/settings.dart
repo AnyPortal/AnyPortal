@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:anyportal/screens/home/settings/tun_hev_socks5_tunnel.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:anyportal/extensions/localization.dart';
 
 import 'settings/about.dart';
 import 'settings/assets.dart';
@@ -27,14 +27,14 @@ class _SettingListState extends State<SettingList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.settings),
+        title: Text(context.loc.settings),
               ),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Wrap(children: [
           ListTile(
-            title: const Text("General"),
-            subtitle: const Text("Auto startup, tray icon, etc."),
+            title: Text(context.loc.general),
+            subtitle: Text(context.loc.auto_startup_tray_icon_etc_),
             onTap: () {
               Navigator.push(
                 context,
@@ -46,13 +46,13 @@ class _SettingListState extends State<SettingList> {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             child: Text(
-              "Connectivity",
+              context.loc.connectivity,
               style: TextStyle(color: Theme.of(context).colorScheme.primary),
             ),
           ),
           ListTile(
-              title: const Text("Socks and HTTP"),
-              subtitle: const Text("Either to match predefined profile or for profile injection"),
+              title: Text(context.loc.socks_and_http),
+              subtitle: Text(context.loc.either_to_match_predefined_profile_or_for_profile_injection),
               onTap: () {
                 Navigator.push(
                   context,
@@ -61,8 +61,8 @@ class _SettingListState extends State<SettingList> {
               }),
           if (Platform.isWindows || Platform.isLinux || Platform.isMacOS || Platform.isAndroid)
             ListTile(
-                title: const Text("System proxy"),
-                subtitle: const Text("Provided by OS, not all apps respect this setting"),
+                title: Text(context.loc.system_proxy),
+                subtitle: Text(context.loc.provided_by_os_not_all_apps_respect_this_setting),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -71,8 +71,8 @@ class _SettingListState extends State<SettingList> {
                 }),
           if (Platform.isAndroid || Platform.isIOS)
             ListTile(
-                title: const Text("Tun (via platform api)"),
-                subtitle: const Text("Vitual network adaptor"),
+                title: Text(context.loc.tun_via_platform_api_),
+                subtitle: Text(context.loc.vitual_network_adaptor),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -81,8 +81,8 @@ class _SettingListState extends State<SettingList> {
                 }),
           if (Platform.isWindows || Platform.isLinux || Platform.isMacOS || Platform.isAndroid)
             ListTile(
-                title: const Text("Tun (via root)"),
-                subtitle: const Text("Vitual network adaptor"),
+                title: Text(context.loc.tun_via_root_),
+                subtitle: Text(context.loc.vitual_network_adaptor),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -93,13 +93,13 @@ class _SettingListState extends State<SettingList> {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             child: Text(
-              "Assets",
+              context.loc.assets,
               style: TextStyle(color: Theme.of(context).colorScheme.primary),
             ),
           ),
           ListTile(
-            title: const Text("Cores"),
-            subtitle: const Text("Path of core exectuable, assets, etc."),
+            title: Text(context.loc.cores),
+            subtitle: Text(context.loc.path_of_core_exectuable_assets_etc_),
             onTap: () {
               Navigator.push(
                 context,
@@ -108,8 +108,8 @@ class _SettingListState extends State<SettingList> {
             },
           ),
           ListTile(
-            title: const Text("Assets"),
-            subtitle: const Text("Assets remote auto update, etc."),
+            title: Text(context.loc.assets),
+            subtitle: Text(context.loc.assets_remote_auto_update_etc_),
             onTap: () {
               Navigator.push(
                 context,
@@ -121,13 +121,13 @@ class _SettingListState extends State<SettingList> {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             child: Text(
-              "Profile",
+              context.loc.profile,
               style: TextStyle(color: Theme.of(context).colorScheme.primary),
             ),
           ),
           ListTile(
-            title: const Text("Profile override"),
-            subtitle: const Text("Inject configuration into v2ray/xray profile"),
+            title: Text(context.loc.profile_override),
+            subtitle: Text(context.loc.inject_configuration_into_v2ray_xray_profile),
             onTap: () {
               Navigator.push(
                 context,
@@ -140,12 +140,12 @@ class _SettingListState extends State<SettingList> {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             child: Text(
-              "About",
+              context.loc.about,
               style: TextStyle(color: Theme.of(context).colorScheme.primary),
             ),
           ),
           ListTile(
-            title: const Text("About"),
+            title: Text(context.loc.about),
             subtitle: const Text("AnyPortal"),
             onTap: () {
               Navigator.push(

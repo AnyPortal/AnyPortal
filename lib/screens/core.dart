@@ -1,11 +1,13 @@
 import 'dart:io';
 
-import 'package:anyportal/models/edit_status.dart';
-import 'package:anyportal/utils/permission_manager.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import 'package:anyportal/extensions/localization.dart';
+import 'package:anyportal/models/edit_status.dart';
+import 'package:anyportal/utils/permission_manager.dart';
 
 import '../../utils/db.dart';
 import '../../models/core.dart';
@@ -114,7 +116,7 @@ class _CoreScreenState extends State<CoreScreen> {
         await permMan.requestPermission(
           context,
           Permission.storage,
-          "Storage permission is required for cores to load assets.",
+          context.loc.storage_permission_is_required_for_cores_to_load_assets_,
         ).then((status){
           if (status != PermissionStatus.granted) {
             permitted = false;
@@ -126,7 +128,7 @@ class _CoreScreenState extends State<CoreScreen> {
         await permMan.requestPermission(
           context,
           Permission.notification,
-          "Notification permission is required for quick tiles to work properly",
+          context.loc.notification_permission_is_required_for_quick_tiles_to_work_properly,
         ).then((status){
           if (status != PermissionStatus.granted) {
             permitted = false;
@@ -232,7 +234,7 @@ class _CoreScreenState extends State<CoreScreen> {
       dropdownMenuItems.add(
         DropdownMenuItem<int>(
           value: _assetId,
-          child: Text("invalid asset"),
+          child: Text(context.loc.warning_invalid_asset),
         )
       );
     }
@@ -247,8 +249,8 @@ class _CoreScreenState extends State<CoreScreen> {
         children: [
           Expanded(
             child: DropdownButtonFormField<int>(
-              decoration: const InputDecoration(
-                labelText: 'core type',
+              decoration: InputDecoration(
+                labelText: context.loc.core_type,
                 border: OutlineInputBorder(),
               ),
               items: _coreTypeDataList.map((e) {
@@ -281,8 +283,8 @@ class _CoreScreenState extends State<CoreScreen> {
         children: [
           Expanded(
             child: DropdownButtonFormField<int>(
-              decoration: const InputDecoration(
-                labelText: 'core executable',
+              decoration: InputDecoration(
+                labelText: context.loc.core_executable,
                 border: OutlineInputBorder(),
               ),
               items: getDropdownMenuItems(),
@@ -318,13 +320,13 @@ class _CoreScreenState extends State<CoreScreen> {
       ),
       const Divider(),
       Text(
-        "Advanced",
+        context.loc.advanced,
         style: TextStyle(color: Theme.of(context).colorScheme.primary),
       ),
       TextFormField(
         controller: _envsController,
-        decoration: const InputDecoration(
-          labelText: 'envs',
+        decoration: InputDecoration(
+          labelText: context.loc.envs,
           hintText: '{"key1":"value1", "key2":"value2"}',
           border: OutlineInputBorder(),
         ),
@@ -336,8 +338,8 @@ class _CoreScreenState extends State<CoreScreen> {
             Expanded(
               child: TextFormField(
                 controller: _workingDirController,
-                decoration: const InputDecoration(
-                  labelText: 'working dir',
+                decoration: InputDecoration(
+                  labelText: context.loc.working_dir,
                   hintText: "use core's parent folder if leave empty",
                   border: OutlineInputBorder(),
                 ),
@@ -352,8 +354,8 @@ class _CoreScreenState extends State<CoreScreen> {
       if (_coreIsExec)
         TextFormField(
           controller: _argsController,
-          decoration: const InputDecoration(
-            labelText: 'args',
+          decoration: InputDecoration(
+            labelText: context.loc.args,
             hintText: '["run", "-c", "{config.path}"}]',
             border: OutlineInputBorder(),
           ),
@@ -364,7 +366,7 @@ class _CoreScreenState extends State<CoreScreen> {
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
           ),
-          child: const Text('Save and update'),
+          child: Text(context.loc.save_and_update),
         ),
       ),
     ];
@@ -372,7 +374,7 @@ class _CoreScreenState extends State<CoreScreen> {
     return Scaffold(
       appBar: AppBar(
         // Use the selected tab's label for the AppBar title
-        title: const Text("Edit core"),
+        title: Text(context.loc.edit_core),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

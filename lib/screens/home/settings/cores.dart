@@ -1,7 +1,7 @@
 import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:anyportal/extensions/localization.dart';
 import 'package:anyportal/models/asset.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
@@ -26,12 +26,12 @@ enum CoresAction {
 }
 
 extension ToLCString on CoresAction {
-  String toShortString(context) {
+  String toLCString(BuildContext context) {
     switch (this) {
       case CoresAction.addCore:
-        return AppLocalizations.of(context)!.addCore;
+        return context.loc.add_core;
       case CoresAction.addCoreType:
-        return AppLocalizations.of(context)!.addCoreType;
+        return context.loc.add_core_type;
     }
   }
 }
@@ -252,12 +252,12 @@ class _CoresScreenState extends State<CoresScreen> {
       final selectedCoreId = _coreTypeSeclectedId[coreTypeId];
       final selectedCore = _cores[selectedCoreId];
       if (selectedCore == null){
-        return "No core selected!";
+        return context.loc.warning_no_core_selected_;
       } else {
         return getCoreTitle(selectedCore);
       }
     } else {
-      return "No core selected!";
+      return context.loc.warning_no_core_selected_;
     }
   }
 
@@ -270,11 +270,11 @@ class _CoresScreenState extends State<CoresScreen> {
           return core.read(db.assetRemote.url)!;
         } catch (e) {
           logger.e("getCoreTitle: $e");
-          return "invalid url";
+          return context.loc.warning_invalid_url;
         }
       }
     } else {
-      return "embedded";
+      return context.loc.embedded;
     }
   }
 
@@ -295,7 +295,7 @@ class _CoresScreenState extends State<CoresScreen> {
     return Scaffold(
         appBar: AppBar(
           title: Stack(children: [
-            Text(AppLocalizations.of(context)!.cores),
+            Text(context.loc.cores),
             Align(
                 alignment: Alignment.topRight,
                 child: SmoothHighlight(
@@ -305,7 +305,7 @@ class _CoresScreenState extends State<CoresScreen> {
                       itemBuilder: (context) => CoresAction.values
                           .map((action) => PopupMenuItem(
                                 value: action,
-                                child: Text(action.toShortString(context)),
+                                child: Text(action.toLCString(context)),
                               ))
                           .toList(),
                       onSelected: (value) => handleCoresAction(value),

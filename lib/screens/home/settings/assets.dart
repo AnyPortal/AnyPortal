@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:anyportal/extensions/localization.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
 import '../../../models/asset.dart';
@@ -21,10 +21,10 @@ enum AssetsAction {
 }
 
 extension ToLCString on AssetsAction {
-  String toShortString(context) {
+  String toLCString(context) {
     switch (this) {
       case AssetsAction.addAsset:
-        return AppLocalizations.of(context)!.addAsset;
+        return context.loc.add_asset;
     }
   }
 }
@@ -139,7 +139,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
     return Scaffold(
         appBar: AppBar(
           title: Stack(children: [
-            Text(AppLocalizations.of(context)!.assets),
+            Text(context.loc.assets),
             Align(
                 alignment: Alignment.topRight,
                 child: SmoothHighlight(
@@ -149,7 +149,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
                       itemBuilder: (context) => AssetsAction.values
                           .map((action) => PopupMenuItem(
                                 value: action,
-                                child: Text(action.toShortString(context)),
+                                child: Text(action.toLCString(context)),
                               ))
                           .toList(),
                       onSelected: (value) => handleAssetsAction(value),

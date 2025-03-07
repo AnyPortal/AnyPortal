@@ -1,12 +1,12 @@
 import 'dart:io';
 
+import 'package:anyportal/extensions/localization.dart';
 import 'package:anyportal/utils/global.dart';
 import 'package:anyportal/utils/tray_menu.dart';
 import 'package:anyportal/utils/vpn_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:path/path.dart' as p;
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -94,29 +94,27 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
     super.dispose();
   }
 
-  final _elevatedUser = Platform.isWindows ? "Administrator" : "root";
-
   @override
   Widget build(BuildContext context) {
     List<ScreenNav> screens = <ScreenNav>[
       ScreenNav(
         Dashboard(setSelectedIndex: setSelectedIndex),
-        AppLocalizations.of(context)!.dashboard,
+        context.loc.dashboard,
         const Icon(Icons.dashboard),
       ),
       ScreenNav(
         LogViewer(filePath: _pathLog),
-        AppLocalizations.of(context)!.logs,
+        context.loc.logs,
         const Icon(Icons.message),
       ),
       ScreenNav(
         const ProfileList(),
-        AppLocalizations.of(context)!.profiles,
+        context.loc.profiles,
         const Icon(Icons.description),
       ),
       ScreenNav(
         const SettingList(),
-        AppLocalizations.of(context)!.settings,
+        context.loc.settings,
         const Icon(Icons.settings),
       ),
     ];
@@ -186,8 +184,12 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
                                     onChanged: (shouldEnable) {
                                       if (!global.isElevated) {
                                         final snackBar = SnackBar(
-                                          content: Text(
-                                              "You need to be $_elevatedUser to modify this setting"),
+                                          content: Text(context.loc
+                                              .warning_you_need_to_be_elevated_user_to_modify_this_setting(
+                                                  Platform.isWindows
+                                                      ? context
+                                                          .loc.administrator
+                                                      : "root")),
                                         );
                                         if (context.mounted) {
                                           ScaffoldMessenger.of(context)
@@ -220,7 +222,7 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
                           Platform.isAndroid)
                         ListTile(
                             dense: true,
-                            title: const Text("System proxy"),
+                            title: Text(context.loc.system_proxy),
                             trailing: Transform.scale(
                               scale: 0.5,
                               origin: const Offset(32, 4),
@@ -382,7 +384,7 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    themeManager.updateBrightness();
+    themeManager.update();
     if (Platform.isWindows || Platform.isMacOS) {
       var isDark = themeManager.isDark;
       Window.setEffect(

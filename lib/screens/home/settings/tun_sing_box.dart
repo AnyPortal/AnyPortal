@@ -1,8 +1,10 @@
 import 'dart:io';
 
-import 'package:anyportal/models/log_level.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
+
+import 'package:anyportal/models/log_level.dart';
+import 'package:anyportal/extensions/localization.dart';
 
 import '../../../utils/global.dart';
 import '../../../utils/platform_file_mananger.dart';
@@ -26,7 +28,6 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
   LogLevel _logLevel = LogLevel.values[prefs.getInt('tun.inject.log.level')!];
   bool _injectSocks = prefs.getBool('tun.inject.socks')!;
   bool _injectExcludeCorePath = prefs.getBool('tun.inject.excludeCorePath')!;
-  final _elevatedUser = Platform.isWindows ? "Administrator" : "root";
 
   @override
   void initState() {
@@ -44,18 +45,19 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
     final fields = [
       ListTile(
         enabled: global.isElevated,
-        title: const Text("Enable tun (via root)"),
-        subtitle:
-            const Text("""Enable tun2socks so a socks proxy works like a VPN
-Requires elevation
-"""),
+        title: Text(context.loc.enable_tun_via_root_),
+        subtitle: Text(context.loc
+            .enable_tun2socks_so_a_socks_proxy_works_like_a_vpn_requires_elevation_),
         trailing: Switch(
           value: _tun && !_tunUseEmbedded,
           onChanged: (shouldEnable) {
             if (!global.isElevated) {
               final snackBar = SnackBar(
-                content: Text(
-                    "You need to be $_elevatedUser to modify this setting"),
+                content: Text(context.loc
+                    .warning_you_need_to_be_elevated_user_to_modify_this_setting(
+                        Platform.isWindows
+                            ? context.loc.administrator
+                            : "root")),
               );
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -86,13 +88,13 @@ Requires elevation
       Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Text(
-          "Log config override",
+          context.loc.log_config_override,
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
       ),
       ListTile(
-        title: const Text("Inject Log"),
-        subtitle: const Text("Override log config"),
+        title: Text(context.loc.inject_log),
+        subtitle: Text(context.loc.override_log_config),
         trailing: Switch(
           value: _injectLog,
           onChanged: (bool value) {
@@ -105,13 +107,13 @@ Requires elevation
       ),
       ListTile(
         enabled: _injectLog,
-        title: const Text('Log Level'),
+        title: Text(context.loc.log_level),
         subtitle: Text(_logLevel.name),
         onTap: () {
           showDialog(
               context: context,
               builder: (context) => RadioListSelectionPopup<LogLevel>(
-                    title: 'Log Level',
+                    title: context.loc.log_level,
                     items: LogLevel.values,
                     initialValue: _logLevel,
                     onSaved: (value) {
@@ -128,12 +130,12 @@ Requires elevation
       Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Text(
-          "Outbound config: additional socks outbound",
+          context.loc.outbound_config_additional_socks_outbound,
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
       ),
       ListTile(
-        title: const Text("Inject socks outbound"),
+        title: Text(context.loc.inject_socks_outbound),
         subtitle:
             Text("$injectSocksAddress:${prefs.getInt('app.socks.port')!}"),
         trailing: Switch(
@@ -150,14 +152,14 @@ Requires elevation
       Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Text(
-          "Routing rule: additionally exclude core path",
+          context.loc.routing_rule_additionally_exclude_core_path,
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
       ),
       ListTile(
-        title: const Text("Inject rule to exclude core path"),
-        subtitle: const Text(
-            "Disable to improve performance, make sure you have bound core to a correct interface"),
+        title: Text(context.loc.inject_rule_to_exclude_core_path),
+        subtitle: Text(context.loc
+            .disable_to_improve_performance_make_sure_you_have_bound_core_to_a_correct_interface),
         trailing: Switch(
           value: _injectExcludeCorePath,
           onChanged: (value) {
@@ -172,12 +174,12 @@ Requires elevation
       Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Text(
-          "Advanced",
+          context.loc.advanced,
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
       ),
       ListTile(
-        title: const Text("Edit config"),
+        title: Text(context.loc.edit_config),
         subtitle: Text(p.join(global.applicationDocumentsDirectory.path,
             "AnyPortal", "conf", "tun.sing_box.json")),
         trailing: const Icon(Icons.folder_open),
@@ -205,7 +207,7 @@ Requires elevation
       child: Scaffold(
         appBar: AppBar(
           // Use the selected tab's label for the AppBar title
-          title: const Text("Tun settings"),
+          title: Text(context.loc.tun_settings),
         ),
         body: ListView.builder(
           itemCount: fields.length,

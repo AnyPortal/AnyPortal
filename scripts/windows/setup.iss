@@ -42,6 +42,9 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 Name: "chinesesimplified"; MessagesFile: "..\..\third_party\Inno-Setup-Chinese-Simplified-Translation\ChineseSimplified.isl"
+Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
+Name: "portuguese"; MessagesFile: "compiler:Languages\Portuguese.isl"
+Name: "japanese"; MessagesFile: "compiler:Languages\Japanese.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked

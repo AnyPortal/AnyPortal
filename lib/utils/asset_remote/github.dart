@@ -91,12 +91,17 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
       return false;
     }
 
-    final oldCreatedAt =
-        (jsonDecode(oldMeta) as Map<String, dynamic>)["created_at"];
-    final newCreatedAt =
-        (jsonDecode(newMeta) as Map<String, dynamic>)["created_at"];
+    try{
+      final oldCreatedAt =
+          (jsonDecode(oldMeta) as Map<String, dynamic>)["created_at"];
+      final newCreatedAt =
+          (jsonDecode(newMeta) as Map<String, dynamic>)["created_at"];
 
-    return oldCreatedAt == newCreatedAt;
+      return oldCreatedAt == newCreatedAt;
+    } catch (e) {
+      logger.w("isUpdated: failed to read created_at");
+      return false;
+    }
   }
 
   String? getDownloadUrl(String meta) {
@@ -247,7 +252,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     TypedResult? oldAsset,
     int autoUpdateInterval = 0,
   }) async {
-    /// todo: report progress
+    /// TODO: report progress
 
     /// check if need to update
     logger.d("to update: $url");

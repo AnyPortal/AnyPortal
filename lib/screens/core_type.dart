@@ -1,6 +1,8 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 
+import 'package:anyportal/extensions/localization.dart';
+
 import '../utils/db.dart';
 import '../utils/logger.dart';
 
@@ -83,8 +85,8 @@ class _CoreTypeScreenState extends State<CoreTypeScreen> {
       TextFormField(
         enabled: widget.coreType != null ? widget.coreType!.id > 2 : true,
         controller: _typeController,
-        decoration: const InputDecoration(
-          labelText: 'type',
+        decoration: InputDecoration(
+          labelText: context.loc.type,
           border: OutlineInputBorder(),
         ),
       ),
@@ -94,7 +96,7 @@ class _CoreTypeScreenState extends State<CoreTypeScreen> {
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
           ),
-          child: const Text('Save and update'),
+          child: Text(context.loc.save_and_update),
         ),
       ),
     ];
@@ -102,7 +104,7 @@ class _CoreTypeScreenState extends State<CoreTypeScreen> {
     return Scaffold(
       appBar: AppBar(
         // Use the selected tab's label for the AppBar title
-        title: const Text("Edit core type"),
+        title: Text(context.loc.edit_core_type),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

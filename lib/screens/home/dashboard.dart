@@ -1,10 +1,11 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
+import 'package:smooth_highlight/smooth_highlight.dart';
+
+import 'package:anyportal/extensions/localization.dart';
 import 'package:anyportal/screens/home/dashboard/direct_speed.dart';
 import 'package:anyportal/screens/home/dashboard/proxy_speed.dart';
 import 'package:anyportal/screens/home/dashboard/speed_chart.dart';
-import 'package:smooth_highlight/smooth_highlight.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../utils/db.dart';
 import '../../utils/prefs.dart';
@@ -81,7 +82,7 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.dashboard),
+          title: Text(context.loc.dashboard),
         ),
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
@@ -93,8 +94,8 @@ class _DashboardState extends State<Dashboard> {
                     enabled: _highlightSelectProfile,
                     color: Colors.grey,
                     child: ListTile(
-                      title: const Text(
-                        'Selected Profile',
+                      title: Text(
+                        context.loc.selected_profile,
                       ),
                       subtitle: Text(_selectedProfile == null
                           ? ""
@@ -104,9 +105,8 @@ class _DashboardState extends State<Dashboard> {
                         _profiles.isNotEmpty
                             ? widget.setSelectedIndex(2)
                             : () {
-                                const snackBar = SnackBar(
-                                  content:
-                                      Text("No profile yet, create one first"),
+                                final snackBar = SnackBar(
+                                  content: Text(context.loc.no_profile_yet_create_one_first),
                                 );
                                 if (mounted) {
                                   ScaffoldMessenger.of(context)
@@ -120,7 +120,7 @@ class _DashboardState extends State<Dashboard> {
                 margin: const EdgeInsets.all(8.0),
                 child: ListTile(
                   title: Text(
-                    'Speed graph',
+                    context.loc.speed_graph,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   subtitle: const SpeedChart(),
@@ -144,7 +144,7 @@ class _DashboardState extends State<Dashboard> {
                   ListTile(
                     title: Row(children: [
                       Text(
-                        'Direct speed',
+                        context.loc.direct_speed,
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                     ]),
@@ -169,7 +169,7 @@ class _DashboardState extends State<Dashboard> {
                       )),
                   ListTile(
                     title: Text(
-                      'Proxy speed',
+                      context.loc.proxy_speed,
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     subtitle: const ProxySpeeds(),
@@ -183,17 +183,17 @@ class _DashboardState extends State<Dashboard> {
                     margin: const EdgeInsets.all(8.0),
                     child: ListTile(
                       title: Text(
-                        'Performance',
+                        context.loc.performance,
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       subtitle: const PerfStats(),
                     )),
               ),
-              const Expanded(
+              Expanded(
                 child: Card(
                     margin: EdgeInsets.all(8.0),
                     child: ListTile(
-                      title: Text('Traffic'),
+                      title: Text(context.loc.traffic),
                       subtitle: TrafficStats(),
                     )),
               ),

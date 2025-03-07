@@ -1,10 +1,12 @@
 import 'dart:io';
 
-import 'package:anyportal/utils/global.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:path/path.dart' as p;
+
+import 'package:anyportal/extensions/localization.dart';
+import 'package:anyportal/utils/global.dart';
 
 import '../../../utils/platform_file_mananger.dart';
 import '../../../widgets/blockquote.dart';
@@ -75,7 +77,7 @@ We hope you choose well between your home world and Wonderlands.""")),
         ),
       ),
       ListTile(
-        title: const Text("App"),
+        title: Text(context.loc.app),
         subtitle: Text(File(Platform.resolvedExecutable).parent.path),
         trailing: const Icon(Icons.folder_open),
         onTap: () {
@@ -83,7 +85,7 @@ We hope you choose well between your home world and Wonderlands.""")),
         },
       ),
       ListTile(
-        title: const Text("User data"),
+        title: Text(context.loc.user_data),
         subtitle: Text(p.join(global.applicationDocumentsDirectory.path, "AnyPortal")),
         trailing: const Icon(Icons.folder_open),
         onTap: () {
@@ -91,7 +93,7 @@ We hope you choose well between your home world and Wonderlands.""")),
         },
       ),
       ListTile(
-        title: const Text("Generated assets"),
+        title: Text(context.loc.generated_assets),
         subtitle: Text(global.applicationSupportDirectory.path),
         trailing: const Icon(Icons.folder_open),
         onTap: () {
@@ -102,7 +104,7 @@ We hope you choose well between your home world and Wonderlands.""")),
     return Scaffold(
         appBar: AppBar(
           // Use the selected tab's label for the AppBar title
-          title: const Text("About"),
+          title: Text(context.loc.about),
                   ),
         body: ListView.builder(
           itemCount: fields.length,

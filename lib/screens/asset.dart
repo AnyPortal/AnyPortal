@@ -4,6 +4,8 @@ import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 
+import 'package:anyportal/extensions/localization.dart';
+
 import '../../utils/db.dart';
 import '../../models/asset.dart';
 import '../models/edit_status.dart';
@@ -142,8 +144,8 @@ class _AssetScreenState extends State<AssetScreen> {
   Widget build(BuildContext context) {
     final fields = [
       DropdownButtonFormField<AssetType>(
-          decoration: const InputDecoration(
-            labelText: 'asset type',
+          decoration: InputDecoration(
+            labelText: context.loc.asset_type,
             border: OutlineInputBorder(),
           ),
           items: AssetType.values.map((AssetType t) {
@@ -162,10 +164,10 @@ class _AssetScreenState extends State<AssetScreen> {
               child: TextFormField(
                 controller: _assetPathController,
                 decoration: InputDecoration(
-                  labelText: 'asset path',
+                  labelText: context.loc.asset_path,
                   hintText: Platform.isWindows
-                      ? "e.g. C:\\path\\to\\v2ray.exe"
-                      : "e.g. /path/to/v2ray",
+                      ? context.loc.e_g_c_path_to_v2ray_exe
+                      : context.loc.e_g_path_to_v2ray,
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -179,18 +181,18 @@ class _AssetScreenState extends State<AssetScreen> {
       if (_assetType == AssetType.remote)
         TextFormField(
           controller: _urlController,
-          decoration: const InputDecoration(
-            labelText: 'url',
+          decoration: InputDecoration(
+            labelText: context.loc.url,
             hintText:
-                'e.g. github://v2fly/v2ray-core/v2ray-windows-64.zip/v2ray.exe',
+                context.loc.e_g_github_v2fly_v2ray_core_v2ray_windows_64_zip_v2ray_exe,
             border: OutlineInputBorder(),
           ),
         ),
       if (_assetType == AssetType.remote)
         TextFormField(
           controller: _autoUpdateIntervalController,
-          decoration: const InputDecoration(
-            labelText: 'auto update interval (seconds), 0 to disable',
+          decoration: InputDecoration(
+            labelText: context.loc.auto_update_interval_seconds_0_to_disable,
             border: OutlineInputBorder(),
           ),
           keyboardType: TextInputType.number,
@@ -201,7 +203,7 @@ class _AssetScreenState extends State<AssetScreen> {
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
           ),
-          child: const Text('Save and update'),
+          child: Text(context.loc.save_and_update),
         ),
       ),
     ];
@@ -209,7 +211,7 @@ class _AssetScreenState extends State<AssetScreen> {
     return Scaffold(
       appBar: AppBar(
         // Use the selected tab's label for the AppBar title
-        title: const Text("Edit asset"),
+        title: Text(context.loc.edit_asset),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

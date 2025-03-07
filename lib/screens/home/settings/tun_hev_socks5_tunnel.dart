@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:anyportal/screens/installed_app.dart';
 import 'package:path/path.dart' as p;
+
+import 'package:anyportal/screens/installed_app.dart';
+import 'package:anyportal/extensions/localization.dart';
 
 import '../../../utils/global.dart';
 import '../../../utils/vpn_manager.dart';
@@ -56,12 +58,12 @@ class _TunHevSocks5TunnelScreenState extends State<TunHevSocks5TunnelScreen> {
 
   void _editAllowedApplications() {
     _editProxyApplist(
-        'android.tun.allowedApplications', 'Allowed applications');
+        'android.tun.allowedApplications', context.loc.allowed_applications);
   }
 
   void _editDisallowedApplications() {
     _editProxyApplist(
-        'android.tun.disAllowedApplications', 'Disallowed applications');
+        'android.tun.disAllowedApplications', context.loc.disallowed_applications);
   }
 
   void writeTProxyConf() async {
@@ -98,9 +100,9 @@ misc:
   Widget build(BuildContext context) {
     final fields = [
       ListTile(
-        title: const Text("Enable tun (via platform api)"),
+        title: Text(context.loc.enable_tun_via_platform_api_),
         subtitle:
-            const Text("Enable tun2socks so a socks proxy works like a VPN"),
+            Text(context.loc.enable_tun2socks_so_a_socks_proxy_works_like_a_vpn),
         trailing: Switch(
           value: _tun && _tunUseEmbedded,
           onChanged: (shouldEnable) {
@@ -124,8 +126,8 @@ misc:
       ),
       ListTile(
         enabled: _tun,
-        title: const Text("Per-app proxy"),
-        subtitle: const Text("All apps are proxied if disabled"),
+        title: Text(context.loc.per_app_proxy),
+        subtitle: Text(context.loc.all_apps_are_proxied_if_disabled),
         trailing: Switch(
           value: _perAppProxy,
           onChanged: (value) {
@@ -138,10 +140,10 @@ misc:
       ),
       ListTile(
         enabled: _tun && _perAppProxy,
-        title: const Text("Per-app proxy mode"),
+        title: Text(context.loc.per_app_proxy_mode),
         subtitle: Text(_perAppProxyAllowed
-            ? "Allowed: all apps in allowed list will be proxied"
-            : "Disallowed: all apps not in disallowed list will be proxied"),
+            ? context.loc.allowed_all_apps_in_allowed_list_will_be_proxied
+            : context.loc.disallowed_all_apps_not_in_disallowed_list_will_be_proxied),
         trailing: Switch(
           value: _perAppProxyAllowed,
           onChanged: _tun && _perAppProxy
@@ -156,32 +158,32 @@ misc:
       ),
       ListTile(
         enabled: _tun && _perAppProxy && _perAppProxyAllowed,
-        title: const Text("Allowed applications"),
-        subtitle: const Text("All apps in allowed list will be proxied"),
+        title: Text(context.loc.allowed_applications),
+        subtitle: Text(context.loc.all_apps_in_allowed_list_will_be_proxied),
         onTap: _editAllowedApplications,
       ),
       ListTile(
         enabled: _tun && _perAppProxy && !_perAppProxyAllowed,
-        title: const Text("Disallowed applications"),
-        subtitle: const Text("All apps not in disallowed list will be proxied"),
+        title: Text(context.loc.disallowed_applications),
+        subtitle: Text(context.loc.all_apps_not_in_disallowed_list_will_be_proxied),
         onTap: _editDisallowedApplications,
       ),
       const Divider(),
       Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Text(
-          "Advanced",
+          context.loc.advanced,
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
       ),
       ListTile(
-        title: const Text('Socks user name'),
+        title: Text(context.loc.socks_user_name),
         subtitle: Text(_socksUserName),
         onTap: () {
           showDialog(
             context: context,
             builder: (context) => TextInputPopup(
-                title: 'Socks user name',
+                title: context.loc.socks_user_name,
                 initialValue: _socksUserName,
                 onSaved: (value) {
                   prefs.setString('tun.socks.username', value);
@@ -193,13 +195,13 @@ misc:
         },
       ),
       ListTile(
-        title: const Text('Socks password'),
+        title: Text(context.loc.socks_password),
         subtitle: Text(_socksPassword),
         onTap: () {
           showDialog(
             context: context,
             builder: (context) => TextInputPopup(
-                title: 'Socks password',
+                title: context.loc.socks_password,
                 initialValue: _socksPassword,
                 onSaved: (value) {
                   prefs.setString('tun.socks.password', value);
@@ -211,13 +213,13 @@ misc:
         },
       ),
       ListTile(
-        title: const Text('DNS IPv4'),
+        title: Text(context.loc.dns_ipv4),
         subtitle: Text(_dnsIpv4),
         onTap: () {
           showDialog(
             context: context,
             builder: (context) => TextInputPopup(
-                title: 'DNS IPv4',
+                title: context.loc.dns_ipv4,
                 initialValue: _dnsIpv4,
                 onSaved: (value) {
                   prefs.setString('tun.dns.ipv4', value);
@@ -229,13 +231,13 @@ misc:
         },
       ),
       ListTile(
-        title: const Text('DNS IPv6'),
+        title: Text(context.loc.dns_ipv6),
         subtitle: Text(_dnsIpv6),
         onTap: () {
           showDialog(
             context: context,
             builder: (context) => TextInputPopup(
-                title: 'DNS IPv6',
+                title: context.loc.dns_ipv6,
                 initialValue: _dnsIpv6,
                 onSaved: (value) {
                   prefs.setString('tun.dns.ipv6', value);
@@ -247,8 +249,8 @@ misc:
         },
       ),
       ListTile(
-        title: const Text("IPv4"),
-        subtitle: const Text("enable IPv4"),
+        title: Text(context.loc.ipv4),
+        subtitle: Text(context.loc.enable_ipv4),
         trailing: Switch(
           value: _ipv4,
           onChanged: (value) {
@@ -260,8 +262,8 @@ misc:
         ),
       ),
       ListTile(
-        title: const Text("IPv6"),
-        subtitle: const Text("enable IPv6"),
+        title: Text(context.loc.ipv6),
+        subtitle: Text(context.loc.enable_ipv6),
         trailing: Switch(
           value: _ipv6,
           onChanged: (value) {
@@ -288,7 +290,7 @@ misc:
       child: Scaffold(
         appBar: AppBar(
           // Use the selected tab's label for the AppBar title
-          title: const Text("Tun settings"),
+          title: Text(context.loc.tun_settings),
         ),
         body: ListView.builder(
           itemCount: fields.length,

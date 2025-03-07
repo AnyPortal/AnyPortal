@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:anyportal/utils/core_data_notifier.dart';
 
+import 'package:anyportal/extensions/localization.dart';
+
 import '../../../utils/format_byte.dart';
 
 class TrafficStats extends StatefulWidget {
@@ -42,21 +44,21 @@ class _TrafficStatsState extends State<TrafficStats> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             keyValueRow(
-              "direct ↑",
+              "${context.loc.direct} ↑",
               formatBytes(
                   coreDataNotifier.trafficStatAgg[TrafficStatType.directUp]!),
             ),
             keyValueRow(
-              "direct ↓",
+              "${context.loc.direct} ↓",
               formatBytes(
                   coreDataNotifier.trafficStatAgg[TrafficStatType.directDn]!),
             ),
             keyValueRow(
-              "proxy ↑",
+              "${context.loc.proxy} ↑",
               formatBytes(coreDataNotifier.trafficStatAgg[TrafficStatType.proxyUp]!),
             ),
             keyValueRow(
-              "proxy ↓",
+              "${context.loc.proxy} ↓",
               formatBytes(coreDataNotifier.trafficStatAgg[TrafficStatType.proxyDn]!),
             ),
           ],
