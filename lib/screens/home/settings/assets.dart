@@ -21,8 +21,8 @@ enum AssetsAction {
   addAsset,
 }
 
-extension ToLCString on AssetsAction {
-  String toLCString(context) {
+extension AssetsActionX on AssetsAction {
+  String localized(BuildContext context) {
     switch (this) {
       case AssetsAction.addAsset:
         return context.loc.add_asset;
@@ -150,7 +150,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
                       itemBuilder: (context) => AssetsAction.values
                           .map((action) => PopupMenuItem(
                                 value: action,
-                                child: Text(action.toLCString(context)),
+                                child: Text(action.localized(context)),
                               ))
                           .toList(),
                       onSelected: (value) => handleAssetsAction(value),

@@ -26,8 +26,8 @@ enum ProfilesAction {
   addProfileGroup,
 }
 
-extension ProfilesActionToLCString on ProfilesAction {
-  String toLCString(context) {
+extension ProfilesActionX on ProfilesAction {
+  String localized(BuildContext context) {
     switch (this) {
       case ProfilesAction.addProfile:
         return context.loc.add_profile;
@@ -42,8 +42,8 @@ enum ProfileAction {
   delete,
 }
 
-extension ProfileActionToLCString on ProfileAction {
-  String toLCString(context) {
+extension ProfileActionX on ProfileAction {
+  String localized(BuildContext context) {
     switch (this) {
       case ProfileAction.edit:
         return context.loc.edit;
@@ -58,8 +58,8 @@ enum ProfileGroupAction {
   delete,
 }
 
-extension ProfileGroupActionToLCString on ProfileGroupAction {
-  String toLCString(context) {
+extension ProfileGroupActionX on ProfileGroupAction {
+  String localized(BuildContext context) {
     switch (this) {
       case ProfileGroupAction.edit:
         return context.loc.edit;
@@ -272,7 +272,7 @@ class _ProfileListState extends State<ProfileList> {
                       itemBuilder: (context) => ProfilesAction.values
                           .map((action) => PopupMenuItem(
                                 value: action,
-                                child: Text(action.toLCString(context)),
+                                child: Text(action.localized(context)),
                               ))
                           .toList(),
                       onSelected: (value) => handleProfilesAction(value),

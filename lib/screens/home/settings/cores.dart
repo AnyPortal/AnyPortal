@@ -26,8 +26,8 @@ enum CoresAction {
   addCoreType,
 }
 
-extension ToLCString on CoresAction {
-  String toLCString(BuildContext context) {
+extension CoresActionX on CoresAction {
+  String localized(BuildContext context) {
     switch (this) {
       case CoresAction.addCore:
         return context.loc.add_core;
@@ -306,7 +306,7 @@ class _CoresScreenState extends State<CoresScreen> {
                       itemBuilder: (context) => CoresAction.values
                           .map((action) => PopupMenuItem(
                                 value: action,
-                                child: Text(action.toLCString(context)),
+                                child: Text(action.localized(context)),
                               ))
                           .toList(),
                       onSelected: (value) => handleCoresAction(value),
