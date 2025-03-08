@@ -39,13 +39,23 @@ WizardStyle=modern
 SetupIconFile=..\..\assets\icon\icon.ico
 
 [Languages]
+Name: "arabic"; MessagesFile: "compiler:Languages\Arabic.isl"
 Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "french"; MessagesFile: "compiler:Languages\French.isl"
-Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
-Name: "chinesesimplified"; MessagesFile: "..\..\third_party\Inno-Setup-Chinese-Simplified-Translation\ChineseSimplified.isl"
-Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
-Name: "portuguese"; MessagesFile: "compiler:Languages\Portuguese.isl"
+Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 Name: "japanese"; MessagesFile: "compiler:Languages\Japanese.isl"
+Name: "korean"; MessagesFile: "compiler:Languages\Korean.isl"
+Name: "portuguese"; MessagesFile: "compiler:Languages\Portuguese.isl"
+Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
+Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
+Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
+Name: "chinesesimplified"; MessagesFile: "..\..\third_party\issrc\Files\Languages\Unofficial\ChineseSimplified.isl"
+Name: "chinesetraditional"; MessagesFile: "..\..\third_party\issrc\Files\Languages\Unofficial\ChineseTraditional.isl"
+Name: "hindi"; MessagesFile: "..\..\third_party\issrc\Files\Languages\Unofficial\Hindi.islu"
+Name: "indonesian"; MessagesFile: "..\..\third_party\issrc\Files\Languages\Unofficial\Indonesian.isl"
+Name: "persian"; MessagesFile: "..\..\third_party\issrc\Files\Languages\Unofficial\Persian.isl"
+Name: "thai"; MessagesFile: "..\..\third_party\issrc\Files\Languages\Unofficial\Thai.isl"
+Name: "vietnamese"; MessagesFile: "..\..\third_party\issrc\Files\Languages\Unofficial\Vietnamese.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked

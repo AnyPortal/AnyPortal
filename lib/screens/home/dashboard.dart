@@ -1,16 +1,16 @@
-import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
+
+import 'package:drift/drift.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
 import 'package:anyportal/extensions/localization.dart';
 import 'package:anyportal/screens/home/dashboard/direct_speed.dart';
 import 'package:anyportal/screens/home/dashboard/proxy_speed.dart';
 import 'package:anyportal/screens/home/dashboard/speed_chart.dart';
-
 import '../../utils/db.dart';
 import '../../utils/prefs.dart';
-import 'dashboard/perf_stats.dart';
 import '../../widgets/ray_toggle.dart';
+import 'dashboard/perf_stats.dart';
 import 'dashboard/traffic_stats.dart';
 
 // ignore: must_be_immutable
@@ -106,7 +106,8 @@ class _DashboardState extends State<Dashboard> {
                             ? widget.setSelectedIndex(2)
                             : () {
                                 final snackBar = SnackBar(
-                                  content: Text(context.loc.no_profile_yet_create_one_first),
+                                  content: Text(context
+                                      .loc.no_profile_yet_create_one_first),
                                 );
                                 if (mounted) {
                                   ScaffoldMessenger.of(context)
@@ -131,7 +132,9 @@ class _DashboardState extends State<Dashboard> {
                 margin: const EdgeInsets.all(8.0),
                 child: Stack(children: [
                   Align(
-                      alignment: Alignment.topRight,
+                      alignment: Directionality.of(context) == TextDirection.ltr
+                          ? Alignment.topRight
+                          : Alignment.topLeft,
                       child: Container(
                         width: 8,
                         height: 8,
@@ -157,7 +160,9 @@ class _DashboardState extends State<Dashboard> {
                 margin: const EdgeInsets.all(8.0),
                 child: Stack(children: [
                   Align(
-                      alignment: Alignment.topRight,
+                      alignment: Directionality.of(context) == TextDirection.ltr
+                          ? Alignment.topRight
+                          : Alignment.topLeft,
                       child: Container(
                         width: 8,
                         height: 8,

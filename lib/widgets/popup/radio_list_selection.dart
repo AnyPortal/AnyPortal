@@ -19,10 +19,12 @@ class RadioListSelectionPopup<T> extends StatefulWidget {
   });
 
   @override
-  RadioListSelectionPopupState<T> createState() => RadioListSelectionPopupState<T>();
+  RadioListSelectionPopupState<T> createState() =>
+      RadioListSelectionPopupState<T>();
 }
 
-class RadioListSelectionPopupState<T> extends State<RadioListSelectionPopup<T>> {
+class RadioListSelectionPopupState<T>
+    extends State<RadioListSelectionPopup<T>> {
   T? _selectedValue;
 
   @override
@@ -35,26 +37,29 @@ class RadioListSelectionPopupState<T> extends State<RadioListSelectionPopup<T>> 
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(widget.title),
-      content: Wrap(
-        // shrinkWrap: true,
-        children: widget.items.map((item) {
-          return RadioListTile<T>(
-            title: Text(widget.itemToString(item)),
-            value: item,
-            groupValue: _selectedValue,
-            onChanged: (value) {
-              setState(() {
-                _selectedValue = value;
-              });
-            },
-          );
-        }).toList(),
+      content: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Wrap(
+          children: widget.items.map((item) {
+            return RadioListTile<T>(
+              title: Text(widget.itemToString(item)),
+              value: item,
+              groupValue: _selectedValue,
+              onChanged: (value) {
+                setState(() {
+                  _selectedValue = value;
+                });
+              },
+            );
+          }).toList(),
+        ),
       ),
       actions: [
-        if (widget.onNew != null) TextButton(
-          onPressed: widget.onNew,
-          child: const Text('New'),
-        ),
+        if (widget.onNew != null)
+          TextButton(
+            onPressed: widget.onNew,
+            child: const Text('New'),
+          ),
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
