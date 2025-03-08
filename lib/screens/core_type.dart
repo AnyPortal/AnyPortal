@@ -1,8 +1,8 @@
-import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 
-import 'package:anyportal/extensions/localization.dart';
+import 'package:drift/drift.dart';
 
+import 'package:anyportal/extensions/localization.dart';
 import '../utils/db.dart';
 import '../utils/logger.dart';
 

@@ -1,10 +1,11 @@
+import 'package:flutter/material.dart';
+
 import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:drift/drift.dart';
-import 'package:flutter/material.dart';
-import 'package:anyportal/extensions/localization.dart';
-import 'package:anyportal/models/asset.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
+import 'package:anyportal/extensions/localization.dart';
+import 'package:anyportal/models/asset.dart';
 import '../../../models/edit_status.dart';
 import '../../../screens/core.dart';
 import '../../../utils/db.dart';

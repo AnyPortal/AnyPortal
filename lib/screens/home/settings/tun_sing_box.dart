@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+
 import 'package:path/path.dart' as p;
 
-import 'package:anyportal/models/log_level.dart';
 import 'package:anyportal/extensions/localization.dart';
-
+import 'package:anyportal/models/log_level.dart';
 import '../../../utils/global.dart';
 import '../../../utils/platform_file_mananger.dart';
 import '../../../utils/prefs.dart';

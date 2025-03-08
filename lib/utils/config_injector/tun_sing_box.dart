@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:anyportal/utils/vpn_manager.dart';
 import 'package:path/path.dart' as p;
 
+import 'package:anyportal/utils/vpn_manager.dart';
 import '../../models/log_level.dart';
 import '../global.dart';
 import '../prefs.dart';

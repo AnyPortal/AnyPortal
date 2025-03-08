@@ -1,24 +1,25 @@
 import 'dart:io';
 
-import 'package:anyportal/utils/asset_remote/app.dart';
-import 'package:anyportal/utils/global.dart';
-import 'package:anyportal/utils/logger.dart';
-import 'package:anyportal/utils/platform_elevation.dart';
-import 'package:anyportal/utils/theme_manager.dart';
-import 'package:anyportal/utils/locale_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+
 import 'package:flutter_acrylic/flutter_acrylic.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:anyportal/utils/vpn_manager.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:system_theme/system_theme.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'package:anyportal/generated/l10n/app_localizations.dart';
+import 'package:anyportal/utils/asset_remote/app.dart';
+import 'package:anyportal/utils/global.dart';
+import 'package:anyportal/utils/locale_manager.dart';
+import 'package:anyportal/utils/logger.dart';
+import 'package:anyportal/utils/platform_elevation.dart';
+import 'package:anyportal/utils/theme_manager.dart';
+import 'package:anyportal/utils/vpn_manager.dart';
 import 'screens/home.dart';
 import 'screens/home/settings/tun_hev_socks5_tunnel.dart';
 import 'utils/arg_parser.dart';
-// import 'utils/asset_remote/app.dart';
+import 'utils/copy_assets.dart';
 import 'utils/core_data_notifier.dart';
 import 'utils/db.dart';
 import 'utils/launch_at_startup.dart';
@@ -27,7 +28,6 @@ import 'utils/platform_task_scheduler.dart';
 import 'utils/platform_theme.dart';
 import 'utils/prefs.dart';
 import 'utils/tray_menu.dart';
-import 'utils/copy_assets.dart';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,20 +1,21 @@
 import 'dart:io';
 
-import 'package:anyportal/extensions/localization.dart';
-import 'package:anyportal/utils/global.dart';
-import 'package:anyportal/utils/tray_menu.dart';
-import 'package:anyportal/utils/vpn_manager.dart';
 import 'package:flutter/material.dart';
+
 import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:path/path.dart' as p;
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
+import 'package:anyportal/extensions/localization.dart';
+import 'package:anyportal/utils/global.dart';
+import 'package:anyportal/utils/tray_menu.dart';
+import 'package:anyportal/utils/vpn_manager.dart';
 import '../utils/platform_system_proxy_user.dart';
 import '../utils/prefs.dart';
 import '../utils/theme_manager.dart';
-import 'home/logs.dart';
 import 'home/dashboard.dart';
+import 'home/logs.dart';
 import 'home/profiles.dart';
 import 'home/settings.dart';
 

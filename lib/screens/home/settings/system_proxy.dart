@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:anyportal/extensions/localization.dart';
-
 import '../../../utils/platform_system_proxy_user.dart';
 import '../../../utils/prefs.dart';
 import '../../../utils/vpn_manager.dart';

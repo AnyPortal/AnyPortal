@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:anyportal/utils/db.dart';
+import 'package:cron/cron.dart';
 import 'package:drift/drift.dart';
 import 'package:workmanager/workmanager.dart';
-import 'package:cron/cron.dart';
 
+import 'package:anyportal/utils/db.dart';
 import 'asset_remote/app.dart';
 import 'asset_remote/github.dart';
 import 'db/update_profile.dart';

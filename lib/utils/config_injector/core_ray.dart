@@ -1,9 +1,8 @@
 import 'dart:io';
 
-import 'package:anyportal/utils/get_local_ip.dart';
-
 import 'package:path/path.dart' as p;
 
+import 'package:anyportal/utils/get_local_ip.dart';
 import '../../models/log_level.dart';
 import '../../models/send_through_binding_stratagy.dart';
 import '../global.dart';

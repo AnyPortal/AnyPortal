@@ -2,25 +2,26 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:anyportal/models/core.dart';
-import 'package:anyportal/utils/platform_system_proxy_user.dart';
-import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart' as p;
 import 'package:flutter/services.dart';
+
+import 'package:drift/drift.dart';
+import 'package:path/path.dart' as p;
 import 'package:tuple/tuple.dart';
 
+import 'package:anyportal/models/core.dart';
+import 'package:anyportal/utils/platform_system_proxy_user.dart';
 import 'asset_remote/github.dart';
 import 'config_injector/core_ray.dart';
 import 'config_injector/tun_sing_box.dart';
 import 'core_data_notifier.dart';
 import 'db.dart';
+import 'db/update_profile_with_group_remote.dart';
 import 'global.dart';
 import 'logger.dart';
 import 'method_channel.dart';
 import 'platform_process.dart';
 import 'prefs.dart';
-import 'db/update_profile_with_group_remote.dart';
 
 class ExceptionInvalidCorePath implements Exception {
   String message;

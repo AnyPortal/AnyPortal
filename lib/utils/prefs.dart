@@ -1,10 +1,10 @@
-import 'dart:io';
 import 'dart:async';
+import 'dart:io';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:anyportal/models/log_level.dart';
 import 'package:anyportal/models/send_through_binding_stratagy.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'logger.dart';
 import 'shared_preferences_with_defaults.dart';
 

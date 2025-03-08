@@ -1,10 +1,11 @@
-import 'package:animated_tree_view/animated_tree_view.dart';
-import 'package:anyportal/utils/vpn_manager.dart';
-import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
-import 'package:anyportal/extensions/localization.dart';
+
+import 'package:animated_tree_view/animated_tree_view.dart';
+import 'package:drift/drift.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
+import 'package:anyportal/extensions/localization.dart';
+import 'package:anyportal/utils/vpn_manager.dart';
 import '../../models/profile_group.dart';
 import '../../screens/profile_group.dart';
 import '../../utils/db.dart';

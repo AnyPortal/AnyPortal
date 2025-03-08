@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:anyportal/utils/logger.dart';
 import 'package:tray_manager/tray_manager.dart';
 
+import 'package:anyportal/utils/logger.dart';
 import 'global.dart';
 import 'platform_system_proxy_user.dart';
 import 'prefs.dart';

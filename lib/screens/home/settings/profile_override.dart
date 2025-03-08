@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:anyportal/extensions/localization.dart';
-
 import '../../../models/log_level.dart';
 import '../../../models/send_through_binding_stratagy.dart';
 import '../../../utils/prefs.dart';

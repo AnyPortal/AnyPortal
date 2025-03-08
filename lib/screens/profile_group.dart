@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:anyportal/extensions/localization.dart';
-
 import '../models/profile_group.dart';
 import '../utils/db.dart';
 import '../utils/db/update_profile_group.dart';

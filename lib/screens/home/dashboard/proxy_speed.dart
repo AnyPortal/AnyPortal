@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:anyportal/utils/core_data_notifier.dart';
 
+import 'package:anyportal/utils/core_data_notifier.dart';
 import '../../../utils/format_byte.dart';
 
 class ProxySpeeds extends StatefulWidget {

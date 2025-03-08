@@ -9,11 +9,11 @@ import 'package:path/path.dart' as p;
 
 import '../../models/asset.dart';
 import '../db.dart';
-import '../undmg.dart';
-import '../unzip.dart';
 import '../global.dart';
 import '../logger.dart';
 import '../prefs.dart';
+import '../undmg.dart';
+import '../unzip.dart';
 import '../vpn_manager.dart';
 import 'protocol.dart';
 

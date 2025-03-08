@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:anyportal/screens/home/settings/tun_hev_socks5_tunnel.dart';
-import 'package:anyportal/extensions/localization.dart';
 
+import 'package:anyportal/extensions/localization.dart';
+import 'package:anyportal/screens/home/settings/tun_hev_socks5_tunnel.dart';
 import 'settings/about.dart';
 import 'settings/assets.dart';
 import 'settings/connectivity_basic.dart';

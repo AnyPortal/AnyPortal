@@ -1,8 +1,10 @@
 // dart format width=80
 // GENERATED CODE, DO NOT EDIT BY HAND.
 // ignore_for_file: type=lint
+
 import 'package:drift/drift.dart';
 import 'package:drift/internal/migrations.dart';
+
 import 'schema_v1.dart' as v1;
 import 'schema_v2.dart' as v2;
 

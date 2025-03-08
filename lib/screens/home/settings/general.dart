@@ -1,14 +1,14 @@
 import 'dart:io';
 
-import 'package:anyportal/utils/locale_manager.dart';
-import 'package:anyportal/widgets/popup/radio_list_selection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:path/path.dart' as p;
+
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
+import 'package:path/path.dart' as p;
 
 import 'package:anyportal/extensions/localization.dart';
-
+import 'package:anyportal/generated/l10n/app_localizations.dart';
+import 'package:anyportal/utils/locale_manager.dart';
+import 'package:anyportal/widgets/popup/radio_list_selection.dart';
 import '../../../utils/global.dart';
 import '../../../utils/platform_launch_at_login.dart';
 import '../../../utils/prefs.dart';
@@ -103,11 +103,13 @@ class _GeneralScreenState extends State<GeneralScreen> {
         subtitle: Text(getLanguageName(_locale.toString())),
         enabled: !_localeFollowSystem,
         onTap: () {
+          final supportedLocales = AppLocalizations.supportedLocales.toList();
+          supportedLocales.remove(Locale('zh'));
           showDialog(
               context: context,
               builder: (context) => RadioListSelectionPopup<Locale>(
                     title: context.loc.language,
-                    items: AppLocalizations.supportedLocales,
+                    items: supportedLocales,
                     initialValue: _locale,
                     onSaved: (value) {
                       prefs.setString('app.locale', value.toString());

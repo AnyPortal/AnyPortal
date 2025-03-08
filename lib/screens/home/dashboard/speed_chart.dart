@@ -1,5 +1,7 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+
+import 'package:fl_chart/fl_chart.dart';
+
 import 'package:anyportal/extensions/localization.dart';
 import 'package:anyportal/utils/core_data_notifier.dart';
 

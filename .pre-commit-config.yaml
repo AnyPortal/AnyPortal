@@ -1,0 +1,12 @@
+repos:
+# - repo: https://github.com/fluttercommunity/import_sorter
+#   rev: "master"
+#   hooks:
+#     - id: flutter-import-sorter
+  - repo: local
+    hooks:
+      - id: flutter-import-sorter
+        name: flutter pub run import_sorter:main
+        entry: flutter pub run import_sorter:main
+        language: system
+        stages: [commit]

@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:drift/drift.dart' as drift;
-import 'package:anyportal/models/profile.dart';
 import 'package:http/http.dart' as http;
 
+import 'package:anyportal/models/profile.dart';
 import '../../../../models/profile_group.dart';
 import '../../../../models/profile_group_remote/anyportal_rest.dart';
 import '../../../../utils/db.dart';

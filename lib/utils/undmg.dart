@@ -1,7 +1,8 @@
 import 'dart:io';
 
-import 'logger.dart';
 import 'package:path/path.dart' as p;
+
+import 'logger.dart';
 
 Future<bool> undmgThere(String path, String subpath) async {
   return await extractFolderFromDmg(path, subpath, p.withoutExtension(path));

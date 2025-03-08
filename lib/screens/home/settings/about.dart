@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:path/path.dart' as p;
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:anyportal/extensions/localization.dart';
 import 'package:anyportal/utils/global.dart';
-
 import '../../../utils/platform_file_mananger.dart';
 import '../../../widgets/blockquote.dart';
 

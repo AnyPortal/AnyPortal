@@ -1,13 +1,13 @@
 import 'dart:io';
 
-import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
+
+import 'package:drift/drift.dart';
 import 'package:file_picker/file_picker.dart';
 
 import 'package:anyportal/extensions/localization.dart';
-
-import '../../utils/db.dart';
 import '../../models/asset.dart';
+import '../../utils/db.dart';
 import '../models/edit_status.dart';
 import '../utils/asset_remote/github.dart';
 import '../utils/logger.dart';

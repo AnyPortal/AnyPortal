@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:anyportal/utils/db/update_profile.dart';
 import 'package:anyportal/utils/db/update_profile_group.dart';
-
 import '../../models/profile.dart';
 import '../../models/profile_group.dart';
 import '../db.dart';

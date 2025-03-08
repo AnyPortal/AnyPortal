@@ -1,12 +1,13 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
-import 'package:anyportal/utils/method_channel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+
+import 'package:anyportal/utils/method_channel.dart';
 
 class LogViewer extends StatefulWidget {
   final String filePath;
