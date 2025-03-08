@@ -36,6 +36,7 @@ AllowNoIcons=yes
 PrivilegesRequiredOverridesAllowed=commandline
 SolidCompression=yes
 WizardStyle=modern
+SetupIconFile=..\..\assets\icon\icon.ico
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
