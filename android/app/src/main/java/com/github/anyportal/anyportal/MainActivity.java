@@ -44,12 +44,12 @@ public class MainActivity extends FlutterActivity {
     }
 
     @Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		/* Request VPN permission */
-		Intent intentVPNServicePrepare = VpnService.prepare(MainActivity.this);
-		if (intentVPNServicePrepare != null) {
+        /* Request VPN permission */
+        Intent intentVPNServicePrepare = VpnService.prepare(MainActivity.this);
+        if (intentVPNServicePrepare != null) {
             Log.d(TAG, "intentVPNServicePrepare ok");
             startActivityForResult(intentVPNServicePrepare, 0);
         } else {
@@ -58,10 +58,10 @@ public class MainActivity extends FlutterActivity {
         }
         // Copy geoip.dat and geosite.dat to the documents directory if needed
         AssetUtils.copyAssetsIfNeeded(this);
-        
+
         // listen for broadcast
         registerBroadcastReceiver();
-	}
+    }
 
     @Override
     protected void onResume() {
@@ -111,8 +111,6 @@ public class MainActivity extends FlutterActivity {
         }
     };
 
-
-
     ///
     private FileObserver fileObserver;
 
@@ -122,7 +120,7 @@ public class MainActivity extends FlutterActivity {
                 tProxyService.tryStartAll();
                 result.success(true);
                 break;
-        
+
             case "vpn.stopAll":
                 tProxyService.tryStopAll();
                 result.success(true);
@@ -132,7 +130,7 @@ public class MainActivity extends FlutterActivity {
                 tProxyService.tryStartCore();
                 result.success(true);
                 break;
-        
+
             case "vpn.stopCore":
                 tProxyService.tryStopCore();
                 result.success(true);
@@ -142,17 +140,17 @@ public class MainActivity extends FlutterActivity {
                 tProxyService.tryStartNotificationForeground();
                 result.success(true);
                 break;
-        
+
             case "vpn.stopNotificationForeground":
                 tProxyService.tryStopNotificationForeground();
                 result.success(true);
                 break;
-        
+
             case "vpn.startTun":
                 tProxyService.tryStartTun();
                 result.success(true);
                 break;
-        
+
             case "vpn.stopTun":
                 tProxyService.tryStopTun();
                 result.success(true);
@@ -161,7 +159,7 @@ public class MainActivity extends FlutterActivity {
             case "vpn.startSystemProxy":
                 result.success(tProxyService.tryStartSystemProxy());
                 break;
-        
+
             case "vpn.stopSystemProxy":
                 result.success(tProxyService.tryStopSystemProxy());
                 break;
@@ -169,15 +167,15 @@ public class MainActivity extends FlutterActivity {
             case "vpn.getIsSystemProxyEnabled":
                 result.success(tProxyService.tryGetIsSystemProxyEnabled());
                 break;
-        
+
             case "vpn.isCoreActive":
                 result.success(tProxyService.isCoreActive);
                 break;
-        
+
             case "vpn.isTunActive":
                 result.success(tProxyService.isTunActive);
                 break;
-        
+
             case "log.core.startWatching":
                 String filePath = call.argument("filePath");
                 fileObserver = new FileObserver(filePath) {
@@ -195,13 +193,13 @@ public class MainActivity extends FlutterActivity {
                 };
                 fileObserver.startWatching();
                 break;
-        
+
             default:
                 result.notImplemented();
                 break;
         }
     }
-    
+
     private void registerBroadcastReceiver() {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -214,6 +212,7 @@ public class MainActivity extends FlutterActivity {
             }
         };
 
-        registerReceiver(broadcastReceiver, new IntentFilter(TProxyTileService.ACTION_TILE_TOGGLED));
+        registerReceiver(broadcastReceiver, new IntentFilter(TProxyTileService.ACTION_TILE_TOGGLED),
+                RECEIVER_NOT_EXPORTED);
     }
 }
