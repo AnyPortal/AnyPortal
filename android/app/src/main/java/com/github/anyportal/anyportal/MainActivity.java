@@ -21,6 +21,8 @@ import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
+import java.io.File;
+
 public class MainActivity extends FlutterActivity {
     private static final String CHANNEL = "com.github.anyportal.anyportal";
     private static MethodChannel methodChannel;
@@ -178,7 +180,7 @@ public class MainActivity extends FlutterActivity {
 
             case "log.core.startWatching":
                 String filePath = call.argument("filePath");
-                fileObserver = new FileObserver(filePath) {
+                fileObserver = new FileObserver(new File(filePath)) {
                     @Override
                     public void onEvent(int event, String path) {
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
