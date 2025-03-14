@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../screens/home/settings/cores.dart';
+import '../utils/logger.dart';
 import '../utils/vpn_manager.dart';
 
 // ignore: must_be_immutable
@@ -53,6 +54,7 @@ class RayToggleState extends State<RayToggle> {
       widget.setHighlightSelectProfile();
     } on Exception catch (e) {
       err = e;
+      logger.w(e);
     } finally {
       if (err != null) {
         vPNMan.setIsToggling(false);

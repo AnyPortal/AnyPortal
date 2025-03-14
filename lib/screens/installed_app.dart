@@ -6,16 +6,15 @@ import 'package:anyportal/widgets/installed_app_list.dart';
 class InstalledAppScreen extends StatefulWidget {
   late final Set<String> selectedApps;
   final void Function(Set<String>)? handleSelectedApps;
-  late final String title;
+  late final String? title;
 
   InstalledAppScreen({
     super.key,
     selectedApps,
     this.handleSelectedApps,
-    title,
+    this.title,
   }){
     this.selectedApps = selectedApps ?? {};
-    this.title = title ?? "Installed apps";
   }
 
   @override
@@ -25,7 +24,7 @@ class InstalledAppScreen extends StatefulWidget {
 class _InstalledAppScreenState extends State<InstalledAppScreen> {
   @override
   Widget build(BuildContext context) {
-    widget.title = context.loc.installed_apps;
+    final title = widget.title ?? context.loc.installed_apps;
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (bool didPop, Object? result) {
@@ -42,7 +41,7 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
       child: Scaffold(
         appBar: AppBar(
           // Use the selected tab's label for the AppBar title
-          title: Text(widget.title),
+          title: Text(title),
         ),
         body: InstalledAppList(selectedApps: widget.selectedApps),
       ),

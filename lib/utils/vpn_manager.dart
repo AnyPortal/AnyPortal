@@ -116,8 +116,8 @@ abstract class VPNManager with ChangeNotifier {
       return;
     }
     isCoreActive = value;
-    notifyListeners();
     setIsToggling(false);
+    notifyListeners();
     notifyCoreDataNotifier();
   }
 
