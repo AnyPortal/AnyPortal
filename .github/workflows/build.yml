@@ -182,7 +182,7 @@ jobs:
     - name: Build Android APK apilatest
       run: flutter build apk --release --split-per-abi --flavor apilatest
 
-    - name: Build Android APK 
+    - name: Build Android APK api28
       run: flutter build apk --release --split-per-abi --flavor api28
 
     - name: Upload Android APK

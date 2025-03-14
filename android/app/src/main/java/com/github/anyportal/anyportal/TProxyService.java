@@ -317,7 +317,7 @@ public class TProxyService extends VpnService {
     }
 
     private void stopNotificationForeground() {
-        stopForeground(true);
+        stopForeground(STOP_FOREGROUND_REMOVE);
     }
 
     private void startTunEmbedded() {
