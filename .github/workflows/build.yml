@@ -138,58 +138,8 @@ jobs:
         name: anyportal-macos
         path: build/macos/Build/Products/Release/anyportal-macos.dmg
 
-  # Build for Android api28
-  android-api28:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout source code
-      uses: actions/checkout@v4
-      with:
-        submodules: 'recursive'
-
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        channel: stable
-        flutter-version: 3.29.0
-
-    - name: Install dependencies
-      run: flutter pub get
-
-    - name: Set up Go
-      uses: actions/setup-go@v5
-
-    - name: Install Protoc
-      uses: arduino/setup-protoc@v3
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: bash scripts/prepare.sh android
-      run: bash scripts/prepare.sh android
-
-    - name: Set up Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: zulu
-        java-version: 17
-
-    - name: Decode android/app/keystore.jks
-      run: echo "${{ secrets.KEYSTORE_JKS_PROD }}" | base64 --decode > android/app/keystore.jks
-
-    - name: Decode android/key.properties
-      run: echo "${{ secrets.KEY_PROPERTIES_PROD }}" | base64 --decode > android/key.properties
-
-    - name: Build Android APK 
-      run: flutter build apk --release --split-per-abi --flavor api28
-
-    - name: Upload Android APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: anyportal-android-api28
-        path: build/app/outputs/flutter-apk
-
-  # Build for Android apilatest
-  android-apilatest:
+  # Build for Android
+  android:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout source code
@@ -232,10 +182,13 @@ jobs:
     - name: Build Android APK apilatest
       run: flutter build apk --release --split-per-abi --flavor apilatest
 
+    - name: Build Android APK 
+      run: flutter build apk --release --split-per-abi --flavor api28
+
     - name: Upload Android APK
       uses: actions/upload-artifact@v4
       with:
-        name: anyportal-android-apilatest
+        name: anyportal-android
         path: build/app/outputs/flutter-apk
 
   # # Build for iOS (requires macOS)
@@ -284,7 +237,7 @@ jobs:
   # Release Job
   release:
     runs-on: ubuntu-latest
-    needs: [linux, windows, macos, android-api28, android-apilatest]
+    needs: [linux, windows, macos, android]
     steps:
     - name: Checkout source code
       uses: actions/checkout@v4
@@ -319,17 +272,11 @@ jobs:
         name: anyportal-macos
         path: anyportal-macos
 
-    - name: Download Android APK api28 artifacts
+    - name: Download Android APK artifacts
       uses: actions/download-artifact@v4
       with:
-        name: anyportal-android-api28
-        path: anyportal-android-api28
-
-    - name: Download Android APK apilatest artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: anyportal-android-apilatest
-        path: anyportal-android-apilatest
+        name: anyportal-android
+        path: anyportal-android
     
     - run: ls -R
 
@@ -390,62 +337,62 @@ jobs:
         asset_name: anyportal-macos.dmg
         asset_content_type: application/x-apple-diskimage
 
-    - name: Upload Android APK api28
+    - name: Upload Android APK api28 armeabi-v7a
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: anyportal-android-api28/app-armeabi-v7a-api28-release.apk
+        asset_path: anyportal-android/app-armeabi-v7a-api28-release.apk
         asset_name: anyportal-android-api28-armeabi-v7a.apk
         asset_content_type: application/vnd.android.package-archive
 
-    - name: Upload Android APK api28
+    - name: Upload Android APK api28 arm64-v8a
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: anyportal-android-api28/app-arm64-v8a-api28-release.apk
+        asset_path: anyportal-android/app-arm64-v8a-api28-release.apk
         asset_name: anyportal-android-api28-arm64-v8a.apk
         asset_content_type: application/vnd.android.package-archive
 
-    - name: Upload Android APK api28
+    - name: Upload Android APK api28 x86_64
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: anyportal-android-api28/app-x86_64-api28-release.apk
+        asset_path: anyportal-android/app-x86_64-api28-release.apk
         asset_name: anyportal-android-api28-x86_64.apk
         asset_content_type: application/vnd.android.package-archive
 
-    - name: Upload Android APK apilatest
+    - name: Upload Android APK apilatest armeabi-v7a
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: anyportal-android-apilatest/app-armeabi-v7a-apilatest-release.apk
+        asset_path: anyportal-android/app-armeabi-v7a-apilatest-release.apk
         asset_name: anyportal-android-apilatest-armeabi-v7a.apk
         asset_content_type: application/vnd.android.package-archive
 
-    - name: Upload Android APK apilatest
+    - name: Upload Android APK apilatest arm64-v8a
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: anyportal-android-apilatest/app-arm64-v8a-apilatest-release.apk
+        asset_path: anyportal-android/app-arm64-v8a-apilatest-release.apk
         asset_name: anyportal-android-apilatest-arm64-v8a.apk
         asset_content_type: application/vnd.android.package-archive
 
-    - name: Upload Android APK apilatest
+    - name: Upload Android APK apilatest x86_64
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: anyportal-android-apilatest/app-x86_64-apilatest-release.apk
+        asset_path: anyportal-android/app-x86_64-apilatest-release.apk
         asset_name: anyportal-android-apilatest-x86_64.apk
         asset_content_type: application/vnd.android.package-archive
