@@ -52,9 +52,9 @@ class LogViewerState extends State<LogViewer> {
         setState(() {
           _logLines = lines;
         });
-        SchedulerBinding.instance.addPostFrameCallback((_) {
-          _scrollToBottom();
-        });
+        // SchedulerBinding.instance.addPostFrameCallback((_) {
+        //   _scrollToBottom();
+        // });
       }
     });
   }
@@ -120,7 +120,7 @@ class LogViewerState extends State<LogViewer> {
         });
 
         if (_scrollController.position.atEdge &&
-            _scrollController.position.pixels != 0) {
+            _scrollController.position.pixels == 0) {
           SchedulerBinding.instance.addPostFrameCallback((_) {
             _scrollToBottom();
           });
@@ -158,7 +158,7 @@ class LogViewerState extends State<LogViewer> {
       return;
     }
     _scrollController.jumpTo(
-      _scrollController.position.maxScrollExtent,
+      _scrollController.position.minScrollExtent,
     );
   }
 
@@ -166,17 +166,19 @@ class LogViewerState extends State<LogViewer> {
   Widget build(BuildContext context) {
     return Container(
         padding: const EdgeInsets.all(8.0),
-        child: SelectionArea(
+        child: Align(
+          child: SelectionArea(
           child: ListView.builder(
+            reverse: true,
             controller: _scrollController,
             itemCount: _logLines.length,
             itemBuilder: (context, index) {
-              return colorizeLogLine(_logLines[index]);
+              return colorizeLogLine(_logLines[_logLines.length-1-index]);
             },
             physics: const ClampingScrollPhysics(),
             cacheExtent: 99999,
           ),
-        ));
+        )));
   }
 }
 
