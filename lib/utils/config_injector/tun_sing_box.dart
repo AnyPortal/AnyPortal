@@ -57,14 +57,14 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
   if (injectExcludeCore) {
     final route = cfg["route"] as Map<String, dynamic>;
     if (corePath != null) {
-      route["rules"].insert(0, {
+      route["rules"].add({
         "process_path": [corePath],
         "outbound": "ot_direct"
       });
     }
 
     if (Platform.isAndroid) {
-      route["rules"].insert(0, {
+      route["rules"].add({
         "package_name": "com.github.anyportal.anyportal",
         "outbound": "ot_direct"
       });

@@ -8,12 +8,8 @@
     "servers": [
       {
         "tag": "dn_cloudflare",
-        "address": "https://1.1.1.1/dns-query",
-        "detour": "ot_direct"
-      },
-      {
-        "tag": "dn_fakeip",
-        "address": "fakeip"
+        "address": "1.1.1.1",
+        "detour": "ot_socks"
       }
     ],
     "rules": [
@@ -25,12 +21,7 @@
         "server": "dn_cloudflare"
       }
     ],
-    "independent_cache": true,
-    "fakeip": {
-      "enabled": true,
-      "inet4_range": "198.18.0.1/15",
-      "inet6_range": "fc00::/18"
-    }
+    "independent_cache": true
   },
   "inbounds": [
     {
