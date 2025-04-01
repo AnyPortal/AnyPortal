@@ -84,8 +84,8 @@ dependencies:
   crypto: ^3.0.6
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  # flutter_test:
+  #   sdk: flutter
   import_sorter: ^4.6.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
