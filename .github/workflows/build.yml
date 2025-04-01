@@ -75,10 +75,15 @@ jobs:
     - name: Build Windows
       run: flutter build windows
 
-    - name: Compile .ISS to .EXE Installer
-      uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
-      with:
-        path: scripts/windows/setup.iss
+    - name: Download and Install Inno Setup
+      run: |
+        Invoke-WebRequest -Uri "https://jrsoftware.org/download.php/is.exe" -OutFile "is.exe"
+        Start-Process -FilePath "is.exe" -ArgumentList "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-" -Wait
+        echo "C:\\Program Files (x86)\\Inno Setup 6" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+    - name: Compile Installer
+      run: |
+        ISCC.exe scripts/windows/setup.iss
 
     - name: Upload Windows artifacts
       uses: actions/upload-artifact@v4
