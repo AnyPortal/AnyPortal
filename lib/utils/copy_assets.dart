@@ -1,40 +1,41 @@
 import 'dart:io';
 
-import 'package:flutter/services.dart' show rootBundle;
-
+import 'package:crypto/crypto.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 
 import 'global.dart';
 import 'logger.dart';
 
-import 'dart:typed_data'; // For handling binary data
-
-
-Future<void> copyAssetToDesiredLocation(String assetPath, String desiredPath) async {
-  try {
-    // Load the asset as raw binary data
-    ByteData data = await rootBundle.load(assetPath);
-
-    // Create a Uint8List from the ByteData for writing
-    Uint8List bytes = data.buffer.asUint8List();
-
-    // Write the binary data to the desired location
-    File targetFile = File(desiredPath);
-    await targetFile.writeAsBytes(bytes);
-
-    logger.d("Asset copied successfully to: $desiredPath");
-  } catch (e) {
-    logger.d("Error copying asset: $e");
-  }
-}
-
-Future<void> copyAssetsToDefaultLocation({bool overwrite = false}) async {
+Future<void> copyAssetsToDefaultLocation() async {
   // For default location, you can use path_provider to get a suitable directory
   String src = "assets/conf/tun.sing_box.example.json";
-  String dst = p.join(global.applicationDocumentsDirectory.path, "AnyPortal", "conf", "tun.sing_box.json");
+  String dst = p.join(global.applicationDocumentsDirectory.path, "AnyPortal", "conf", "tun.sing_box.example.json");
 
-  if (overwrite || !await File(dst).exists()) {
-    await File(dst).create(recursive: true);
-    await copyAssetToDesiredLocation(src, dst);
+  await copyAssetIfDifferent(src, dst);
+}
+
+Future<void> copyAssetIfDifferent(String src, String dst) async {
+  // Get the bytes of the asset file
+  final byteData = await rootBundle.load(src);
+  final assetBytes = byteData.buffer.asUint8List();
+
+  final dstFile = File(dst);
+
+  if (await dstFile.exists()) {
+    // Read existing file
+    final existingBytes = await dstFile.readAsBytes();
+    final assetHash = sha256.convert(assetBytes);
+    final existingHash = sha256.convert(existingBytes);
+
+    // Compare hashes, overwrite if different
+    if (existingHash == assetHash) {
+      logger.d('File already exists and is the same, skipping copy.');
+      return;
+    }
   }
+
+  // Write the new file
+  await dstFile.writeAsBytes(assetBytes, flush: true);
+  logger.i('File copied: ${dstFile.path}');
 }

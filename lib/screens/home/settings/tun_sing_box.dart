@@ -7,6 +7,7 @@ import 'package:path/path.dart' as p;
 import 'package:anyportal/extensions/localization.dart';
 import 'package:anyportal/models/log_level.dart';
 import '../../../utils/global.dart';
+import '../../../utils/logger.dart';
 import '../../../utils/platform_file_mananger.dart';
 import '../../../utils/prefs.dart';
 import '../../../utils/vpn_manager.dart';
@@ -35,6 +36,17 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
   }
 
   void writeTProxyConf() async {}
+  File tunSingBoxUserConfigFile = vPNMan.getTunSingBoxUserConfigFile();
+
+  handleError(e) {
+    logger.e("tun: $e");
+    final snackBar = SnackBar(
+      content: Text("$e"),
+    );
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,10 +86,12 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
             prefs.setWithNotification('tun', shouldEnable);
             vPNMan.getIsCoreActive().then((isCoreActive) {
               if (isCoreActive) {
-                if (shouldEnable) {
-                  vPNMan.startTun();
-                } else {
-                  vPNMan.stopTun();
+                if (isCoreActive) {
+                  if (shouldEnable) {
+                    vPNMan.startTun().catchError(handleError);
+                  } else {
+                    vPNMan.stopTun().catchError(handleError);
+                  }
                 }
               }
             });
@@ -180,15 +194,11 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
       ),
       ListTile(
         title: Text(context.loc.edit_config),
-        subtitle: Text(p.join(global.applicationDocumentsDirectory.path,
-            "AnyPortal", "conf", "tun.sing_box.json")),
+        subtitle: Text(tunSingBoxUserConfigFile.path),
         trailing: const Icon(Icons.folder_open),
         onTap: () {
-          PlatformFileMananger.highlightFileInFolder(p.join(
-              global.applicationDocumentsDirectory.path,
-              "AnyPortal",
-              "conf",
-              "tun.sing_box.json"));
+          PlatformFileMananger.highlightFileInFolder(
+              tunSingBoxUserConfigFile.path);
         },
       ),
     ];

@@ -101,8 +101,10 @@ abstract class VPNManager with ChangeNotifier {
       delayedTogglingChecker =
           Future.delayed(const Duration(seconds: timeoutSec), () {
         if (isToggling) {
-          logger.w("toggled for $timeoutSec sec, force stopped");
-          updateIsCoreActive();
+          updateIsCoreActive(force: true);
+          final errMsg = "toggled for $timeoutSec sec, force stopped";
+          logger.w(errMsg);
+          throw Exception(errMsg);
         }
       });
     }
@@ -111,9 +113,12 @@ abstract class VPNManager with ChangeNotifier {
   Future<bool> getIsCoreActive();
   Future<bool> getIsTunActive();
 
-  Future<void> setIsCoreActive(value) async {
-    if (value == isCoreActive) {
-      return;
+  Future<void> setIsCoreActive(value, {force = false}) async {
+    if (!force && value == isCoreActive) {
+      if (value == isCoreActive) {
+        logger.d("setIsCoreActive: no need: isCoreActive: $isCoreActive");
+        return;
+      }
     }
     isCoreActive = value;
     setIsToggling(false);
@@ -128,8 +133,8 @@ abstract class VPNManager with ChangeNotifier {
     isTunActive = value;
   }
 
-  Future<void> updateIsCoreActive() async {
-    await setIsCoreActive(await getIsCoreActive());
+  Future<void> updateIsCoreActive({force = false}) async {
+    await setIsCoreActive(await getIsCoreActive(), force: force);
   }
 
   Future<void> updateIsTunActive() async {
@@ -199,6 +204,7 @@ abstract class VPNManager with ChangeNotifier {
   }
 
   Future<void> initCore() async {
+    logger.d("starting: initCore");
     // get selectedProfile
     _selectedProfileId = prefs.getInt('app.selectedProfileId');
     if (_selectedProfileId == null) {
@@ -237,7 +243,7 @@ abstract class VPNManager with ChangeNotifier {
       leftOuterJoin(db.coreType, db.core.coreTypeId.equalsExp(db.coreType.id)),
       leftOuterJoin(db.asset, db.coreExec.assetId.equalsExp(db.asset.id)),
     ])
-          ..where(db.core.coreTypeId.equals(coreTypeId)))
+          ..where(db.coreTypeSelected.coreTypeId.equals(coreTypeId)))
         .getSingleOrNull();
     if (core == null) {
       throw ExceptionInvalidCorePath(
@@ -293,6 +299,29 @@ abstract class VPNManager with ChangeNotifier {
       'log',
       'core.log',
     )).writeAsString("");
+    logger.d("finished: initCore");
+  }
+
+  File getTunSingBoxUserConfigFile() {
+    final tunSingBoxUserConfigFileCustomized = File(p.join(
+      global.applicationDocumentsDirectory.path,
+      'AnyPortal',
+      'conf',
+      'tun.sing_box.json',
+    ));
+    final tunSingBoxUserConfigFileExample = File(p.join(
+      global.applicationDocumentsDirectory.path,
+      'AnyPortal',
+      'conf',
+      'tun.sing_box.example.json',
+    ));
+    late File tunSingBoxUserConfigFile;
+    if (tunSingBoxUserConfigFileCustomized.existsSync()) {
+      tunSingBoxUserConfigFile = tunSingBoxUserConfigFileCustomized;
+    } else {
+      tunSingBoxUserConfigFile = tunSingBoxUserConfigFileExample;
+    }
+    return tunSingBoxUserConfigFile;
   }
 
   Future<void> initTunExec() async {
@@ -333,30 +362,26 @@ abstract class VPNManager with ChangeNotifier {
         }
 
         /// gen config.json
-        final tunSingBoxUserConfig = File(p.join(
-          global.applicationDocumentsDirectory.path,
-          'AnyPortal',
-          'conf',
-          'tun.sing_box.json',
-        ));
-        final tunSingBoxConfig = File(p.join(
+        final tunSingBoxUserConfigFile = getTunSingBoxUserConfigFile();
+        final tunSingBoxConfigFile = File(p.join(
           global.applicationSupportDirectory.path,
           'conf',
           'tun.sing_box.gen.json',
         ));
-        if (!await tunSingBoxConfig.exists()) {
-          await tunSingBoxConfig.create(recursive: true);
+        if (!await tunSingBoxConfigFile.exists()) {
+          await tunSingBoxConfigFile.create(recursive: true);
         }
         Map<String, dynamic> tunSingBoxRawCfgMap =
-            jsonDecode(await tunSingBoxUserConfig.readAsString())
+            jsonDecode(await tunSingBoxUserConfigFile.readAsString())
                 as Map<String, dynamic>;
         tunSingBoxRawCfgMap =
             await getInjectedConfigTunSingBox(tunSingBoxRawCfgMap);
-        await tunSingBoxConfig.writeAsString(jsonEncode(tunSingBoxRawCfgMap));
+        await tunSingBoxConfigFile
+            .writeAsString(jsonEncode(tunSingBoxRawCfgMap));
 
         // get core args
         final replacements = {
-          "{config.path}": tunSingBoxConfig.path,
+          "{config.path}": tunSingBoxConfigFile.path,
         };
 
         /// get core env
@@ -393,6 +418,7 @@ abstract class VPNManager with ChangeNotifier {
   }
 
   installPendingAssetRemote() async {
+    logger.d("starting: installPendingAssetRemote");
     final assets = await (db.select(db.asset).join([
       leftOuterJoin(
           db.assetRemote, db.asset.id.equalsExp(db.assetRemote.assetId)),
@@ -414,6 +440,7 @@ abstract class VPNManager with ChangeNotifier {
         logger.w("install failed: $assetUrl");
       }
     }
+    logger.d("finished: installPendingAssetRemote");
   }
 }
 
@@ -455,9 +482,13 @@ class VPNManagerExec extends VPNManager {
 
   @override
   startCore() async {
-    logger.d("startCore: start");
+    logger.d("starting: startCore");
     await installPendingAssetRemote();
     await initCore();
+    logger.d("corePath: $corePath");
+    logger.d("coreArgList: $_coreArgList");
+    logger.d("coreWorkingDir: $_coreWorkingDir");
+    logger.d("coreEnvs: $_coreEnvs");
     final processCore = await Process.start(
       corePath!,
       _coreArgList,
@@ -466,16 +497,19 @@ class VPNManagerExec extends VPNManager {
     );
     await setIsCoreActive(true);
     pidCore = processCore.pid;
+    logger.d("finished: startCore");
     return true;
   }
 
   @override
   stopCore() async {
+    logger.d("starting: stopCore");
     if (pidCore != null) {
       final res = await PlatformProcess.killProcess(pidCore!);
       if (res) {
         pidCore = null;
         await setIsCoreActive(false);
+        logger.d("finished: stopCore");
         return true;
       } else {
         logger.w("stopCore: failed");

@@ -11,6 +11,7 @@ import 'package:anyportal/extensions/localization.dart';
 import 'package:anyportal/utils/global.dart';
 import 'package:anyportal/utils/tray_menu.dart';
 import 'package:anyportal/utils/vpn_manager.dart';
+import '../utils/logger.dart';
 import '../utils/platform_system_proxy_user.dart';
 import '../utils/prefs.dart';
 import '../utils/theme_manager.dart';
@@ -123,6 +124,16 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
     bool isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
 
+    handleError(e) {
+      logger.e("tun: $e");
+      final snackBar = SnackBar(
+        content: Text("$e"),
+      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
+    }
+
     // Layout for landscape mode with custom drawer
     Widget landscapeLayout = Scaffold(
         body: Row(
@@ -207,9 +218,13 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
                                           .then((isCoreActive) {
                                         if (isCoreActive) {
                                           if (shouldEnable) {
-                                            vPNMan.startTun();
+                                            vPNMan
+                                                .startTun()
+                                                .catchError(handleError);
                                           } else {
-                                            vPNMan.stopTun();
+                                            vPNMan
+                                                .stopTun()
+                                                .catchError(handleError);
                                           }
                                         }
                                       });
