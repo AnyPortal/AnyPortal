@@ -489,6 +489,23 @@ class VPNManagerExec extends VPNManager {
     logger.d("coreArgList: $_coreArgList");
     logger.d("coreWorkingDir: $_coreWorkingDir");
     logger.d("coreEnvs: $_coreEnvs");
+
+    if (!File(corePath!).existsSync()) {
+      logger.w("core path does not exist");
+      throw Exception("core path does not exist");
+    }
+
+    if (Platform.isLinux || Platform.isMacOS || Platform.isAndroid) {
+      final executableTestRes = await Process.run("test", ["-x", corePath!]);
+      if (executableTestRes.exitCode != 0) {
+        logger.i("core path not executable, fixing");
+        await Process.run("chmod", [
+          "+x",
+          corePath!,
+        ]);
+      }
+    }
+    
     final processCore = await Process.start(
       corePath!,
       _coreArgList,

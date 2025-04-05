@@ -425,10 +425,10 @@ packages:
     dependency: "direct main"
     description:
       name: grpc
-      sha256: "5b99b7a420937d4361ece68b798c9af8e04b5bc128a7859f2a4be87427694813"
+      sha256: "30e1edae6846b163a64f6d8716e3443980fe1f7d2d1f086f011d24ea186f2582"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.1"
+    version: "4.0.4"
   http:
     dependency: "direct main"
     description:
@@ -799,13 +799,13 @@ packages:
     source: hosted
     version: "1.2.2+1"
   protobuf:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: protobuf
-      sha256: "68645b24e0716782e58948f8467fd42a880f255096a821f9e7d0ec625b00c84d"
+      sha256: fbb0c37d435641d0b84813c1dad41e6fa61ddc880a320bce16b3063ecec35aa6
       url: "https://pub.dev"
     source: hosted
-    version: "3.1.0"
+    version: "4.0.0"
   pub_semver:
     dependency: transitive
     description:
