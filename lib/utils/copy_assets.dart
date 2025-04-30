@@ -33,6 +33,8 @@ Future<void> copyAssetIfDifferent(String src, String dst) async {
       logger.d('File already exists and is the same, skipping copy.');
       return;
     }
+  } else {
+    await dstFile.create(recursive: true);
   }
 
   // Write the new file
