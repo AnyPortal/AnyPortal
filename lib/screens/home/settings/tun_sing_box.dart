@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:path/path.dart' as p;
 
@@ -46,6 +47,15 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
+  }
+
+  copyTextThenNotify(String text) async {
+    Clipboard.setData(ClipboardData(text: text)).then((_) {
+      final snackBar = SnackBar(
+        content: Text("Copied"),
+      );
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    });
   }
 
   @override
@@ -199,6 +209,7 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
         onTap: () {
           PlatformFileMananger.highlightFileInFolder(
               tunSingBoxUserConfigFile.path);
+          copyTextThenNotify(tunSingBoxUserConfigFile.path);
         },
       ),
     ];

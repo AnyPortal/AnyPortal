@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path/path.dart' as p;
@@ -33,6 +34,15 @@ class _AboutScreenState extends State<AboutScreen> {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     setState(() {
       version = "v${packageInfo.version}+${packageInfo.buildNumber}";
+    });
+  }
+
+  copyTextThenNotify(String text) async {
+    Clipboard.setData(ClipboardData(text: text)).then((_) {
+      final snackBar = SnackBar(
+        content: Text("Copied"),
+      );
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(snackBar);
     });
   }
 
@@ -81,15 +91,21 @@ We hope you choose well between your home world and Wonderlands.""")),
         subtitle: Text(File(Platform.resolvedExecutable).parent.path),
         trailing: const Icon(Icons.folder_open),
         onTap: () {
-          PlatformFileMananger.highlightFileInFolder(Platform.resolvedExecutable);
+          PlatformFileMananger.highlightFileInFolder(
+              Platform.resolvedExecutable);
+          copyTextThenNotify(Platform.resolvedExecutable);
         },
       ),
       ListTile(
         title: Text(context.loc.user_data),
-        subtitle: Text(p.join(global.applicationDocumentsDirectory.path, "AnyPortal")),
+        subtitle: Text(
+            p.join(global.applicationDocumentsDirectory.path, "AnyPortal")),
         trailing: const Icon(Icons.folder_open),
         onTap: () {
-          PlatformFileMananger.openFolder(p.join(global.applicationDocumentsDirectory.path, "AnyPortal"));
+          PlatformFileMananger.openFolder(
+              p.join(global.applicationDocumentsDirectory.path, "AnyPortal"));
+          copyTextThenNotify(
+              p.join(global.applicationDocumentsDirectory.path, "AnyPortal"));
         },
       ),
       ListTile(
@@ -97,7 +113,9 @@ We hope you choose well between your home world and Wonderlands.""")),
         subtitle: Text(global.applicationSupportDirectory.path),
         trailing: const Icon(Icons.folder_open),
         onTap: () {
-          PlatformFileMananger.openFolder(p.join(global.applicationSupportDirectory.path));
+          PlatformFileMananger.openFolder(
+              global.applicationSupportDirectory.path);
+          copyTextThenNotify(global.applicationSupportDirectory.path);
         },
       ),
     ];
@@ -105,7 +123,7 @@ We hope you choose well between your home world and Wonderlands.""")),
         appBar: AppBar(
           // Use the selected tab's label for the AppBar title
           title: Text(context.loc.about),
-                  ),
+        ),
         body: ListView.builder(
           itemCount: fields.length,
           itemBuilder: (context, index) => fields[index],
