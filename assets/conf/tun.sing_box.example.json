@@ -27,9 +27,10 @@
     {
       "type": "tun",
       "tag": "in_tun",
-      "sniff": true,
-      "inet4_address": "172.19.0.1/30",
-      "inet6_address": "fdfe:dcba:9876::1/126",
+      "address": [
+        "172.19.0.1/30",
+        "fdfe:dcba:9876::1/126"
+      ],
       "auto_route": true,
       "strict_route": true
     }
@@ -38,21 +39,17 @@
     {
       "type": "direct",
       "tag": "ot_direct"
-    },
-    {
-      "type": "block",
-      "tag": "ot_block"
-    },
-    {
-      "type": "dns",
-      "tag": "ot_dns"
     }
   ],
   "route": {
     "rules": [
       {
+        "inbound": "in_tun",
+        "action": "sniff"
+      },
+      {
         "protocol": "dns",
-        "outbound": "ot_dns"
+        "outbound": "ot_socks"
       }
     ],
     "auto_detect_interface": true
