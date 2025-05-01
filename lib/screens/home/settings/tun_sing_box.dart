@@ -221,7 +221,7 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
           return;
         }
         writeTProxyConf();
-        if (context.mounted) {
+        if (context.mounted && Navigator.canPop(context)) {
           Navigator.pop(context);
         }
       },

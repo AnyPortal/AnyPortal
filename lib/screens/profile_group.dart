@@ -89,7 +89,7 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
     }
 
     if (ok) {
-      if (mounted) Navigator.pop(context, {'ok': true});
+      if (mounted && Navigator.canPop(context)) Navigator.pop(context, {'ok': true});
     }
   }
 

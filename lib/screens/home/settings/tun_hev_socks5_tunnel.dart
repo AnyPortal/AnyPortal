@@ -283,7 +283,7 @@ misc:
           return;
         }
         writeTProxyConf();
-        if (context.mounted) {
+        if (context.mounted && Navigator.canPop(context)) {
           Navigator.pop(context);
         }
       },

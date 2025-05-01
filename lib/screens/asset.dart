@@ -119,7 +119,7 @@ class _AssetScreenState extends State<AssetScreen> {
       _isSubmitting = false;
     });
 
-    if (mounted) {
+    if (mounted && Navigator.canPop(context)) {
       Navigator.pop(context, {
         'ok': ok,
         'status': status,

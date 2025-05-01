@@ -186,7 +186,7 @@ class _CoreScreenState extends State<CoreScreen> {
       _isSubmitting = false;
     });
 
-    if (mounted) {
+    if (mounted && Navigator.canPop(context)) {
       Navigator.pop(context, {
         'ok': ok,
         'status': status,

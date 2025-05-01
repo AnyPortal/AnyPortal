@@ -34,7 +34,7 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
         if (widget.handleSelectedApps != null) {
           widget.handleSelectedApps!(widget.selectedApps);
         }
-        if (context.mounted) {
+        if (context.mounted && Navigator.canPop(context)) {
           Navigator.pop(context);
         }
       },
