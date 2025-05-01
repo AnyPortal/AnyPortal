@@ -45,8 +45,11 @@ import com.github.anyportal.anyportal.R;
 /// despite name TProxyServiced (bind to hev-socks5-tunnel), this class should be counter part of vpn_manager.dart
 public class TProxyService extends VpnService {
     public static native void TProxyStartService(String config_path, int fd);
+
     public static native void TProxyStopService();
+
     public static native long[] TProxyGetStats();
+
     private static final String TAG = "TProxyService";
     private static final String CHANNEL_ID = "vpn_channel_id";
     private static final int NOTIFICATION_ID = 1;
@@ -66,10 +69,9 @@ public class TProxyService extends VpnService {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Log.d(TAG, "NotificationChannel");
             NotificationChannel channel = new NotificationChannel(
-                CHANNEL_ID,
-                "VPN Service Channel",
-                NotificationManager.IMPORTANCE_DEFAULT
-            );
+                    CHANNEL_ID,
+                    "VPN Service Channel",
+                    NotificationManager.IMPORTANCE_DEFAULT);
             channel.setDescription("Notification channel for VPN service");
 
             NotificationManager manager = getSystemService(NotificationManager.class);
@@ -83,20 +85,18 @@ public class TProxyService extends VpnService {
         // Intent to launch main activity
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(
-            this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE
-        );
+                this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         // Build the notification
         return new NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("AnyPortal")
-            // .setContentText("The VPN service is running")
-            .setSmallIcon(R.drawable.ic_launcher_monochrome)
-            .setContentIntent(pendingIntent)
-            .setOngoing(true)
-            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
-            .build();
+                .setContentTitle("AnyPortal")
+                // .setContentText("The VPN service is running")
+                .setSmallIcon(R.drawable.ic_launcher_monochrome)
+                .setContentIntent(pendingIntent)
+                .setOngoing(true)
+                .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
+                .build();
     }
-
 
     @Override
     public void onCreate() {
@@ -115,15 +115,16 @@ public class TProxyService extends VpnService {
         super.onRevoke();
         stopAll();
     }
-    
+
     // notify tile service
     public void updateTile() {
         ComponentName componentName = new ComponentName(this, TProxyTileService.class);
         TileService.requestListeningState(this, componentName);
     }
-    
+
     /// bind MainActivity
     private final IBinder binder = new LocalBinder();
+
     public class LocalBinder extends Binder {
         public TProxyService getService() {
             return TProxyService.this;
@@ -142,6 +143,7 @@ public class TProxyService extends VpnService {
     }
 
     private StatusUpdateListener statusListener;
+
     /// Set listener for MainActivity to receive updates
     public void setStatusUpdateListener(StatusUpdateListener listener) {
         this.statusListener = listener;
@@ -158,12 +160,11 @@ public class TProxyService extends VpnService {
         Log.d(TAG, "finished: notifyMainActivity");
     }
 
-
-
     /// vpn
     private ParcelFileDescriptor tunFd = null;
     private java.lang.Process coreProcess = null;
-    private java.lang.Process tunSingBoxCoreProcess = null;
+    private java.lang.Process tunSingBoxCoreSuShell = null;
+    private int tunSingBoxCorePid = -1;
     private libv2raymobile.CoreManager coreManager = null;
     public boolean isCoreActive = false;
     public boolean isTunActive = false;
@@ -272,14 +273,14 @@ public class TProxyService extends VpnService {
     private void startAll() {
         Log.d(TAG, "starting: startAll");
 
-        if (prefs.getBoolean("flutter.app.notification.foreground", true)){
+        if (prefs.getBoolean("flutter.app.notification.foreground", true)) {
             startNotificationForeground();
         }
 
         startCore();
         isCoreActive = true;
 
-        if (prefs.getBoolean("flutter.tun", true)){
+        if (prefs.getBoolean("flutter.tun", true)) {
             startTun();
             isTunActive = true;
         }
@@ -296,7 +297,7 @@ public class TProxyService extends VpnService {
         stopCore();
         isCoreActive = false;
 
-        if (prefs.getBoolean("flutter.tun", true)){
+        if (prefs.getBoolean("flutter.tun", true)) {
             stopTun();
             isTunActive = false;
         }
@@ -323,7 +324,7 @@ public class TProxyService extends VpnService {
     private void startTunEmbedded() {
         Log.d(TAG, "starting: startTunEmbedded");
 
-        if (tunFd != null){
+        if (tunFd != null) {
             return;
         }
 
@@ -347,7 +348,7 @@ public class TProxyService extends VpnService {
             String dns = prefs.getString("flutter.tun.dns.ipv4", "1.1.1.1");
             builder.addAddress(addr, prefix);
             builder.addRoute("0.0.0.0", 0);
-            if (!dns.isEmpty()){
+            if (!dns.isEmpty()) {
                 builder.addDnsServer(dns);
             }
             session += "IPv4";
@@ -358,16 +359,16 @@ public class TProxyService extends VpnService {
             String dns = prefs.getString("flutter.tun.dns.ipv6", "2606:4700:4700::1111");
             builder.addAddress(addr, prefix);
             builder.addRoute("::", 0);
-            if (!dns.isEmpty()){
+            if (!dns.isEmpty()) {
                 builder.addDnsServer(dns);
             }
-            if (!session.isEmpty()){
+            if (!session.isEmpty()) {
                 session += " + ";
             }
             session += "IPv6";
         }
         boolean disallowSelf = true;
-        
+
         if (!prefs.getBoolean("flutter.tun.perAppProxy", true)) {
             session += "/Global";
         } else {
@@ -421,24 +422,39 @@ public class TProxyService extends VpnService {
         Log.d(TAG, "starting: startTunExec");
         String corePath = prefs.getString("flutter.cache.tun.singBox.core.path", "");
         new File(corePath).setExecutable(true);
-        List<String> coreArgs = getStringListFromJsonString(prefs.getString("flutter.cache.tun.singBox.core.args", "[]"));
+        List<String> coreArgs = getStringListFromJsonString(
+                prefs.getString("flutter.cache.tun.singBox.core.args", "[]"));
         String coreWorkingDir = prefs.getString("flutter.cache.tun.singBox.core.workingDir", "");
-        Map<String, String> coreEnvs = getStringStringMapFromJsonString(prefs.getString("flutter.tun.singBox.cache.core.envs", "{}"));
-        
+        Map<String, String> coreEnvs = getStringStringMapFromJsonString(
+                prefs.getString("flutter.tun.singBox.cache.core.envs", "{}"));
+
         coreArgs.add(0, corePath);
         ProcessBuilder pb = new ProcessBuilder("su");
         /// external storage can not be used as working dir !!
-        if (!coreWorkingDir.isEmpty()){
+        if (!coreWorkingDir.isEmpty()) {
             pb.directory(new File(coreWorkingDir));
         }
         Map<String, String> env = pb.environment();
         env.putAll(coreEnvs);
 
         try {
-            tunSingBoxCoreProcess = pb.start();
-            OutputStream os = tunSingBoxCoreProcess.getOutputStream();
-            os.write((String.join(" ", coreArgs) + "\n").getBytes());
+            tunSingBoxCoreSuShell = pb.start();
+            OutputStream os = tunSingBoxCoreSuShell.getOutputStream();
+            String cmd = String.join(" ", coreArgs);
+            os.write(("sh -c '" + cmd + " & echo $!'\n").getBytes());
             os.flush();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(tunSingBoxCoreSuShell.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                try {
+                    tunSingBoxCorePid = Integer.parseInt(line.trim());
+                    Log.d(TAG, String.format("tunSingBoxCorePid: %d", tunSingBoxCorePid));
+                    break; // Got the PID
+                } catch (NumberFormatException e) {
+                    Log.e(TAG, String.format("NumberFormatException: %s", line));
+                    e.printStackTrace();
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -449,7 +465,7 @@ public class TProxyService extends VpnService {
     private void startTun() {
         Log.d(TAG, "starting: startTun");
         boolean useEmbedded = prefs.getBoolean("flutter.tun.useEmbedded", true);
-        if (useEmbedded){
+        if (useEmbedded) {
             startTunEmbedded();
         } else {
             startTunExec();
@@ -458,7 +474,7 @@ public class TProxyService extends VpnService {
         Log.d(TAG, "finished: startTun");
     }
 
-    private List<String> getStringListFromJsonString(String str){
+    private List<String> getStringListFromJsonString(String str) {
         List<String> res = new ArrayList<>();
         try {
             JSONArray jsonArray = new JSONArray(str);
@@ -471,7 +487,7 @@ public class TProxyService extends VpnService {
         return res;
     }
 
-    private Map<String, String> getStringStringMapFromJsonString(String str){
+    private Map<String, String> getStringStringMapFromJsonString(String str) {
         Map<String, String> res = new HashMap<String, String>();
         try {
             JSONObject jsonObject = new JSONObject(str);
@@ -487,10 +503,10 @@ public class TProxyService extends VpnService {
         return res;
     }
 
-    private void stopTun(){
+    private void stopTun() {
         Log.d(TAG, "starting: stopTun");
 
-        if (tunFd != null){
+        if (tunFd != null) {
             /* TProxy */
             TProxyStopService();
 
@@ -502,18 +518,27 @@ public class TProxyService extends VpnService {
             tunFd = null;
         }
 
-        if (tunSingBoxCoreProcess != null){
-            tunSingBoxCoreProcess.destroy();
-            tunSingBoxCoreProcess = null;
+        if (tunSingBoxCoreSuShell != null) {
+            if (tunSingBoxCorePid != -1) {
+                try {
+                    new ProcessBuilder("su", "-c", "kill -9 " + tunSingBoxCorePid).start();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+                tunSingBoxCorePid = -1;
+            }
+            tunSingBoxCoreSuShell.destroy();
+            tunSingBoxCoreSuShell = null;
         }
-        
+
         Log.d(TAG, "finished: stopTun");
     }
 
-    private void startCore(){
+    private void startCore() {
         Log.d(TAG, "starting: stopCore");
 
-        if (coreManager != null || coreProcess != null){
+        if (coreManager != null || coreProcess != null) {
             return;
         }
 
@@ -521,10 +546,10 @@ public class TProxyService extends VpnService {
         File libAssetFolder = new File(getFilesDir().getParent(), "files/asset");
         String libAssetPath = libAssetFolder.getAbsolutePath();
         File config_file = new File(getFilesDir().getParent(), "files/conf/core.gen.json");
-        
+
         /* core */
         boolean useEmbedded = prefs.getBoolean("flutter.cache.core.useEmbedded", true);
-        if (useEmbedded){
+        if (useEmbedded) {
             coreManager = new libv2raymobile.CoreManager();
             Libv2raymobile.setEnv("v2ray.location.asset", libAssetPath);
             Libv2raymobile.setEnv("xray.location.asset", libAssetPath);
@@ -534,12 +559,13 @@ public class TProxyService extends VpnService {
             new File(corePath).setExecutable(true);
             List<String> coreArgs = getStringListFromJsonString(prefs.getString("flutter.cache.core.args", "[]"));
             String coreWorkingDir = prefs.getString("flutter.cache.core.workingDir", "");
-            Map<String, String> coreEnvs = getStringStringMapFromJsonString(prefs.getString("flutter.cache.core.envs", "{}"));
-            
+            Map<String, String> coreEnvs = getStringStringMapFromJsonString(
+                    prefs.getString("flutter.cache.core.envs", "{}"));
+
             coreArgs.add(0, corePath);
             ProcessBuilder pb = new ProcessBuilder(coreArgs);
             /// external storage can not be used as working dir !!
-            if (!coreWorkingDir.isEmpty()){
+            if (!coreWorkingDir.isEmpty()) {
                 pb.directory(new File(coreWorkingDir));
             }
             Map<String, String> env = pb.environment();
@@ -556,14 +582,14 @@ public class TProxyService extends VpnService {
         Log.d(TAG, "finished: startCore");
     }
 
-    private void stopCore(){
+    private void stopCore() {
         Log.d(TAG, "starting: stopCore");
 
-        if (coreProcess != null){
+        if (coreProcess != null) {
             coreProcess.destroy();
             coreProcess = null;
         }
-        if (coreManager != null){
+        if (coreManager != null) {
             coreManager.stop();
             coreManager = null;
         }
@@ -571,11 +597,12 @@ public class TProxyService extends VpnService {
         Log.d(TAG, "finished: stopCore");
     }
 
-    private int startSystemProxy(){
+    private int startSystemProxy() {
         Log.d(TAG, "starting: startSystemProxy");
 
-        // if (!Shizuku.isPreV23() && Shizuku.checkSelfPermission() != PackageManager.PERMISSION_GRANTED) {
-        //     Shizuku.requestPermission(0);
+        // if (!Shizuku.isPreV23() && Shizuku.checkSelfPermission() !=
+        // PackageManager.PERMISSION_GRANTED) {
+        // Shizuku.requestPermission(0);
         // }
 
         String serverAddress = prefs.getString("flutter.app.server.address", "127.0.0.1");
@@ -583,9 +610,10 @@ public class TProxyService extends VpnService {
 
         String cmd = String.format("settings put global http_proxy %s:%d", serverAddress, httpPort);
 
-        // int process = Shizuku.newProcess(new String[]{"sh", "-c", cmd}, null, null).waitFor();
+        // int process = Shizuku.newProcess(new String[]{"sh", "-c", cmd}, null,
+        // null).waitFor();
 
-        ProcessBuilder pb = new ProcessBuilder(new String[]{"su", "-c", cmd});
+        ProcessBuilder pb = new ProcessBuilder(new String[] { "su", "-c", cmd });
         int exitCode = -1;
         try {
             exitCode = pb.start().waitFor();
@@ -597,12 +625,13 @@ public class TProxyService extends VpnService {
         return exitCode;
     }
 
-    private int stopSystemProxy(){
+    private int stopSystemProxy() {
         Log.d(TAG, "starting: stopSystemProxy");
 
         String cmd = "settings put global http_proxy :0";
-        // int process = Shizuku.newProcess(new String[]{"sh", "-c", cmd}, null, null).waitFor();
-        ProcessBuilder pb = new ProcessBuilder(new String[]{"su", "-c", cmd});
+        // int process = Shizuku.newProcess(new String[]{"sh", "-c", cmd}, null,
+        // null).waitFor();
+        ProcessBuilder pb = new ProcessBuilder(new String[] { "su", "-c", cmd });
         int exitCode = -1;
         try {
             exitCode = pb.start().waitFor();
@@ -614,12 +643,13 @@ public class TProxyService extends VpnService {
         return exitCode;
     }
 
-    private boolean getIsSystemProxyEnabled(){
+    private boolean getIsSystemProxyEnabled() {
         Log.d(TAG, "starting: getIsSystemProxyEnabled");
 
         String cmd = "settings get global http_proxy";
-        // int process = Shizuku.newProcess(new String[]{"sh", "-c", cmd}, null, null).waitFor();
-        ProcessBuilder pb = new ProcessBuilder(new String[]{"su", "-c", cmd});
+        // int process = Shizuku.newProcess(new String[]{"sh", "-c", cmd}, null,
+        // null).waitFor();
+        ProcessBuilder pb = new ProcessBuilder(new String[] { "su", "-c", cmd });
         int exitCode = -1;
         try {
             java.lang.Process process = pb.start();
@@ -629,7 +659,7 @@ public class TProxyService extends VpnService {
             StringBuilder output = new StringBuilder();
 
             while ((line = reader.readLine()) != null) {
-                output.append(line.trim());  // trim() to remove any surrounding whitespace
+                output.append(line.trim()); // trim() to remove any surrounding whitespace
             }
 
             reader.close();
