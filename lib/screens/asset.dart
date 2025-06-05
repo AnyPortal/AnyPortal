@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 import 'package:drift/drift.dart';
@@ -11,6 +9,7 @@ import '../../utils/db.dart';
 import '../models/edit_status.dart';
 import '../utils/asset_remote/github.dart';
 import '../utils/logger.dart';
+import '../utils/platform.dart';
 
 class AssetScreen extends StatefulWidget {
   final TypedResult? asset;
@@ -165,7 +164,7 @@ class _AssetScreenState extends State<AssetScreen> {
                 controller: _assetPathController,
                 decoration: InputDecoration(
                   labelText: context.loc.asset_path,
-                  hintText: Platform.isWindows
+                  hintText: platform.isWindows
                       ? context.loc.e_g_c_path_to_v2ray_exe
                       : context.loc.e_g_path_to_v2ray,
                   border: OutlineInputBorder(),

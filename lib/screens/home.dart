@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_acrylic/flutter_acrylic.dart';
@@ -15,6 +16,7 @@ import '../utils/logger.dart';
 import '../utils/platform_system_proxy_user.dart';
 import '../utils/prefs.dart';
 import '../utils/theme_manager.dart';
+import '../utils/platform.dart';
 import 'home/dashboard.dart';
 import 'home/logs.dart';
 import 'home/profiles.dart';
@@ -64,21 +66,22 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
 
     _loadSystemProxyIsEnabled();
 
-    final logFile = File(p.join(
-      global.applicationSupportDirectory.path,
-      'log',
-      'core.log',
-    ));
-    logFile.exists().then((logFileExists) async {
-      if (!logFileExists) {
-        await logFile.create(recursive: true);
-      }
-    });
+    if (!kIsWeb){
+      final logFile = File(p.join(
+        global.applicationSupportDirectory.path,
+        'log',
+        'core.log',
+      ));
+      logFile.exists().then((logFileExists) async {
+        if (!logFileExists) {
+          await logFile.create(recursive: true);
+        }
+      });
 
-    setState(() {
-      _pathLog = logFile.absolute.path;
-    });
-    ;
+      setState(() {
+        _pathLog = logFile.absolute.path;
+      });
+    }
   }
 
   bool? _systemProxyIsEnabled;
@@ -198,7 +201,7 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
                                         final snackBar = SnackBar(
                                           content: Text(context.loc
                                               .warning_you_need_to_be_elevated_user_to_modify_this_setting(
-                                                  Platform.isWindows
+                                                  platform.isWindows
                                                       ? context
                                                           .loc.administrator
                                                       : "root")),
@@ -232,10 +235,10 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
                                   );
                                 })),
                       ),
-                      if (Platform.isWindows ||
-                          Platform.isLinux ||
-                          Platform.isMacOS ||
-                          Platform.isAndroid)
+                      if (platform.isWindows ||
+                          platform.isLinux ||
+                          platform.isMacOS ||
+                          platform.isAndroid)
                         ListTile(
                             dense: true,
                             title: Text(context.loc.system_proxy),
@@ -401,10 +404,10 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
     super.didChangeDependencies();
 
     themeManager.update();
-    if (Platform.isWindows || Platform.isMacOS) {
+    if (platform.isWindows || platform.isMacOS) {
       var isDark = themeManager.isDark;
       Window.setEffect(
-        effect: Platform.isLinux || Platform.isMacOS
+        effect: platform.isLinux || platform.isMacOS
             ? WindowEffect.disabled
             : WindowEffect.mica,
         dark: isDark,

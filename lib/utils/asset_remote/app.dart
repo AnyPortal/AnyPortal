@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:path/path.dart' as p;
 
+import '../platform.dart';
 import '../prefs.dart';
 import 'github.dart';
 
@@ -14,7 +15,7 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
     owner = "anyportal";
     repo = "anyportal";
     assetName = "anyportal-${Platform.operatingSystem}.zip";
-    if (Platform.isWindows) {
+    if (platform.isWindows) {
       assetName = "anyportal-windows-setup.exe";
     }
     url = "github://$owner/$repo/$assetName";

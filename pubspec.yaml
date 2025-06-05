@@ -41,8 +41,8 @@ dependencies:
   file_picker: ^9.0.0
   permission_handler: ^11.3.1
   grpc: ^4.0.1
-  drift: ^2.20.0
-  path_provider: ^2.1.4
+  drift: ^2.26.1
+  path_provider: ^2.1.5
   path: ^1.9.0
   intl: any
   http: ^1.2.2
@@ -83,6 +83,7 @@ dependencies:
   flutter_localized_locales: ^2.0.5
   crypto: ^3.0.6
   protobuf: ^4.0.0
+  drift_flutter: ^0.2.4
 
 dev_dependencies:
   # flutter_test:
@@ -95,8 +96,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
-  drift_dev: ^2.20.1
-  build_runner: ^2.4.12
+  drift_dev: ^2.26.1
+  build_runner: ^2.4.15
   flutter_launcher_icons: ^0.14.0
   json_serializable: ^6.8.0
   test: ^1.25.15

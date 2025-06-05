@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -78,15 +79,15 @@ We hope you choose well between your home world and Wonderlands.""")),
           } catch (_) {}
         },
       ),
-      const Divider(),
-      Container(
+      if (!kIsWeb) const Divider(),
+      if (!kIsWeb) Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Text(
           "Local directory",
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
       ),
-      ListTile(
+      if (!kIsWeb) ListTile(
         title: Text(context.loc.app),
         subtitle: Text(File(Platform.resolvedExecutable).parent.path),
         trailing: const Icon(Icons.folder_open),
@@ -96,7 +97,7 @@ We hope you choose well between your home world and Wonderlands.""")),
           copyTextThenNotify(Platform.resolvedExecutable);
         },
       ),
-      ListTile(
+      if (!kIsWeb) ListTile(
         title: Text(context.loc.user_data),
         subtitle: Text(
             p.join(global.applicationDocumentsDirectory.path, "AnyPortal")),
@@ -108,7 +109,7 @@ We hope you choose well between your home world and Wonderlands.""")),
               p.join(global.applicationDocumentsDirectory.path, "AnyPortal"));
         },
       ),
-      ListTile(
+      if (!kIsWeb) ListTile(
         title: Text(context.loc.generated_assets),
         subtitle: Text(global.applicationSupportDirectory.path),
         trailing: const Icon(Icons.folder_open),

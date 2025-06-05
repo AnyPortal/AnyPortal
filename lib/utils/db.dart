@@ -4,16 +4,19 @@ import 'dart:io';
 
 import 'package:drift/drift.dart' as drift;
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
+import 'package:drift_flutter/drift_flutter.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 
 import '../models/asset.dart';
 import '../models/core.dart';
 import '../models/profile.dart';
 import '../models/profile_group.dart';
+import 'db/connection.dart' as impl;
 import 'db.steps.dart';
 import 'global.dart';
 import 'logger.dart';
+import 'platform.dart';
 
 part 'db.g.dart';
 
@@ -33,19 +36,17 @@ class DatabaseManager {
   // Async initializer (call once at app startup)
   Future<void> init() async {
     logger.d("starting: DatabaseManager.init");
-    final dbFolder = global.applicationDocumentsDirectory;
-    final file = File(p.join(dbFolder.path, "AnyPortal", "db.sqlite"));
-    if (!file.existsSync()) {
-      file.createSync(recursive: true);
+    if (!kIsWeb){
+      final dbFolder = global.applicationDocumentsDirectory;
+      final file = File(p.join(dbFolder.path, "AnyPortal", "db.sqlite"));
+      if (!file.existsSync()) {
+        file.createSync(recursive: true);
+      }
     }
-    _db = Database(_openConnection(file));
+    _db = Database();
 
     _completer.complete(); // Signal that initialization is complete
     logger.d("finished: DatabaseManager.init");
-  }
-
-  static QueryExecutor _openConnection(File file) {
-    return NativeDatabase.createInBackground(file);
   }
 
   // Getter for synchronous access (ensure db is initialized before using this)
@@ -55,6 +56,11 @@ class DatabaseManager {
     }
     return _db;
   }
+}
+
+Future<String> getDatabasePath() async {
+  final dbFolder = global.applicationDocumentsDirectory;
+  return p.join(dbFolder.path, "AnyPortal", "db.sqlite");
 }
 
 // Drift database definition
@@ -75,10 +81,31 @@ class DatabaseManager {
   ProfileGroupRemote,
 ])
 class Database extends _$Database {
-  Database(super.e);
+  Database([QueryExecutor? e])
+      : super(
+          e ??
+              driftDatabase(
+                name: 'AnyPortal',
+                native: const DriftNativeOptions(
+                  databasePath: getDatabasePath,
+                ),
+                web: DriftWebOptions(
+                  sqlite3Wasm: Uri.parse('sqlite3.wasm'),
+                  driftWorker: Uri.parse('drift_worker.js'),
+                  onResult: (result) {
+                    if (result.missingFeatures.isNotEmpty) {
+                      logger.w(
+                        'Using ${result.chosenImplementation} due to unsupported '
+                        'browser features: ${result.missingFeatures}',
+                      );
+                    }
+                  },
+                ),
+              ),
+        );
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -100,7 +127,7 @@ class Database extends _$Database {
             ));
           }
           // android embedded core
-          if (Platform.isAndroid) {
+          if (platform.isAndroid) {
             final coreId =
                 await into(core).insertOnConflictUpdate(CoreCompanion(
               coreTypeId: Value(CoreTypeDefault.xray.index),
@@ -122,7 +149,17 @@ class Database extends _$Database {
             await m.addColumn(
                 schema.assetRemote, schema.assetRemote.downloadedFilePath);
           },
+          from2To3: (m, schema) async {
+            await m.alterTable(TableMigration(schema.assetLocal));
+            await m.alterTable(TableMigration(schema.assetRemote));
+          },
         ),
+        beforeOpen: (details) async {
+          // This follows the recommendation to validate that the database schema
+          // matches what drift expects (https://drift.simonbinder.eu/docs/advanced-features/migrations/#verifying-a-database-schema-at-runtime).
+          // It allows catching bugs in the migration logic early.
+          await impl.validateDatabaseSchema(this);
+        },
       );
 }
 

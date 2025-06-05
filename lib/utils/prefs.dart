@@ -1,10 +1,11 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:anyportal/models/log_level.dart';
 import 'package:anyportal/models/send_through_binding_stratagy.dart';
+
+import 'platform.dart';
 import 'logger.dart';
 import 'shared_preferences_with_defaults.dart';
 
@@ -18,16 +19,16 @@ class PrefsManager {
     'app.brightness.followSystem': true,
     'app.locale.followSystem': true,
     'app.locale': "en_US",
-    'app.connectAtLaunch': Platform.isWindows || Platform.isLinux || Platform.isMacOS,
+    'app.connectAtLaunch': platform.isWindows || platform.isLinux || platform.isMacOS,
     'app.connectAtStartup': false,
     // 'app.github.downloadedFilePath': null,
     'app.github.meta': '{"created_at": "1970-01-01T00:00:00Z"}',
     'app.http.port': 15492,
-    'app.notification.foreground': Platform.isAndroid,
+    'app.notification.foreground': platform.isAndroid,
     'app.window.size.width': 1280.0,
     'app.window.size.height': 720.0,
     'app.window.isMaximized': false,
-    'app.window.closeToTray': Platform.isWindows || Platform.isLinux || Platform.isMacOS,
+    'app.window.closeToTray': platform.isWindows || platform.isLinux || platform.isMacOS,
     'app.runElevated': false,
     'app.server.address': "127.0.0.1",
     'app.socks.port': 15491,
@@ -42,7 +43,7 @@ class PrefsManager {
     'inject.sendThrough.bindingIp': "0.0.0.0",
     'inject.sendThrough.bindingStratagy': SendThroughBindingStratagy.ip.index,
     'systemProxy': false,
-    'tun': Platform.isAndroid || Platform.isIOS,
+    'tun': platform.isAndroid || platform.isIOS,
     'tun.perAppProxy': false,
     'tun.socks.username': "",
     'tun.socks.password': "",
@@ -55,7 +56,7 @@ class PrefsManager {
     'tun.inject.http': true,
     'tun.inject.socks': true,
     'tun.inject.excludeCorePath': true,
-    'tun.useEmbedded': Platform.isAndroid || Platform.isIOS,
+    'tun.useEmbedded': platform.isAndroid || platform.isIOS,
 
     'android.tun.perAppProxy.allowed': true,
     'android.tun.allowedApplications': "[]",

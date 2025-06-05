@@ -1,0 +1,3 @@
+int? getPlatformVersionNumber() {
+  return null;
+}

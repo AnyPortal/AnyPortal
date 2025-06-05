@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
 
 import 'package:anyportal/utils/method_channel.dart';
+
+import '../../utils/platform.dart';
 
 class LogViewer extends StatefulWidget {
   final String filePath;
@@ -60,6 +62,10 @@ class LogViewerState extends State<LogViewer> {
   }
 
   Future<List<String>> _readLastNLines(int n) async {
+    if (kIsWeb) {
+      return [];
+    }
+
     List<String> lines = [];
     if (!await _logFile.exists()) {
       return [];
@@ -94,6 +100,10 @@ class LogViewerState extends State<LogViewer> {
   }
 
   Future<void> onFileChange() async {
+    if (kIsWeb) {
+      return;
+    }
+
     if (!_logFile.existsSync()) {
       return;
     }
@@ -129,13 +139,14 @@ class LogViewerState extends State<LogViewer> {
     }
   }
 
-  static const platform = MethodChannel('com.github.anyportal.anyportal');
-
   void _startFileMonitor() async {
-    if (Platform.isAndroid) {
-      mCMan.methodChannel.invokeListMethod('log.core.startWatching', {"filePath": widget.filePath});
-      mCMan.addHandler('onFileChange', (_) async {onFileChange();});
-    } else if (Platform.isLinux) {
+    if (platform.isAndroid) {
+      mCMan.methodChannel.invokeListMethod(
+          'log.core.startWatching', {"filePath": widget.filePath});
+      mCMan.addHandler('onFileChange', (_) async {
+        onFileChange();
+      });
+    } else if (platform.isLinux) {
       _logFile.watch().listen((e) {
         onFileChange();
       });
@@ -145,6 +156,7 @@ class LogViewerState extends State<LogViewer> {
         onFileChange();
       });
     }
+
     /// TODO: liunx inotify
   }
 
@@ -167,13 +179,13 @@ class LogViewerState extends State<LogViewer> {
     return Container(
         padding: const EdgeInsets.all(8.0),
         child: Align(
-          child: SelectionArea(
+            child: SelectionArea(
           child: ListView.builder(
             reverse: true,
             controller: _scrollController,
             itemCount: _logLines.length,
             itemBuilder: (context, index) {
-              return colorizeLogLine(_logLines[_logLines.length-1-index]);
+              return colorizeLogLine(_logLines[_logLines.length - 1 - index]);
             },
             physics: const ClampingScrollPhysics(),
             cacheExtent: 99999,
@@ -219,8 +231,7 @@ Widget colorizeLogLine(String logline) {
           style: TextStyle(color: Colors.grey),
         ),
         TextSpan(
-          text:
-              '$address2 ', // Second protocol, address, and port
+          text: '$address2 ', // Second protocol, address, and port
           style: const TextStyle(color: Color(0xfffb9d51)),
         ),
         TextSpan(

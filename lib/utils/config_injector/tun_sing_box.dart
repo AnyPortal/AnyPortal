@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 import 'package:anyportal/utils/vpn_manager.dart';
 import '../../models/log_level.dart';
 import '../global.dart';
+import '../platform.dart';
 import '../prefs.dart';
 
 Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
@@ -63,7 +64,7 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
       });
     }
 
-    if (Platform.isAndroid) {
+    if (platform.isAndroid) {
       route["rules"].add({
         "package_name": "com.github.anyportal.anyportal",
         "outbound": "ot_direct"

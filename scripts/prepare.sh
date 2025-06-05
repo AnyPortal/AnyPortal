@@ -18,6 +18,11 @@ get_v2ray_assets () {
   wget -O geosite.dat https://github.com/v2fly/domain-list-community/releases/latest/download/dlc.dat
 }
 
+get_web_assets () {
+  wget https://github.com/simolus3/sqlite3.dart/releases/latest/download/sqlite3.wasm
+  wget https://github.com/simolus3/drift/releases/latest/download/drift_worker.js
+}
+
 init_gomobile () {
   cd third_party/libv2raymobile
   go install golang.org/x/mobile/cmd/gomobile@latest
@@ -60,4 +65,10 @@ elif [[ $os == "ios" ]]; then
   mkdir build
   mv HevSocks5Tunnel.xcframework build
   cd -
+
+elif [[ $os == "web" ]]; then
+  cd web
+  get_web_assets
+  cd -
+  
 fi

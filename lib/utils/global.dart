@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:path_provider/path_provider.dart';
+import 'package:path_provider/path_provider.dart' if (dart.library.html) 'path_provider/web.dart';
 
 import 'logger.dart';
 import 'platform_elevation.dart';
@@ -33,6 +33,7 @@ class GlobalManager {
   Future<void> updateIsElevated() async {
     isElevated = await PlatformElevation.isElevated();
   }
+
   static final GlobalManager _instance = GlobalManager._internal();
   final Completer<void> _completer = Completer<void>();
 

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -24,6 +25,7 @@ import 'utils/core_data_notifier.dart';
 import 'utils/db.dart';
 import 'utils/launch_at_startup.dart';
 import 'utils/method_channel.dart';
+import 'utils/platform.dart';
 import 'utils/platform_task_scheduler.dart';
 import 'utils/platform_theme.dart';
 import 'utils/prefs.dart';
@@ -46,8 +48,9 @@ void main(List<String> args) async {
     exit(0);
   }
 
-  if (prefs.getBool("app.autoUpdate")!){
-    String? downloadedFilePath = prefs.getString("app.github.downloadedFilePath");
+  if (prefs.getBool("app.autoUpdate")!) {
+    String? downloadedFilePath =
+        prefs.getString("app.github.downloadedFilePath");
     if (downloadedFilePath != null) {
       prefs.remove("app.github.downloadedFilePath");
       await AssetRemoteProtocolApp.init().install(File(downloadedFilePath));
@@ -73,9 +76,9 @@ void main(List<String> args) async {
     logger.w("vPNMan.initCore: ${e.toString()}");
   }
 
-  if (Platform.isAndroid || Platform.isIOS) {
+  if (platform.isAndroid || platform.isIOS) {
     await tProxyConfInit();
-  } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+  } else if (platform.isWindows || platform.isLinux || platform.isMacOS) {
     /// auto launch at login
     initLaunchAtStartup();
 
@@ -99,25 +102,25 @@ void main(List<String> args) async {
       }
     });
 
-    bool isTransparentBG = getIsTransparentBG();
-
     /// transparent background
-    if (Platform.isWindows || Platform.isMacOS) {
+    if (platform.isWindows || platform.isMacOS) {
       await Window.initialize();
       var dispatcher = SchedulerBinding.instance.platformDispatcher;
       await Window.setEffect(
-        effect: isTransparentBG ? WindowEffect.mica : WindowEffect.solid,
+        effect: getIsTransparentBG() ? WindowEffect.mica : WindowEffect.solid,
         dark: dispatcher.platformBrightness == Brightness.dark,
       );
     }
   }
 
-  /// copy assets
-  await copyAssetsToDefaultLocation();
+  if (!kIsWeb) {
+    /// copy assets
+    await copyAssetsToDefaultLocation();
 
-  /// theme color
-  SystemTheme.fallbackColor = const Color.fromARGB(82, 0, 140, 255);
-  await SystemTheme.accentColor.load();
+    /// theme color
+    SystemTheme.fallbackColor = const Color.fromARGB(82, 0, 140, 255);
+    await SystemTheme.accentColor.load();
+  }
 
   /// app
   logger.d("starting: runApp");
@@ -134,7 +137,7 @@ void main(List<String> args) async {
     logger.w("vPNMan.initCore: ${e.toString()}");
   }
 
-  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+  if (platform.isWindows || platform.isLinux || platform.isMacOS) {
     /// connect at launch
     Exception? err;
     if (prefs.getBool('app.connectAtLaunch')!) {

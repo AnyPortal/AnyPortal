@@ -2835,8 +2835,8 @@ class ProfileGroupRemoteCompanion
   }
 }
 
-class DatabaseAtV2 extends GeneratedDatabase {
-  DatabaseAtV2(QueryExecutor e) : super(e);
+class DatabaseAtV3 extends GeneratedDatabase {
+  DatabaseAtV3(QueryExecutor e) : super(e);
   late final Asset asset = Asset(this);
   late final AssetLocal assetLocal = AssetLocal(this);
   late final AssetRemote assetRemote = AssetRemote(this);
@@ -2872,5 +2872,5 @@ class DatabaseAtV2 extends GeneratedDatabase {
         profileGroupRemote
       ];
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 }

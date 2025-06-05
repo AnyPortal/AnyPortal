@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 
 import 'package:anyportal/utils/get_local_ip.dart';
@@ -38,7 +39,7 @@ Future<Map<String, dynamic>> getInjectedConfig(Map<String, dynamic> cfg) async {
       sendThrough = ip;
   }
 
-  if (injectLog) {
+  if (!kIsWeb && injectLog) {
     final pathLogErr = File(p.join(
       global.applicationSupportDirectory.path,
       'log',

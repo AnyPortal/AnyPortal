@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-
 import 'package:permission_handler/permission_handler.dart';
+
+import 'platform.dart';
 
 class PermissionManager {
   Future<PermissionStatus> requestPermission(
@@ -58,4 +58,4 @@ class PermissionManagerAndroid extends PermissionManager {
 }
 
 final permMan =
-    Platform.isAndroid ? PermissionManagerAndroid() : PermissionManager();
+    platform.isAndroid ? PermissionManagerAndroid() : PermissionManager();

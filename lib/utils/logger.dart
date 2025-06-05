@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 
 import 'package:logger/logger.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
+import 'package:path_provider/path_provider.dart' if (dart.library.html) 'path_provider/web.dart';
 
 import 'logger/filter.dart';
 import 'logger/printer.dart';
@@ -24,6 +24,21 @@ class LoggerManager {
     {String? logLevelName}
   ) async {
     final logLevel = getLevelByName(logLevelName);
+
+    if (kIsWeb){
+      logger = Logger(
+        printer: CustomLogPrinter(),
+        output: MultiOutput(
+          [
+            ConsoleOutput(),
+          ],
+        ),
+        level: kDebugMode ? Level.all : logLevel,
+        filter: CustomFilter()
+      );
+      _completer.complete();
+      return;
+    }
 
     final applicationSupportDirectory = await getApplicationSupportDirectory();
     final file = File(

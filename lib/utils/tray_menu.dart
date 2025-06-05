@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:tray_manager/tray_manager.dart';
 
 import 'package:anyportal/utils/logger.dart';
 import 'global.dart';
+import 'platform.dart';
 import 'platform_system_proxy_user.dart';
 import 'prefs.dart';
 import 'vpn_manager.dart';
@@ -16,9 +16,9 @@ class TrayMenuManager {
 
   Future<void> init() async {
     logger.d("starting: TrayMenuManager.init");
-    if (Platform.isWindows) {
+    if (platform.isWindows) {
       await trayManager.setIcon('windows/runner/resources/app_icon.ico');
-    } else if (Platform.isMacOS) {
+    } else if (platform.isMacOS) {
       await trayManager.setIcon('assets/icon/icon_k.png', isTemplate: true);
     } else {
       await trayManager.setIcon('assets/icon/icon.png');
@@ -41,7 +41,7 @@ class TrayMenuManager {
   }
 
   updateContextMenu() async {
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (platform.isAndroid || platform.isIOS) {
       return;
     }
     final systemProxyIsEnabled = await platformSystemProxyUser.isEnabled();

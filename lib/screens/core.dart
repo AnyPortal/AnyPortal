@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 import 'package:drift/drift.dart';
@@ -13,6 +11,7 @@ import '../../models/core.dart';
 import '../../utils/db.dart';
 import '../models/asset.dart';
 import '../utils/logger.dart';
+import '../utils/platform.dart';
 import 'asset.dart';
 import 'core_type.dart';
 
@@ -111,7 +110,7 @@ class _CoreScreenState extends State<CoreScreen> {
     int? coreId;
     bool permitted = true;
 
-    if (Platform.isAndroid) {
+    if (platform.isAndroid) {
       if (context.mounted) {
         await permMan.requestPermission(
           context,
@@ -124,7 +123,7 @@ class _CoreScreenState extends State<CoreScreen> {
         });
       }
 
-      if (context.mounted) {
+      if (mounted) {
         await permMan.requestPermission(
           context,
           Permission.notification,

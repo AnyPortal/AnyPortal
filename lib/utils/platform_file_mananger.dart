@@ -2,13 +2,15 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import 'platform.dart';
+
 class PlatformFileMananger {
   static void highlightFileInFolder(String filePath) {
-    if (Platform.isWindows) {
+    if (platform.isWindows) {
       Process.run('explorer', ['/select,', filePath]);
-    } else if (Platform.isMacOS) {
+    } else if (platform.isMacOS) {
       Process.run('open', ['-R', filePath]);
-    } else if (Platform.isLinux) {
+    } else if (platform.isLinux) {
       Process.run('xdg-open', [filePath]);
     } else {
       debugPrint('Unsupported platform');
@@ -16,11 +18,11 @@ class PlatformFileMananger {
   }
 
   static void openFolder(String folderPath) {
-    if (Platform.isWindows) {
+    if (platform.isWindows) {
       Process.run('explorer', [folderPath]);
-    } else if (Platform.isMacOS) {
+    } else if (platform.isMacOS) {
       Process.run('open', [folderPath]);
-    } else if (Platform.isLinux) {
+    } else if (platform.isLinux) {
       Process.run('xdg-open', [folderPath]);
     } else {
       debugPrint('Unsupported platform');

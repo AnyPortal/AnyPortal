@@ -6,6 +6,7 @@ import 'package:process_run/shell.dart';
 import 'package:tuple/tuple.dart';
 
 import 'logger.dart';
+import 'platform.dart';
 
 class PlatformSystemProxyUser {
   Future<bool?> isEnabled() async {
@@ -343,12 +344,12 @@ class PlatformSystemProxyUserAndroid extends PlatformSystemProxyUser {
   }
 }
 
-final platformSystemProxyUser = Platform.isWindows
+final platformSystemProxyUser = platform.isWindows
     ? PlatformSystemProxyUserWindows()
-    : Platform.isLinux
+    : platform.isLinux
         ? PlatformSystemProxyUserLinux()
-        : Platform.isMacOS
+        : platform.isMacOS
             ? PlatformSystemProxyUserMacOS()
-            : Platform.isAndroid
+            : platform.isAndroid
                 ? PlatformSystemProxyUserAndroid()
                 : PlatformSystemProxyUser();

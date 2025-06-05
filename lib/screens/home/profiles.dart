@@ -317,10 +317,12 @@ class _ProfileListState extends State<ProfileList> {
                             final res = await vPNMan.startCore();
 
                             String msg = "";
-                            if (res) {
-                              msg = context.loc.info_reconnected;
-                            } else {
-                              msg = context.loc.warning_failed_to_reconnect;
+                            if (context.mounted){
+                              if (res) {
+                                msg = context.loc.info_reconnected;
+                              } else {
+                                msg = context.loc.warning_failed_to_reconnect;
+                              }
                             }
                             final snackBar2 = SnackBar(
                               content: Text(msg),

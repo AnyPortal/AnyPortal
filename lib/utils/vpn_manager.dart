@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import 'package:drift/drift.dart';
@@ -20,6 +20,7 @@ import 'db/update_profile_with_group_remote.dart';
 import 'global.dart';
 import 'logger.dart';
 import 'method_channel.dart';
+import 'platform.dart';
 import 'platform_process.dart';
 import 'prefs.dart';
 
@@ -200,7 +201,7 @@ abstract class VPNManager with ChangeNotifier {
 
   bool getIsTunProcess() {
     return prefs.getBool("tun")! &&
-        (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
+        (platform.isWindows || platform.isLinux || platform.isMacOS);
   }
 
   Future<void> initCore() async {
@@ -221,21 +222,25 @@ abstract class VPNManager with ChangeNotifier {
     updateProfileWithGroupRemote(_selectedProfile!);
 
     // gen config.json
-    final config = File(p.join(
-        global.applicationSupportDirectory.path, 'conf', 'core.gen.json'));
-    if (!await config.exists()) {
-      await config.create(recursive: true);
-    }
     coreRawCfgMap =
         jsonDecode(_selectedProfile!.coreCfg) as Map<String, dynamic>;
     if (_selectedProfile!.coreTypeId == CoreTypeDefault.v2ray.index ||
         _selectedProfile!.coreTypeId == CoreTypeDefault.xray.index) {
       coreRawCfgMap = await getInjectedConfig(coreRawCfgMap);
     }
-    await config.writeAsString(jsonEncode(coreRawCfgMap));
 
-    // check core path
+    final config = File(p.join(
+        global.applicationSupportDirectory.path, 'conf', 'core.gen.json'));
+    if (!kIsWeb) {
+      if (!await config.exists()) {
+        await config.create(recursive: true);
+      }
+      await config.writeAsString(jsonEncode(coreRawCfgMap));
+    }
+
     coreTypeId = _selectedProfile!.coreTypeId;
+    
+    // check core path
     final core = await (db.select(db.coreTypeSelected).join([
       leftOuterJoin(db.core, db.coreTypeSelected.coreId.equalsExp(db.core.id)),
       leftOuterJoin(db.coreExec, db.core.id.equalsExp(db.coreExec.coreId)),
@@ -325,10 +330,10 @@ abstract class VPNManager with ChangeNotifier {
   }
 
   Future<void> initTunExec() async {
-    if (Platform.isWindows ||
-        Platform.isLinux ||
-        Platform.isMacOS ||
-        Platform.isAndroid) {
+    if (platform.isWindows ||
+        platform.isLinux ||
+        platform.isMacOS ||
+        platform.isAndroid) {
       final coreTypeId = CoreTypeDefault.singBox.index;
       final core = await (db.select(db.coreTypeSelected).join([
         leftOuterJoin(
@@ -483,7 +488,7 @@ class VPNManagerExec extends VPNManager {
   @override
   startCore() async {
     logger.d("starting: startCore");
-    await installPendingAssetRemote();
+    if (!kIsWeb) await installPendingAssetRemote();
     await initCore();
     logger.d("corePath: $corePath");
     logger.d("coreArgList: $_coreArgList");
@@ -495,7 +500,7 @@ class VPNManagerExec extends VPNManager {
       throw Exception("core path does not exist");
     }
 
-    if (Platform.isLinux || Platform.isMacOS || Platform.isAndroid) {
+    if (platform.isLinux || platform.isMacOS || platform.isAndroid) {
       final executableTestRes = await Process.run("test", ["-x", corePath!]);
       if (executableTestRes.exitCode != 0) {
         logger.i("core path not executable, fixing");
@@ -505,7 +510,7 @@ class VPNManagerExec extends VPNManager {
         ]);
       }
     }
-    
+
     final processCore = await Process.start(
       corePath!,
       _coreArgList,
@@ -696,7 +701,7 @@ class VPNManManager {
   // Async initializer (call once at app startup)
   Future<void> init() async {
     logger.d("starting: VPNManManager.init");
-    _vPNMan = Platform.isAndroid || Platform.isIOS
+    _vPNMan = platform.isAndroid || platform.isIOS
         ? VPNManagerMC()
         : VPNManagerExec();
     _completer.complete(); // Signal that initialization is complete

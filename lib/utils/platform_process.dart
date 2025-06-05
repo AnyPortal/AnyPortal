@@ -3,13 +3,15 @@ import 'dart:io';
 
 import 'package:anyportal/utils/logger.dart';
 
+import 'platform.dart';
+
 class PlatformProcess {
   static Future<int?> getProcessPid(String commandLine) async {
     logger.d("getProcessPid: $commandLine");
     try {
-      if (Platform.isWindows) {
+      if (platform.isWindows) {
         return await _getProcessPidWindows(commandLine);
-      } else if (Platform.isMacOS || Platform.isLinux) {
+      } else if (platform.isMacOS || platform.isLinux) {
         return await _getProcessPidUnix(commandLine);
       }
     } catch (e) {
@@ -73,7 +75,7 @@ class PlatformProcess {
     List<String> arguments;
 
     // Determine the platform and set appropriate command and arguments
-    if (Platform.isWindows) {
+    if (platform.isWindows) {
       command = 'taskkill';
       arguments = ['/F', '/PID', pid.toString()]; // /F forces the termination
     } else {

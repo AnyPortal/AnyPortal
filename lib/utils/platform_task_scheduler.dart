@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:cron/cron.dart';
 import 'package:drift/drift.dart';
@@ -11,6 +10,7 @@ import 'asset_remote/github.dart';
 import 'db/update_profile.dart';
 import 'db/update_profile_group.dart';
 import 'logger.dart';
+import 'platform.dart';
 import 'prefs.dart';
 
 void checkAllRemotes() {
@@ -117,7 +117,7 @@ class PlatformTaskScheduler {
 
   void init() {
     /// check all remote assets every 15 mins
-    if (Platform.isAndroid || Platform.isIOS) {
+    if (platform.isAndroid || platform.isIOS) {
       Workmanager().initialize(workmanagerCallbackDispatcher);
       Workmanager().registerPeriodicTask(
           "anyportal-periodic-task", "anyportalPeriodicTask",
@@ -126,7 +126,7 @@ class PlatformTaskScheduler {
           constraints: Constraints(
             networkType: NetworkType.connected,
           ));
-    } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    } else if (platform.isWindows || platform.isLinux || platform.isMacOS) {
       // checkAllRemotes();
       final delayedMinutes = DateTime.now().minute % 15;
       cron.schedule(Schedule.parse('*/15 * * * *'), () async {
