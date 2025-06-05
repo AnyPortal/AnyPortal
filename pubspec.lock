@@ -491,12 +491,11 @@ packages:
   installed_apps:
     dependency: "direct main"
     description:
-      path: "."
-      ref: master
-      resolved-ref: ed3a908fd52657193ac67110ea35cfd9ae53987d
-      url: "https://github.com/shatanikmahanty/installed_apps.git"
-    source: git
-    version: "3.0.0"
+      name: installed_apps
+      sha256: dd2b7c531f91114cd6df447c56567593c9799ca83f057137ae719324ae0afd06
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.6.0"
   intl:
     dependency: "direct main"
     description:
@@ -1345,11 +1344,10 @@ packages:
   workmanager:
     dependency: "direct main"
     description:
-      path: workmanager
-      ref: main
-      resolved-ref: "88161e38650fba809707c5b37c90a9e904545527"
-      url: "https://github.com/fluttercommunity/flutter_workmanager.git"
-    source: git
+      name: workmanager
+      sha256: f3c3ce6d79cce53eee4a29dd2e8328c25db5ba5d9062fcc5e8f3c71e0af9b7e4
+      url: "https://pub.dev"
+    source: hosted
     version: "0.6.0"
   xdg_directories:
     dependency: transitive
