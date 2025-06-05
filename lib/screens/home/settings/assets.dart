@@ -102,7 +102,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
     });
   }
 
-  void handleAssetsAction(action) {
+  void handleAssetsAction(AssetsAction action) {
     switch (action) {
       case AssetsAction.addAsset:
         _addAsset();

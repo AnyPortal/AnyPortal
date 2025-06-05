@@ -26,7 +26,7 @@ class LocaleManager with ChangeNotifier {
     logger.d("finished: LocaleManager.init");
   }
 
-  void update({notify = false}) {
+  void update({bool notify = false}) {
     if (prefs.getBool('app.locale.followSystem')!) {
       var dispatcher = SchedulerBinding.instance.platformDispatcher;
       locale = dispatcher.locale;

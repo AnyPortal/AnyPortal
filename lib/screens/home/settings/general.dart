@@ -46,7 +46,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
     _loadLaunchAtLogin();
   }
 
-  _loadLaunchAtLogin() {
+  void _loadLaunchAtLogin() {
     if (platform.isWindows || platform.isLinux || platform.isMacOS) {
       platformLaunchAtLogin.isEnabled().then((value) {
         setState(() {

@@ -71,7 +71,7 @@ class CoreDataNotifier with ChangeNotifier {
     init();
   }
 
-  loadCfg(Map<String, dynamic> cfg) {
+  void loadCfg(Map<String, dynamic> cfg) {
     init();
 
     if (!cfg.containsKey("outbounds")){
@@ -105,7 +105,7 @@ class CoreDataNotifier with ChangeNotifier {
     }
   }
 
-  processStats(List<Stat> stats) {
+  void processStats(List<Stat> stats) {
     ++index;
     for (var t in TrafficStatType.values) {
       trafficStatPre[t] = trafficStatAgg[t]!;
@@ -131,7 +131,7 @@ class CoreDataNotifier with ChangeNotifier {
   Timer? timer;
 
 
-  start() async {
+  Future<void> start() async {
     final serverAddress = prefs.getString('app.server.address')!;
     final apiPort = prefs.getInt('inject.api.port')!;
     final v2ApiServer = V2ApiServer(serverAddress, apiPort);
@@ -151,7 +151,7 @@ class CoreDataNotifier with ChangeNotifier {
     on = true;
   }
 
-  stop() {
+  void stop() {
     if (timer != null) timer!.cancel();
     on = false;
   }

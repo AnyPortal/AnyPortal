@@ -40,7 +40,7 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
   void writeTProxyConf() async {}
   File tunSingBoxUserConfigFile = vPNMan.getTunSingBoxUserConfigFile();
 
-  handleError(e) {
+  void handleError(Object e) {
     logger.e("tun: $e");
     final snackBar = SnackBar(
       content: Text("$e"),
@@ -50,7 +50,7 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
     }
   }
 
-  copyTextThenNotify(String text) async {
+  Future<void> copyTextThenNotify(String text) async {
     Clipboard.setData(ClipboardData(text: text)).then((_) {
       final snackBar = SnackBar(
         content: Text("Copied"),
@@ -241,7 +241,7 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
   }
 }
 
-tProxyConfInit() async {
+Future<void> tProxyConfInit() async {
   final file = File(p.join(
     global.applicationSupportDirectory.path,
     'conf',

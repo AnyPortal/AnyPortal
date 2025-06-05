@@ -31,14 +31,14 @@ class _AboutScreenState extends State<AboutScreen> {
     _loadPackageInfo();
   }
 
-  _loadPackageInfo() async {
+  Future<void> _loadPackageInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     setState(() {
       version = "v${packageInfo.version}+${packageInfo.buildNumber}";
     });
   }
 
-  copyTextThenNotify(String text) async {
+  Future<void> copyTextThenNotify(String text) async {
     Clipboard.setData(ClipboardData(text: text)).then((_) {
       final snackBar = SnackBar(
         content: Text("Copied"),

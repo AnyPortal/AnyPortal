@@ -37,7 +37,7 @@ class _InstalledAppListState extends State<InstalledAppList> {
     }
   }
 
-  updateAppList() {
+  void updateAppList() {
     setState(() {
       if (_query == "") {
         _filteredApps = _allApps;

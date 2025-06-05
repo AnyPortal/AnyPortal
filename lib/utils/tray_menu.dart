@@ -40,7 +40,7 @@ class TrayMenuManager {
     return _instance;
   }
 
-  updateContextMenu() async {
+  Future<void> updateContextMenu() async {
     if (platform.isAndroid || platform.isIOS) {
       return;
     }

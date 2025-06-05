@@ -71,7 +71,7 @@ abstract class VPNManager with ChangeNotifier {
     }
   }
 
-  startSystemProxy() async {
+  Future<void> startSystemProxy() async {
     if (prefs.getBool("systemProxy")!) {
       String serverAddress = prefs.getString('app.server.address')!;
       if (serverAddress == "0.0.0.0") {
@@ -84,7 +84,7 @@ abstract class VPNManager with ChangeNotifier {
     }
   }
 
-  stopSystemProxy() async {
+  Future<void> stopSystemProxy() async {
     await platformSystemProxyUser.disable();
   }
 
@@ -114,7 +114,7 @@ abstract class VPNManager with ChangeNotifier {
   Future<bool> getIsCoreActive();
   Future<bool> getIsTunActive();
 
-  Future<void> setIsCoreActive(value, {force = false}) async {
+  Future<void> setIsCoreActive(bool value, {force = false}) async {
     if (!force && value == isCoreActive) {
       if (value == isCoreActive) {
         logger.d("setIsCoreActive: no need: isCoreActive: $isCoreActive");
@@ -127,14 +127,14 @@ abstract class VPNManager with ChangeNotifier {
     notifyCoreDataNotifier();
   }
 
-  Future<void> setIsTunActive(value) async {
+  Future<void> setIsTunActive(bool value) async {
     if (value == isTunActive) {
       return;
     }
     isTunActive = value;
   }
 
-  Future<void> updateIsCoreActive({force = false}) async {
+  Future<void> updateIsCoreActive({bool force = false}) async {
     await setIsCoreActive(await getIsCoreActive(), force: force);
   }
 
@@ -422,7 +422,7 @@ abstract class VPNManager with ChangeNotifier {
     }
   }
 
-  installPendingAssetRemote() async {
+  Future<void> installPendingAssetRemote() async {
     logger.d("starting: installPendingAssetRemote");
     final assets = await (db.select(db.asset).join([
       leftOuterJoin(

@@ -24,7 +24,7 @@ class _SystemProxyScreenState extends State<SystemProxyScreen> {
     _loadSettings();
   }
 
-  _loadSettings() async {
+  Future<void> _loadSettings() async {
     _systemProxyIsEnabled = await platformSystemProxyUser.isEnabled();
     _systemProxyShouldEnable = prefs.getBool('systemProxy')!;
     setState(() {

@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
   int _selectedIndex = 0;
   String _pathLog = "";
 
-  setSelectedIndex(i) {
+  void setSelectedIndex(int i) {
     setState(() {
       _selectedIndex = i;
     });
@@ -85,7 +85,7 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
   }
 
   bool? _systemProxyIsEnabled;
-  _loadSystemProxyIsEnabled() async {
+  Future<void> _loadSystemProxyIsEnabled() async {
     _systemProxyIsEnabled = await platformSystemProxyUser.isEnabled();
     setState(() {
       _systemProxyIsEnabled = _systemProxyIsEnabled;

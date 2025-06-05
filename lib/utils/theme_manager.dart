@@ -26,7 +26,7 @@ class ThemeManager with ChangeNotifier {
     logger.d("starting: ThemeManager.init");
   }
 
-  void update({notify = false}) {
+  void update({bool notify = false}) {
     var dispatcher = SchedulerBinding.instance.platformDispatcher;
     isDark = prefs.getBool('app.brightness.followSystem')!
         ? dispatcher.platformBrightness == Brightness.dark

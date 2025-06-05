@@ -86,7 +86,7 @@ class _ProfileListState extends State<ProfileList> {
     }
   }
 
-  void handleProfilesAction(action) {
+  void handleProfilesAction(ProfilesAction action) {
     switch (action) {
       case ProfilesAction.addProfile:
         _addProfile();

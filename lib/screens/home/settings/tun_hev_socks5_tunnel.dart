@@ -302,7 +302,7 @@ misc:
   }
 }
 
-tProxyConfInit() async {
+Future<void> tProxyConfInit() async {
   final folder = global.applicationSupportDirectory;
   final file =
       File(p.join(folder.path, 'conf', 'tun.hev_socks5_tunnel.gen.yaml'));

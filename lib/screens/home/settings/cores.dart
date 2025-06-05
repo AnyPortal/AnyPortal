@@ -63,7 +63,7 @@ class _CoresScreenState extends State<CoresScreen> {
     }
   }
 
-  void handleCoresAction(action) {
+  void handleCoresAction(CoresAction action) {
     switch (action) {
       case CoresAction.addCore:
         _addCore();
@@ -279,7 +279,7 @@ class _CoresScreenState extends State<CoresScreen> {
     }
   }
 
-  setCoreTypeIdCoreId(int coreTypeId, int coreId) {
+  void setCoreTypeIdCoreId(int coreTypeId, int coreId) {
     db
         .into(db.coreTypeSelected)
         .insertOnConflictUpdate(CoreTypeSelectedCompanion(
