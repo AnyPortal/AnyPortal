@@ -35,7 +35,7 @@ ThemeData getPlatformThemeData() {
       colorSchemeSeed: getColorSchemeSeed(),
       useMaterial3: true,
       scaffoldBackgroundColor: isTransparentBG ? Colors.transparent : null,
-      cardTheme: const CardTheme(
+      cardTheme: const CardThemeData(
         color: Color.fromARGB(240, 255, 255, 255),
         shadowColor: Color.fromARGB(172, 0, 0, 0),
       ),
@@ -76,7 +76,7 @@ ThemeData getPlatformDarkThemeData() {
           : isTransparentBG
               ? Colors.transparent
               : null,
-      cardTheme: const CardTheme(
+      cardTheme: const CardThemeData(
         color: Color.fromARGB(16, 255, 255, 255),
         shadowColor: Color.fromARGB(64, 0, 0, 0),
       ),
