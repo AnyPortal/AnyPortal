@@ -534,6 +534,7 @@ class VPNManagerExec extends VPNManager {
         logger.d("finished: stopCore");
         return true;
       } else {
+        pidCore = null;
         logger.w("stopCore: failed");
         return false;
       }
@@ -545,8 +546,14 @@ class VPNManagerExec extends VPNManager {
 
   @override
   startTun() async {
+    logger.d("starting: startTun");
     if (getIsTunProcess() && pidTun == null) {
       await initTunExec();
+      logger.d("tunSingBoxCorePath: $_tunSingBoxCorePath");
+      logger.d("tunSingBoxCoreArgList: $_tunSingBoxCoreArgList");
+      logger.d("tunSingBoxCoreWorkingDir: $_tunSingBoxCoreWorkingDir");
+      logger.d("tunSingBoxCoreEnvs: $_tunSingBoxCoreEnvs");
+
       final processTun = await Process.start(
         _tunSingBoxCorePath!,
         _tunSingBoxCoreArgList,
@@ -556,21 +563,25 @@ class VPNManagerExec extends VPNManager {
       pidTun = processTun.pid;
       await setIsTunActive(true);
     }
+    logger.d("finished: startTun");
   }
 
   @override
   stopTun() async {
+    logger.d("starting: stopTun");
     if (pidTun != null) {
       final res = await PlatformProcess.killProcess(pidTun!);
       if (res) {
         pidTun = null;
         await setIsTunActive(false);
       } else {
+        pidTun = null;
         logger.w("stopTun: failed");
       }
     } else {
       logger.w("stopTun: pidTun is null");
     }
+    logger.d("finished: stopTun");
   }
 
   @override
