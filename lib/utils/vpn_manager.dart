@@ -78,8 +78,8 @@ abstract class VPNManager with ChangeNotifier {
     }
   }
 
-  Future<void> _startTun();
-  Future<void> _stopTun();
+  Future<bool> _startTun();
+  Future<bool> _stopTun();
 
   Future<void> startNotificationForeground() async {}
   Future<void> stopNotificationForeground() async {}
@@ -342,7 +342,7 @@ abstract class VPNManager with ChangeNotifier {
     isExpectingActive = false;
 
     /// check is already inactive
-    if (!await getIsCoreActive()) {
+    if (!await getIsTunActive()) {
       setisTogglingTun(false);
       return;
     }
@@ -783,6 +783,7 @@ class VPNManagerExec extends VPNManager {
       });
     }
     logger.d("finished: _startTun");
+    return true;
   }
 
   @override
@@ -801,6 +802,7 @@ class VPNManagerExec extends VPNManager {
       logger.w("stopTun: pidTun is null");
     }
     logger.d("finished: _stopTun");
+    return true;
   }
 
   @override
@@ -884,12 +886,20 @@ class VPNManagerMC extends VPNManager {
     if (!prefs.getBool("tun.useEmbedded")!) {
       await initTunExec();
     }
-    await platform.invokeMethod('vpn.startTun');
+    final res = await platform.invokeMethod('vpn.startTun') as bool;
+    if (res == true) {
+      await setIsTunActive(true);
+    }
+    return res;
   }
 
   @override
   _stopTun() async {
-    await platform.invokeMethod('vpn.stopTun');
+    final res = await platform.invokeMethod('vpn.stopTun') as bool;
+    if (res == true) {
+      await setIsTunActive(false);
+    }
+    return res;
   }
 
   @override

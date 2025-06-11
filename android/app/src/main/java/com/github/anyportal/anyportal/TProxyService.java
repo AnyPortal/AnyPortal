@@ -282,7 +282,6 @@ public class TProxyService extends VpnService {
 
         if (prefs.getBoolean("flutter.tun", true)) {
             startTun();
-            isTunActive = true;
         }
 
         notifyMainActivity();
@@ -299,7 +298,6 @@ public class TProxyService extends VpnService {
 
         if (prefs.getBoolean("flutter.tun", true)) {
             stopTun();
-            isTunActive = false;
         }
 
         notifyMainActivity();
@@ -470,7 +468,7 @@ public class TProxyService extends VpnService {
         } else {
             startTunExec();
         }
-
+        isTunActive = true;
         Log.d(TAG, "finished: startTun");
     }
 
@@ -532,6 +530,7 @@ public class TProxyService extends VpnService {
             tunSingBoxCoreSuShell = null;
         }
 
+        isTunActive = false;
         Log.d(TAG, "finished: stopTun");
     }
 
@@ -620,6 +619,10 @@ public class TProxyService extends VpnService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        if (exitCode == 0){
+            isSystemProxyActive = true;
+        }
 
         Log.d(TAG, "finished: startSystemProxy");
         return exitCode;
@@ -637,6 +640,10 @@ public class TProxyService extends VpnService {
             exitCode = pb.start().waitFor();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        if (exitCode == 0){
+            isSystemProxyActive = false;
         }
 
         Log.d(TAG, "finished: stopSystemProxy");
