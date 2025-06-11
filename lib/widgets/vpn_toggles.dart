@@ -11,8 +11,10 @@ import '../utils/prefs.dart';
 import '../utils/platform.dart';
 
 class VPNToggles extends StatefulWidget {
+  final bool isDense;
   const VPNToggles({
     super.key,
+    this.isDense = false,
   });
 
   @override
@@ -127,23 +129,25 @@ class VPNTogglesState extends State<VPNToggles> {
     });
   }
 
-  bool? _systemProxyIsEnabled;
+  bool? _systemProxyIsEnabled = prefs.getBool('cache.systemProxy');
   bool tun = prefs.getBool('tun')!;
   bool systemProxy = prefs.getBool('systemProxy')!;
 
   Future<void> _loadSystemProxyIsEnabled() async {
-    _systemProxyIsEnabled = await platformSystemProxyUser.isEnabled();
-    setState(() {
-      _systemProxyIsEnabled = _systemProxyIsEnabled;
+    platformSystemProxyUser.isEnabled().then((value) {
+      setState(() {
+        _systemProxyIsEnabled = value;
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final double switchScale = widget.isDense ? 0.5 : 1;
     return Column(
       children: [
         ListTile(
-          dense: true,
+          dense: widget.isDense,
           title: ListenableBuilder(
               listenable: vPNMan,
               builder: (BuildContext context, Widget? child) {
@@ -164,7 +168,7 @@ class VPNTogglesState extends State<VPNToggles> {
                 ]);
               }),
           trailing: Transform.scale(
-              scale: 0.5,
+              scale: switchScale,
               origin: const Offset(32, 0),
               child: ListenableBuilder(
                   listenable: vPNMan,
@@ -180,9 +184,9 @@ class VPNTogglesState extends State<VPNToggles> {
         if (platform.isWindows ||
             platform.isLinux ||
             platform.isMacOS ||
-            platform.isAndroid)
+            (platform.isAndroid && global.isElevated))
           ListTile(
-              dense: true,
+              dense: widget.isDense,
               title: ListenableBuilder(
                   listenable: Listenable.merge([vPNMan, prefs]),
                   builder: (BuildContext context, Widget? child) {
@@ -210,25 +214,25 @@ class VPNTogglesState extends State<VPNToggles> {
                     ]);
                   }),
               trailing: Transform.scale(
-                scale: 0.5,
+                scale: switchScale,
                 origin: const Offset(32, 0),
                 child: ListenableBuilder(
                     listenable: prefs,
                     builder: (BuildContext context, Widget? child) {
                       return Switch(
-                        value: _systemProxyIsEnabled == null
-                            ? false
-                            : prefs.getBool("systemProxy")!,
-                        onChanged: (bool shouldEnable) {
-                          vPNMan.isTogglingSystemProxy
-                              ? null
-                              : toggleSystemProxy(shouldEnable);
-                        },
+                        value: prefs.getBool("systemProxy")!,
+                        onChanged: _systemProxyIsEnabled == null
+                            ? null
+                            : (bool shouldEnable) {
+                                vPNMan.isTogglingSystemProxy
+                                    ? null
+                                    : toggleSystemProxy(shouldEnable);
+                              },
                       );
                     }),
               )),
         ListTile(
-          dense: true,
+          dense: widget.isDense,
           title: ListenableBuilder(
               listenable: Listenable.merge([vPNMan, prefs]),
               builder: (BuildContext context, Widget? child) {
@@ -256,7 +260,7 @@ class VPNTogglesState extends State<VPNToggles> {
                 ]);
               }),
           trailing: Transform.scale(
-              scale: 0.5,
+              scale: switchScale,
               origin: const Offset(32, 0),
               child: ListenableBuilder(
                   listenable: prefs,

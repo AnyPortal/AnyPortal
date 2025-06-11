@@ -17,6 +17,7 @@ class PrefsManager {
     'app.brightness.dark': true,
     'app.brightness.dark.black': false,
     'app.brightness.followSystem': true,
+    'app.dashboard.floatingActionButton': true,
     'app.locale.followSystem': true,
     'app.locale': "en_US",
     'app.connectAtLaunch': platform.isWindows || platform.isLinux || platform.isMacOS,

@@ -93,14 +93,14 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
 
   @override
   Widget build(BuildContext context) {
-    bool isLandscape =
+    bool isLandscapeLayout =
         MediaQuery.of(context).orientation == Orientation.landscape;
 
     List<ScreenNav> screens = <ScreenNav>[
       ScreenNav(
         Dashboard(
           setSelectedIndex: setSelectedIndex,
-          isToShowVPNToggles: !isLandscape,
+          isLandscapeLayout: isLandscapeLayout,
         ),
         context.loc.dashboard,
         const Icon(Icons.dashboard),
@@ -167,7 +167,7 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
-                  child: VPNToggles(),
+                  child: VPNToggles(isDense: true),
                 ),
               ],
             )),
@@ -200,7 +200,7 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
             }).toList()));
 
     // Switch between portrait and landscape layouts
-    return isLandscape ? landscapeLayout : portraitLayout;
+    return isLandscapeLayout ? landscapeLayout : portraitLayout;
   }
 
   // @override

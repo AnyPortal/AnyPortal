@@ -39,6 +39,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
   bool _notificationForeground = prefs.getBool('app.notification.foreground')!;
   late Locale _locale = localeManager.locale;
   bool _localeFollowSystem = prefs.getBool('app.locale.followSystem')!;
+  bool _isFloatingActionButton = prefs.getBool('app.dashboard.floatingActionButton')!;
 
   @override
   void initState() {
@@ -314,6 +315,19 @@ class _GeneralScreenState extends State<GeneralScreen> {
               _isBlackDark = value;
             });
             themeManager.update(notify: true);
+          },
+        ),
+      ),
+      ListTile(
+        title: Text(context.loc.show_dashboard_floating_button),
+        subtitle: Text(context.loc.disable_to_show_all_toggles_inside_a_dashboard_pane_instead),
+        trailing: Switch(
+          value: _isFloatingActionButton,
+          onChanged: (value) async {
+            prefs.setBool('app.dashboard.floatingActionButton', value);
+            setState(() {
+              _isFloatingActionButton = value;
+            });
           },
         ),
       ),

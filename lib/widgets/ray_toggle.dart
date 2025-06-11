@@ -6,10 +6,9 @@ import '../screens/home/settings/cores.dart';
 import '../utils/logger.dart';
 import '../utils/vpn_manager.dart';
 
-// ignore: must_be_immutable
 class RayToggle extends StatefulWidget {
-  Function setHighlightSelectProfile;
-  RayToggle({
+  final Function setHighlightSelectProfile;
+  const RayToggle({
     super.key,
     required this.setHighlightSelectProfile,
   });

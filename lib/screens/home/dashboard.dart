@@ -11,17 +11,17 @@ import 'package:anyportal/screens/home/dashboard/speed_chart.dart';
 import '../../utils/db.dart';
 import '../../utils/prefs.dart';
 import '../../widgets/ray_toggle.dart';
+import '../../widgets/vpn_toggles.dart';
 import 'dashboard/perf_stats.dart';
 import 'dashboard/traffic_stats.dart';
 
-// ignore: must_be_immutable
 class Dashboard extends StatefulWidget {
-  Function setSelectedIndex;
-  bool isToShowVPNToggles;
-  Dashboard({
+  final Function setSelectedIndex;
+  final bool isLandscapeLayout;
+  const Dashboard({
     super.key,
     required this.setSelectedIndex,
-    required this.isToShowVPNToggles,
+    this.isLandscapeLayout = false,
   });
 
   @override
@@ -30,7 +30,7 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   List<ProfileData> _profiles = [];
-  ProfileData? _selectedProfile;
+  String? _selectedProfileName = prefs.getString("cache.app.selectedProfileName");
 
   bool _highlightSelectProfile = false;
 
@@ -53,7 +53,7 @@ class _DashboardState extends State<Dashboard> {
           .getSingleOrNull();
       if (mounted) {
         setState(() {
-          _selectedProfile = selectedProfile;
+          _selectedProfileName = selectedProfile?.name;
         });
       }
     }
@@ -84,147 +84,147 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(context.loc.dashboard),
-        ),
-        body: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          padding: const EdgeInsets.all(8.0),
-          child: Wrap(children: [
-            Card(
-                margin: const EdgeInsets.all(8.0),
-                child: SmoothHighlight(
-                    enabled: _highlightSelectProfile,
-                    color: Colors.grey,
-                    child: ListTile(
-                      title: Text(
-                        context.loc.selected_profile,
-                      ),
-                      subtitle: Text(_selectedProfile == null
-                          ? ""
-                          : _selectedProfile!.name),
-                      trailing: const Icon(Icons.more_vert),
-                      onTap: () {
-                        _profiles.isNotEmpty
-                            ? widget.setSelectedIndex(2)
-                            : () {
-                                final snackBar = SnackBar(
-                                  content: Text(context
-                                      .loc.no_profile_yet_create_one_first),
-                                );
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(snackBar);
-                                }
-                                widget.setSelectedIndex(2);
-                              }();
-                      },
-                    ))),
-            // if (widget.isToShowVPNToggles)
-            //   Card(
-            //       margin: const EdgeInsets.all(8.0),
-            //       child: ListTile(
-            //         title: Text(
-            //           context.loc.toggles,
-            //           style: Theme.of(context).textTheme.bodyLarge,
-            //         ),
-            //         subtitle: const VPNToggles(),
-            //       )),
-            Card(
-                margin: const EdgeInsets.all(8.0),
-                child: ListTile(
-                  title: Text(
-                    context.loc.speed_graph,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  subtitle: const SpeedChart(),
-                )),
-            Row(children: [
-              Expanded(
-                  child: Card(
-                margin: const EdgeInsets.all(8.0),
-                child: Stack(children: [
-                  Align(
-                      alignment: Directionality.of(context) == TextDirection.ltr
-                          ? Alignment.topRight
-                          : Alignment.topLeft,
-                      child: Container(
-                        width: 8,
-                        height: 8,
-                        margin: const EdgeInsets.fromLTRB(0, 16, 24, 0),
-                        decoration: const BoxDecoration(
-                          color: Colors.orange,
-                          shape: BoxShape.circle,
-                        ),
-                      )),
-                  ListTile(
-                    title: Row(children: [
-                      Text(
-                        context.loc.direct_speed,
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                    ]),
-                    subtitle: const DirectSpeeds(),
-                  )
-                ]),
-              )),
-              Expanded(
-                  child: Card(
-                margin: const EdgeInsets.all(8.0),
-                child: Stack(children: [
-                  Align(
-                      alignment: Directionality.of(context) == TextDirection.ltr
-                          ? Alignment.topRight
-                          : Alignment.topLeft,
-                      child: Container(
-                        width: 8,
-                        height: 8,
-                        margin: const EdgeInsets.fromLTRB(0, 16, 24, 0),
-                        decoration: const BoxDecoration(
-                          color: Colors.blue,
-                          shape: BoxShape.circle,
-                        ),
-                      )),
-                  ListTile(
+      appBar: AppBar(
+        title: Text(context.loc.dashboard),
+      ),
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        padding: const EdgeInsets.all(8.0),
+        child: Wrap(children: [
+          Card(
+              margin: const EdgeInsets.all(8.0),
+              child: SmoothHighlight(
+                  enabled: _highlightSelectProfile,
+                  color: Colors.grey,
+                  child: ListTile(
                     title: Text(
-                      context.loc.proxy_speed,
+                      context.loc.selected_profile,
+                    ),
+                    subtitle: Text(
+                        _selectedProfileName == null ? "" : _selectedProfileName!),
+                    trailing: const Icon(Icons.more_vert),
+                    onTap: () {
+                      _profiles.isNotEmpty
+                          ? widget.setSelectedIndex(2)
+                          : () {
+                              final snackBar = SnackBar(
+                                content: Text(context
+                                    .loc.no_profile_yet_create_one_first),
+                              );
+                              if (mounted) {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
+                              }
+                              widget.setSelectedIndex(2);
+                            }();
+                    },
+                  ))),
+          if (!widget.isLandscapeLayout &&
+              !prefs.getBool("app.dashboard.floatingActionButton")!)
+            Card(
+                margin: const EdgeInsets.all(8.0),
+                child: const Padding(
+                  padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
+                  child: VPNToggles(),
+                )),
+          Card(
+              margin: const EdgeInsets.all(8.0),
+              child: ListTile(
+                title: Text(
+                  context.loc.speed_graph,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                subtitle: const SpeedChart(),
+              )),
+          Row(children: [
+            Expanded(
+                child: Card(
+              margin: const EdgeInsets.all(8.0),
+              child: Stack(children: [
+                Align(
+                    alignment: Directionality.of(context) == TextDirection.ltr
+                        ? Alignment.topRight
+                        : Alignment.topLeft,
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      margin: const EdgeInsets.fromLTRB(0, 16, 24, 0),
+                      decoration: const BoxDecoration(
+                        color: Colors.orange,
+                        shape: BoxShape.circle,
+                      ),
+                    )),
+                ListTile(
+                  title: Row(children: [
+                    Text(
+                      context.loc.direct_speed,
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                    subtitle: const ProxySpeeds(),
-                  )
-                ]),
-              )),
-            ]),
-            Row(children: <Widget>[
-              Expanded(
+                  ]),
+                  subtitle: const DirectSpeeds(),
+                )
+              ]),
+            )),
+            Expanded(
                 child: Card(
-                    margin: const EdgeInsets.all(8.0),
-                    child: ListTile(
-                      title: Text(
-                        context.loc.performance,
-                        style: Theme.of(context).textTheme.bodyLarge,
+              margin: const EdgeInsets.all(8.0),
+              child: Stack(children: [
+                Align(
+                    alignment: Directionality.of(context) == TextDirection.ltr
+                        ? Alignment.topRight
+                        : Alignment.topLeft,
+                    child: Container(
+                      width: 8,
+                      height: 8,
+                      margin: const EdgeInsets.fromLTRB(0, 16, 24, 0),
+                      decoration: const BoxDecoration(
+                        color: Colors.blue,
+                        shape: BoxShape.circle,
                       ),
-                      subtitle: const PerfStats(),
                     )),
-              ),
-              Expanded(
-                child: Card(
-                    margin: EdgeInsets.all(8.0),
-                    child: ListTile(
-                      title: Text(context.loc.traffic),
-                      subtitle: TrafficStats(),
-                    )),
-              ),
-            ]),
-            Container(
-              constraints: const BoxConstraints(
-                minHeight: 72,
-              ),
-            )
+                ListTile(
+                  title: Text(
+                    context.loc.proxy_speed,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  subtitle: const ProxySpeeds(),
+                )
+              ]),
+            )),
           ]),
-        ),
-        floatingActionButton: RayToggle(
-          setHighlightSelectProfile: setHighlightSelectProfile,
-        ));
+          Row(children: <Widget>[
+            Expanded(
+              child: Card(
+                  margin: const EdgeInsets.all(8.0),
+                  child: ListTile(
+                    title: Text(
+                      context.loc.performance,
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    subtitle: const PerfStats(),
+                  )),
+            ),
+            Expanded(
+              child: Card(
+                  margin: EdgeInsets.all(8.0),
+                  child: ListTile(
+                    title: Text(context.loc.traffic),
+                    subtitle: TrafficStats(),
+                  )),
+            ),
+          ]),
+          Container(
+            constraints: const BoxConstraints(
+              minHeight: 72,
+            ),
+          )
+        ]),
+      ),
+      floatingActionButton: prefs.getBool("app.dashboard.floatingActionButton")!
+          ? RayToggle(
+              setHighlightSelectProfile: setHighlightSelectProfile,
+            )
+          : null,
+    );
   }
 }

@@ -7,9 +7,17 @@ import 'package:tuple/tuple.dart';
 
 import 'logger.dart';
 import 'platform.dart';
+import 'prefs.dart';
 
 class PlatformSystemProxyUser {
+  /// return true, false, or null when system proxy is not available
   Future<bool?> isEnabled() async {
+    final res = await _isEnabled();
+    prefs.set('cache.systemProxy', res);
+    return res;
+  }
+
+  Future<bool?> _isEnabled() async {
     return null;
   }
 
@@ -28,7 +36,7 @@ class PlatformSystemProxyUserWindows extends PlatformSystemProxyUser {
       r'HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings';
 
   @override
-  Future<bool?> isEnabled() async {
+  Future<bool?> _isEnabled() async {
     try {
       final shell = Shell();
       final result =
@@ -151,7 +159,7 @@ class PlatformSystemProxyUserMacOS extends PlatformSystemProxyUser {
   }
 
   @override
-  Future<bool?> isEnabled() async {
+  Future<bool?> _isEnabled() async {
     await updateNetworkService();
     if (networkService == null) {
       logger.w('PlatformSystemProxyUserMacOS.isEnabled: no networkService');
@@ -240,7 +248,7 @@ class PlatformSystemProxyUserLinux extends PlatformSystemProxyUser {
   }
 
   @override
-  Future<bool?> isEnabled() async {
+  Future<bool?> _isEnabled() async {
     desktop = await _detectGui();
     try {
       final shell = Shell();
@@ -340,7 +348,7 @@ class PlatformSystemProxyUserAndroid extends PlatformSystemProxyUser {
   static const platform = MethodChannel('com.github.anyportal.anyportal');
 
   @override
-  Future<bool?> isEnabled() async {
+  Future<bool?> _isEnabled() async {
     return await platform.invokeMethod('vpn.getIsSystemProxyEnabled') as bool;
   }
 
