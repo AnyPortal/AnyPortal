@@ -38,8 +38,10 @@
   "binding_ip": "IP الربط",
   "black_dark": "أسود داكن",
   "close_to_tray": "إغلاق إلى العلبة",
+  "connect": null,
   "connectivity": "الاتصال",
   "connectivity_basic_settings": "إعدادات الاتصال الأساسية",
+  "core": null,
   "core_executable": "الملف التنفيذي للنواة",
   "core_type": "نوع النواة",
   "cores": "النوى",
@@ -74,6 +76,7 @@
   "enable_tun_via_platform_api_": "تمكين tun عبر API النظام الأساسي",
   "enable_tun_via_root_": "تمكين tun عبر الروت",
   "envs": "المتغيرات البيئية",
+  "exit": null,
   "follow_system_brightness": "اتباع سطوع النظام",
   "follow_system_locale": "اتباع لغة النظام",
   "foreground": "المقدمة",
@@ -132,7 +135,7 @@
   "@run_as_elevated_user": {
     "placeholders": {
       "elevatedUser": {
-        "example": "المسؤول",
+        "example": "Administrator",
         "type": "String"
       }
     }
@@ -154,6 +157,7 @@
   "storage_permission_is_required_for_cores_to_load_assets_": "إذن التخزين مطلوب لكي تتمكن النواة من تحميل الأصول.",
   "system_proxy": "بروكسي النظام",
   "theme_settings": "إعدادات المظهر",
+  "toggles": null,
   "traffic": "حركة المرور",
   "tun_settings": "إعدادات Tun",
   "tun_via_platform_api_": "Tun (عبر API النظام الأساسي)",
@@ -175,7 +179,7 @@
   "@warning_you_need_to_be_elevated_user_to_modify_this_setting": {
     "placeholders": {
       "elevatedUser": {
-        "example": "المسؤول",
+        "example": "Administrator",
         "type": "String"
       }
     }

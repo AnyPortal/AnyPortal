@@ -178,6 +178,10 @@ public class MainActivity extends FlutterActivity {
                 result.success(tProxyService.isTunActive);
                 break;
 
+            case "vpn.isSystemProxyActive":
+                result.success(tProxyService.isSystemProxyActive);
+                break;
+
             case "log.core.startWatching":
                 String filePath = call.argument("filePath");
                 fileObserver = new FileObserver(new File(filePath)) {

@@ -143,14 +143,14 @@ void main(List<String> args) async {
     if (prefs.getBool('app.connectAtLaunch')!) {
       try {
         if (!await vPNMan.getIsCoreActive()) {
-          await vPNMan.start();
+          await vPNMan.startAll();
         }
       } on Exception catch (e) {
         logger.w("$e");
         err = e;
       } finally {
         if (err != null) {
-          vPNMan.setIsToggling(false);
+          vPNMan.setisTogglingAll(false);
         }
       }
     }
@@ -159,7 +159,7 @@ void main(List<String> args) async {
 
 class AnyPortal extends StatelessWidget {
   const AnyPortal({super.key});
-
+  
   /// This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -168,11 +168,14 @@ class AnyPortal extends StatelessWidget {
         builder: (BuildContext context, Widget? child) {
           return MaterialApp(
             title: 'AnyPortal',
+            navigatorKey: global.navigatorKey,
             theme: getPlatformThemeData(),
             locale: localeManager.locale,
             darkTheme: getPlatformDarkThemeData(),
             themeMode: themeManager.isDark ? ThemeMode.dark : ThemeMode.light,
-            home: const HomePage(title: 'AnyPortal'),
+            home: HomePage(
+              title: 'AnyPortal',
+            ),
             localizationsDelegates: [
               LocaleNamesLocalizationsDelegate(),
               ...AppLocalizations.localizationsDelegates,

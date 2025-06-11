@@ -38,8 +38,10 @@
   "binding_ip": "آدرس IP اتصال",
   "black_dark": "سیاه تیره",
   "close_to_tray": "بستن به سینی سیستم",
+  "connect": null,
   "connectivity": "اتصال",
   "connectivity_basic_settings": "تنظیمات اولیه اتصال",
+  "core": null,
   "core_executable": "اجرای هسته",
   "core_type": "نوع هسته",
   "cores": "هسته‌ها",
@@ -74,6 +76,7 @@
   "enable_tun_via_platform_api_": "فعال‌سازی تونل (از طریق API پلتفرم)",
   "enable_tun_via_root_": "فعال‌سازی تونل (از طریق روت)",
   "envs": "محیط‌ها",
+  "exit": null,
   "follow_system_brightness": "پیروی از روشنایی سیستم",
   "follow_system_locale": "پیروی از زبان سیستم",
   "foreground": "پیش‌زمینه",
@@ -132,7 +135,7 @@
   "@run_as_elevated_user": {
     "placeholders": {
       "elevatedUser": {
-        "example": "مدیر سیستم",
+        "example": "Administrator",
         "type": "String"
       }
     }
@@ -154,6 +157,7 @@
   "storage_permission_is_required_for_cores_to_load_assets_": "مجوز ذخیره‌سازی برای بارگیری دارایی‌های هسته مورد نیاز است",
   "system_proxy": "پروکسی سیستم",
   "theme_settings": "تنظیمات پوسته",
+  "toggles": null,
   "traffic": "ترافیک",
   "tun_settings": "تنظیمات TUN",
   "tun_via_platform_api_": "TUN (از طریق API پلتفرم)",
@@ -175,7 +179,7 @@
   "@warning_you_need_to_be_elevated_user_to_modify_this_setting": {
     "placeholders": {
       "elevatedUser": {
-        "example": "مدیر سیستم",
+        "example": "Administrator",
         "type": "String"
       }
     }

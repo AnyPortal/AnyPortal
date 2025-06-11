@@ -38,8 +38,10 @@
   "binding_ip": "Bağlantı IP’si",
   "black_dark": "Siyah koyu",
   "close_to_tray": "Sistem tepsisine küçült",
+  "connect": null,
   "connectivity": "Bağlantı",
   "connectivity_basic_settings": "Bağlantı temel ayarları",
+  "core": null,
   "core_executable": "Çekirdek çalıştırılabilir dosyası",
   "core_type": "Çekirdek türü",
   "cores": "Çekirdekler",
@@ -74,6 +76,7 @@
   "enable_tun_via_platform_api_": "Tun’u platform API’si üzerinden etkinleştir",
   "enable_tun_via_root_": "Tun’u root üzerinden etkinleştir",
   "envs": "Çevresel değişkenler",
+  "exit": null,
   "follow_system_brightness": "Sistem parlaklığını takip et",
   "follow_system_locale": "Sistem dilini takip et",
   "foreground": "Ön plan",
@@ -132,7 +135,7 @@
   "@run_as_elevated_user": {
     "placeholders": {
       "elevatedUser": {
-        "example": "Yönetici",
+        "example": "Administrator",
         "type": "String"
       }
     }
@@ -154,6 +157,7 @@
   "storage_permission_is_required_for_cores_to_load_assets_": "Çekirdeklerin varlıkları yükleyebilmesi için depolama izni gereklidir.",
   "system_proxy": "Sistem proxy’si",
   "theme_settings": "Tema ayarları",
+  "toggles": null,
   "traffic": "Trafik",
   "tun_settings": "Tun ayarları",
   "tun_via_platform_api_": "Tun (platform API üzerinden)",
@@ -175,7 +179,7 @@
   "@warning_you_need_to_be_elevated_user_to_modify_this_setting": {
     "placeholders": {
       "elevatedUser": {
-        "example": "Yönetici",
+        "example": "Administrator",
         "type": "String"
       }
     }

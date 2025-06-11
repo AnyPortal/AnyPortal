@@ -13,12 +13,12 @@ class PlatformSystemProxyUser {
     return null;
   }
 
-  Future<void> enable(Map<String, Tuple2<String, int>> proxies) async {
-    return;
+  Future<bool> enable(Map<String, Tuple2<String, int>> proxies) async {
+    return false;
   }
 
-  Future<void> disable() async {
-    return;
+  Future<bool> disable() async {
+    return false;
   }
 }
 
@@ -41,7 +41,7 @@ class PlatformSystemProxyUserWindows extends PlatformSystemProxyUser {
   }
 
   @override
-  Future<void> enable(Map<String, Tuple2<String, int>> proxies) async {
+  Future<bool> enable(Map<String, Tuple2<String, int>> proxies) async {
     try {
       final shell = Shell();
       await shell
@@ -58,18 +58,22 @@ class PlatformSystemProxyUserWindows extends PlatformSystemProxyUser {
       }
     } catch (e) {
       logger.e("PlatformSystemProxyUserWindows.enable: $e");
+      return false;
     }
+    return true;
   }
 
   @override
-  Future<void> disable() async {
+  Future<bool> disable() async {
     try {
       final shell = Shell();
       await shell
           .run('reg add "$_registryPath" /v ProxyEnable /t REG_DWORD /d 0 /f');
     } catch (e) {
       logger.e("PlatformSystemProxyUserWindows.disable: $e");
+      return false;
     }
+    return true;
   }
 }
 
@@ -165,7 +169,7 @@ class PlatformSystemProxyUserMacOS extends PlatformSystemProxyUser {
   }
 
   @override
-  Future<void> enable(Map<String, Tuple2<String, int>> proxies) async {
+  Future<bool> enable(Map<String, Tuple2<String, int>> proxies) async {
     try {
       final shell = Shell();
       await shell
@@ -188,11 +192,14 @@ class PlatformSystemProxyUserMacOS extends PlatformSystemProxyUser {
       }
     } catch (e) {
       logger.e('PlatformSystemProxyUserMacOS.enable: $e');
+      return false;
     }
+    return true;
   }
 
+
   @override
-  Future<void> disable() async {
+  Future<bool> disable() async {
     try {
       final shell = Shell();
       await shell
@@ -200,7 +207,9 @@ class PlatformSystemProxyUserMacOS extends PlatformSystemProxyUser {
       await shell.run('networksetup -setwebproxystate $networkService off');
     } catch (e) {
       logger.e('PlatformSystemProxyUserMacOS.disable: $e');
+      return false;
     }
+    return true;
   }
 }
 
@@ -253,7 +262,7 @@ class PlatformSystemProxyUserLinux extends PlatformSystemProxyUser {
   }
 
   @override
-  Future<void> enable(Map<String, Tuple2<String, int>> proxies) async {
+  Future<bool> enable(Map<String, Tuple2<String, int>> proxies) async {
     try {
       final shell = Shell();
 
@@ -303,11 +312,13 @@ class PlatformSystemProxyUserLinux extends PlatformSystemProxyUser {
       }
     } catch (e) {
       logger.e('PlatformSystemProxyUserLinux.enable: $e');
+      return false;
     }
+    return true;
   }
 
   @override
-  Future<void> disable() async {
+  Future<bool> disable() async {
     try {
       final shell = Shell();
 
@@ -319,7 +330,9 @@ class PlatformSystemProxyUserLinux extends PlatformSystemProxyUser {
       }
     } catch (e) {
       logger.e('PlatformSystemProxyUserLinux.disable: $e');
+      return false;
     }
+    return true;
   }
 }
 
@@ -332,15 +345,15 @@ class PlatformSystemProxyUserAndroid extends PlatformSystemProxyUser {
   }
 
   @override
-  Future<void> enable(Map<String, Tuple2<String, int>> proxies) async {
-    await platform.invokeMethod('vpn.startSystemProxy') as int;
-    return;
+  Future<bool> enable(Map<String, Tuple2<String, int>> proxies) async {
+    final exitCode = await platform.invokeMethod('vpn.startSystemProxy') as int;
+    return exitCode == 0;
   }
 
   @override
-  Future<void> disable() async {
-    await platform.invokeMethod('vpn.stopSystemProxy') as int;
-    return;
+  Future<bool> disable() async {
+    final exitCode = await platform.invokeMethod('vpn.stopSystemProxy') as int;
+    return exitCode == 0;
   }
 }
 

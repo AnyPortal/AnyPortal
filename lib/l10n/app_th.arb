@@ -38,8 +38,10 @@
   "binding_ip": "การเชื่อมต่อ IP",
   "black_dark": "ดำเข้ม",
   "close_to_tray": "ปิดไปที่ถาด",
+  "connect": null,
   "connectivity": "การเชื่อมต่อ",
   "connectivity_basic_settings": "การตั้งค่าการเชื่อมต่อพื้นฐาน",
+  "core": null,
   "core_executable": "ไฟล์ปฏิบัติการของคอร์",
   "core_type": "ประเภทคอร์",
   "cores": "คอร์",
@@ -74,6 +76,7 @@
   "enable_tun_via_platform_api_": "เปิดใช้งาน TUN ผ่าน API ของแพลตฟอร์ม",
   "enable_tun_via_root_": "เปิดใช้งาน TUN ผ่าน root",
   "envs": "สภาพแวดล้อม",
+  "exit": null,
   "follow_system_brightness": "ปฏิบัติตามความสว่างของระบบ",
   "follow_system_locale": "ปฏิบัติตามภาษาและภูมิภาคของระบบ",
   "foreground": "เบื้องหน้า",
@@ -132,7 +135,7 @@
   "@run_as_elevated_user": {
     "placeholders": {
       "elevatedUser": {
-        "example": "ผู้ดูแลระบบ",
+        "example": "Administrator",
         "type": "String"
       }
     }
@@ -154,6 +157,7 @@
   "storage_permission_is_required_for_cores_to_load_assets_": "ต้องได้รับอนุญาตการจัดเก็บเพื่อให้ไฟล์หลักโหลดทรัพย์สินได้",
   "system_proxy": "พร็อกซีระบบ",
   "theme_settings": "การตั้งค่าธีม",
+  "toggles": null,
   "traffic": "ทราฟฟิก",
   "tun_settings": "การตั้งค่า TUN",
   "tun_via_platform_api_": "TUN (ผ่าน API ของแพลตฟอร์ม)",
@@ -175,7 +179,7 @@
   "@warning_you_need_to_be_elevated_user_to_modify_this_setting": {
     "placeholders": {
       "elevatedUser": {
-        "example": "ผู้ดูแลระบบ",
+        "example": "Administrator",
         "type": "String"
       }
     }

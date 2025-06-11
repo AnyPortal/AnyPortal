@@ -38,8 +38,10 @@
   "binding_ip": "IP ràng buộc",
   "black_dark": "Đen tối",
   "close_to_tray": "Thu nhỏ vào khay hệ thống",
+  "connect": null,
   "connectivity": "Kết nối",
   "connectivity_basic_settings": "Cài đặt kết nối cơ bản",
+  "core": null,
   "core_executable": "Tệp thực thi lõi",
   "core_type": "Loại lõi",
   "cores": "Lõi",
@@ -74,6 +76,7 @@
   "enable_tun_via_platform_api_": "Bật tun (qua API nền tảng)",
   "enable_tun_via_root_": "Bật tun (qua root)",
   "envs": "Môi trường",
+  "exit": null,
   "follow_system_brightness": "Theo độ sáng hệ thống",
   "follow_system_locale": "Theo ngôn ngữ hệ thống",
   "foreground": "Tiền cảnh",
@@ -132,7 +135,7 @@
   "@run_as_elevated_user": {
     "placeholders": {
       "elevatedUser": {
-        "example": "Quản trị viên",
+        "example": "Administrator",
         "type": "String"
       }
     }
@@ -154,6 +157,7 @@
   "storage_permission_is_required_for_cores_to_load_assets_": "Cần có quyền lưu trữ để lõi tải tài nguyên.",
   "system_proxy": "Proxy hệ thống",
   "theme_settings": "Cài đặt giao diện",
+  "toggles": null,
   "traffic": "Lưu lượng",
   "tun_settings": "Cài đặt Tun",
   "tun_via_platform_api_": "Tun (qua API nền tảng)",
@@ -175,7 +179,7 @@
   "@warning_you_need_to_be_elevated_user_to_modify_this_setting": {
     "placeholders": {
       "elevatedUser": {
-        "example": "Quản trị viên",
+        "example": "Administrator",
         "type": "String"
       }
     }

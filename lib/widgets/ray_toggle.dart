@@ -33,9 +33,9 @@ class RayToggleState extends State<RayToggle> {
     Exception? err;
     try {
       if (isCoreActive) {
-        await vPNMan.stop();
+        await vPNMan.stopAll();
       } else {
-        await vPNMan.start();
+        await vPNMan.startAll();
       }
     } on ExceptionInvalidCorePath catch (e) {
       err = e;
@@ -57,7 +57,7 @@ class RayToggleState extends State<RayToggle> {
       logger.w(e);
     } finally {
       if (err != null) {
-        vPNMan.setIsToggling(false);
+        vPNMan.setisTogglingAll(false);
         final snackBar = SnackBar(
           content: Text("toggle: $err"),
         );
@@ -78,11 +78,11 @@ class RayToggleState extends State<RayToggle> {
         listenable: vPNMan,
         builder: (BuildContext context, Widget? child) {
           return FloatingActionButton(
-              onPressed: vPNMan.isToggling ? null : _toggle,
+              onPressed: vPNMan.isTogglingAll ? null : _toggle,
               tooltip: vPNMan.isCoreActive
                   ? 'disconnect'
                   : 'connect',
-              child: vPNMan.isToggling
+              child: vPNMan.isTogglingAll
                   ? Transform.scale(
                       scale: 0.5,
                       child: const CircularProgressIndicator(),

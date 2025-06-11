@@ -38,8 +38,10 @@
   "binding_ip": "바인딩 IP",
   "black_dark": "블랙 다크",
   "close_to_tray": "트레이로 최소화",
+  "connect": null,
   "connectivity": "연결",
   "connectivity_basic_settings": "연결 기본 설정",
+  "core": null,
   "core_executable": "코어 실행 파일",
   "core_type": "코어 유형",
   "cores": "코어",
@@ -74,6 +76,7 @@
   "enable_tun_via_platform_api_": "플랫폼 API를 통한 TUN 활성화",
   "enable_tun_via_root_": "루트를 통한 TUN 활성화",
   "envs": "환경 변수",
+  "exit": null,
   "follow_system_brightness": "시스템 밝기 따라가기",
   "follow_system_locale": "시스템 로케일 따라가기",
   "foreground": "전경",
@@ -132,7 +135,7 @@
   "@run_as_elevated_user": {
     "placeholders": {
       "elevatedUser": {
-        "example": "관리자",
+        "example": "Administrator",
         "type": "String"
       }
     }
@@ -154,6 +157,7 @@
   "storage_permission_is_required_for_cores_to_load_assets_": "코어가 애셋을 로드하려면 저장소 권한이 필요합니다.",
   "system_proxy": "시스템 프록시",
   "theme_settings": "테마 설정",
+  "toggles": null,
   "traffic": "트래픽",
   "tun_settings": "TUN 설정",
   "tun_via_platform_api_": "TUN (플랫폼 API 사용)",
@@ -175,7 +179,7 @@
   "@warning_you_need_to_be_elevated_user_to_modify_this_setting": {
     "placeholders": {
       "elevatedUser": {
-        "example": "관리자",
+        "example": "Administrator",
         "type": "String"
       }
     }

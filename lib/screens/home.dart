@@ -12,18 +12,20 @@ import 'package:anyportal/extensions/localization.dart';
 import 'package:anyportal/utils/global.dart';
 import 'package:anyportal/utils/tray_menu.dart';
 import 'package:anyportal/utils/vpn_manager.dart';
-import '../utils/logger.dart';
-import '../utils/platform_system_proxy_user.dart';
 import '../utils/prefs.dart';
 import '../utils/theme_manager.dart';
 import '../utils/platform.dart';
+import '../widgets/vpn_toggles.dart';
 import 'home/dashboard.dart';
 import 'home/logs.dart';
 import 'home/profiles.dart';
 import 'home/settings.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.title});
+  const HomePage({
+    super.key,
+    required this.title,
+  });
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -64,9 +66,7 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
     windowManager.addListener(this);
     super.initState();
 
-    _loadSystemProxyIsEnabled();
-
-    if (!kIsWeb){
+    if (!kIsWeb) {
       final logFile = File(p.join(
         global.applicationSupportDirectory.path,
         'log',
@@ -84,14 +84,6 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
     }
   }
 
-  bool? _systemProxyIsEnabled;
-  Future<void> _loadSystemProxyIsEnabled() async {
-    _systemProxyIsEnabled = await platformSystemProxyUser.isEnabled();
-    setState(() {
-      _systemProxyIsEnabled = _systemProxyIsEnabled;
-    });
-  }
-
   @override
   void dispose() {
     trayManager.removeListener(this);
@@ -101,9 +93,15 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
 
   @override
   Widget build(BuildContext context) {
+    bool isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
     List<ScreenNav> screens = <ScreenNav>[
       ScreenNav(
-        Dashboard(setSelectedIndex: setSelectedIndex),
+        Dashboard(
+          setSelectedIndex: setSelectedIndex,
+          isToShowVPNToggles: !isLandscape,
+        ),
         context.loc.dashboard,
         const Icon(Icons.dashboard),
       ),
@@ -123,19 +121,6 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
         const Icon(Icons.settings),
       ),
     ];
-
-    bool isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
-
-    handleError(e) {
-      logger.e("tun: $e");
-      final snackBar = SnackBar(
-        content: Text("$e"),
-      );
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      }
-    }
 
     // Layout for landscape mode with custom drawer
     Widget landscapeLayout = Scaffold(
@@ -182,103 +167,7 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
-                  child: Column(
-                    children: [
-                      ListTile(
-                        dense: true,
-                        title: const Text("Tun"),
-                        trailing: Transform.scale(
-                            scale: 0.5,
-                            origin: const Offset(32, 4),
-                            child: ListenableBuilder(
-                                listenable: prefs,
-                                builder: (BuildContext context, Widget? child) {
-                                  bool tun = prefs.getBool('tun')!;
-                                  return Switch(
-                                    value: tun,
-                                    onChanged: (shouldEnable) {
-                                      if (!global.isElevated) {
-                                        final snackBar = SnackBar(
-                                          content: Text(context.loc
-                                              .warning_you_need_to_be_elevated_user_to_modify_this_setting(
-                                                  platform.isWindows
-                                                      ? context
-                                                          .loc.administrator
-                                                      : "root")),
-                                        );
-                                        if (context.mounted) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(snackBar);
-                                        }
-                                        return;
-                                      }
-                                      setState(() {
-                                        tun = shouldEnable;
-                                      });
-                                      prefs.setBool('tun', shouldEnable);
-                                      vPNMan
-                                          .getIsCoreActive()
-                                          .then((isCoreActive) {
-                                        if (isCoreActive) {
-                                          if (shouldEnable) {
-                                            vPNMan
-                                                .startTun()
-                                                .catchError(handleError);
-                                          } else {
-                                            vPNMan
-                                                .stopTun()
-                                                .catchError(handleError);
-                                          }
-                                        }
-                                      });
-                                    },
-                                  );
-                                })),
-                      ),
-                      if (platform.isWindows ||
-                          platform.isLinux ||
-                          platform.isMacOS ||
-                          platform.isAndroid)
-                        ListTile(
-                            dense: true,
-                            title: Text(context.loc.system_proxy),
-                            trailing: Transform.scale(
-                              scale: 0.5,
-                              origin: const Offset(32, 4),
-                              child: ListenableBuilder(
-                                  listenable: prefs,
-                                  builder:
-                                      (BuildContext context, Widget? child) {
-                                    bool systemProxyShouldEnable =
-                                        prefs.getBool("systemProxy")!;
-                                    return Switch(
-                                      value: _systemProxyIsEnabled == null
-                                          ? false
-                                          : systemProxyShouldEnable,
-                                      onChanged: (bool shouldEnable) {
-                                        setState(() {
-                                          systemProxyShouldEnable =
-                                              shouldEnable;
-                                        });
-                                        prefs.setBool(
-                                            'systemProxy', shouldEnable);
-                                        vPNMan
-                                            .getIsCoreActive()
-                                            .then((isCoreActive) {
-                                          if (isCoreActive) {
-                                            if (shouldEnable) {
-                                              vPNMan.startSystemProxy();
-                                            } else {
-                                              vPNMan.stopSystemProxy();
-                                            }
-                                          }
-                                        });
-                                      },
-                                    );
-                                  }),
-                            ))
-                    ],
-                  ),
+                  child: VPNToggles(),
                 ),
               ],
             )),
@@ -347,9 +236,9 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
         final shouldEnable = !menuItem.checked!;
         menuItem.checked = shouldEnable;
         if (shouldEnable) {
-          vPNMan.start();
+          vPNMan.startAll();
         } else {
-          vPNMan.stop();
+          vPNMan.stopAll();
         }
       case 'toggle_tun':
         final shouldEnable = !menuItem.checked!;

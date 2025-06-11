@@ -38,8 +38,10 @@
   "binding_ip": "बाइंडिंग आईपी",
   "black_dark": "काला गहरा",
   "close_to_tray": "ट्रे में बंद करें",
+  "connect": null,
   "connectivity": "कनेक्टिविटी",
   "connectivity_basic_settings": "कनेक्टिविटी की मूल सेटिंग्स",
+  "core": null,
   "core_executable": "कोर निष्पादन योग्य",
   "core_type": "कोर प्रकार",
   "cores": "कोर",
@@ -74,6 +76,7 @@
   "enable_tun_via_platform_api_": "प्लेटफ़ॉर्म API के माध्यम से TUN सक्षम करें",
   "enable_tun_via_root_": "रूट के माध्यम से TUN सक्षम करें",
   "envs": "पर्यावरण सेटिंग्स",
+  "exit": null,
   "follow_system_brightness": "सिस्टम चमक का पालन करें",
   "follow_system_locale": "सिस्टम भाषा का पालन करें",
   "foreground": "अग्रभूमि",
@@ -132,7 +135,7 @@
   "@run_as_elevated_user": {
     "placeholders": {
       "elevatedUser": {
-        "example": "प्रशासक",
+        "example": "Administrator",
         "type": "String"
       }
     }
@@ -154,6 +157,7 @@
   "storage_permission_is_required_for_cores_to_load_assets_": "कोर को संपत्तियाँ लोड करने के लिए संग्रहण अनुमति आवश्यक है",
   "system_proxy": "सिस्टम प्रॉक्सी",
   "theme_settings": "थीम सेटिंग्स",
+  "toggles": null,
   "traffic": "ट्रैफ़िक",
   "tun_settings": "TUN सेटिंग्स",
   "tun_via_platform_api_": "TUN (प्लेटफ़ॉर्म एपीआई के माध्यम से)",
@@ -175,7 +179,7 @@
   "@warning_you_need_to_be_elevated_user_to_modify_this_setting": {
     "placeholders": {
       "elevatedUser": {
-        "example": "प्रशासक",
+        "example": "Administrator",
         "type": "String"
       }
     }

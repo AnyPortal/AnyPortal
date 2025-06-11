@@ -1,3 +1,4 @@
+// import 'package:anyportal/widgets/vpn_toggles.dart';
 import 'package:flutter/material.dart';
 
 import 'package:drift/drift.dart';
@@ -16,9 +17,11 @@ import 'dashboard/traffic_stats.dart';
 // ignore: must_be_immutable
 class Dashboard extends StatefulWidget {
   Function setSelectedIndex;
+  bool isToShowVPNToggles;
   Dashboard({
     super.key,
     required this.setSelectedIndex,
+    required this.isToShowVPNToggles,
   });
 
   @override
@@ -117,6 +120,16 @@ class _DashboardState extends State<Dashboard> {
                               }();
                       },
                     ))),
+            // if (widget.isToShowVPNToggles)
+            //   Card(
+            //       margin: const EdgeInsets.all(8.0),
+            //       child: ListTile(
+            //         title: Text(
+            //           context.loc.toggles,
+            //           style: Theme.of(context).textTheme.bodyLarge,
+            //         ),
+            //         subtitle: const VPNToggles(),
+            //       )),
             Card(
                 margin: const EdgeInsets.all(8.0),
                 child: ListTile(

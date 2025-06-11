@@ -40,17 +40,47 @@ class ExceptionInvalidSelectedProfile implements Exception {
 }
 
 abstract class VPNManager with ChangeNotifier {
-  bool isToggling = false;
   bool isCoreActive = false;
   bool isTunActive = false;
-  bool isExpectingActive = false;
+  bool isSystemProxyActive = false;
 
-  Future<void> startAll();
-  Future<void> stopAll();
-  Future<bool> startCore();
-  Future<bool> stopCore();
-  Future<void> startTun();
-  Future<void> stopTun();
+  bool isExpectingActive = false;
+  bool isTogglingAll = false;
+  bool isTogglingCore = false;
+  bool isTogglingTun = false;
+  bool isTogglingSystemProxy = false;
+
+  Future<void> _startAll();
+  Future<void> _stopAll();
+  Future<bool> _startCore();
+  Future<bool> _stopCore();
+
+  Future<void> _startSystemProxy() async {
+    if (prefs.getBool("systemProxy")!) {
+      String serverAddress = prefs.getString('app.server.address')!;
+      if (serverAddress == "0.0.0.0") {
+        serverAddress = "127.0.0.1";
+      }
+      final ok = await platformSystemProxyUser.enable({
+        'socks': Tuple2(serverAddress, prefs.getInt("app.socks.port")!),
+        'http': Tuple2(serverAddress, prefs.getInt("app.http.port")!),
+      });
+      if (ok) {
+        setIsSystemProxyActive(true);
+      }
+    }
+  }
+
+  Future<void> _stopSystemProxy() async {
+    final ok = await platformSystemProxyUser.disable();
+    if (ok) {
+      setIsSystemProxyActive(false);
+    }
+  }
+
+  Future<void> _startTun();
+  Future<void> _stopTun();
+
   Future<void> startNotificationForeground() async {}
   Future<void> stopNotificationForeground() async {}
 
@@ -71,41 +101,95 @@ abstract class VPNManager with ChangeNotifier {
     }
   }
 
-  Future<void> startSystemProxy() async {
-    if (prefs.getBool("systemProxy")!) {
-      String serverAddress = prefs.getString('app.server.address')!;
-      if (serverAddress == "0.0.0.0") {
-        serverAddress = "127.0.0.1";
-      }
-      await platformSystemProxyUser.enable({
-        'socks': Tuple2(serverAddress, prefs.getInt("app.socks.port")!),
-        'http': Tuple2(serverAddress, prefs.getInt("app.http.port")!),
-      });
-    }
-  }
-
-  Future<void> stopSystemProxy() async {
-    await platformSystemProxyUser.disable();
-  }
-
   Future<Null>? delayedTogglingChecker;
 
-  void setIsToggling(bool val) {
-    if (isToggling != val) {
-      isToggling = val;
+  void setisTogglingAll(bool val) {
+    if (isTogglingAll != val) {
+      isTogglingAll = val;
       notifyListeners();
+    } else {
+      return;
     }
 
     /// with timeout
     const timeoutSec = 5;
-    if (isToggling) {
+    if (isTogglingAll) {
       delayedTogglingChecker =
           Future.delayed(const Duration(seconds: timeoutSec), () {
-        if (isToggling) {
+        if (isTogglingAll) {
           updateIsCoreActive(force: true);
-          final errMsg = "toggled for $timeoutSec sec, force stopped";
+          final errMsg = "all toggled for $timeoutSec sec, force stopped";
           logger.w(errMsg);
-          throw Exception(errMsg);
+          // throw Exception(errMsg);
+        }
+      });
+    }
+  }
+
+  void setisTogglingCore(bool val) {
+    if (isTogglingCore != val) {
+      isTogglingCore = val;
+      notifyListeners();
+    } else {
+      return;
+    }
+
+    /// with timeout
+    const timeoutSec = 5;
+    if (isTogglingCore) {
+      delayedTogglingChecker =
+          Future.delayed(const Duration(seconds: timeoutSec), () {
+        if (isTogglingCore) {
+          updateIsCoreActive(force: true);
+          final errMsg = "core toggled for $timeoutSec sec, force stopped";
+          logger.w(errMsg);
+          // throw Exception(errMsg);
+        }
+      });
+    }
+  }
+
+  void setisTogglingSystemProxy(bool val) {
+    if (isTogglingSystemProxy != val) {
+      isTogglingSystemProxy = val;
+      notifyListeners();
+    } else {
+      return;
+    }
+
+    /// with timeout
+    const timeoutSec = 5;
+    if (isTogglingSystemProxy) {
+      delayedTogglingChecker =
+          Future.delayed(const Duration(seconds: timeoutSec), () {
+        if (isTogglingSystemProxy) {
+          updateIsSystemProxyActive(force: true);
+          final errMsg = "system proxy toggled for $timeoutSec sec, force stopped";
+          logger.w(errMsg);
+          // throw Exception(errMsg);
+        }
+      });
+    }
+  }
+
+  void setisTogglingTun(bool val) {
+    if (isTogglingTun != val) {
+      isTogglingTun = val;
+      notifyListeners();
+    } else {
+      return;
+    }
+
+    /// with timeout
+    const timeoutSec = 5;
+    if (isTogglingTun) {
+      delayedTogglingChecker =
+          Future.delayed(const Duration(seconds: timeoutSec), () {
+        if (isTogglingTun) {
+          updateIsTunActive(force: true);
+          final errMsg = "tun toggled for $timeoutSec sec, force stopped";
+          logger.w(errMsg);
+          // throw Exception(errMsg);
         }
       });
     }
@@ -113,33 +197,55 @@ abstract class VPNManager with ChangeNotifier {
 
   Future<bool> getIsCoreActive();
   Future<bool> getIsTunActive();
+  Future<bool> getIsSystemProxyActive();
 
   Future<void> setIsCoreActive(bool value, {force = false}) async {
     if (!force && value == isCoreActive) {
       if (value == isCoreActive) {
-        logger.d("setIsCoreActive: no need: isCoreActive: $isCoreActive");
+        logger.d("setIsCoreActive: no need, already $isCoreActive");
         return;
       }
     }
     isCoreActive = value;
-    setIsToggling(false);
+    setisTogglingAll(false);
     notifyListeners();
     notifyCoreDataNotifier();
   }
 
-  Future<void> setIsTunActive(bool value) async {
-    if (value == isTunActive) {
-      return;
+  Future<void> setIsTunActive(bool value, {force = false}) async {
+    if (!force && value == isTunActive) {
+      if (value == isTunActive) {
+        logger.d("setIsTunActive: no need, already $isTunActive");
+        return;
+      }
     }
     isTunActive = value;
+    setisTogglingTun(false);
+    notifyListeners();
+  }
+
+  Future<void> setIsSystemProxyActive(bool value, {force = false}) async {
+    if (!force && value == isSystemProxyActive) {
+      if (value == isSystemProxyActive) {
+        logger.d("setIsSystemProxyActive: no need, already $isSystemProxyActive");
+        return;
+      }
+    }
+    isSystemProxyActive = value;
+    setisTogglingSystemProxy(false);
+    notifyListeners();
   }
 
   Future<void> updateIsCoreActive({bool force = false}) async {
     await setIsCoreActive(await getIsCoreActive(), force: force);
   }
 
-  Future<void> updateIsTunActive() async {
-    await setIsTunActive(await getIsTunActive());
+  Future<void> updateIsTunActive({bool force = false}) async {
+    await setIsTunActive(await getIsTunActive(), force: force);
+  }
+
+  Future<void> updateIsSystemProxyActive({bool force = false}) async {
+    await setIsSystemProxyActive(await getIsSystemProxyActive(), force: force);
   }
 
   Future<void> updateDetachedCore() async {
@@ -150,36 +256,130 @@ abstract class VPNManager with ChangeNotifier {
     await updateIsTunActive();
   }
 
-  Future<void> start() async {
+  Future<void> startAll() async {
     /// check is toggling
-    if (isToggling) return;
-    setIsToggling(true);
+    if (isTogglingAll) return;
+    setisTogglingAll(true);
     isExpectingActive = true;
 
     /// check is already active
     if (await getIsCoreActive()) {
-      setIsToggling(false);
+      setisTogglingAll(false);
       return;
     }
 
     /// start
-    await startAll();
+    await _startAll();
   }
 
-  Future<void> stop() async {
+  Future<void> stopAll() async {
     /// check is toggling
-    if (isToggling) return;
-    setIsToggling(true);
+    if (isTogglingAll) return;
+    setisTogglingAll(true);
     isExpectingActive = false;
 
     /// check is already inactive
     if (!await getIsCoreActive()) {
-      setIsToggling(false);
+      setisTogglingAll(false);
       return;
     }
 
     /// stop
-    await stopAll();
+    await _stopAll();
+  }
+
+  Future<bool> startCore() async {
+    /// check is toggling
+    if (isTogglingCore) return false;
+    setisTogglingCore(true);
+    isExpectingActive = true;
+
+    /// check is already active
+    if (await getIsCoreActive()) {
+      setisTogglingCore(false);
+      return false;
+    }
+
+    /// start
+    return await _startCore();
+  }
+
+  Future<bool> stopCore() async {
+    /// check is toggling
+    if (isTogglingCore) return false;
+    setisTogglingCore(true);
+    isExpectingActive = false;
+
+    /// check is already inactive
+    if (!await getIsCoreActive()) {
+      setisTogglingCore(false);
+      return false;
+    }
+
+    /// stop
+    return await _stopCore();
+  }
+  
+  Future<void> startTun() async {
+    /// check is toggling
+    if (isTogglingTun) return;
+    setisTogglingTun(true);
+
+    /// check is already active
+    if (await getIsTunActive()) {
+      setisTogglingTun(false);
+      return;
+    }
+
+    /// start
+    await _startTun();
+  }
+
+  Future<void> stopTun() async {
+    /// check is toggling
+    if (isTogglingTun) return;
+    setisTogglingTun(true);
+    isExpectingActive = false;
+
+    /// check is already inactive
+    if (!await getIsCoreActive()) {
+      setisTogglingTun(false);
+      return;
+    }
+
+    /// stop
+    await _stopTun();
+  }
+  
+  Future<void> startSystemProxy() async {
+    /// check is toggling
+    if (isTogglingSystemProxy) return;
+    setisTogglingSystemProxy(true);
+
+    /// check is already active
+    if (await getIsSystemProxyActive()) {
+      setisTogglingSystemProxy(false);
+      return;
+    }
+
+    /// start
+    await _startSystemProxy();
+  }
+
+  Future<void> stopSystemProxy() async {
+    /// check is toggling
+    if (isTogglingSystemProxy) return;
+    setisTogglingSystemProxy(true);
+    isExpectingActive = false;
+
+    /// check is already inactive
+    if (!await getIsCoreActive()) {
+      setisTogglingSystemProxy(false);
+      return;
+    }
+
+    /// stop
+    await _stopSystemProxy();
   }
 
   int? _selectedProfileId;
@@ -486,8 +686,17 @@ class VPNManagerExec extends VPNManager {
   }
 
   @override
-  startCore() async {
-    logger.d("starting: startCore");
+  getIsSystemProxyActive() async {
+    final isEnabled = await platformSystemProxyUser.isEnabled();
+    if (isEnabled == true) {
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  _startCore() async {
+    logger.d("starting: _startCore");
     if (!kIsWeb) await installPendingAssetRemote();
     await initCore();
     logger.d("corePath: $corePath");
@@ -524,13 +733,13 @@ class VPNManagerExec extends VPNManager {
       pidCore = null;
       await setIsCoreActive(false);
     });
-    logger.d("finished: startCore");
+    logger.d("finished: _startCore");
     return true;
   }
 
   @override
-  stopCore() async {
-    logger.d("starting: stopCore");
+  _stopCore() async {
+    logger.d("starting: _stopCore");
     if (pidCore != null) {
       final res = await PlatformProcess.killProcess(pidCore!);
       if (res) {
@@ -540,18 +749,18 @@ class VPNManagerExec extends VPNManager {
         return true;
       } else {
         pidCore = null;
-        logger.w("stopCore: failed");
-        return false;
+        logger.w("_stopCore: failed");
+        return true;
       }
     } else {
-      logger.w("stopCore: pidCore is null");
-      return false;
+      logger.w("_stopCore: pidCore is null");
+      return true;
     }
   }
 
   @override
-  startTun() async {
-    logger.d("starting: startTun");
+  _startTun() async {
+    logger.d("starting: _startTun");
     if (getIsTunProcess() && pidTun == null) {
       await initTunExec();
       logger.d("tunSingBoxCorePath: $_tunSingBoxCorePath");
@@ -573,12 +782,12 @@ class VPNManagerExec extends VPNManager {
         await setIsTunActive(false);
       });
     }
-    logger.d("finished: startTun");
+    logger.d("finished: _startTun");
   }
 
   @override
-  stopTun() async {
-    logger.d("starting: stopTun");
+  _stopTun() async {
+    logger.d("starting: _stopTun");
     if (pidTun != null) {
       final res = await PlatformProcess.killProcess(pidTun!);
       if (res) {
@@ -591,23 +800,23 @@ class VPNManagerExec extends VPNManager {
     } else {
       logger.w("stopTun: pidTun is null");
     }
-    logger.d("finished: stopTun");
+    logger.d("finished: _stopTun");
   }
 
   @override
-  startAll() async {
-    await startCore();
-    await startTun();
-    await startSystemProxy();
+  _startAll() async {
+    await _startCore();
+    await _startTun();
+    await _startSystemProxy();
     await updateIsCoreActive();
     return;
   }
 
   @override
-  stopAll() async {
-    await stopSystemProxy();
-    await stopTun();
-    await stopCore();
+  _stopAll() async {
+    await _stopSystemProxy();
+    await _stopTun();
+    await _stopCore();
     await updateIsCoreActive();
     return;
   }
@@ -642,8 +851,15 @@ class VPNManagerMC extends VPNManager {
     return await platform.invokeMethod('vpn.isTunActive') as bool;
   }
 
+  
   @override
-  startAll() async {
+  Future<bool> getIsSystemProxyActive() async {
+    return await platform.invokeMethod('vpn.isSystemProxyActive') as bool;
+  }
+
+
+  @override
+  _startAll() async {
     await initCore();
     await installPendingAssetRemote();
     if (!prefs.getBool("tun.useEmbedded")!) {
@@ -656,7 +872,7 @@ class VPNManagerMC extends VPNManager {
   }
 
   @override
-  stopAll() async {
+  _stopAll() async {
     final res = await platform.invokeMethod('vpn.stopAll') as bool;
     if (res == true) {
       await setIsCoreActive(false);
@@ -664,7 +880,7 @@ class VPNManagerMC extends VPNManager {
   }
 
   @override
-  startTun() async {
+  _startTun() async {
     if (!prefs.getBool("tun.useEmbedded")!) {
       await initTunExec();
     }
@@ -672,12 +888,12 @@ class VPNManagerMC extends VPNManager {
   }
 
   @override
-  stopTun() async {
+  _stopTun() async {
     await platform.invokeMethod('vpn.stopTun');
   }
 
   @override
-  startCore() async {
+  _startCore() async {
     await initCore();
     await installPendingAssetRemote();
     final res = await platform.invokeMethod('vpn.startCore') as bool;
@@ -688,7 +904,7 @@ class VPNManagerMC extends VPNManager {
   }
 
   @override
-  stopCore() async {
+  _stopCore() async {
     final res = await platform.invokeMethod('vpn.stopCore') as bool;
     if (res == true) {
       await setIsCoreActive(false);
