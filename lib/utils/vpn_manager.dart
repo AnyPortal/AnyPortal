@@ -517,8 +517,13 @@ class VPNManagerExec extends VPNManager {
       workingDirectory: _coreWorkingDir,
       environment: _coreEnvs,
     );
-    await setIsCoreActive(true);
     pidCore = processCore.pid;
+    await setIsCoreActive(true);
+    processCore.exitCode.then((exitCode) async {
+      logger.d("processCore: exited: $exitCode");
+      pidCore = null;
+      await setIsCoreActive(false);
+    });
     logger.d("finished: startCore");
     return true;
   }
@@ -562,6 +567,11 @@ class VPNManagerExec extends VPNManager {
       );
       pidTun = processTun.pid;
       await setIsTunActive(true);
+      processTun.exitCode.then((exitCode) async {
+        logger.d("processTun: exited: $exitCode");
+        pidTun = null;
+        await setIsTunActive(false);
+      });
     }
     logger.d("finished: startTun");
   }
