@@ -164,7 +164,8 @@ abstract class VPNManager with ChangeNotifier {
           Future.delayed(const Duration(seconds: timeoutSec), () {
         if (isTogglingSystemProxy) {
           updateIsSystemProxyActive(force: true);
-          final errMsg = "system proxy toggled for $timeoutSec sec, force stopped";
+          final errMsg =
+              "system proxy toggled for $timeoutSec sec, force stopped";
           logger.w(errMsg);
           // throw Exception(errMsg);
         }
@@ -199,7 +200,11 @@ abstract class VPNManager with ChangeNotifier {
   Future<bool> getIsTunActive();
   Future<bool> getIsSystemProxyActive();
 
-  Future<void> setIsCoreActive(bool value, {force = false}) async {
+  Future<void> setIsCoreActive(
+    bool value, {
+    force = false,
+    isToNotify = true,
+  }) async {
     if (!force && value == isCoreActive) {
       if (value == isCoreActive) {
         logger.d("setIsCoreActive: no need, already $isCoreActive");
@@ -208,11 +213,17 @@ abstract class VPNManager with ChangeNotifier {
     }
     isCoreActive = value;
     setisTogglingAll(false);
-    notifyListeners();
-    notifyCoreDataNotifier();
+    if (isToNotify) {
+      notifyListeners();
+      notifyCoreDataNotifier();
+    }
   }
 
-  Future<void> setIsTunActive(bool value, {force = false}) async {
+  Future<void> setIsTunActive(
+    bool value, {
+    force = false,
+    isToNotify = true,
+  }) async {
     if (!force && value == isTunActive) {
       if (value == isTunActive) {
         logger.d("setIsTunActive: no need, already $isTunActive");
@@ -220,32 +231,62 @@ abstract class VPNManager with ChangeNotifier {
       }
     }
     isTunActive = value;
-    setisTogglingTun(false);
-    notifyListeners();
+    if (isToNotify) {
+      setisTogglingTun(false);
+      notifyListeners();
+    }
   }
 
-  Future<void> setIsSystemProxyActive(bool value, {force = false}) async {
+  Future<void> setIsSystemProxyActive(
+    bool value, {
+    force = false,
+    isToNotify = true,
+  }) async {
     if (!force && value == isSystemProxyActive) {
       if (value == isSystemProxyActive) {
-        logger.d("setIsSystemProxyActive: no need, already $isSystemProxyActive");
+        logger
+            .d("setIsSystemProxyActive: no need, already $isSystemProxyActive");
         return;
       }
     }
     isSystemProxyActive = value;
-    setisTogglingSystemProxy(false);
-    notifyListeners();
+    if (isToNotify) {
+      setisTogglingSystemProxy(false);
+      notifyListeners();
+    }
   }
 
-  Future<void> updateIsCoreActive({bool force = false}) async {
-    await setIsCoreActive(await getIsCoreActive(), force: force);
+  Future<void> updateIsCoreActive({
+    bool force = false,
+    isToNotify = true,
+  }) async {
+    await setIsCoreActive(
+      await getIsCoreActive(),
+      force: force,
+      isToNotify: isToNotify,
+    );
   }
 
-  Future<void> updateIsTunActive({bool force = false}) async {
-    await setIsTunActive(await getIsTunActive(), force: force);
+  Future<void> updateIsTunActive({
+    bool force = false,
+    isToNotify = true,
+  }) async {
+    await setIsTunActive(
+      await getIsTunActive(),
+      force: force,
+      isToNotify: isToNotify,
+    );
   }
 
-  Future<void> updateIsSystemProxyActive({bool force = false}) async {
-    await setIsSystemProxyActive(await getIsSystemProxyActive(), force: force);
+  Future<void> updateIsSystemProxyActive({
+    bool force = false,
+    isToNotify = true,
+  }) async {
+    await setIsSystemProxyActive(
+      await getIsSystemProxyActive(),
+      force: force,
+      isToNotify: isToNotify,
+    );
   }
 
   Future<void> updateDetachedCore() async {
@@ -319,7 +360,7 @@ abstract class VPNManager with ChangeNotifier {
     /// stop
     return await _stopCore();
   }
-  
+
   Future<void> startTun() async {
     /// check is toggling
     if (isTogglingTun) return;
@@ -350,7 +391,7 @@ abstract class VPNManager with ChangeNotifier {
     /// stop
     await _stopTun();
   }
-  
+
   Future<void> startSystemProxy() async {
     /// check is toggling
     if (isTogglingSystemProxy) return;
@@ -439,7 +480,7 @@ abstract class VPNManager with ChangeNotifier {
     }
 
     coreTypeId = _selectedProfile!.coreTypeId;
-    
+
     // check core path
     final core = await (db.select(db.coreTypeSelected).join([
       leftOuterJoin(db.core, db.coreTypeSelected.coreId.equalsExp(db.core.id)),
@@ -853,12 +894,10 @@ class VPNManagerMC extends VPNManager {
     return await platform.invokeMethod('vpn.isTunActive') as bool;
   }
 
-  
   @override
   Future<bool> getIsSystemProxyActive() async {
     return await platform.invokeMethod('vpn.isSystemProxyActive') as bool;
   }
-
 
   @override
   _startAll() async {
@@ -869,7 +908,10 @@ class VPNManagerMC extends VPNManager {
     }
     final res = await platform.invokeMethod('vpn.startAll') as bool;
     if (res == true) {
-      await setIsCoreActive(true);
+      await setIsCoreActive(true, isToNotify: false);
+      await updateIsSystemProxyActive(isToNotify: false);
+      await updateIsTunActive(isToNotify: false);
+      notifyListeners();
     }
   }
 
@@ -877,7 +919,10 @@ class VPNManagerMC extends VPNManager {
   _stopAll() async {
     final res = await platform.invokeMethod('vpn.stopAll') as bool;
     if (res == true) {
-      await setIsCoreActive(false);
+      await setIsCoreActive(false, isToNotify: false);
+      await updateIsSystemProxyActive(isToNotify: false);
+      await updateIsTunActive(isToNotify: false);
+      notifyListeners();
     }
   }
 

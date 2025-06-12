@@ -284,6 +284,10 @@ public class TProxyService extends VpnService {
             startTun();
         }
 
+        if (prefs.getBoolean("flutter.systemProxy", true)) {
+            startSystemProxy();
+        }
+
         notifyMainActivity();
         updateTile();
 
@@ -298,6 +302,10 @@ public class TProxyService extends VpnService {
 
         if (prefs.getBoolean("flutter.tun", true)) {
             stopTun();
+        }
+
+        if (prefs.getBoolean("flutter.systemProxy", true)) {
+            stopSystemProxy();
         }
 
         notifyMainActivity();
