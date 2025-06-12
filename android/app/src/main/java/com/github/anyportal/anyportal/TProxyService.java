@@ -389,7 +389,9 @@ public class TProxyService extends VpnService {
                         Log.w(TAG, e);
                     }
                 }
-                disallowSelf = false;
+                if (selectedAppsString != "[]"){
+                    disallowSelf = false;
+                }
             } else {
                 String selectedAppsString = prefs.getString("flutter.android.tun.disAllowedApplications", "[]");
                 List<String> selectedApps = getStringListFromJsonString(selectedAppsString);
@@ -414,7 +416,7 @@ public class TProxyService extends VpnService {
         tunFd = builder.establish();
         if (tunFd == null) {
             Log.w(TAG, "tunFd == null");
-            stopSelf();
+            // stopSelf();
             return;
         }
 
