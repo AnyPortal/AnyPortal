@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:anyportal/utils/permission_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -82,6 +83,10 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
         _pathLog = logFile.absolute.path;
       });
     }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await permMan.onHomeScreen(context);
+    });
   }
 
   @override

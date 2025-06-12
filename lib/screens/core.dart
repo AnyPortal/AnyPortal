@@ -122,18 +122,6 @@ class _CoreScreenState extends State<CoreScreen> {
           }
         });
       }
-
-      if (mounted) {
-        await permMan.requestPermission(
-          context,
-          Permission.notification,
-          context.loc.notification_permission_is_required_for_quick_tiles_to_work_properly,
-        ).then((status){
-          if (status != PermissionStatus.granted) {
-            permitted = false;
-          }
-        });
-      }
     }
 
     try {

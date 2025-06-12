@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:anyportal/extensions/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -9,6 +10,10 @@ class PermissionManager {
   Future<PermissionStatus> requestPermission(
       BuildContext context, Permission permission, String reason) async {
     return PermissionStatus.granted;
+  }
+
+  Future<void> onHomeScreen(BuildContext context) async {
+    return;
   }
 }
 
@@ -35,6 +40,16 @@ class PermissionManagerAndroid extends PermissionManager {
           ),
         ],
       ),
+    );
+  }
+
+  @override
+  Future<void> onHomeScreen(BuildContext context) async {
+    await permMan.requestPermission(
+      context,
+      Permission.notification,
+      context.loc
+          .notification_permission_is_required_for_quick_tiles_to_work_properly,
     );
   }
 
