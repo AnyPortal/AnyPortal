@@ -185,7 +185,8 @@ class _CoreScreenState extends State<CoreScreen> {
       _isSubmitting = false;
     });
 
-    if (mounted && Navigator.canPop(context)) {
+    /// check permitted, or could accidently pop permission request popup instead
+    if (permitted && mounted && Navigator.canPop(context)) {
       Navigator.pop(context, {
         'ok': ok,
         'status': status,
