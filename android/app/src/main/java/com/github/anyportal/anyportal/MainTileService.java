@@ -21,7 +21,7 @@ public class MainTileService extends TileService {
     private ServiceConnection serviceConnection = null;
 
     private void bindMainService(ServiceConnection serviceConnection) {
-        Intent intent = new Intent(this, MainService.class);
+        Intent intent = new Intent(getApplicationContext(), MainService.class);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 

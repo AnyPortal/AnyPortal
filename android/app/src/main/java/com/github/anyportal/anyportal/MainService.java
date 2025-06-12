@@ -23,7 +23,6 @@ import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-// import android.os.ParcelFileDescriptor;
 import android.service.quicksettings.TileService;
 import android.util.Log;
 
@@ -36,25 +35,16 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
-// import libv2raymobile.Libv2raymobile;
-
 import com.github.anyportal.anyportal.R;
 
 // import dev.rikka.shizuku.Shizuku;
 
-/// despite name MainServiced (bind to hev-socks5-tunnel), this class should be counter part of vpn_manager.dart
-public class MainService extends Service {
-    // public static native void TProxyStartService(String config_path, int fd);
-    // public static native void TProxyStopService();
-    // public static native long[] TProxyGetStats();
 
+public class MainService extends Service {
     private static final String TAG = "MainService";
     private static final String CHANNEL_ID = "vpn_channel_id";
     private static final int NOTIFICATION_ID = 1;
 
-    // static {
-    //     System.loadLibrary("hev-socks5-tunnel");
-    // }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -81,7 +71,7 @@ public class MainService extends Service {
 
     private Notification createNotification() {
         // Intent to launch main activity
-        Intent notificationIntent = new Intent(this, MainActivity.class);
+        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
@@ -154,11 +144,9 @@ public class MainService extends Service {
     }
 
     /// vpn
-    // private ParcelFileDescriptor tunFd = null;
     private java.lang.Process coreProcess = null;
     private java.lang.Process tunSingBoxCoreSuShell = null;
     private int tunSingBoxCorePid = -1;
-    // private libv2raymobile.CoreManager coreManager = null;
     public boolean isCoreActive = false;
     public boolean isTunActive = false;
     public boolean isSystemProxyActive = false;
@@ -322,103 +310,7 @@ public class MainService extends Service {
 
     private void startTunEmbedded() {
         Log.d(TAG, "starting: startTunEmbedded");
-
-        // if (tunFd != null) {
-        //     return;
-        // }
-
-        // Context ctx = getApplicationContext();
-        // Intent intentVPNServicePrepare = VpnService.prepare(ctx);
-        // if (intentVPNServicePrepare != null) {
-        //     Log.d(TAG, "intentVPNServicePrepare ok");
-        //     intentVPNServicePrepare.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        //     ctx.startActivity(intentVPNServicePrepare);
-        // } else {
-        //     Log.d(TAG, "intentVPNServicePrepare == null");
-        // }
-
-        // String session = "";
-        // VpnService.Builder builder = new VpnService.Builder();
-        // builder.setBlocking(false);
-        // builder.setMtu(8500);
-        // if (prefs.getBoolean("flutter.tun.ipv4", true)) {
-        //     String addr = "198.18.0.1";
-        //     int prefix = 32;
-        //     String dns = prefs.getString("flutter.tun.dns.ipv4", "1.1.1.1");
-        //     builder.addAddress(addr, prefix);
-        //     builder.addRoute("0.0.0.0", 0);
-        //     if (!dns.isEmpty()) {
-        //         builder.addDnsServer(dns);
-        //     }
-        //     session += "IPv4";
-        // }
-        // if (prefs.getBoolean("flutter.tun.ipv6", true)) {
-        //     String addr = "fc00::1";
-        //     int prefix = 128;
-        //     String dns = prefs.getString("flutter.tun.dns.ipv6", "2606:4700:4700::1111");
-        //     builder.addAddress(addr, prefix);
-        //     builder.addRoute("::", 0);
-        //     if (!dns.isEmpty()) {
-        //         builder.addDnsServer(dns);
-        //     }
-        //     if (!session.isEmpty()) {
-        //         session += " + ";
-        //     }
-        //     session += "IPv6";
-        // }
-        // boolean disallowSelf = true;
-
-        // if (!prefs.getBoolean("flutter.tun.perAppProxy", true)) {
-        //     session += "/Global";
-        // } else {
-        //     session += "/per-App";
-        //     if (prefs.getBoolean("flutter.android.tun.perAppProxy.allowed", true)) {
-        //         String selectedAppsString = prefs.getString("flutter.android.tun.allowedApplications", "[]");
-        //         List<String> selectedApps = getStringListFromJsonString(selectedAppsString);
-        //         for (String appName : selectedApps) {
-        //             try {
-        //                 builder.addAllowedApplication(appName);
-        //             } catch (NameNotFoundException e) {
-        //                 Log.w(TAG, e);
-        //             }
-        //         }
-        //         if (selectedAppsString != "[]"){
-        //             disallowSelf = false;
-        //         }
-        //     } else {
-        //         String selectedAppsString = prefs.getString("flutter.android.tun.disAllowedApplications", "[]");
-        //         List<String> selectedApps = getStringListFromJsonString(selectedAppsString);
-        //         for (String appName : selectedApps) {
-        //             try {
-        //                 builder.addDisallowedApplication(appName);
-        //             } catch (NameNotFoundException e) {
-        //                 Log.w(TAG, e);
-        //             }
-        //         }
-        //     }
-        // }
-        // if (disallowSelf) {
-        //     String selfName = getApplicationContext().getPackageName();
-        //     try {
-        //         builder.addDisallowedApplication(selfName);
-        //     } catch (NameNotFoundException e) {
-        //         Log.w(TAG, e);
-        //     }
-        // }
-        // builder.setSession(session);
-        // tunFd = builder.establish();
-        // if (tunFd == null) {
-        //     Log.w(TAG, "tunFd == null");
-        //     // stopSelf();
-        //     return;
-        // }
-
-        /* TProxy */
-        // File tproxy_file = new File(getFilesDir(), "conf/tun.hev_socks5_tunnel.gen.yaml");
-        // TProxyStartService(tproxy_file.getAbsolutePath(), tunFd.getFd());
-
         startService(new Intent(getApplicationContext(), TProxyService.class));
-
         Log.d(TAG, "finished: startTunEmbedded");
     }
 
@@ -510,18 +402,6 @@ public class MainService extends Service {
     private void stopTun() {
         Log.d(TAG, "starting: stopTun");
 
-        // if (tunFd != null) {
-        //     /* TProxy */
-        //     TProxyStopService();
-
-        //     /* VPN */
-        //     try {
-        //         tunFd.close();
-        //     } catch (IOException e) {
-        //     }
-        //     tunFd = null;
-        // }
-
         /// just stopService does not work unless run TProxyService.stopTun first
         Intent stopIntent = new Intent(getApplicationContext(), TProxyService.class);
         stopIntent.setAction(TProxyService.ACTION_STOP_T_PROXY_SERVICE_TUN);
@@ -551,20 +431,7 @@ public class MainService extends Service {
 
         boolean useEmbedded = prefs.getBoolean("flutter.cache.core.useEmbedded", true);
         if (useEmbedded) {
-            // if (coreManager != null) {
-            //     return;
-            // }
-            // File libAssetFolder = new File(getFilesDir().getParent(), "files/asset");
-            // String libAssetPath = libAssetFolder.getAbsolutePath();
-            // File configFile = new File(getFilesDir().getParent(), "files/conf/core.gen.json");
-            
-            // coreManager = new libv2raymobile.CoreManager();
-            // Libv2raymobile.setEnv("v2ray.location.asset", libAssetPath);
-            // Libv2raymobile.setEnv("xray.location.asset", libAssetPath);
-            // coreManager.runConfig(configFile.getAbsolutePath());
-
-            Context ctx = getApplicationContext();
-            Intent intent = new Intent(ctx, LibV2rayService.class);
+            Intent intent = new Intent(getApplicationContext(), LibV2rayService.class);
             startService(intent);
         } else {
             if (coreProcess != null) {
