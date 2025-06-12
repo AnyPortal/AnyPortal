@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -13,6 +14,7 @@ import libv2raymobile.Libv2raymobile;
 
 
 public class LibV2rayService extends Service{
+    private static final String TAG = "LibV2rayService";
     private libv2raymobile.CoreManager coreManager;
 
     private final IBinder binder = new LocalBinder();
@@ -31,6 +33,7 @@ public class LibV2rayService extends Service{
 
     @Override
     public void onCreate() {
+        Log.d(TAG, "starting: onCreate");
         File libAssetFolder = new File(getFilesDir().getParent(), "files/asset");
         String libAssetPath = libAssetFolder.getAbsolutePath();
         File configFile = new File(getFilesDir().getParent(), "files/conf/core.gen.json");
@@ -39,14 +42,18 @@ public class LibV2rayService extends Service{
         Libv2raymobile.setEnv("xray.location.asset", libAssetPath);
         coreManager = new libv2raymobile.CoreManager();
         coreManager.runConfig(configFile.getAbsolutePath());
+        Log.d(TAG, "finished: onCreate");
     }
 
     @Override
     public void onDestroy() {
+        Log.d(TAG, "starting: onDestroy");
         if (coreManager != null) {
             coreManager.stop();
             coreManager = null;
         }
+        Log.d(TAG, "finished: onDestroy");
         android.os.Process.killProcess(android.os.Process.myPid());
+        super.onDestroy();
     }
 }

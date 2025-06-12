@@ -4,18 +4,22 @@
         android:label="AnyPortal"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+        <service
+            android:name=".MainService"
+            android:exported="true" 
+            android:foregroundServiceType="specialUse" />
         <service android:name=".TProxyService"
-            android:permission="android.permission.BIND_VPN_SERVICE"
             android:exported="true"
-            android:foregroundServiceType="specialUse">
-        <intent-filter>
-            <action android:name="android.net.VpnService"/>
-        </intent-filter>
-        <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-            android:value="VPN service"/>
+            android:process=":tproxy_process"
+            android:permission="android.permission.BIND_VPN_SERVICE">
+            <intent-filter>
+                <action android:name="android.net.VpnService" />
+            </intent-filter>
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="VPN service"/>
 		</service>
         <service
-            android:name=".TProxyTileService"
+            android:name=".MainTileService"
             android:exported="true"
             android:icon="@drawable/ic_launcher_monochrome"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">

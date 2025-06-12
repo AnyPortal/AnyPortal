@@ -12,24 +12,24 @@ import android.os.Build;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 
-public class TProxyTileService extends TileService {
+public class MainTileService extends TileService {
     public static final String ACTION_TILE_TOGGLED = "com.github.anyportal.anyportal.ACTION_TILE_TOGGLED";
     public static final String EXTRA_IS_ACTIVE = "is_active";
 
-    /// bind TProxyService
-    private TProxyService tProxyService = null;
+    /// bind MainService
+    private MainService mainService = null;
     private ServiceConnection serviceConnection = null;
 
-    private void bindTProxyService(ServiceConnection serviceConnection) {
-        Intent intent = new Intent(this, TProxyService.class);
+    private void bindMainService(ServiceConnection serviceConnection) {
+        Intent intent = new Intent(this, MainService.class);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
     public void onStartListening() {
-        if (tProxyService != null) {
+        if (mainService != null) {
             updateTileText();
-            onTProxyServiceReady(tProxyService);
+            onMainServiceReady(mainService);
         } else {
             if (serviceConnection != null) {
                 unbindService(serviceConnection);
@@ -37,16 +37,16 @@ public class TProxyTileService extends TileService {
             serviceConnection = new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName className, IBinder service) {
-                    TProxyService.LocalBinder binder = (TProxyService.LocalBinder) service;
-                    tProxyService = binder.getService();
+                    MainService.LocalBinder binder = (MainService.LocalBinder) service;
+                    mainService = binder.getService();
                     updateTileText();
-                    onTProxyServiceReady(tProxyService);
+                    onMainServiceReady(mainService);
                 }
         
                 @Override
                 public void onServiceDisconnected(ComponentName className) {}
             };
-            bindTProxyService(serviceConnection);
+            bindMainService(serviceConnection);
         }
     }
 
@@ -66,12 +66,12 @@ public class TProxyTileService extends TileService {
 
     public void onClick() {
         super.onClick();
-        toggleTProxyService();
+        toggleMainService();
     }
 
-    private void toggleTProxyService() {
-        if (tProxyService != null) {
-            toggleTile(tProxyService);
+    private void toggleMainService() {
+        if (mainService != null) {
+            toggleTile(mainService);
         } else {
             if (serviceConnection != null) {
                 unbindService(serviceConnection);
@@ -79,15 +79,15 @@ public class TProxyTileService extends TileService {
             serviceConnection = new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName className, IBinder service) {
-                    TProxyService.LocalBinder binder = (TProxyService.LocalBinder) service;
-                    tProxyService = binder.getService();
-                    toggleTile(tProxyService);
+                    MainService.LocalBinder binder = (MainService.LocalBinder) service;
+                    mainService = binder.getService();
+                    toggleTile(mainService);
                 }
         
                 @Override
                 public void onServiceDisconnected(ComponentName className) {}
             };
-            bindTProxyService(serviceConnection);
+            bindMainService(serviceConnection);
         }
     }
 
@@ -98,10 +98,10 @@ public class TProxyTileService extends TileService {
         sendBroadcast(broadcastIntent);
     }
 
-    private void onTProxyServiceReady(TProxyService tProxyService) {
+    private void onMainServiceReady(MainService mainService) {
         Tile tile = getQsTile();
-        if (tile != null && tProxyService != null) {
-            boolean isCoreActive = tProxyService.isCoreActive;
+        if (tile != null && mainService != null) {
+            boolean isCoreActive = mainService.isCoreActive;
             tile.setState(isCoreActive ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
             tile.updateTile();
         }
@@ -125,8 +125,8 @@ public class TProxyTileService extends TileService {
         tile.updateTile();
     }
 
-    private void toggleTile(TProxyService tProxyService) {
-        if (tProxyService == null) {
+    private void toggleTile(MainService mainService) {
+        if (mainService == null) {
             return;
         }
 
@@ -138,13 +138,13 @@ public class TProxyTileService extends TileService {
         if (tile.getState() == Tile.STATE_ACTIVE) {
             tile.setState(Tile.STATE_UNAVAILABLE);
             notifyMainActivity(false);
-            tProxyService.tryStopAll();
+            mainService.tryStopAll();
         } else {
             tile.setState(Tile.STATE_UNAVAILABLE);
             notifyMainActivity(true);
-            tProxyService.tryStartAll();
+            mainService.tryStartAll();
         }
 
-        onTProxyServiceReady(tProxyService);
+        onMainServiceReady(mainService);
     }
 }
