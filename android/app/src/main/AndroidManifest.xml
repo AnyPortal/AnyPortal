@@ -24,6 +24,10 @@
             </intent-filter>
             <meta-data android:name="android.service.quicksettings.ACTIVE_TILE" android:value="true" />
         </service>
+        <service
+            android:name=".LibV2rayService"
+            android:process=":libv2ray_process"
+            android:exported="false" />
         <receiver android:name=".BootReceiver" android:exported="true">
             <intent-filter android:priority="999">
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

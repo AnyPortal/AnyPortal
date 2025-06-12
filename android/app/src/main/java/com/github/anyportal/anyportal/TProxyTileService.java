@@ -29,7 +29,7 @@ public class TProxyTileService extends TileService {
     public void onStartListening() {
         if (tProxyService != null) {
             updateTileText();
-            updateTileState(tProxyService);
+            onTProxyServiceReady(tProxyService);
         } else {
             if (serviceConnection != null) {
                 unbindService(serviceConnection);
@@ -40,7 +40,7 @@ public class TProxyTileService extends TileService {
                     TProxyService.LocalBinder binder = (TProxyService.LocalBinder) service;
                     tProxyService = binder.getService();
                     updateTileText();
-                    updateTileState(tProxyService);
+                    onTProxyServiceReady(tProxyService);
                 }
         
                 @Override
@@ -98,7 +98,7 @@ public class TProxyTileService extends TileService {
         sendBroadcast(broadcastIntent);
     }
 
-    private void updateTileState(TProxyService tProxyService) {
+    private void onTProxyServiceReady(TProxyService tProxyService) {
         Tile tile = getQsTile();
         if (tile != null && tProxyService != null) {
             boolean isCoreActive = tProxyService.isCoreActive;
@@ -145,6 +145,6 @@ public class TProxyTileService extends TileService {
             tProxyService.tryStartAll();
         }
 
-        updateTileState(tProxyService);
+        onTProxyServiceReady(tProxyService);
     }
 }

@@ -36,7 +36,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
-import libv2raymobile.Libv2raymobile;
+// import libv2raymobile.Libv2raymobile;
 
 import com.github.anyportal.anyportal.R;
 
@@ -165,7 +165,7 @@ public class TProxyService extends VpnService {
     private java.lang.Process coreProcess = null;
     private java.lang.Process tunSingBoxCoreSuShell = null;
     private int tunSingBoxCorePid = -1;
-    private libv2raymobile.CoreManager coreManager = null;
+    // private libv2raymobile.CoreManager coreManager = null;
     public boolean isCoreActive = false;
     public boolean isTunActive = false;
     public boolean isSystemProxyActive = false;
@@ -547,23 +547,27 @@ public class TProxyService extends VpnService {
     private void startCore() {
         Log.d(TAG, "starting: stopCore");
 
-        if (coreManager != null || coreProcess != null) {
-            return;
-        }
-
-        /* asset location */
-        File libAssetFolder = new File(getFilesDir().getParent(), "files/asset");
-        String libAssetPath = libAssetFolder.getAbsolutePath();
-        File config_file = new File(getFilesDir().getParent(), "files/conf/core.gen.json");
-
-        /* core */
         boolean useEmbedded = prefs.getBoolean("flutter.cache.core.useEmbedded", true);
         if (useEmbedded) {
-            coreManager = new libv2raymobile.CoreManager();
-            Libv2raymobile.setEnv("v2ray.location.asset", libAssetPath);
-            Libv2raymobile.setEnv("xray.location.asset", libAssetPath);
-            coreManager.runConfig(config_file.getAbsolutePath());
+            // if (coreManager != null) {
+            //     return;
+            // }
+            // File libAssetFolder = new File(getFilesDir().getParent(), "files/asset");
+            // String libAssetPath = libAssetFolder.getAbsolutePath();
+            // File configFile = new File(getFilesDir().getParent(), "files/conf/core.gen.json");
+            
+            // coreManager = new libv2raymobile.CoreManager();
+            // Libv2raymobile.setEnv("v2ray.location.asset", libAssetPath);
+            // Libv2raymobile.setEnv("xray.location.asset", libAssetPath);
+            // coreManager.runConfig(configFile.getAbsolutePath());
+
+            Context ctx = getApplicationContext();
+            Intent intent = new Intent(ctx, LibV2rayService.class);
+            ctx.startService(intent);
         } else {
+            if (coreProcess != null) {
+                return;
+            }
             String corePath = prefs.getString("flutter.cache.core.path", "");
             new File(corePath).setExecutable(true);
             List<String> coreArgs = getStringListFromJsonString(prefs.getString("flutter.cache.core.args", "[]"));
@@ -598,10 +602,15 @@ public class TProxyService extends VpnService {
             coreProcess.destroy();
             coreProcess = null;
         }
-        if (coreManager != null) {
-            coreManager.stop();
-            coreManager = null;
-        }
+
+        // if (coreManager != null) {
+        //     coreManager.stop();
+        //     coreManager = null;
+        // }
+
+        Context ctx = getApplicationContext();
+        Intent intent = new Intent(ctx, LibV2rayService.class);
+        ctx.stopService(intent);
 
         Log.d(TAG, "finished: stopCore");
     }
