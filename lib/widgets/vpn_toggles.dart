@@ -103,7 +103,7 @@ class VPNTogglesState extends State<VPNToggles> {
   }
 
   void toggleTun(bool shouldEnable) async {
-    if (!global.isElevated) {
+    if (!prefs.getBool('tun.useEmbedded')! && !global.isElevated) {
       final snackBar = SnackBar(
         content: Text(context.loc
             .warning_you_need_to_be_elevated_user_to_modify_this_setting(
