@@ -1,8 +1,6 @@
 package com.github.anyportal.anyportal;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.github.anyportal.anyportal.utils.JsonUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -318,10 +316,10 @@ public class MainService extends Service {
         Log.d(TAG, "starting: startTunExec");
         String corePath = prefs.getString("flutter.cache.tun.singBox.core.path", "");
         new File(corePath).setExecutable(true);
-        List<String> coreArgs = getStringListFromJsonString(
+        List<String> coreArgs = JsonUtils.getStringListFromJsonString(
                 prefs.getString("flutter.cache.tun.singBox.core.args", "[]"));
         String coreWorkingDir = prefs.getString("flutter.cache.tun.singBox.core.workingDir", "");
-        Map<String, String> coreEnvs = getStringStringMapFromJsonString(
+        Map<String, String> coreEnvs = JsonUtils.getStringStringMapFromJsonString(
                 prefs.getString("flutter.tun.singBox.cache.core.envs", "{}"));
 
         coreArgs.add(0, corePath);
@@ -370,34 +368,6 @@ public class MainService extends Service {
         Log.d(TAG, "finished: startTun");
     }
 
-    private List<String> getStringListFromJsonString(String str) {
-        List<String> res = new ArrayList<>();
-        try {
-            JSONArray jsonArray = new JSONArray(str);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                res.add(jsonArray.getString(i));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return res;
-    }
-
-    private Map<String, String> getStringStringMapFromJsonString(String str) {
-        Map<String, String> res = new HashMap<String, String>();
-        try {
-            JSONObject jsonObject = new JSONObject(str);
-            Iterator<String> keys = jsonObject.keys();
-            while (keys.hasNext()) {
-                String key = keys.next();
-                String value = jsonObject.getString(key); // Get the value as a string
-                res.put(key, value);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return res;
-    }
 
     private void stopTun() {
         Log.d(TAG, "starting: stopTun");
@@ -439,9 +409,9 @@ public class MainService extends Service {
             }
             String corePath = prefs.getString("flutter.cache.core.path", "");
             new File(corePath).setExecutable(true);
-            List<String> coreArgs = getStringListFromJsonString(prefs.getString("flutter.cache.core.args", "[]"));
+            List<String> coreArgs = JsonUtils.getStringListFromJsonString(prefs.getString("flutter.cache.core.args", "[]"));
             String coreWorkingDir = prefs.getString("flutter.cache.core.workingDir", "");
-            Map<String, String> coreEnvs = getStringStringMapFromJsonString(
+            Map<String, String> coreEnvs = JsonUtils.getStringStringMapFromJsonString(
                     prefs.getString("flutter.cache.core.envs", "{}"));
 
             coreArgs.add(0, corePath);
@@ -471,11 +441,6 @@ public class MainService extends Service {
             coreProcess.destroy();
             coreProcess = null;
         }
-
-        // if (coreManager != null) {
-        //     coreManager.stop();
-        //     coreManager = null;
-        // }
 
         stopService(new Intent(getApplicationContext(), LibV2rayService.class));
 

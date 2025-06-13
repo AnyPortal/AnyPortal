@@ -1,7 +1,6 @@
 package com.github.anyportal.anyportal;
 
-import org.json.JSONArray;
-import org.json.JSONException;
+import com.github.anyportal.anyportal.utils.JsonUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,7 +132,7 @@ public class TProxyService extends VpnService{
             session += "/per-App";
             if (prefs.getBoolean("flutter.android.tun.perAppProxy.allowed", true)) {
                 String selectedAppsString = prefs.getString("flutter.android.tun.allowedApplications", "[]");
-                List<String> selectedApps = getStringListFromJsonString(selectedAppsString);
+                List<String> selectedApps = JsonUtils.getStringListFromJsonString(selectedAppsString);
                 for (String appName : selectedApps) {
                     try {
                         builder.addAllowedApplication(appName);
@@ -146,7 +145,7 @@ public class TProxyService extends VpnService{
                 }
             } else {
                 String selectedAppsString = prefs.getString("flutter.android.tun.disAllowedApplications", "[]");
-                List<String> selectedApps = getStringListFromJsonString(selectedAppsString);
+                List<String> selectedApps = JsonUtils.getStringListFromJsonString(selectedAppsString);
                 for (String appName : selectedApps) {
                     try {
                         builder.addDisallowedApplication(appName);
@@ -186,18 +185,5 @@ public class TProxyService extends VpnService{
             }
             tunFd = null;
         }
-    }
-
-    private List<String> getStringListFromJsonString(String str) {
-        List<String> res = new ArrayList<>();
-        try {
-            JSONArray jsonArray = new JSONArray(str);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                res.add(jsonArray.getString(i));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return res;
     }
 }

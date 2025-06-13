@@ -1,7 +1,8 @@
-package com.github.anyportal.anyportal;
+package com.github.anyportal.anyportal.utils;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

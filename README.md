@@ -80,7 +80,7 @@
    - The core exec asset is copied to internal storage upon selection, so you MUST reselect the core if you want to update it.
    - The `working directory` can not be set to a location without execution permission, e.g. the sdcard which has a FAT file system.
    - You MUST manually specify the `envs` if the core needs it, e.g. `{"xray.location.asset" : "/storage/emulated/0/path/to/xray/assets"}`
-2. Only xray-core 1.8.24 is embedded for now. Latest xray-core has stability issues. Some os (e.g. Xiaomi may have problems using this feature due to aggresive RAM management)
+2. Only xray-core 1.8.24 is embedded for now. Latest xray-core has stability issues.
 3. Require `Run as Administrator`, elevated user share configuration with original user
 4. Require root, root DOES NOT share configuration with original user
 5. Require root, root DOES NOT share configuration with original user. Move the app to Application folder and run `sudo /Applications/AnyPortal.app/Contents/MacOS/AnyPortal`.

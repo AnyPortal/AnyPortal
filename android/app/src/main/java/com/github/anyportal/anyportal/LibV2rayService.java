@@ -34,6 +34,7 @@ public class LibV2rayService extends Service{
     @Override
     public void onCreate() {
         Log.d(TAG, "starting: onCreate");
+        super.onCreate();
         File libAssetFolder = new File(getFilesDir().getParent(), "files/asset");
         String libAssetPath = libAssetFolder.getAbsolutePath();
         File configFile = new File(getFilesDir().getParent(), "files/conf/core.gen.json");
@@ -52,8 +53,8 @@ public class LibV2rayService extends Service{
             coreManager.stop();
             coreManager = null;
         }
-        Log.d(TAG, "finished: onDestroy");
-        android.os.Process.killProcess(android.os.Process.myPid());
         super.onDestroy();
+        Log.d(TAG, "finished: onDestroy");
+        // android.os.Process.killProcess(android.os.Process.myPid());
     }
 }

@@ -1,5 +1,7 @@
 package com.github.anyportal.anyportal;
 
+import com.github.anyportal.anyportal.utils.AssetUtils;
+
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
