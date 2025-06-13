@@ -30,9 +30,12 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   List<ProfileData> _profiles = [];
-  String? _selectedProfileName = prefs.getString("cache.app.selectedProfileName");
+  String? _selectedProfileName =
+      prefs.getString("cache.app.selectedProfileName");
 
   bool _highlightSelectProfile = false;
+  bool _useFloatingActionButton =
+      prefs.getBool("app.dashboard.floatingActionButton")!;
 
   void setHighlightSelectProfile() async {
     for (var i = 0; i < 2; ++i) {
@@ -100,8 +103,9 @@ class _DashboardState extends State<Dashboard> {
                     title: Text(
                       context.loc.selected_profile,
                     ),
-                    subtitle: Text(
-                        _selectedProfileName == null ? "" : _selectedProfileName!),
+                    subtitle: Text(_selectedProfileName == null
+                        ? ""
+                        : _selectedProfileName!),
                     trailing: const Icon(Icons.more_vert),
                     onTap: () {
                       _profiles.isNotEmpty
@@ -119,8 +123,7 @@ class _DashboardState extends State<Dashboard> {
                             }();
                     },
                   ))),
-          if (!widget.isLandscapeLayout &&
-              !prefs.getBool("app.dashboard.floatingActionButton")!)
+          if (!widget.isLandscapeLayout && !_useFloatingActionButton)
             Card(
                 margin: const EdgeInsets.all(8.0),
                 child: const Padding(
@@ -213,11 +216,12 @@ class _DashboardState extends State<Dashboard> {
                   )),
             ),
           ]),
-          Container(
-            constraints: const BoxConstraints(
-              minHeight: 72,
-            ),
-          )
+          if (_useFloatingActionButton)
+            Container(
+              constraints: const BoxConstraints(
+                minHeight: 72,
+              ),
+            )
         ]),
       ),
       floatingActionButton: prefs.getBool("app.dashboard.floatingActionButton")!
