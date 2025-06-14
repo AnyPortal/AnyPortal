@@ -264,7 +264,8 @@ class _ProfileListState extends State<ProfileList> {
           title: Stack(children: [
             Text(context.loc.profiles),
             Align(
-                alignment: Alignment.topRight,
+                alignment: Alignment.centerRight,
+                heightFactor: 0.7,
                 child: SmoothHighlight(
                     enabled: _highlightProfilesPopupMenuButton,
                     color: Colors.grey,
@@ -307,17 +308,19 @@ class _ProfileListState extends State<ProfileList> {
                           setState(() {
                             _selectedProfileId = value;
                           });
-                          if (await vPNMan.getIsCoreActive()){
+                          if (await vPNMan.getIsCoreActive()) {
                             const snackBar = SnackBar(
                               content: Text("Reconnecting"),
                             );
-                            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                            
+                            if (context.mounted)
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+
                             await vPNMan.stopCore();
                             final res = await vPNMan.startCore();
 
                             String msg = "";
-                            if (context.mounted){
+                            if (context.mounted) {
                               if (res) {
                                 msg = context.loc.info_reconnected;
                               } else {
@@ -327,9 +330,12 @@ class _ProfileListState extends State<ProfileList> {
                             final snackBar2 = SnackBar(
                               content: Text(msg),
                             );
-                            if (context.mounted) ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                            if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(snackBar2);
-                            
+                            if (context.mounted)
+                              ScaffoldMessenger.of(context)
+                                  .hideCurrentSnackBar();
+                            if (context.mounted)
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar2);
                           }
                         },
                         title: Text(profile.name.toString()),
