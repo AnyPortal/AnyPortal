@@ -21,22 +21,24 @@ Future<Map<String, dynamic>> getInjectedConfig(Map<String, dynamic> cfg) async {
   final sendThroughBindingStratagy = SendThroughBindingStratagy
       .values[prefs.getInt('inject.sendThrough.bindingStratagy')!];
   String sendThrough = "0.0.0.0";
-  switch (sendThroughBindingStratagy) {
-    // case SendThroughBindingStratagy.internet:
-    //   autoDetectedSendThrough = await getIPAddr();
-    //   if (autoDetectedSendThrough != null){
-    //     sendThrough = autoDetectedSendThrough;
-    //   }
-    case SendThroughBindingStratagy.ip:
-      sendThrough = prefs.getString('inject.sendThrough.bindingIp')!;
-    case SendThroughBindingStratagy.interface:
-      final bindingInterface =
-          prefs.getString('inject.sendThrough.bindingInterface')!;
-      final ip = await getIPv4OfInterface(bindingInterface);
-      if (ip == null) {
-        throw Exception('ip not found for binding interface $bindingInterface');
-      }
-      sendThrough = ip;
+  if (injectSendThrough){
+    switch (sendThroughBindingStratagy) {
+      // case SendThroughBindingStratagy.internet:
+      //   autoDetectedSendThrough = await getIPAddr();
+      //   if (autoDetectedSendThrough != null){
+      //     sendThrough = autoDetectedSendThrough;
+      //   }
+      case SendThroughBindingStratagy.ip:
+        sendThrough = prefs.getString('inject.sendThrough.bindingIp')!;
+      case SendThroughBindingStratagy.interface:
+        final bindingInterface =
+            prefs.getString('inject.sendThrough.bindingInterface')!;
+        final ip = await getIPv4OfInterface(bindingInterface);
+        if (ip == null) {
+          throw Exception('ip not found for binding interface $bindingInterface');
+        }
+        sendThrough = ip;
+    }
   }
 
   if (!kIsWeb && injectLog) {
