@@ -6,10 +6,25 @@
 #include "utils.h"
 
 int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
-                      _In_ wchar_t *command_line, _In_ int show_command) {
+                      _In_ wchar_t* command_line, _In_ int show_command) {
+  std::vector<std::string> command_line_arguments =
+      GetCommandLineArguments();
+
+  bool has_console_flag = false;
+  std::string console_flag = "--console";
+  for (auto it = command_line_arguments.begin(); it != command_line_arguments.end(); ++it) {
+    if (*it == console_flag) {
+      command_line_arguments.erase(it);
+      has_console_flag = true;
+      break;
+    }
+  }
+
   // Attach to console when present (e.g., 'flutter run') or create a
   // new console when running with a debugger.
-  if (!::AttachConsole(ATTACH_PARENT_PROCESS) && ::IsDebuggerPresent()) {
+  // Note that ::AttachConsole(ATTACH_PARENT_PROCESS) will success in WIN32 GUI app
+  // but the console will not block and wait
+  if (has_console_flag || (!::AttachConsole(ATTACH_PARENT_PROCESS) && ::IsDebuggerPresent())) {
     CreateAndAttachConsole();
   }
 
@@ -18,9 +33,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   ::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
 
   flutter::DartProject project(L"data");
-
-  std::vector<std::string> command_line_arguments =
-      GetCommandLineArguments();
 
   project.set_dart_entrypoint_arguments(std::move(command_line_arguments));
 
