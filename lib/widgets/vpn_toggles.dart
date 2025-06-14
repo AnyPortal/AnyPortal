@@ -155,11 +155,7 @@ class VPNTogglesState extends State<VPNToggles> {
                 if (vPNMan.isTogglingAll) {
                   status = [
                     Text(" "),
-                    SizedBox(
-                      height: 16.0,
-                      width: 16.0,
-                      child: Center(child: CircularProgressIndicator()),
-                    ),
+                    CircularProgressIndicator16(),
                   ];
                 }
                 return Row(children: [
@@ -175,7 +171,7 @@ class VPNTogglesState extends State<VPNToggles> {
                   builder: (BuildContext context, Widget? child) {
                     return Switch(
                       value: vPNMan.isCoreActive,
-                      onChanged: (shouldEnable) {
+                      onChanged: (bool shouldEnable) {
                         vPNMan.isTogglingAll ? null : toggleCore(shouldEnable);
                       },
                     );
@@ -188,24 +184,13 @@ class VPNTogglesState extends State<VPNToggles> {
           ListTile(
               dense: widget.isDense,
               title: ListenableBuilder(
-                  listenable: Listenable.merge([vPNMan, prefs]),
+                  listenable: vPNMan,
                   builder: (BuildContext context, Widget? child) {
-                    final shouldOn = prefs.getBool('systemProxy')!;
-                    final isOn = vPNMan.isSystemProxyActive;
                     List<Widget> status = [];
                     if (vPNMan.isTogglingSystemProxy) {
                       status = [
                         Text(" "),
-                        SizedBox(
-                          height: 16.0,
-                          width: 16.0,
-                          child: Center(child: CircularProgressIndicator()),
-                        ),
-                      ];
-                    }
-                    if (!vPNMan.isTogglingSystemProxy && !isOn && shouldOn) {
-                      status = [
-                        Text(" (!)"),
+                        CircularProgressIndicator16(),
                       ];
                     }
                     return Row(children: [
@@ -217,10 +202,12 @@ class VPNTogglesState extends State<VPNToggles> {
                 scale: switchScale,
                 origin: const Offset(32, 0),
                 child: ListenableBuilder(
-                    listenable: prefs,
+                    listenable: Listenable.merge([vPNMan, prefs]),
                     builder: (BuildContext context, Widget? child) {
+                      final shouldOn = prefs.getBool('systemProxy')!;
+                      final isOn = vPNMan.isSystemProxyActive;
                       return Switch(
-                        value: prefs.getBool("systemProxy")!,
+                        value: shouldOn,
                         onChanged: _systemProxyIsEnabled == null
                             ? null
                             : (bool shouldEnable) {
@@ -228,30 +215,27 @@ class VPNTogglesState extends State<VPNToggles> {
                                     ? null
                                     : toggleSystemProxy(shouldEnable);
                               },
+                        thumbIcon: WidgetStateProperty.resolveWith<Icon?>(
+                            (Set<WidgetState> states) {
+                          return !vPNMan.isTogglingSystemProxy &&
+                                  shouldOn &&
+                                  !isOn
+                              ? Icon(Icons.priority_high)
+                              : null;
+                        }),
                       );
                     }),
               )),
         ListTile(
           dense: widget.isDense,
           title: ListenableBuilder(
-              listenable: Listenable.merge([vPNMan, prefs]),
+              listenable: vPNMan,
               builder: (BuildContext context, Widget? child) {
-                final shouldOn = prefs.getBool('tun')!;
-                final isOn = vPNMan.isTunActive;
                 List<Widget> status = [];
                 if (vPNMan.isTogglingTun) {
                   status = [
                     Text(" "),
-                    SizedBox(
-                      height: 16.0,
-                      width: 16.0,
-                      child: Center(child: CircularProgressIndicator()),
-                    ),
-                  ];
-                }
-                if (!vPNMan.isTogglingTun && !isOn && shouldOn) {
-                  status = [
-                    Text(" (!)"),
+                    CircularProgressIndicator16(),
                   ];
                 }
                 return Row(children: [
@@ -263,18 +247,38 @@ class VPNTogglesState extends State<VPNToggles> {
               scale: switchScale,
               origin: const Offset(32, 0),
               child: ListenableBuilder(
-                  listenable: prefs,
+                  listenable: Listenable.merge([vPNMan, prefs]),
                   builder: (BuildContext context, Widget? child) {
-                    bool tun = prefs.getBool('tun')!;
+                    final shouldOn = prefs.getBool('tun')!;
+                    final isOn = vPNMan.isTunActive;
                     return Switch(
                       value: tun,
-                      onChanged: (shouldEnable) {
+                      onChanged: (bool shouldEnable) {
                         vPNMan.isTogglingTun ? null : toggleTun(shouldEnable);
                       },
+                      thumbIcon: WidgetStateProperty.resolveWith<Icon?>(
+                          (Set<WidgetState> states) {
+                        return !vPNMan.isTogglingTun && shouldOn && !isOn
+                            ? Icon(Icons.priority_high)
+                            : null;
+                      }),
                     );
                   })),
         ),
       ],
+    );
+  }
+}
+
+class CircularProgressIndicator16 extends StatelessWidget {
+  const CircularProgressIndicator16({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 16.0,
+      width: 16.0,
+      child: Center(child: CircularProgressIndicator()),
     );
   }
 }
