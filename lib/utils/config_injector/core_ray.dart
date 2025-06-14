@@ -24,7 +24,7 @@ Future<Map<String, dynamic>> getInjectedConfig(Map<String, dynamic> cfg) async {
   if (injectSendThrough){
     switch (sendThroughBindingStratagy) {
       // case SendThroughBindingStratagy.internet:
-      //   autoDetectedSendThrough = await getIPAddr();
+      //   final autoDetectedSendThrough = await getIPAddr();
       //   if (autoDetectedSendThrough != null){
       //     sendThrough = autoDetectedSendThrough;
       //   }

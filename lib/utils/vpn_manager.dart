@@ -200,11 +200,11 @@ abstract class VPNManager with ChangeNotifier {
   Future<bool> getIsTunActive();
   Future<bool> getIsSystemProxyActive();
 
-  Future<void> setIsCoreActive(
+  void setIsCoreActive(
     bool value, {
-    force = false,
-    isToNotify = true,
-  }) async {
+    bool force = false,
+    bool isToNotify = true,
+  }) {
     if (!force && value == isCoreActive) {
       if (value == isCoreActive) {
         logger.d("setIsCoreActive: no need, already $isCoreActive");
@@ -221,8 +221,8 @@ abstract class VPNManager with ChangeNotifier {
 
   Future<void> setIsTunActive(
     bool value, {
-    force = false,
-    isToNotify = true,
+    bool force = false,
+    bool isToNotify = true,
   }) async {
     if (!force && value == isTunActive) {
       if (value == isTunActive) {
@@ -239,8 +239,8 @@ abstract class VPNManager with ChangeNotifier {
 
   Future<void> setIsSystemProxyActive(
     bool value, {
-    force = false,
-    isToNotify = true,
+    bool force = false,
+    bool isToNotify = true,
   }) async {
     if (!force && value == isSystemProxyActive) {
       if (value == isSystemProxyActive) {
@@ -258,9 +258,9 @@ abstract class VPNManager with ChangeNotifier {
 
   Future<void> updateIsCoreActive({
     bool force = false,
-    isToNotify = true,
+    bool isToNotify = true,
   }) async {
-    await setIsCoreActive(
+    setIsCoreActive(
       await getIsCoreActive(),
       force: force,
       isToNotify: isToNotify,
@@ -269,7 +269,7 @@ abstract class VPNManager with ChangeNotifier {
 
   Future<void> updateIsTunActive({
     bool force = false,
-    isToNotify = true,
+    bool isToNotify = true,
   }) async {
     await setIsTunActive(
       await getIsTunActive(),
@@ -280,7 +280,7 @@ abstract class VPNManager with ChangeNotifier {
 
   Future<void> updateIsSystemProxyActive({
     bool force = false,
-    isToNotify = true,
+    bool isToNotify = true,
   }) async {
     await setIsSystemProxyActive(
       await getIsSystemProxyActive(),
@@ -699,7 +699,7 @@ class VPNManagerExec extends VPNManager {
   Future<void> updateDetachedCore() async {
     final coreCommandLine = "$corePath ${_coreArgList.join(' ')}";
     pidCore = await PlatformProcess.getProcessPid(coreCommandLine);
-    await setIsCoreActive(pidCore != null);
+    setIsCoreActive(pidCore != null);
   }
 
   @override
@@ -735,6 +735,38 @@ class VPNManagerExec extends VPNManager {
     return false;
   }
 
+  Future<void> ensureServerAddressPort(String name, int port) async {
+    final serverAddress = prefs.getString("app.server.address")!;
+    if (await isServerAddressPortInUse(serverAddress, port)) {
+      throw Exception("$name: $serverAddress:$port in use");
+    }
+  }
+
+  Future<bool> isServerAddressPortInUse(String serverAddress, int port) async {
+    try {
+      final server = await ServerSocket.bind(serverAddress, port);
+      await server.close();
+      return false; // Port is free
+    } catch (e) {
+      return true; // Port is in use
+    }
+  }
+
+  Future<void> ensureServerAddressPorts() async {
+    final apiPort = prefs.getInt('inject.api.port')!;
+    final httpPort = prefs.getInt('app.http.port')!;
+    final socksPort = prefs.getInt('app.socks.port')!;
+
+    final shouldCheckApiPort = prefs.getBool('inject.api')!;
+    final shouldCheckHttpPort = httpPort != socksPort;
+
+    await Future.wait([
+      if (shouldCheckApiPort) ensureServerAddressPort("API", apiPort),
+      if (shouldCheckHttpPort) ensureServerAddressPort("HTTP", httpPort),
+      ensureServerAddressPort("SOCKS", socksPort),
+    ]);
+  }
+
   @override
   _startCore() async {
     logger.d("starting: _startCore");
@@ -761,19 +793,23 @@ class VPNManagerExec extends VPNManager {
       }
     }
 
+    await ensureServerAddressPorts();
+
     final processCore = await Process.start(
       corePath!,
       _coreArgList,
       workingDirectory: _coreWorkingDir,
       environment: _coreEnvs,
     );
+    setIsCoreActive(true);
     pidCore = processCore.pid;
-    await setIsCoreActive(true);
+    logger.d("processCore: started: pid: $pidCore");
     processCore.exitCode.then((exitCode) async {
-      logger.d("processCore: exited: $exitCode");
+      logger.d("processCore: exitCode: $exitCode");
       pidCore = null;
-      await setIsCoreActive(false);
+      setIsCoreActive(false);
     });
+
     logger.d("finished: _startCore");
     return true;
   }
@@ -785,13 +821,12 @@ class VPNManagerExec extends VPNManager {
       final res = await PlatformProcess.killProcess(pidCore!);
       if (res) {
         pidCore = null;
-        await setIsCoreActive(false);
+        setIsCoreActive(false);
         logger.d("finished: stopCore");
         return true;
       } else {
-        pidCore = null;
         logger.w("_stopCore: failed");
-        return true;
+        return false;
       }
     } else {
       logger.w("_stopCore: pidCore is null");
@@ -870,7 +905,7 @@ class VPNManagerMC extends VPNManager {
 
   VPNManagerMC() {
     mCMan.addHandler("onCoreToggled", (call) async {
-      await setIsCoreActive(call.arguments as bool);
+      setIsCoreActive(call.arguments as bool);
     });
     mCMan.addHandler("onTileToggled", (call) async {
       isExpectingActive = call.arguments as bool;
@@ -908,7 +943,7 @@ class VPNManagerMC extends VPNManager {
     }
     final res = await platform.invokeMethod('vpn.startAll') as bool;
     if (res == true) {
-      await setIsCoreActive(true, isToNotify: false);
+      setIsCoreActive(true, isToNotify: false);
       await updateIsSystemProxyActive(isToNotify: false);
       await updateIsTunActive(isToNotify: false);
       notifyListeners();
@@ -919,7 +954,7 @@ class VPNManagerMC extends VPNManager {
   _stopAll() async {
     final res = await platform.invokeMethod('vpn.stopAll') as bool;
     if (res == true) {
-      await setIsCoreActive(false, isToNotify: false);
+      setIsCoreActive(false, isToNotify: false);
       await updateIsSystemProxyActive(isToNotify: false);
       await updateIsTunActive(isToNotify: false);
       notifyListeners();
@@ -953,7 +988,7 @@ class VPNManagerMC extends VPNManager {
     await installPendingAssetRemote();
     final res = await platform.invokeMethod('vpn.startCore') as bool;
     if (res == true) {
-      await setIsCoreActive(true);
+      setIsCoreActive(true);
     }
     return res;
   }
@@ -962,7 +997,7 @@ class VPNManagerMC extends VPNManager {
   _stopCore() async {
     final res = await platform.invokeMethod('vpn.stopCore') as bool;
     if (res == true) {
-      await setIsCoreActive(false);
+      setIsCoreActive(false);
     }
     return res;
   }

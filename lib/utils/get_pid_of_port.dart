@@ -18,11 +18,19 @@ Future<int?> getPidOfPort(int port) async {
           // Ensure line has enough columns (protocol, local address, foreign address, state, PID)
           if (columns.length >= 5) {
             var localAddress = columns[1];
-            var pid = columns[4];
+            String pidStr = columns[4];
 
             // Check if local address ends with ':port'
             if (localAddress.endsWith(':$port')) {
-              return int.tryParse(pid);
+              final pid = int.tryParse(pidStr);
+              if (pid == 0){
+                // ignore TIME_WAIT
+                continue;
+              } else {
+                /// Todo: pid may not exist
+                // final res = await Process.run('tasklist', ['/FI', '"PID eq $pid"']);
+                return pid;
+              }
             }
           }
         }
