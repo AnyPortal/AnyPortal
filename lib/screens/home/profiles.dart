@@ -312,9 +312,10 @@ class _ProfileListState extends State<ProfileList> {
                             const snackBar = SnackBar(
                               content: Text("Reconnecting"),
                             );
-                            if (context.mounted)
+                            if (context.mounted) {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(snackBar);
+                            }
 
                             await vPNMan.stopCore();
                             final res = await vPNMan.startCore();
@@ -330,12 +331,12 @@ class _ProfileListState extends State<ProfileList> {
                             final snackBar2 = SnackBar(
                               content: Text(msg),
                             );
-                            if (context.mounted)
+                            if (context.mounted) {
                               ScaffoldMessenger.of(context)
                                   .hideCurrentSnackBar();
-                            if (context.mounted)
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(snackBar2);
+                            }
                           }
                         },
                         title: Text(profile.name.toString()),
