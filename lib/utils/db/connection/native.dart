@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:drift/drift.dart';
+// ignore: depend_on_referenced_packages
 import 'package:drift_dev/api/migrations_native.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
