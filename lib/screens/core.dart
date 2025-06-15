@@ -12,6 +12,7 @@ import '../../utils/db.dart';
 import '../models/asset.dart';
 import '../utils/logger.dart';
 import '../utils/platform.dart';
+import '../widgets/form/progress_button.dart';
 import 'asset.dart';
 import 'core_type.dart';
 
@@ -348,15 +349,11 @@ class _CoreScreenState extends State<CoreScreen> {
             border: OutlineInputBorder(),
           ),
         ),
-      Center(
-        child: ElevatedButton(
-          onPressed: _isSubmitting ? null : _submitForm,
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
-          ),
-          child: Text(context.loc.save_and_update),
-        ),
-      ),
+      ProgressButton(
+        isInProgress: _isSubmitting,
+        onPressed: _submitForm,
+        child: Text(context.loc.save_and_update),
+      )
     ];
 
     return Scaffold(

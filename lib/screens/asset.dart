@@ -10,6 +10,7 @@ import '../models/edit_status.dart';
 import '../utils/asset_remote/github.dart';
 import '../utils/logger.dart';
 import '../utils/platform.dart';
+import '../widgets/form/progress_button.dart';
 
 class AssetScreen extends StatefulWidget {
   final TypedResult? asset;
@@ -182,8 +183,8 @@ class _AssetScreenState extends State<AssetScreen> {
           controller: _urlController,
           decoration: InputDecoration(
             labelText: context.loc.url,
-            hintText:
-                context.loc.e_g_github_v2fly_v2ray_core_v2ray_windows_64_zip_v2ray_exe,
+            hintText: context
+                .loc.e_g_github_v2fly_v2ray_core_v2ray_windows_64_zip_v2ray_exe,
             border: OutlineInputBorder(),
           ),
         ),
@@ -196,15 +197,11 @@ class _AssetScreenState extends State<AssetScreen> {
           ),
           keyboardType: TextInputType.number,
         ),
-      Center(
-        child: ElevatedButton(
-          onPressed: _isSubmitting ? null : _submitForm,
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
-          ),
-          child: Text(context.loc.save_and_update),
-        ),
-      ),
+      ProgressButton(
+        isInProgress: _isSubmitting,
+        onPressed: _submitForm,
+        child: Text(context.loc.save_and_update),
+      )
     ];
 
     return Scaffold(

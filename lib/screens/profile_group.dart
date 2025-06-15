@@ -5,6 +5,7 @@ import '../models/profile_group.dart';
 import '../utils/db.dart';
 import '../utils/db/update_profile_group.dart';
 import '../utils/logger.dart';
+import '../widgets/form/progress_button.dart';
 
 class ProfileGroupScreen extends StatefulWidget {
   final ProfileGroupData? profileGroup;
@@ -89,7 +90,8 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
     }
 
     if (ok) {
-      if (mounted && Navigator.canPop(context)) Navigator.pop(context, {'ok': true});
+      if (mounted && Navigator.canPop(context))
+        Navigator.pop(context, {'ok': true});
     }
   }
 
@@ -139,15 +141,11 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
           ),
           keyboardType: TextInputType.number,
         ),
-      Center(
-        child: ElevatedButton(
-          onPressed: _isSubmitting ? null : _submitForm,
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
-          ),
-          child: Text(context.loc.save_and_update),
-        ),
-      ),
+      ProgressButton(
+        isInProgress: _isSubmitting,
+        onPressed: _submitForm,
+        child: Text(context.loc.save_and_update),
+      )
     ];
 
     return Scaffold(

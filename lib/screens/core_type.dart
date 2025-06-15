@@ -5,6 +5,7 @@ import 'package:drift/drift.dart';
 import 'package:anyportal/extensions/localization.dart';
 import '../utils/db.dart';
 import '../utils/logger.dart';
+import '../widgets/form/progress_button.dart';
 
 class CoreTypeScreen extends StatefulWidget {
   final CoreTypeData? coreType;
@@ -90,15 +91,11 @@ class _CoreTypeScreenState extends State<CoreTypeScreen> {
           border: OutlineInputBorder(),
         ),
       ),
-      Center(
-        child: ElevatedButton(
-          onPressed: _isSubmitting ? null : _submitForm,
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
-          ),
-          child: Text(context.loc.save_and_update),
-        ),
-      ),
+      ProgressButton(
+        isInProgress: _isSubmitting,
+        onPressed: _submitForm,
+        child: Text(context.loc.save_and_update),
+      )
     ];
 
     return Scaffold(
