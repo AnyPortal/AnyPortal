@@ -92,6 +92,7 @@
   "inject_configuration_into_v2ray_xray_profile": "Inject configuration into v2ray/xray profile",
   "inject_http_inbound": "Inject http inbound",
   "inject_log": "Inject Log",
+  "inject_rule_to_exclude_core_dns": "Inject rule to exclude core DNS",
   "inject_rule_to_exclude_core_path": "Inject rule to exclude core path",
   "inject_send_through": "Inject sendThrough",
   "inject_socks_inbound": "Inject socks inbound",
@@ -131,6 +132,7 @@
   "proxy": "Proxy",
   "proxy_speed": "Proxy speed",
   "reconnected": "Reconnected",
+  "routing_rule_additional_rules": "Routing rule: additional rules",
   "routing_rule_additionally_exclude_core_path": "Routing rule: additionally exclude core path",
   "run_as_elevated_user": "Run as {elevatedUser}",
   "@run_as_elevated_user": {

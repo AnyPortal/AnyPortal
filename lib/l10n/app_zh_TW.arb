@@ -92,6 +92,7 @@
   "inject_configuration_into_v2ray_xray_profile": null,
   "inject_http_inbound": null,
   "inject_log": null,
+  "inject_rule_to_exclude_core_dns": null,
   "inject_rule_to_exclude_core_path": null,
   "inject_send_through": null,
   "inject_socks_inbound": null,
@@ -131,6 +132,7 @@
   "proxy": null,
   "proxy_speed": null,
   "reconnected": null,
+  "routing_rule_additional_rules": null,
   "routing_rule_additionally_exclude_core_path": null,
   "run_as_elevated_user": null,
   "@run_as_elevated_user": {

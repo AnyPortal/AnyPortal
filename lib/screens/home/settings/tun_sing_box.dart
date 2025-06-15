@@ -31,6 +31,7 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
   LogLevel _logLevel = LogLevel.values[prefs.getInt('tun.inject.log.level')!];
   bool _injectSocks = prefs.getBool('tun.inject.socks')!;
   bool _injectExcludeCorePath = prefs.getBool('tun.inject.excludeCorePath')!;
+  bool _injectExcludeCoreDNS = prefs.getBool('tun.inject.excludeCoreDNS')!;
 
   @override
   void initState() {
@@ -176,8 +177,7 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
       const Divider(),
       Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-        child: Text(
-          context.loc.routing_rule_additionally_exclude_core_path,
+        child: Text(context.loc.routing_rule_additional_rules,
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
       ),
@@ -191,6 +191,19 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
             prefs.setBool('tun.inject.excludeCorePath', value);
             setState(() {
               _injectExcludeCorePath = value;
+            });
+          },
+        ),
+      ),
+      ListTile(
+        title: Text(context.loc.inject_rule_to_exclude_core_dns),
+        subtitle: Text("All IPv4 defined in dns.servers will not be proxied"),
+        trailing: Switch(
+          value: _injectExcludeCoreDNS,
+          onChanged: (value) {
+            prefs.setBool('tun.inject.excludeCoreDNS', value);
+            setState(() {
+              _injectExcludeCoreDNS = value;
             });
           },
         ),

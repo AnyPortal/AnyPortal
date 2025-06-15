@@ -92,6 +92,7 @@
   "inject_configuration_into_v2ray_xray_profile": "حقن التكوين في ملف تعريف v2ray/xray",
   "inject_http_inbound": "حقن اتصال HTTP الوارد",
   "inject_log": "حقن السجل",
+  "inject_rule_to_exclude_core_dns": "إضافة قاعدة لاستثناء DNS الأساسي",
   "inject_rule_to_exclude_core_path": "حقن قاعدة لاستثناء مسار النواة",
   "inject_send_through": "حقن sendThrough",
   "inject_socks_inbound": "حقن اتصال SOCKS الوارد",
@@ -131,6 +132,7 @@
   "proxy": "البروكسي",
   "proxy_speed": "سرعة البروكسي",
   "reconnected": "تم إعادة الاتصال",
+  "routing_rule_additional_rules": "قاعدة التوجيه: القواعد الإضافية",
   "routing_rule_additionally_exclude_core_path": "قاعدة التوجيه: استبعاد مسار النواة إضافيًا",
   "run_as_elevated_user": "تشغيل كـ {elevatedUser}",
   "@run_as_elevated_user": {

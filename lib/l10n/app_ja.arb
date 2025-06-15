@@ -92,6 +92,7 @@
   "inject_configuration_into_v2ray_xray_profile": "V2Ray/Xrayプロファイルに設定を挿入",
   "inject_http_inbound": "HTTPインバウンドを挿入",
   "inject_log": "ログを挿入",
+  "inject_rule_to_exclude_core_dns": "コアDNSを除外するルールを挿入",
   "inject_rule_to_exclude_core_path": "コアパスを除外するルールを挿入",
   "inject_send_through": "送信経路を挿入",
   "inject_socks_inbound": "SOCKSインバウンドを挿入",
@@ -131,6 +132,7 @@
   "proxy": "プロキシ",
   "proxy_speed": "プロキシ速度",
   "reconnected": "再接続されました",
+  "routing_rule_additional_rules": "ルーティングルール：追加のルール",
   "routing_rule_additionally_exclude_core_path": "ルーティングルール：コアパスを追加で除外",
   "run_as_elevated_user": "{elevatedUser}として実行",
   "@run_as_elevated_user": {

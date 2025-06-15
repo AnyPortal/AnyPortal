@@ -92,6 +92,7 @@
   "inject_configuration_into_v2ray_xray_profile": "Tiêm cấu hình vào hồ sơ v2ray/xray",
   "inject_http_inbound": "Tiêm HTTP inbound",
   "inject_log": "Tiêm nhật ký",
+  "inject_rule_to_exclude_core_dns": "Tiêm quy tắc để loại trừ DNS lõi",
   "inject_rule_to_exclude_core_path": "Tiêm quy tắc để loại trừ đường dẫn lõi",
   "inject_send_through": "Tiêm sendThrough",
   "inject_socks_inbound": "Tiêm socks inbound",
@@ -131,6 +132,7 @@
   "proxy": "Proxy",
   "proxy_speed": "Tốc độ proxy",
   "reconnected": "Đã kết nối lại",
+  "routing_rule_additional_rules": "Quy tắc định tuyến: quy tắc bổ sung",
   "routing_rule_additionally_exclude_core_path": "Quy tắc định tuyến: loại trừ thêm đường dẫn lõi",
   "run_as_elevated_user": "Chạy với tư cách {elevatedUser}",
   "@run_as_elevated_user": {

@@ -92,6 +92,7 @@
   "inject_configuration_into_v2ray_xray_profile": "v2ray/xray 프로필에 설정 주입",
   "inject_http_inbound": "HTTP 인바운드 주입",
   "inject_log": "로그 주입",
+  "inject_rule_to_exclude_core_dns": "코어 DNS를 제외하기 위한 주입 규칙",
   "inject_rule_to_exclude_core_path": "코어 경로 제외 규칙 주입",
   "inject_send_through": "sendThrough 주입",
   "inject_socks_inbound": "SOCKS 인바운드 주입",
@@ -131,6 +132,7 @@
   "proxy": "프록시",
   "proxy_speed": "프록시 속도",
   "reconnected": "재연결됨",
+  "routing_rule_additional_rules": "라우팅 규칙: 추가 규칙",
   "routing_rule_additionally_exclude_core_path": "라우팅 규칙: 추가적으로 코어 경로 제외",
   "run_as_elevated_user": "{elevatedUser}(으)로 실행",
   "@run_as_elevated_user": {

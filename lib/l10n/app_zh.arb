@@ -92,6 +92,7 @@
   "inject_configuration_into_v2ray_xray_profile": "将配置注入 v2ray/xray 配置",
   "inject_http_inbound": "注入 http 入站",
   "inject_log": "注入日志",
+  "inject_rule_to_exclude_core_dns": "注入规则以排除核心DNS",
   "inject_rule_to_exclude_core_path": "注入规则以排除核心路径",
   "inject_send_through": "注入 sendThrough",
   "inject_socks_inbound": "注入 socks 入站",
@@ -131,6 +132,7 @@
   "proxy": "代理",
   "proxy_speed": "代理速度",
   "reconnected": "已重新连接",
+  "routing_rule_additional_rules": "路由规则：附加规则",
   "routing_rule_additionally_exclude_core_path": "路由规则：额外排除核心路径",
   "run_as_elevated_user": "以{elevatedUser}身份运行",
   "@run_as_elevated_user": {

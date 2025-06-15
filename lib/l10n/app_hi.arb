@@ -92,6 +92,7 @@
   "inject_configuration_into_v2ray_xray_profile": "V2Ray/XRay प्रोफ़ाइल में कॉन्फ़िगरेशन सम्मिलित करें",
   "inject_http_inbound": "HTTP इनबाउंड सम्मिलित करें",
   "inject_log": "लॉग सम्मिलित करें",
+  "inject_rule_to_exclude_core_dns": "कोर DNS को बाहर करने के लिए नियम सम्मिलित करें",
   "inject_rule_to_exclude_core_path": "कोर पथ को छोड़ने के लिए नियम सम्मिलित करें",
   "inject_send_through": "SendThrough सम्मिलित करें",
   "inject_socks_inbound": "SOCKS इनबाउंड सम्मिलित करें",
@@ -131,6 +132,7 @@
   "proxy": "प्रॉक्सी",
   "proxy_speed": "प्रॉक्सी गति",
   "reconnected": "पुन: कनेक्ट किया गया",
+  "routing_rule_additional_rules": "रूटिंग नियम: अतिरिक्त नियम",
   "routing_rule_additionally_exclude_core_path": "रूटिंग नियम: अतिरिक्त रूप से कोर पथ को बाहर करें",
   "run_as_elevated_user": "{elevatedUser} के रूप में चलाएँ",
   "@run_as_elevated_user": {

@@ -92,6 +92,7 @@
   "inject_configuration_into_v2ray_xray_profile": "Sisipkan konfigurasi ke dalam profil v2ray/xray",
   "inject_http_inbound": "Sisipkan HTTP masuk",
   "inject_log": "Sisipkan log",
+  "inject_rule_to_exclude_core_dns": "Sisipkan aturan untuk mengecualikan DNS inti",
   "inject_rule_to_exclude_core_path": "Sisipkan aturan untuk mengecualikan jalur inti",
   "inject_send_through": "Sisipkan sendThrough",
   "inject_socks_inbound": "Sisipkan SOCKS masuk",
@@ -131,6 +132,7 @@
   "proxy": "Proxy",
   "proxy_speed": "Kecepatan proxy",
   "reconnected": "Tersambung kembali",
+  "routing_rule_additional_rules": "Aturan perutean: aturan tambahan",
   "routing_rule_additionally_exclude_core_path": "Aturan perutean: tambahkan pengecualian jalur inti",
   "run_as_elevated_user": "Jalankan sebagai {elevatedUser}",
   "@run_as_elevated_user": {

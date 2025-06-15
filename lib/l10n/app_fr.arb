@@ -92,6 +92,7 @@
   "inject_configuration_into_v2ray_xray_profile": "Injecter la configuration dans le profil v2ray/xray",
   "inject_http_inbound": "Injecter HTTP entrant",
   "inject_log": "Injecter journal",
+  "inject_rule_to_exclude_core_dns": "Injecter une règle pour exclure le DNS principal",
   "inject_rule_to_exclude_core_path": "Injecter une règle pour exclure le chemin du noyau",
   "inject_send_through": "Injecter sendThrough",
   "inject_socks_inbound": "Injecter SOCKS entrant",
@@ -131,6 +132,7 @@
   "proxy": "Proxy",
   "proxy_speed": "Vitesse du proxy",
   "reconnected": "Reconnecté",
+  "routing_rule_additional_rules": "Règle de routage : règles supplémentaires",
   "routing_rule_additionally_exclude_core_path": "Règle de routage : exclure également le chemin principal",
   "run_as_elevated_user": "Exécuter en tant que {elevatedUser}",
   "@run_as_elevated_user": {

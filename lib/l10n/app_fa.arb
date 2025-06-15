@@ -92,6 +92,7 @@
   "inject_configuration_into_v2ray_xray_profile": "تزریق پیکربندی به پروفایل v2ray/xray",
   "inject_http_inbound": "تزریق ورودی HTTP",
   "inject_log": "تزریق لاگ",
+  "inject_rule_to_exclude_core_dns": "تزریق قانون برای حذف DNS هسته",
   "inject_rule_to_exclude_core_path": "تزریق قانون برای حذف مسیر هسته",
   "inject_send_through": "تزریق sendThrough",
   "inject_socks_inbound": "تزریق ورودی SOCKS",
@@ -131,6 +132,7 @@
   "proxy": "پروکسی",
   "proxy_speed": "سرعت پروکسی",
   "reconnected": "اتصال مجدد برقرار شد",
+  "routing_rule_additional_rules": "قانون مسیریابی: قوانین اضافی",
   "routing_rule_additionally_exclude_core_path": "قانون مسیریابی: حذف مسیر هسته به‌صورت اضافی",
   "run_as_elevated_user": "اجرا به عنوان {elevatedUser}",
   "@run_as_elevated_user": {

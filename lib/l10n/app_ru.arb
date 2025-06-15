@@ -92,6 +92,7 @@
   "inject_configuration_into_v2ray_xray_profile": "Внедрить конфигурацию в профиль v2ray/xray",
   "inject_http_inbound": "Внедрить HTTP-входящее соединение",
   "inject_log": "Внедрить лог",
+  "inject_rule_to_exclude_core_dns": "Внедрить правило исключения ядерного DNS",
   "inject_rule_to_exclude_core_path": "Добавить правило исключения пути к ядру",
   "inject_send_through": "Внедрить sendThrough",
   "inject_socks_inbound": "Внедрить SOCKS-входящее соединение",
@@ -131,6 +132,7 @@
   "proxy": "Прокси",
   "proxy_speed": "Скорость прокси",
   "reconnected": "Переподключено",
+  "routing_rule_additional_rules": "Дополнительные правила маршрутизации",
   "routing_rule_additionally_exclude_core_path": "Правило маршрутизации: дополнительно исключить путь к ядру",
   "run_as_elevated_user": "Запуск от имени {elevatedUser}",
   "@run_as_elevated_user": {

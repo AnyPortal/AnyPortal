@@ -92,6 +92,7 @@
   "inject_configuration_into_v2ray_xray_profile": "แทรกการตั้งค่าเข้าไปในโปรไฟล์ v2ray/xray",
   "inject_http_inbound": "แทรก HTTP ขาเข้า",
   "inject_log": "แทรกบันทึก",
+  "inject_rule_to_exclude_core_dns": "แทรกกฎเพื่อไม่รวม DNS ของคอร์",
   "inject_rule_to_exclude_core_path": "แทรกกฎเพื่อยกเว้นเส้นทางของคอร์",
   "inject_send_through": "แทรก sendThrough",
   "inject_socks_inbound": "แทรก SOCKS ขาเข้า",
@@ -131,6 +132,7 @@
   "proxy": "พร็อกซี",
   "proxy_speed": "ความเร็วพร็อกซี",
   "reconnected": "เชื่อมต่อใหม่แล้ว",
+  "routing_rule_additional_rules": "กฎการกำหนดเส้นทาง: กฎเพิ่มเติม",
   "routing_rule_additionally_exclude_core_path": "กฎการกำหนดเส้นทาง: แยกเส้นทางหลักออกเพิ่มเติม",
   "run_as_elevated_user": "เรียกใช้เป็น {elevatedUser}",
   "@run_as_elevated_user": {

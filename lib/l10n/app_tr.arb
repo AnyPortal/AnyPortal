@@ -92,6 +92,7 @@
   "inject_configuration_into_v2ray_xray_profile": "v2ray/xray profiline yapılandırma enjekte et",
   "inject_http_inbound": "HTTP gelen bağlantısını enjekte et",
   "inject_log": "Günlük kaydını enjekte et",
+  "inject_rule_to_exclude_core_dns": "Çekirdek DNS'yi hariç tutma kuralı enjekte et",
   "inject_rule_to_exclude_core_path": "Çekirdek yolunu hariç tutma kuralı enjekte et",
   "inject_send_through": "sendThrough enjekte et",
   "inject_socks_inbound": "SOCKS gelen bağlantısını enjekte et",
@@ -131,6 +132,7 @@
   "proxy": "Vekil sunucu",
   "proxy_speed": "Proxy hızı",
   "reconnected": "Yeniden bağlandı",
+  "routing_rule_additional_rules": "Yönlendirme kuralına ek kurallar",
   "routing_rule_additionally_exclude_core_path": "Yönlendirme kuralı: çekirdek yolunu ayrıca hariç tut",
   "run_as_elevated_user": "{elevatedUser} olarak çalıştır",
   "@run_as_elevated_user": {
