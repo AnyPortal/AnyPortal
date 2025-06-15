@@ -343,6 +343,7 @@ class _CoresScreenState extends State<CoresScreen> {
                         title: Text(getCoreTitle(core)),
                         subtitle: Text(
                             '${core.read(db.core.updatedAt)}'),
+                        dense: true,
                         secondary: PopupMenuButton<CoreAction>(
                           onSelected: (value) => handleCoreAction(core, value),
                           itemBuilder: (context) => CoreAction.values
