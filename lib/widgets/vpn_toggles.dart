@@ -148,21 +148,7 @@ class VPNTogglesState extends State<VPNToggles> {
       children: [
         ListTile(
           dense: widget.isDense,
-          title: ListenableBuilder(
-              listenable: vPNMan,
-              builder: (BuildContext context, Widget? child) {
-                List<Widget> status = [];
-                if (vPNMan.isTogglingAll) {
-                  status = [
-                    Text(" "),
-                    CircularProgressIndicator16(),
-                  ];
-                }
-                return Row(children: [
-                  Text(context.loc.core),
-                  ...status,
-                ]);
-              }),
+          title: Text(context.loc.core),
           trailing: Transform.scale(
               scale: switchScale,
               origin: const Offset(32, 0),
@@ -171,9 +157,7 @@ class VPNTogglesState extends State<VPNToggles> {
                   builder: (BuildContext context, Widget? child) {
                     return Switch(
                       value: vPNMan.isCoreActive,
-                      onChanged: (bool shouldEnable) {
-                        vPNMan.isTogglingAll ? null : toggleCore(shouldEnable);
-                      },
+                      onChanged: vPNMan.isTogglingAll ? null : toggleCore,
                     );
                   })),
         ),
@@ -183,21 +167,7 @@ class VPNTogglesState extends State<VPNToggles> {
             (platform.isAndroid && global.isElevated))
           ListTile(
               dense: widget.isDense,
-              title: ListenableBuilder(
-                  listenable: vPNMan,
-                  builder: (BuildContext context, Widget? child) {
-                    List<Widget> status = [];
-                    if (vPNMan.isTogglingSystemProxy) {
-                      status = [
-                        Text(" "),
-                        CircularProgressIndicator16(),
-                      ];
-                    }
-                    return Row(children: [
-                      Text(context.loc.system_proxy),
-                      ...status,
-                    ]);
-                  }),
+              title: Text(context.loc.system_proxy),
               trailing: Transform.scale(
                 scale: switchScale,
                 origin: const Offset(32, 0),
@@ -208,13 +178,10 @@ class VPNTogglesState extends State<VPNToggles> {
                       final isOn = vPNMan.isSystemProxyActive;
                       return Switch(
                         value: shouldOn,
-                        onChanged: _systemProxyIsEnabled == null
-                            ? null
-                            : (bool shouldEnable) {
+                        onChanged: _systemProxyIsEnabled == null ||
                                 vPNMan.isTogglingSystemProxy
-                                    ? null
-                                    : toggleSystemProxy(shouldEnable);
-                              },
+                            ? null
+                            : toggleSystemProxy,
                         thumbIcon: WidgetStateProperty.resolveWith<Icon?>(
                             (Set<WidgetState> states) {
                           return !vPNMan.isTogglingSystemProxy &&
@@ -228,21 +195,7 @@ class VPNTogglesState extends State<VPNToggles> {
               )),
         ListTile(
           dense: widget.isDense,
-          title: ListenableBuilder(
-              listenable: vPNMan,
-              builder: (BuildContext context, Widget? child) {
-                List<Widget> status = [];
-                if (vPNMan.isTogglingTun) {
-                  status = [
-                    Text(" "),
-                    CircularProgressIndicator16(),
-                  ];
-                }
-                return Row(children: [
-                  Text("Tun"),
-                  ...status,
-                ]);
-              }),
+          title: Text("Tun"),
           trailing: Transform.scale(
               scale: switchScale,
               origin: const Offset(32, 0),
@@ -253,9 +206,7 @@ class VPNTogglesState extends State<VPNToggles> {
                     final isOn = vPNMan.isTunActive;
                     return Switch(
                       value: tun,
-                      onChanged: (bool shouldEnable) {
-                        vPNMan.isTogglingTun ? null : toggleTun(shouldEnable);
-                      },
+                      onChanged: vPNMan.isTogglingTun ? null : toggleTun,
                       thumbIcon: WidgetStateProperty.resolveWith<Icon?>(
                           (Set<WidgetState> states) {
                         return !vPNMan.isTogglingTun && shouldOn && !isOn
@@ -266,19 +217,6 @@ class VPNTogglesState extends State<VPNToggles> {
                   })),
         ),
       ],
-    );
-  }
-}
-
-class CircularProgressIndicator16 extends StatelessWidget {
-  const CircularProgressIndicator16({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 16.0,
-      width: 16.0,
-      child: Center(child: CircularProgressIndicator()),
     );
   }
 }
