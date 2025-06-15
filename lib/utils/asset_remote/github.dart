@@ -252,8 +252,6 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     TypedResult? oldAsset,
     int autoUpdateInterval = 0,
   }) async {
-    /// TODO: report progress
-
     /// check if need to update
     logger.d("to update: $url");
     final oldMeta = getOldMeta(oldAsset: oldAsset);

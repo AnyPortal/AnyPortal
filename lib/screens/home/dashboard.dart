@@ -34,7 +34,7 @@ class _DashboardState extends State<Dashboard> {
       prefs.getString("cache.app.selectedProfileName");
 
   bool _highlightSelectProfile = false;
-  bool _useFloatingActionButton =
+  final bool _useFloatingActionButton =
       prefs.getBool("app.dashboard.floatingActionButton")!;
 
   void setHighlightSelectProfile() async {

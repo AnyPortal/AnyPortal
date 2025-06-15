@@ -156,8 +156,6 @@ class LogViewerState extends State<LogViewer> {
         onFileChange();
       });
     }
-
-    /// TODO: liunx inotify
   }
 
   void _scrollToBottom() {
