@@ -17,6 +17,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Build;
@@ -148,6 +149,10 @@ public class MainService extends Service {
     public boolean isCoreActive = false;
     public boolean isTunActive = false;
     public boolean isSystemProxyActive = false;
+    /// for binding control
+    public boolean shouldCoreActive = false;
+    public boolean shouldTunActive = false;
+
     private SharedPreferences prefs;
 
     public void tryStartAll() {
@@ -257,7 +262,6 @@ public class MainService extends Service {
         }
 
         startCore();
-        isCoreActive = true;
 
         if (prefs.getBoolean("flutter.tun", true)) {
             startTun();
@@ -275,9 +279,7 @@ public class MainService extends Service {
 
     private void stopAll() {
         Log.d(TAG, "starting: stopAll");
-
         stopCore();
-        isCoreActive = false;
 
         if (prefs.getBoolean("flutter.tun", true)) {
             stopTun();
@@ -306,9 +308,51 @@ public class MainService extends Service {
         stopForeground(STOP_FOREGROUND_REMOVE);
     }
 
+    private ServiceConnection libV2rayConnection;
+    private ServiceConnection tProxyConnection;
+
+    private void bindLibV2rayService() {
+        libV2rayConnection = new ServiceConnection() {
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                Log.d(TAG, "LibV2rayService connected");
+            }
+
+            public void onServiceDisconnected(ComponentName name) {
+                Log.d(TAG, "LibV2rayService disconnected");
+                if (shouldTunActive) {
+                    Log.w(TAG, "LibV2rayService disconnected, rebinding...");
+                    bindLibV2rayService();
+                }                
+            }
+        };
+
+        Intent intent = new Intent(this, LibV2rayService.class);
+        bindService(intent, libV2rayConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    private void bindTProxyService() {
+        tProxyConnection = new ServiceConnection() {
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                Log.d(TAG, "TProxyService connected");
+            }
+
+            public void onServiceDisconnected(ComponentName name) {
+                Log.d(TAG, "TProxyService disconnected");
+                if (shouldCoreActive) {
+                    Log.w(TAG, "TProxyService disconnected, rebinding...");
+                    bindLibV2rayService();
+                }                
+            }
+        };
+
+        Intent intent = new Intent(this, TProxyService.class);
+        bindService(intent, tProxyConnection, Context.BIND_AUTO_CREATE);
+    }
+
     private void startTunEmbedded() {
         Log.d(TAG, "starting: startTunEmbedded");
         startService(new Intent(getApplicationContext(), TProxyService.class));
+        bindTProxyService();
         Log.d(TAG, "finished: startTunEmbedded");
     }
 
@@ -358,6 +402,7 @@ public class MainService extends Service {
 
     private void startTun() {
         Log.d(TAG, "starting: startTun");
+        shouldTunActive = true;
         boolean useEmbedded = prefs.getBoolean("flutter.tun.useEmbedded", true);
         if (useEmbedded) {
             startTunEmbedded();
@@ -371,11 +416,18 @@ public class MainService extends Service {
 
     private void stopTun() {
         Log.d(TAG, "starting: stopTun");
+        shouldTunActive = false;
 
         /// just stopService does not work unless run TProxyService.stopTun first
         Intent stopIntent = new Intent(getApplicationContext(), TProxyService.class);
         stopIntent.setAction(TProxyService.ACTION_STOP_T_PROXY_SERVICE_TUN);
         startService(stopIntent);
+        try {
+            unbindService(tProxyConnection);
+        } catch (IllegalArgumentException e) {
+            // Already unbound or was never bound — safe to ignore
+            Log.w(TAG, "TProxyService was not bound: " + e.getMessage());
+        }
         stopService(new Intent(getApplicationContext(), TProxyService.class));
 
         if (tunSingBoxCoreSuShell != null) {
@@ -397,12 +449,14 @@ public class MainService extends Service {
     }
 
     private void startCore() {
-        Log.d(TAG, "starting: stopCore");
+        Log.d(TAG, "starting: startCore");
+        shouldCoreActive = true;
 
         boolean useEmbedded = prefs.getBoolean("flutter.cache.core.useEmbedded", true);
         if (useEmbedded) {
             Intent intent = new Intent(getApplicationContext(), LibV2rayService.class);
             startService(intent);
+            bindLibV2rayService();
         } else {
             if (coreProcess != null) {
                 return;
@@ -431,19 +485,28 @@ public class MainService extends Service {
             }
         }
 
+        isCoreActive = true;
         Log.d(TAG, "finished: startCore");
     }
 
     private void stopCore() {
         Log.d(TAG, "starting: stopCore");
+        shouldCoreActive = false;
 
         if (coreProcess != null) {
             coreProcess.destroy();
             coreProcess = null;
         }
 
+        try {
+            unbindService(libV2rayConnection);
+        } catch (IllegalArgumentException e) {
+            // Already unbound or was never bound — safe to ignore
+            Log.w(TAG, "LibV2rayService was not bound: " + e.getMessage());
+        }
         stopService(new Intent(getApplicationContext(), LibV2rayService.class));
 
+        isCoreActive = false;
         Log.d(TAG, "finished: stopCore");
     }
 
