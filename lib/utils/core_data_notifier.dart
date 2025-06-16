@@ -53,7 +53,7 @@ class CoreDataNotifier with ChangeNotifier {
   int index = 0;
   bool on = false;
 
-  void init(){
+  void init() {
     for (var t in TrafficStatType.values) {
       trafficStatAgg[t] = 0;
       trafficStatPre[t] = 0;
@@ -67,18 +67,18 @@ class CoreDataNotifier with ChangeNotifier {
     }
   }
 
-  CoreDataNotifier(){
+  CoreDataNotifier() {
     init();
   }
 
   void loadCfg(Map<String, dynamic> cfg) {
     init();
 
-    if (!cfg.containsKey("outbounds")){
+    if (!cfg.containsKey("outbounds")) {
       return;
     }
     final List outboundList = cfg["outbounds"];
-    if (outboundList.isEmpty){
+    if (outboundList.isEmpty) {
       return;
     }
     outboundProtocol = {
@@ -94,7 +94,7 @@ class CoreDataNotifier with ChangeNotifier {
         apiItemTrafficStatType["outbound>>>$tag>>>traffic>>>downlink"] =
             TrafficStatType.directDn;
       } else {
-        if (!protocolProxy.contains(protocol)){
+        if (!protocolProxy.contains(protocol)) {
           logger.w('unknown protocol treated as proxy protocol: $protocol');
         }
         apiItemTrafficStatType["outbound>>>$tag>>>traffic>>>uplink"] =
@@ -119,7 +119,13 @@ class CoreDataNotifier with ChangeNotifier {
       }
     }
     for (var t in TrafficStatType.values) {
-      trafficStatCur[t] = trafficStatAgg[t]! - trafficStatPre[t]!;
+      final diff = trafficStatAgg[t]! - trafficStatPre[t]!;
+      if (diff < 0) {
+        /// negative traffic indicates potential core restart
+        trafficStatCur[t] = 0;
+      } else {
+        trafficStatCur[t] = diff;
+      }
       trafficQs[t]!
           .add(FlSpot(index.toDouble(), trafficStatCur[t]!.toDouble()));
       while (trafficQs[t]!.length > limitCount) {
@@ -129,7 +135,6 @@ class CoreDataNotifier with ChangeNotifier {
   }
 
   Timer? timer;
-
 
   Future<void> start() async {
     final serverAddress = prefs.getString('app.server.address')!;
@@ -158,7 +163,8 @@ class CoreDataNotifier with ChangeNotifier {
 }
 
 class CoreDataNotifierManager {
-  static final CoreDataNotifierManager _instance = CoreDataNotifierManager._internal();
+  static final CoreDataNotifierManager _instance =
+      CoreDataNotifierManager._internal();
   final Completer<void> _completer = Completer<void>();
   late CoreDataNotifier _coreDataNotifier;
   // Private constructor
