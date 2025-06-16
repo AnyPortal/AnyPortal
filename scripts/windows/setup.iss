@@ -75,3 +75,35 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 
 [InstallDelete]
 Type: "filesandordirs"; Name: "{app}"
+
+[Code]
+procedure CreateShutdownFlag();
+var
+  AppDataPath: string;
+begin
+  AppDataPath := ExpandConstant('{userappdata}\com.github.anyportal\anyportal');
+  if not DirExists(AppDataPath) then
+    CreateDir(AppDataPath);
+
+  SaveStringToFile(AppDataPath + '\pending_installer_exit.flag', '', False);
+end;
+
+procedure RemoveShutdownFlag();
+var
+  FlagFile: string;
+begin
+  FlagFile := ExpandConstant('{userappdata}\com.github.anyportal\anyportal\pending_installer_exit.flag');
+  if FileExists(FlagFile) then
+    DeleteFile(FlagFile);
+end;
+
+function InitializeSetup(): Boolean;
+begin
+  CreateShutdownFlag();
+  Result := True;
+end;
+
+procedure DeinitializeSetup();
+begin
+  RemoveShutdownFlag();
+end;

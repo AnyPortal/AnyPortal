@@ -213,8 +213,18 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
   //   logger.d('[WindowManager] onWindowEvent: $eventName');
   // }
 
+  static final pendingInstallerExitFlagFile = File(p.join(
+      global.applicationSupportDirectory.path,
+      "pending_installer_exit.flag",
+    ));
+
   @override
   void onWindowClose() async {
+    if (await pendingInstallerExitFlagFile.exists()) {
+      await pendingInstallerExitFlagFile.delete();
+      await vPNMan.stopAll();
+      exit(0);
+    }
     windowManager.hide();
   }
 
