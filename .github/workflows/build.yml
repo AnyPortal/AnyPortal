@@ -163,6 +163,9 @@ jobs:
 
     - name: Set up Go
       uses: actions/setup-go@v5
+      with:
+        cache-dependency-path: |
+          third_party/libv2raymobile/go.sum
 
     - name: Install Protoc
       uses: arduino/setup-protoc@v3
