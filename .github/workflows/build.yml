@@ -285,119 +285,38 @@ jobs:
     
     - run: ls -R
 
-    - name: Create GitHub Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: "v${{ env.version }}"
-        release_name: "v${{ env.version }}"
-        body: ""
-        draft: true
-
     - name: zip linux
       run: zip -r anyportal-linux.zip anyportal-linux
-
-    - name: Upload Linux artifact
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: anyportal-linux.zip
-        asset_name: anyportal-linux.zip
-        asset_content_type: application/zip
 
     - name: zip windows
       run: zip -r anyportal-windows.zip anyportal-windows
 
-    - name: Upload Windows artifact
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: anyportal-windows.zip
-        asset_name: anyportal-windows.zip
-        asset_content_type: application/zip
-    
-    - name: Upload Windows setup artifact
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: anyportal-windows-setup/mysetup.exe
-        asset_name: anyportal-windows-setup.exe
-        asset_content_type: application/vnd.microsoft.portable-executable
+    - name: Rename for release
+      run: |
+        mv anyportal-windows-setup/mysetup.exe anyportal-windows-setup/anyportal-windows-setup.exe
+        mv anyportal-android/app-armeabi-v7a-api28-release.apk anyportal-android/anyportal-android-api28-armeabi-v7a.apk
+        mv anyportal-android/app-arm64-v8a-api28-release.apk anyportal-android/anyportal-android-api28-arm64-v8a.apk
+        mv anyportal-android/app-x86_64-api28-release.apk anyportal-android/anyportal-android-api28-x86_64.apk
+        mv anyportal-android/app-armeabi-v7a-apilatest-release.apk anyportal-android/anyportal-android-apilatest-armeabi-v7a.apk
+        mv anyportal-android/app-arm64-v8a-apilatest-release.apk anyportal-android/anyportal-android-apilatest-arm64-v8a.apk
+        mv anyportal-android/app-x86_64-apilatest-release.apk anyportal-android/anyportal-android-apilatest-x86_64.apk
 
-    - name: Upload macOS artifact
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create GitHub Release and Upload All Assets
+      uses: softprops/action-gh-release@v2
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: anyportal-macos/anyportal-macos.dmg
-        asset_name: anyportal-macos.dmg
-        asset_content_type: application/x-apple-diskimage
-
-    - name: Upload Android APK api28 armeabi-v7a
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: anyportal-android/app-armeabi-v7a-api28-release.apk
-        asset_name: anyportal-android-api28-armeabi-v7a.apk
-        asset_content_type: application/vnd.android.package-archive
-
-    - name: Upload Android APK api28 arm64-v8a
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: anyportal-android/app-arm64-v8a-api28-release.apk
-        asset_name: anyportal-android-api28-arm64-v8a.apk
-        asset_content_type: application/vnd.android.package-archive
-
-    - name: Upload Android APK api28 x86_64
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: anyportal-android/app-x86_64-api28-release.apk
-        asset_name: anyportal-android-api28-x86_64.apk
-        asset_content_type: application/vnd.android.package-archive
-
-    - name: Upload Android APK apilatest armeabi-v7a
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: anyportal-android/app-armeabi-v7a-apilatest-release.apk
-        asset_name: anyportal-android-apilatest-armeabi-v7a.apk
-        asset_content_type: application/vnd.android.package-archive
-
-    - name: Upload Android APK apilatest arm64-v8a
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: anyportal-android/app-arm64-v8a-apilatest-release.apk
-        asset_name: anyportal-android-apilatest-arm64-v8a.apk
-        asset_content_type: application/vnd.android.package-archive
-
-    - name: Upload Android APK apilatest x86_64
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: anyportal-android/app-x86_64-apilatest-release.apk
-        asset_name: anyportal-android-apilatest-x86_64.apk
-        asset_content_type: application/vnd.android.package-archive
+        tag_name: "v${{ env.version }}"
+        name: "v${{ env.version }}"
+        body: ""
+        draft: true
+        files: |
+          anyportal-linux.zip
+          anyportal-windows.zip
+          anyportal-windows-setup/anyportal-windows-setup.exe
+          anyportal-macos/anyportal-macos.dmg
+          anyportal-android/anyportal-android-api28-armeabi-v7a.apk
+          anyportal-android/anyportal-android-api28-arm64-v8a.apk
+          anyportal-android/anyportal-android-api28-x86_64.apk
+          anyportal-android/anyportal-android-apilatest-armeabi-v7a.apk
+          anyportal-android/anyportal-android-apilatest-arm64-v8a.apk
+          anyportal-android/anyportal-android-apilatest-x86_64.apk
+      token: ${{ secrets.GITHUB_TOKEN }}
