@@ -40,6 +40,7 @@ class ExceptionInvalidSelectedProfile implements Exception {
 }
 
 abstract class VPNManager with ChangeNotifier {
+  bool isAllActive = false;
   bool isCoreActive = false;
   bool isTunActive = false;
   bool isSystemProxyActive = false;
@@ -50,8 +51,8 @@ abstract class VPNManager with ChangeNotifier {
   bool isTogglingTun = false;
   bool isTogglingSystemProxy = false;
 
-  Future<void> _startAll();
-  Future<void> _stopAll();
+  Future<bool> _startAll();
+  Future<bool> _stopAll();
   Future<bool> _startCore();
   Future<bool> _stopCore();
 
@@ -117,7 +118,8 @@ abstract class VPNManager with ChangeNotifier {
       delayedTogglingChecker =
           Future.delayed(const Duration(seconds: timeoutSec), () {
         if (isTogglingAll) {
-          updateIsCoreActive(force: true);
+          updateIsCoreActive(force: true, isToNotify: false);
+          updateIsAllActive(force: true);
           final errMsg = "all toggled for $timeoutSec sec, force stopped";
           logger.w(errMsg);
           // throw Exception(errMsg);
@@ -196,9 +198,33 @@ abstract class VPNManager with ChangeNotifier {
     }
   }
 
+  /// there is no actual such thing as "all is active"
+  /// as "all" just means starts everything needed when the core starts
+  /// a failed tun does not mean that all is not active
+  /// therefore getIsAllActive is defined eqivalent to getIsCoreActive
+  Future<bool> getIsAllActive() async {return await getIsCoreActive();}
   Future<bool> getIsCoreActive();
   Future<bool> getIsTunActive();
   Future<bool> getIsSystemProxyActive();
+
+  void setIsAllActive(
+    bool value, {
+    bool force = false,
+    bool isToNotify = true,
+  }) {
+    if (!force && value == isAllActive) {
+      if (value == isAllActive) {
+        logger.d("isAllActive: no need, already $isAllActive");
+        return;
+      }
+    }
+    isAllActive = value;
+    setisTogglingAll(false);
+    if (isToNotify) {
+      notifyListeners();
+      notifyCoreDataNotifier();
+    }
+  }
 
   void setIsCoreActive(
     bool value, {
@@ -212,7 +238,7 @@ abstract class VPNManager with ChangeNotifier {
       }
     }
     isCoreActive = value;
-    setisTogglingAll(false);
+    setisTogglingCore(false);
     if (isToNotify) {
       notifyListeners();
       notifyCoreDataNotifier();
@@ -256,6 +282,17 @@ abstract class VPNManager with ChangeNotifier {
     }
   }
 
+  Future<void> updateIsAllActive({
+    bool force = false,
+    bool isToNotify = true,
+  }) async {
+    setIsAllActive(
+      await getIsAllActive(),
+      force: force,
+      isToNotify: isToNotify,
+    );
+  }
+
   Future<void> updateIsCoreActive({
     bool force = false,
     bool isToNotify = true,
@@ -297,36 +334,36 @@ abstract class VPNManager with ChangeNotifier {
     await updateIsTunActive();
   }
 
-  Future<void> startAll() async {
+  Future<bool> startAll() async {
     /// check is toggling
-    if (isTogglingAll) return;
+    if (isTogglingAll) return false;
     setisTogglingAll(true);
     isExpectingActive = true;
 
     /// check is already active
-    if (await getIsCoreActive()) {
+    if (await getIsAllActive()) {
       setisTogglingAll(false);
-      return;
+      return false;
     }
 
     /// start
-    await _startAll();
+    return await _startAll();
   }
 
-  Future<void> stopAll() async {
+  Future<bool> stopAll() async {
     /// check is toggling
-    if (isTogglingAll) return;
+    if (isTogglingAll) return false;
     setisTogglingAll(true);
     isExpectingActive = false;
 
     /// check is already inactive
     if (!await getIsCoreActive()) {
       setisTogglingAll(false);
-      return;
+      return false;
     }
 
     /// stop
-    await _stopAll();
+    return await _stopAll();
   }
 
   Future<bool> startCore() async {
@@ -880,23 +917,28 @@ class VPNManagerExec extends VPNManager {
     logger.d("finished: _stopTun");
     return true;
   }
-
   @override
   _startAll() async {
-    await _startCore();
-    await _startTun();
-    await _startSystemProxy();
-    await updateIsCoreActive();
-    return;
+    final res = await _startCore();
+    if (res) {
+      await _startTun();
+      await _startSystemProxy();
+      setIsCoreActive(true, isToNotify: false);
+      setIsAllActive(true);
+    }
+    return res;
   }
 
   @override
   _stopAll() async {
     await _stopSystemProxy();
     await _stopTun();
-    await _stopCore();
-    await updateIsCoreActive();
-    return;
+    final res = await _stopCore();
+    if (res) {
+      setIsCoreActive(false, isToNotify: false);
+      setIsAllActive(false);
+    }
+    return res;
   }
 }
 
@@ -944,10 +986,12 @@ class VPNManagerMC extends VPNManager {
     final res = await platform.invokeMethod('vpn.startAll') as bool;
     if (res == true) {
       setIsCoreActive(true, isToNotify: false);
+      setIsAllActive(true, isToNotify: false);
       await updateIsSystemProxyActive(isToNotify: false);
       await updateIsTunActive(isToNotify: false);
       notifyListeners();
     }
+    return res;
   }
 
   @override
@@ -955,10 +999,12 @@ class VPNManagerMC extends VPNManager {
     final res = await platform.invokeMethod('vpn.stopAll') as bool;
     if (res == true) {
       setIsCoreActive(false, isToNotify: false);
+      setIsAllActive(false, isToNotify: false);
       await updateIsSystemProxyActive(isToNotify: false);
       await updateIsTunActive(isToNotify: false);
       notifyListeners();
     }
+    return res;
   }
 
   @override

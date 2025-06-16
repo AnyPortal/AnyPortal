@@ -314,11 +314,13 @@ class _ProfileListState extends State<ProfileList> {
                             );
                             if (context.mounted) {
                               ScaffoldMessenger.of(context)
+                                  .hideCurrentSnackBar();
+                              ScaffoldMessenger.of(context)
                                   .showSnackBar(snackBar);
                             }
 
-                            await vPNMan.stopCore();
-                            final res = await vPNMan.startCore();
+                            await vPNMan.stopAll();
+                            final res = await vPNMan.startAll();
 
                             String msg = "";
                             if (context.mounted) {

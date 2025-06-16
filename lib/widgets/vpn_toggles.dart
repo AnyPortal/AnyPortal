@@ -38,7 +38,7 @@ class VPNTogglesState extends State<VPNToggles> {
     }
   }
 
-  void toggleCore(bool shouldEnable) async {
+  void toggleAll(bool shouldEnable) async {
     Exception? err;
     try {
       if (!shouldEnable) {
@@ -157,7 +157,7 @@ class VPNTogglesState extends State<VPNToggles> {
                   builder: (BuildContext context, Widget? child) {
                     return Switch(
                       value: vPNMan.isCoreActive,
-                      onChanged: vPNMan.isTogglingAll ? null : toggleCore,
+                      onChanged: vPNMan.isTogglingAll ? null : toggleAll,
                     );
                   })),
         ),
