@@ -304,6 +304,7 @@ jobs:
     - name: Create GitHub Release and Upload All Assets
       uses: softprops/action-gh-release@v2
       with:
+        token: ${{ secrets.GITHUB_TOKEN }}
         tag_name: "v${{ env.version }}"
         name: "v${{ env.version }}"
         body: ""
@@ -319,4 +320,3 @@ jobs:
           anyportal-android/anyportal-android-apilatest-armeabi-v7a.apk
           anyportal-android/anyportal-android-apilatest-arm64-v8a.apk
           anyportal-android/anyportal-android-apilatest-x86_64.apk
-      token: ${{ secrets.GITHUB_TOKEN }}
