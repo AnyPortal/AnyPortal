@@ -35,7 +35,10 @@ void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await ArgParserManager().init(args);
-  await LoggerManager().init(logLevelName: cliArg.option("log-level"));
+  await LoggerManager().init(
+    logLevelName: cliArg.option("log-level"),
+    overrideExisting: true,
+  );
 
   await Future.wait([
     PrefsManager().init(),
@@ -159,7 +162,7 @@ void main(List<String> args) async {
 
 class AnyPortal extends StatelessWidget {
   const AnyPortal({super.key});
-  
+
   /// This widget is the root of your application.
   @override
   Widget build(BuildContext context) {

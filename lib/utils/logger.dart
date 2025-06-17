@@ -5,7 +5,8 @@ import 'package:flutter/foundation.dart';
 
 import 'package:logger/logger.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart' if (dart.library.html) 'path_provider/web.dart';
+import 'package:path_provider/path_provider.dart'
+    if (dart.library.html) 'path_provider/web.dart';
 
 import 'logger/filter.dart';
 import 'logger/printer.dart';
@@ -20,22 +21,22 @@ class LoggerManager {
     );
   }
 
-  Future<void> init(
-    {String? logLevelName}
-  ) async {
+  Future<void> init({
+    String? logLevelName,
+    bool overrideExisting=false,
+  }) async {
     final logLevel = getLevelByName(logLevelName);
 
-    if (kIsWeb){
+    if (kIsWeb) {
       logger = Logger(
-        printer: CustomLogPrinter(),
-        output: MultiOutput(
-          [
-            ConsoleOutput(),
-          ],
-        ),
-        level: kDebugMode ? Level.all : logLevel,
-        filter: CustomFilter()
-      );
+          printer: CustomLogPrinter(),
+          output: MultiOutput(
+            [
+              ConsoleOutput(),
+            ],
+          ),
+          level: kDebugMode ? Level.all : logLevel,
+          filter: CustomFilter());
       _completer.complete();
       return;
     }
@@ -48,26 +49,21 @@ class LoggerManager {
         "app.log",
       ),
     );
-    if (await file.exists()) {
-      try {
-        await file.delete();
-      } catch (_) {}
-    }
     await file.create(recursive: true);
     file.create(recursive: true);
     logger = Logger(
-      printer: CustomLogPrinter(),
-      output: MultiOutput(
-        [
-          ConsoleOutput(),
-          FileOutput(
-            file: file,
-          ),
-        ],
-      ),
-      level: kDebugMode ? Level.all : logLevel,
-      filter: CustomFilter()
-    );
+        printer: CustomLogPrinter(),
+        output: MultiOutput(
+          [
+            ConsoleOutput(),
+            FileOutput(
+              file: file,
+              overrideExisting: overrideExisting,
+            ),
+          ],
+        ),
+        level: kDebugMode ? Level.all : logLevel,
+        filter: CustomFilter());
     _completer.complete(); // Signal that initialization is complete
     logger.d("finished: LoggerManager.init");
   }

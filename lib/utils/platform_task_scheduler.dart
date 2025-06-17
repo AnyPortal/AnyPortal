@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:cron/cron.dart';
 import 'package:drift/drift.dart';
+import 'package:flutter/widgets.dart';
 import 'package:workmanager/workmanager.dart';
 
 import 'package:anyportal/utils/db.dart';
@@ -9,11 +11,24 @@ import 'asset_remote/app.dart';
 import 'asset_remote/github.dart';
 import 'db/update_profile.dart';
 import 'db/update_profile_group.dart';
+import 'global.dart';
 import 'logger.dart';
 import 'platform.dart';
 import 'prefs.dart';
 
-void checkAllRemotes() {
+Future<void> init() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  DartPluginRegistrant.ensureInitialized();
+  await LoggerManager().init();
+  await Future.wait([
+    PrefsManager().init(),
+    GlobalManager().init(),
+  ]);
+  await DatabaseManager().init();
+}
+
+Future<void> checkAllRemotes() async {
+  await init();
   logger.d("starting: checkAllRemotes");
   checkAllAssetRemotes();
   checkAllProfileGroupRemotes();
@@ -26,7 +41,7 @@ void checkAllRemotes() {
     'vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
 void workmanagerCallbackDispatcher() {
   Workmanager().executeTask((taskName, inputData) async {
-    checkAllRemotes();
+    await checkAllRemotes();
     return true;
   });
 }
