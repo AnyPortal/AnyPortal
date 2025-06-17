@@ -32,6 +32,11 @@ public class LibV2rayService extends Service{
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_STICKY;
+    }
+    
+    @Override
     public void onCreate() {
         Log.d(TAG, "starting: onCreate");
         super.onCreate();
