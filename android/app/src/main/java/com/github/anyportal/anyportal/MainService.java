@@ -319,7 +319,7 @@ public class MainService extends Service {
 
             public void onServiceDisconnected(ComponentName name) {
                 Log.d(TAG, "LibV2rayService disconnected");
-                if (shouldTunActive) {
+                if (shouldCoreActive) {
                     Log.w(TAG, "LibV2rayService disconnected, rebinding...");
                     bindLibV2rayService();
                 }                
@@ -338,9 +338,9 @@ public class MainService extends Service {
 
             public void onServiceDisconnected(ComponentName name) {
                 Log.d(TAG, "TProxyService disconnected");
-                if (shouldCoreActive) {
+                if (shouldTunActive) {
                     Log.w(TAG, "TProxyService disconnected, rebinding...");
-                    bindLibV2rayService();
+                    bindTProxyService();
                 }                
             }
         };
