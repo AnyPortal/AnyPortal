@@ -35,7 +35,7 @@ public class LibV2rayService extends Service{
     public int onStartCommand(Intent intent, int flags, int startId) {
         return START_STICKY;
     }
-    
+
     @Override
     public void onCreate() {
         Log.d(TAG, "starting: onCreate");
@@ -44,8 +44,12 @@ public class LibV2rayService extends Service{
         String libAssetPath = libAssetFolder.getAbsolutePath();
         File configFile = new File(getFilesDir().getParent(), "files/conf/core.gen.json");
 
+        // Libv2raymobile.setEnv("GODEBUG", "cgocheck=2");
+        // Libv2raymobile.setEnv("GOTRACEBACK", "crash");
+        
         Libv2raymobile.setEnv("v2ray.location.asset", libAssetPath);
         Libv2raymobile.setEnv("xray.location.asset", libAssetPath);
+
         coreManager = new libv2raymobile.CoreManager();
         coreManager.runConfig(configFile.getAbsolutePath());
         Log.d(TAG, "finished: onCreate");

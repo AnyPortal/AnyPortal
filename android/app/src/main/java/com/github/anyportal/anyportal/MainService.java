@@ -38,12 +38,10 @@ import com.github.anyportal.anyportal.R;
 
 // import dev.rikka.shizuku.Shizuku;
 
-
 public class MainService extends Service {
     private static final String TAG = "MainService";
     private static final String CHANNEL_ID = "vpn_channel_id";
     private static final int NOTIFICATION_ID = 1;
-
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -54,7 +52,6 @@ public class MainService extends Service {
     private void createNotificationChannel() {
         Log.d(TAG, "starting: createNotificationChannel");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Log.d(TAG, "NotificationChannel");
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID,
                     "VPN Service Channel",
@@ -65,6 +62,7 @@ public class MainService extends Service {
             if (manager != null) {
                 manager.createNotificationChannel(channel);
             }
+            Log.d(TAG, "NotificationChannel created");
         }
     }
 
@@ -117,7 +115,6 @@ public class MainService extends Service {
     public IBinder onBind(Intent intent) {
         return binder;
     }
-
 
     /// Interface for MainActivity to receive status updates
     public interface StatusUpdateListener {
@@ -308,43 +305,39 @@ public class MainService extends Service {
         stopForeground(STOP_FOREGROUND_REMOVE);
     }
 
-    private ServiceConnection libV2rayConnection;
-    private ServiceConnection tProxyConnection;
+    private final ServiceConnection libV2rayConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d(TAG, "LibV2rayService connected");
+        }
+
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d(TAG, "LibV2rayService disconnected");
+            if (shouldCoreActive) {
+                Log.w(TAG, "LibV2rayService disconnected, rebinding...");
+                bindLibV2rayService();
+            }
+        }
+    };;
+    private final ServiceConnection tProxyConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d(TAG, "TProxyService connected");
+        }
+
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d(TAG, "TProxyService disconnected");
+            if (shouldTunActive) {
+                Log.w(TAG, "TProxyService disconnected, rebinding...");
+                bindTProxyService();
+            }
+        }
+    };;
 
     private void bindLibV2rayService() {
-        libV2rayConnection = new ServiceConnection() {
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                Log.d(TAG, "LibV2rayService connected");
-            }
-
-            public void onServiceDisconnected(ComponentName name) {
-                Log.d(TAG, "LibV2rayService disconnected");
-                if (shouldCoreActive) {
-                    Log.w(TAG, "LibV2rayService disconnected, rebinding...");
-                    bindLibV2rayService();
-                }                
-            }
-        };
-
         Intent intent = new Intent(this, LibV2rayService.class);
         bindService(intent, libV2rayConnection, Context.BIND_AUTO_CREATE);
     }
 
     private void bindTProxyService() {
-        tProxyConnection = new ServiceConnection() {
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                Log.d(TAG, "TProxyService connected");
-            }
-
-            public void onServiceDisconnected(ComponentName name) {
-                Log.d(TAG, "TProxyService disconnected");
-                if (shouldTunActive) {
-                    Log.w(TAG, "TProxyService disconnected, rebinding...");
-                    bindTProxyService();
-                }                
-            }
-        };
-
         Intent intent = new Intent(this, TProxyService.class);
         bindService(intent, tProxyConnection, Context.BIND_AUTO_CREATE);
     }
@@ -413,7 +406,6 @@ public class MainService extends Service {
         Log.d(TAG, "finished: startTun");
     }
 
-
     private void stopTun() {
         Log.d(TAG, "starting: stopTun");
         shouldTunActive = false;
@@ -461,9 +453,11 @@ public class MainService extends Service {
             if (coreProcess != null) {
                 return;
             }
+
             String corePath = prefs.getString("flutter.cache.core.path", "");
             new File(corePath).setExecutable(true);
-            List<String> coreArgs = JsonUtils.getStringListFromJsonString(prefs.getString("flutter.cache.core.args", "[]"));
+            List<String> coreArgs = JsonUtils
+                    .getStringListFromJsonString(prefs.getString("flutter.cache.core.args", "[]"));
             String coreWorkingDir = prefs.getString("flutter.cache.core.workingDir", "");
             Map<String, String> coreEnvs = JsonUtils.getStringStringMapFromJsonString(
                     prefs.getString("flutter.cache.core.envs", "{}"));
@@ -533,8 +527,8 @@ public class MainService extends Service {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
-        if (exitCode == 0){
+
+        if (exitCode == 0) {
             isSystemProxyActive = true;
         }
 
@@ -556,7 +550,7 @@ public class MainService extends Service {
             e.printStackTrace();
         }
 
-        if (exitCode == 0){
+        if (exitCode == 0) {
             isSystemProxyActive = false;
         }
 
