@@ -220,7 +220,7 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
 
   @override
   void onWindowClose() async {
-    if (await pendingInstallerExitFlagFile.exists()) {
+    if (platform.isWindows && await pendingInstallerExitFlagFile.exists()) {
       await pendingInstallerExitFlagFile.delete();
       await vPNMan.stopAll();
       exit(0);
