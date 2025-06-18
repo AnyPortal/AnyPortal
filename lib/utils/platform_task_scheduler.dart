@@ -16,7 +16,7 @@ import 'logger.dart';
 import 'platform.dart';
 import 'prefs.dart';
 
-Future<void> init() async {
+Future<void> workManagerTaskInit() async {
   WidgetsFlutterBinding.ensureInitialized();
   DartPluginRegistrant.ensureInitialized();
   await LoggerManager().init();
@@ -28,7 +28,6 @@ Future<void> init() async {
 }
 
 Future<void> checkAllRemotes() async {
-  await init();
   logger.d("starting: checkAllRemotes");
   checkAllAssetRemotes();
   checkAllProfileGroupRemotes();
@@ -41,6 +40,7 @@ Future<void> checkAllRemotes() async {
     'vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
 void workmanagerCallbackDispatcher() {
   Workmanager().executeTask((taskName, inputData) async {
+    await workManagerTaskInit();
     await checkAllRemotes();
     return true;
   });

@@ -38,6 +38,7 @@ class LoggerManager {
           level: kDebugMode ? Level.all : logLevel,
           filter: CustomFilter());
       _completer.complete();
+      logger.d("finished: LoggerManager.init");
       return;
     }
 
