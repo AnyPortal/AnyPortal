@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -25,7 +24,7 @@ import 'utils/core_data_notifier.dart';
 import 'utils/db.dart';
 import 'utils/launch_at_startup.dart';
 import 'utils/method_channel.dart';
-import 'utils/platform.dart';
+import 'utils/runtime_platform.dart';
 import 'utils/platform_task_scheduler.dart';
 import 'utils/platform_theme.dart';
 import 'utils/prefs.dart';
@@ -79,9 +78,9 @@ void main(List<String> args) async {
     logger.w("vPNMan.initCore: ${e.toString()}");
   }
 
-  if (platform.isAndroid || platform.isIOS) {
+  if (RuntimePlatform.isAndroid || RuntimePlatform.isIOS) {
     await tProxyConfInit();
-  } else if (platform.isWindows || platform.isLinux || platform.isMacOS) {
+  } else if (RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS) {
     /// auto launch at login
     initLaunchAtStartup();
 
@@ -106,7 +105,7 @@ void main(List<String> args) async {
     });
 
     /// transparent background
-    if (platform.isWindows || platform.isMacOS) {
+    if (RuntimePlatform.isWindows || RuntimePlatform.isMacOS) {
       await Window.initialize();
       var dispatcher = SchedulerBinding.instance.platformDispatcher;
       await Window.setEffect(
@@ -116,7 +115,7 @@ void main(List<String> args) async {
     }
   }
 
-  if (!kIsWeb) {
+  if (RuntimePlatform.isWeb) {
     /// copy assets
     await copyAssetsToDefaultLocation();
 
@@ -140,7 +139,7 @@ void main(List<String> args) async {
     logger.w("vPNMan.initCore: ${e.toString()}");
   }
 
-  if (platform.isWindows || platform.isLinux || platform.isMacOS) {
+  if (RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS) {
     /// connect at launch
     Exception? err;
     if (prefs.getBool('app.connectAtLaunch')!) {

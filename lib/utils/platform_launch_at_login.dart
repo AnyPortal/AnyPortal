@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:launch_at_startup/launch_at_startup.dart';
 
-import 'platform.dart';
+import 'runtime_platform.dart';
 
 abstract class PlatformLaunchAtLogin {
   Future<bool> isEnabled();
@@ -77,6 +77,6 @@ class PlatformLaunchAtLoginGeneric extends PlatformLaunchAtLogin {
   }
 }
 
-final platformLaunchAtLogin = platform.isWindows
+final platformLaunchAtLogin = RuntimePlatform.isWindows
     ? PlatformLaunchAtLoginWindows()
     : PlatformLaunchAtLoginGeneric();

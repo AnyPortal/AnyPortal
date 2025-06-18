@@ -6,7 +6,7 @@ import 'package:process_run/shell.dart';
 import 'package:tuple/tuple.dart';
 
 import 'logger.dart';
-import 'platform.dart';
+import 'runtime_platform.dart';
 import 'prefs.dart';
 
 class PlatformSystemProxyUser {
@@ -365,12 +365,12 @@ class PlatformSystemProxyUserAndroid extends PlatformSystemProxyUser {
   }
 }
 
-final platformSystemProxyUser = platform.isWindows
+final platformSystemProxyUser = RuntimePlatform.isWindows
     ? PlatformSystemProxyUserWindows()
-    : platform.isLinux
+    : RuntimePlatform.isLinux
         ? PlatformSystemProxyUserLinux()
-        : platform.isMacOS
+        : RuntimePlatform.isMacOS
             ? PlatformSystemProxyUserMacOS()
-            : platform.isAndroid
+            : RuntimePlatform.isAndroid
                 ? PlatformSystemProxyUserAndroid()
                 : PlatformSystemProxyUser();

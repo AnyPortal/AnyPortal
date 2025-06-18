@@ -5,7 +5,7 @@ import 'package:anyportal/extensions/localization.dart';
 
 import 'package:anyportal/utils/logger.dart';
 import 'global.dart';
-import 'platform.dart';
+import 'runtime_platform.dart';
 import 'platform_system_proxy_user.dart';
 import 'prefs.dart';
 import 'vpn_manager.dart';
@@ -17,9 +17,9 @@ class TrayMenuManager {
 
   Future<void> init() async {
     logger.d("starting: TrayMenuManager.init");
-    if (platform.isWindows) {
+    if (RuntimePlatform.isWindows) {
       await trayManager.setIcon('windows/runner/resources/app_icon.ico');
-    } else if (platform.isMacOS) {
+    } else if (RuntimePlatform.isMacOS) {
       await trayManager.setIcon('assets/icon/icon_k.png', isTemplate: true);
     } else {
       await trayManager.setIcon('assets/icon/icon.png');
@@ -41,7 +41,7 @@ class TrayMenuManager {
   }
 
   Future<void> updateContextMenu() async {
-    if (platform.isAndroid || platform.isIOS) {
+    if (RuntimePlatform.isAndroid || RuntimePlatform.isIOS) {
       return;
     }
 

@@ -1,26 +1,25 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:system_theme/system_theme.dart';
 
-import 'platform.dart';
+import 'runtime_platform.dart';
 import 'platform_version.dart';
 import 'prefs.dart';
 
 bool getIsTransparentBG() {
   bool isTransparentBG = false;
-  if (platform.isWindows) {
+  if (RuntimePlatform.isWindows) {
     final windowsVersionNumber = getPlatformVersionNumber();
     isTransparentBG =
         windowsVersionNumber != null && windowsVersionNumber >= 22000;
-  } else if (platform.isMacOS) {
+  } else if (RuntimePlatform.isMacOS) {
     isTransparentBG = true;
   }
   return isTransparentBG;
 }
 
 Color getColorSchemeSeed() {
-  if (kIsWeb){
+  if (RuntimePlatform.isWeb){
     return const Color.fromARGB(82, 0, 140, 255);
   }
   return SystemTheme.accentColor.accent;
@@ -29,7 +28,7 @@ Color getColorSchemeSeed() {
 ThemeData getPlatformThemeData() {
   bool isTransparentBG = getIsTransparentBG();
 
-  if (platform.isWindows || platform.isMacOS) {
+  if (RuntimePlatform.isWindows || RuntimePlatform.isMacOS) {
     return ThemeData(
       // colorSchemeSeed: SystemTheme.accentColor.accent,
       colorSchemeSeed: getColorSchemeSeed(),
@@ -65,7 +64,7 @@ ThemeData getPlatformDarkThemeData() {
   final isBlackDark = prefs.getBool("app.brightness.dark.black")!;
   bool isTransparentBG = getIsTransparentBG();
 
-  if (platform.isWindows || platform.isMacOS) {
+  if (RuntimePlatform.isWindows || RuntimePlatform.isMacOS) {
     return ThemeData(
       brightness: Brightness.dark,
       // colorSchemeSeed: SystemTheme.accentColor.accent,

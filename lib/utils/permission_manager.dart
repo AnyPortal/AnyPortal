@@ -4,7 +4,7 @@ import 'package:anyportal/extensions/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'platform.dart';
+import 'runtime_platform.dart';
 
 class PermissionManager {
   Future<PermissionStatus> requestPermission(
@@ -73,4 +73,4 @@ class PermissionManagerAndroid extends PermissionManager {
 }
 
 final permMan =
-    platform.isAndroid ? PermissionManagerAndroid() : PermissionManager();
+    RuntimePlatform.isAndroid ? PermissionManagerAndroid() : PermissionManager();

@@ -11,7 +11,7 @@ import '../../models/core.dart';
 import '../../utils/db.dart';
 import '../models/asset.dart';
 import '../utils/logger.dart';
-import '../utils/platform.dart';
+import '../utils/runtime_platform.dart';
 import '../widgets/form/progress_button.dart';
 import 'asset.dart';
 import 'core_type.dart';
@@ -111,7 +111,7 @@ class _CoreScreenState extends State<CoreScreen> {
     int? coreId;
     bool permitted = true;
 
-    if (platform.isAndroid) {
+    if (RuntimePlatform.isAndroid) {
       if (context.mounted) {
         await permMan.requestPermission(
           context,

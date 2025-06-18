@@ -8,7 +8,7 @@ import '../screens/home/profiles.dart';
 import '../utils/logger.dart';
 import '../utils/platform_system_proxy_user.dart';
 import '../utils/prefs.dart';
-import '../utils/platform.dart';
+import '../utils/runtime_platform.dart';
 
 class VPNToggles extends StatefulWidget {
   final bool isDense;
@@ -107,7 +107,7 @@ class VPNTogglesState extends State<VPNToggles> {
       final snackBar = SnackBar(
         content: Text(context.loc
             .warning_you_need_to_be_elevated_user_to_modify_this_setting(
-                platform.isWindows ? context.loc.administrator : "root")),
+                RuntimePlatform.isWindows ? context.loc.administrator : "root")),
       );
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -161,10 +161,10 @@ class VPNTogglesState extends State<VPNToggles> {
                     );
                   })),
         ),
-        if (platform.isWindows ||
-            platform.isLinux ||
-            platform.isMacOS ||
-            (platform.isAndroid && global.isElevated))
+        if (RuntimePlatform.isWindows ||
+            RuntimePlatform.isLinux ||
+            RuntimePlatform.isMacOS ||
+            (RuntimePlatform.isAndroid && global.isElevated))
           ListTile(
               dense: widget.isDense,
               title: Text(context.loc.system_proxy),

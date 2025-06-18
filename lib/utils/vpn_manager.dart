@@ -20,7 +20,7 @@ import 'db/update_profile_with_group_remote.dart';
 import 'global.dart';
 import 'logger.dart';
 import 'method_channel.dart';
-import 'platform.dart';
+import 'runtime_platform.dart';
 import 'platform_process.dart';
 import 'prefs.dart';
 
@@ -479,7 +479,7 @@ abstract class VPNManager with ChangeNotifier {
 
   bool getIsTunProcess() {
     return prefs.getBool("tun")! &&
-        (platform.isWindows || platform.isLinux || platform.isMacOS);
+        (RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS);
   }
 
   Future<void> initCore() async {
@@ -509,7 +509,7 @@ abstract class VPNManager with ChangeNotifier {
 
     final config = File(p.join(
         global.applicationSupportDirectory.path, 'conf', 'core.gen.json'));
-    if (!kIsWeb) {
+    if (!RuntimePlatform.isWeb) {
       if (!await config.exists()) {
         await config.create(recursive: true);
       }
@@ -608,10 +608,10 @@ abstract class VPNManager with ChangeNotifier {
   }
 
   Future<void> initTunExec() async {
-    if (platform.isWindows ||
-        platform.isLinux ||
-        platform.isMacOS ||
-        platform.isAndroid) {
+    if (RuntimePlatform.isWindows ||
+        RuntimePlatform.isLinux ||
+        RuntimePlatform.isMacOS ||
+        RuntimePlatform.isAndroid) {
       final coreTypeId = CoreTypeDefault.singBox.index;
       final core = await (db.select(db.coreTypeSelected).join([
         leftOuterJoin(
@@ -807,7 +807,7 @@ class VPNManagerExec extends VPNManager {
   @override
   _startCore() async {
     logger.d("starting: _startCore");
-    if (!kIsWeb) await installPendingAssetRemote();
+    if (!RuntimePlatform.isWeb) await installPendingAssetRemote();
     await initCore();
     logger.d("corePath: $corePath");
     logger.d("coreArgList: $_coreArgList");
@@ -819,7 +819,7 @@ class VPNManagerExec extends VPNManager {
       throw Exception("core path does not exist");
     }
 
-    if (platform.isLinux || platform.isMacOS || platform.isAndroid) {
+    if (RuntimePlatform.isLinux || RuntimePlatform.isMacOS || RuntimePlatform.isAndroid) {
       final executableTestRes = await Process.run("test", ["-x", corePath!]);
       if (executableTestRes.exitCode != 0) {
         logger.i("core path not executable, fixing");
@@ -1074,7 +1074,7 @@ class VPNManManager {
   // Async initializer (call once at app startup)
   Future<void> init() async {
     logger.d("starting: VPNManManager.init");
-    _vPNMan = platform.isAndroid || platform.isIOS
+    _vPNMan = RuntimePlatform.isAndroid || RuntimePlatform.isIOS
         ? VPNManagerMC()
         : VPNManagerExec();
     _completer.complete(); // Signal that initialization is complete

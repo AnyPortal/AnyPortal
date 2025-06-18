@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:drift/drift.dart' as drift;
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
-import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 
 import '../models/asset.dart';
@@ -16,7 +15,7 @@ import 'db/connection.dart' as impl;
 import 'db.steps.dart';
 import 'global.dart';
 import 'logger.dart';
-import 'platform.dart';
+import 'runtime_platform.dart';
 
 part 'db.g.dart';
 
@@ -36,7 +35,7 @@ class DatabaseManager {
   // Async initializer (call once at app startup)
   Future<void> init() async {
     logger.d("starting: DatabaseManager.init");
-    if (!kIsWeb){
+    if (!RuntimePlatform.isWeb){
       final dbFolder = global.applicationDocumentsDirectory;
       final file = File(p.join(dbFolder.path, "AnyPortal", "db.sqlite"));
       if (!file.existsSync()) {
@@ -127,7 +126,7 @@ class Database extends _$Database {
             ));
           }
           // android embedded core
-          if (platform.isAndroid) {
+          if (RuntimePlatform.isAndroid) {
             final coreId =
                 await into(core).insertOnConflictUpdate(CoreCompanion(
               coreTypeId: Value(CoreTypeDefault.xray.index),

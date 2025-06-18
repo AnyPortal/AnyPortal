@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'logger.dart';
-import 'platform.dart';
+import 'runtime_platform.dart';
 
 Future<int?> getPidOfPort(int port) async {
     try {
-      if (platform.isWindows) {
+      if (RuntimePlatform.isWindows) {
         // Windows command
         var result = await Process.run('netstat', ['-aon']);
         var output = result.stdout as String;
@@ -34,7 +34,7 @@ Future<int?> getPidOfPort(int port) async {
             }
           }
         }
-      } else if (platform.isLinux || platform.isMacOS) {
+      } else if (RuntimePlatform.isLinux || RuntimePlatform.isMacOS) {
         // macOS/Linux command
         var result = await Process.run('lsof', ['-i', 'tcp:$port']);
         var output = result.stdout as String;

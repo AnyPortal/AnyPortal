@@ -9,7 +9,7 @@ import 'package:anyportal/extensions/localization.dart';
 import 'package:anyportal/models/log_level.dart';
 import '../../../utils/global.dart';
 import '../../../utils/logger.dart';
-import '../../../utils/platform.dart';
+import '../../../utils/runtime_platform.dart';
 import '../../../utils/platform_file_mananger.dart';
 import '../../../utils/prefs.dart';
 import '../../../utils/vpn_manager.dart';
@@ -79,7 +79,7 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
               final snackBar = SnackBar(
                 content: Text(context.loc
                     .warning_you_need_to_be_elevated_user_to_modify_this_setting(
-                        platform.isWindows
+                        RuntimePlatform.isWindows
                             ? context.loc.administrator
                             : "root")),
               );

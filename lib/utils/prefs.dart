@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:anyportal/models/log_level.dart';
 import 'package:anyportal/models/send_through_binding_stratagy.dart';
 
-import 'platform.dart';
+import 'runtime_platform.dart';
 import 'logger.dart';
 import 'shared_preferences_with_defaults.dart';
 
@@ -20,16 +20,16 @@ class PrefsManager {
     'app.dashboard.floatingActionButton': true,
     'app.locale.followSystem': true,
     'app.locale': "en_US",
-    'app.connectAtLaunch': platform.isWindows || platform.isLinux || platform.isMacOS,
+    'app.connectAtLaunch': RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS,
     'app.connectAtStartup': false,
     // 'app.github.downloadedFilePath': null,
     'app.github.meta': '{"created_at": "1970-01-01T00:00:00Z"}',
     'app.http.port': 15492,
-    'app.notification.foreground': platform.isAndroid,
+    'app.notification.foreground': RuntimePlatform.isAndroid,
     'app.window.size.width': 1280.0,
     'app.window.size.height': 720.0,
     'app.window.isMaximized': false,
-    'app.window.closeToTray': platform.isWindows || platform.isLinux || platform.isMacOS,
+    'app.window.closeToTray': RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS,
     'app.runElevated': false,
     'app.server.address': "127.0.0.1",
     'app.socks.port': 15491,
@@ -44,7 +44,7 @@ class PrefsManager {
     'inject.sendThrough.bindingIp': "0.0.0.0",
     'inject.sendThrough.bindingStratagy': SendThroughBindingStratagy.ip.index,
     'systemProxy': false,
-    'tun': platform.isAndroid || platform.isIOS,
+    'tun': RuntimePlatform.isAndroid || RuntimePlatform.isIOS,
     'tun.perAppProxy': false,
     'tun.socks.username': "",
     'tun.socks.password': "",
@@ -58,7 +58,7 @@ class PrefsManager {
     'tun.inject.socks': true,
     'tun.inject.excludeCorePath': true,
     'tun.inject.excludeCoreDNS': true,
-    'tun.useEmbedded': platform.isAndroid || platform.isIOS,
+    'tun.useEmbedded': RuntimePlatform.isAndroid || RuntimePlatform.isIOS,
 
     'android.tun.perAppProxy.allowed': true,
     'android.tun.allowedApplications': "[]",

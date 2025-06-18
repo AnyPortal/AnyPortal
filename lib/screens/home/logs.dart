@@ -3,13 +3,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 import 'package:anyportal/utils/method_channel.dart';
 
-import '../../utils/platform.dart';
+import '../../utils/runtime_platform.dart';
 
 class LogViewer extends StatefulWidget {
   final String filePath;
@@ -62,7 +61,7 @@ class LogViewerState extends State<LogViewer> {
   }
 
   Future<List<String>> _readLastNLines(int n) async {
-    if (kIsWeb) {
+    if (RuntimePlatform.isWeb) {
       return [];
     }
 
@@ -100,7 +99,7 @@ class LogViewerState extends State<LogViewer> {
   }
 
   Future<void> onFileChange() async {
-    if (kIsWeb) {
+    if (RuntimePlatform.isWeb) {
       return;
     }
 
@@ -140,13 +139,13 @@ class LogViewerState extends State<LogViewer> {
   }
 
   void _startFileMonitor() async {
-    if (platform.isAndroid) {
+    if (RuntimePlatform.isAndroid) {
       mCMan.methodChannel.invokeListMethod(
           'log.core.startWatching', {"filePath": widget.filePath});
       mCMan.addHandler('onFileChange', (_) async {
         onFileChange();
       });
-    } else if (platform.isLinux) {
+    } else if (RuntimePlatform.isLinux) {
       _logFile.watch().listen((e) {
         onFileChange();
       });

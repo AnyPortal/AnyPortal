@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:anyportal/utils/permission_manager.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_acrylic/flutter_acrylic.dart';
@@ -15,7 +14,7 @@ import 'package:anyportal/utils/tray_menu.dart';
 import 'package:anyportal/utils/vpn_manager.dart';
 import '../utils/prefs.dart';
 import '../utils/theme_manager.dart';
-import '../utils/platform.dart';
+import '../utils/runtime_platform.dart';
 import '../widgets/vpn_toggles.dart';
 import 'home/dashboard.dart';
 import 'home/logs.dart';
@@ -67,7 +66,7 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
     windowManager.addListener(this);
     super.initState();
 
-    if (!kIsWeb) {
+    if (!RuntimePlatform.isWeb) {
       final logFile = File(p.join(
         global.applicationSupportDirectory.path,
         'log',
@@ -220,7 +219,7 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
 
   @override
   void onWindowClose() async {
-    if (platform.isWindows && await pendingInstallerExitFlagFile.exists()) {
+    if (RuntimePlatform.isWindows && await pendingInstallerExitFlagFile.exists()) {
       await pendingInstallerExitFlagFile.delete();
       await vPNMan.stopAll();
       exit(0);
@@ -308,10 +307,10 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
     super.didChangeDependencies();
 
     themeManager.update();
-    if (platform.isWindows || platform.isMacOS) {
+    if (RuntimePlatform.isWindows || RuntimePlatform.isMacOS) {
       var isDark = themeManager.isDark;
       Window.setEffect(
-        effect: platform.isLinux || platform.isMacOS
+        effect: RuntimePlatform.isLinux || RuntimePlatform.isMacOS
             ? WindowEffect.disabled
             : WindowEffect.mica,
         dark: isDark,

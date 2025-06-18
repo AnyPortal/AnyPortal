@@ -1,16 +1,16 @@
 import 'dart:io';
 
-import 'platform.dart';
+import 'runtime_platform.dart';
 
 class PlatformElevation {
   static Future<bool> isElevated() async {
-    if (platform.isWindows) {
+    if (RuntimePlatform.isWindows) {
       ProcessResult result = await Process.run('net', ['session']);
       return result.exitCode == 0;
-    } else if (platform.isMacOS || platform.isLinux) {
+    } else if (RuntimePlatform.isMacOS || RuntimePlatform.isLinux) {
       ProcessResult result = await Process.run('id', ['-u']);
       return result.stdout.trim() == '0';
-    } else if (platform.isAndroid) {
+    } else if (RuntimePlatform.isAndroid) {
       try {
         ProcessResult result = await Process.run('su', ['-c', 'echo 0']);
         return result.stdout.trim() == '0';
@@ -23,7 +23,7 @@ class PlatformElevation {
 
   static Future<void> elevate() async {
     final args = Platform.executableArguments;
-    if (platform.isWindows) {
+    if (RuntimePlatform.isWindows) {
       await Process.run(
         'C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe',
         [
@@ -32,12 +32,12 @@ class PlatformElevation {
         ],
         runInShell: true,
       );
-    } else if (platform.isMacOS) {
+    } else if (RuntimePlatform.isMacOS) {
       await Process.run('osascript', [
         '-e',
         'do shell script "sudo ${Platform.resolvedExecutable}" with administrator privileges'
       ]);
-    } else if (platform.isLinux) {
+    } else if (RuntimePlatform.isLinux) {
       await Process.run(
         'pkexec',
         [Platform.resolvedExecutable, ...args],

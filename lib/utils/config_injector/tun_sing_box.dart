@@ -8,7 +8,7 @@ import '../../models/core.dart';
 import '../../models/log_level.dart';
 import '../global.dart';
 import '../logger.dart';
-import '../platform.dart';
+import '../runtime_platform.dart';
 import '../prefs.dart';
 
 Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
@@ -69,7 +69,7 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
       });
     }
   }
-  if (platform.isAndroid) {
+  if (RuntimePlatform.isAndroid) {
     if (prefs.getBool("tun.perAppProxy")!) {
       if (prefs.getBool("android.tun.perAppProxy.allowed")!) {
         rules.insert(0, {

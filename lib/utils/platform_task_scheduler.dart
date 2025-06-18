@@ -13,7 +13,7 @@ import 'db/update_profile.dart';
 import 'db/update_profile_group.dart';
 import 'global.dart';
 import 'logger.dart';
-import 'platform.dart';
+import 'runtime_platform.dart';
 import 'prefs.dart';
 
 Future<void> workManagerTaskInit() async {
@@ -132,7 +132,7 @@ class PlatformTaskScheduler {
 
   void init() {
     /// check all remote assets every 15 mins
-    if (platform.isAndroid || platform.isIOS) {
+    if (RuntimePlatform.isAndroid || RuntimePlatform.isIOS) {
       Workmanager().initialize(workmanagerCallbackDispatcher);
       Workmanager().registerPeriodicTask(
           "anyportal-periodic-task", "anyportalPeriodicTask",
@@ -141,7 +141,7 @@ class PlatformTaskScheduler {
           constraints: Constraints(
             networkType: NetworkType.connected,
           ));
-    } else if (platform.isWindows || platform.isLinux || platform.isMacOS) {
+    } else if (RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS) {
       // checkAllRemotes();
       final delayedMinutes = DateTime.now().minute % 15;
       cron.schedule(Schedule.parse('*/15 * * * *'), () async {

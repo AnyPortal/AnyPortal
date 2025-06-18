@@ -10,7 +10,7 @@ import 'settings/general.dart';
 import 'settings/profile_override.dart';
 import 'settings/system_proxy.dart';
 import 'settings/tun_sing_box.dart';
-import '../../utils/platform.dart';
+import '../../utils/runtime_platform.dart';
 
 class SettingList extends StatefulWidget {
   const SettingList({
@@ -58,7 +58,7 @@ class _SettingListState extends State<SettingList> {
                   MaterialPageRoute(builder: (context) => const ConnectivityBasicScreen()),
                 );
               }),
-          if (platform.isWindows || platform.isLinux || platform.isMacOS || platform.isAndroid)
+          if (RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS || RuntimePlatform.isAndroid)
             ListTile(
                 title: Text(context.loc.system_proxy),
                 subtitle: Text(context.loc.provided_by_os_not_all_apps_respect_this_setting),
@@ -68,7 +68,7 @@ class _SettingListState extends State<SettingList> {
                     MaterialPageRoute(builder: (context) => const SystemProxyScreen()),
                   );
                 }),
-          if (platform.isAndroid || platform.isIOS)
+          if (RuntimePlatform.isAndroid || RuntimePlatform.isIOS)
             ListTile(
                 title: Text(context.loc.tun_via_platform_api_),
                 subtitle: Text(context.loc.vitual_network_adaptor),
@@ -78,7 +78,7 @@ class _SettingListState extends State<SettingList> {
                     MaterialPageRoute(builder: (context) => const TunHevSocks5TunnelScreen()),
                   );
                 }),
-          if (platform.isWindows || platform.isLinux || platform.isMacOS || platform.isAndroid)
+          if (RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS || RuntimePlatform.isAndroid)
             ListTile(
                 title: Text(context.loc.tun_via_root_),
                 subtitle: Text(context.loc.vitual_network_adaptor),

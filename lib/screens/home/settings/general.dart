@@ -10,7 +10,7 @@ import 'package:anyportal/generated/l10n/app_localizations.dart';
 import 'package:anyportal/utils/locale_manager.dart';
 import 'package:anyportal/widgets/popup/radio_list_selection.dart';
 import '../../../utils/global.dart';
-import '../../../utils/platform.dart';
+import '../../../utils/runtime_platform.dart';
 import '../../../utils/platform_launch_at_login.dart';
 import '../../../utils/prefs.dart';
 import '../../../utils/theme_manager.dart';
@@ -48,7 +48,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
   }
 
   void _loadLaunchAtLogin() {
-    if (platform.isWindows || platform.isLinux || platform.isMacOS) {
+    if (RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS) {
       platformLaunchAtLogin.isEnabled().then((value) {
         setState(() {
           _launchAtLogin = value;
@@ -58,7 +58,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
   }
 
   bool getCanAutoUpdate() {
-    if (platform.isWindows) {
+    if (RuntimePlatform.isWindows) {
       return File(p.join(
         File(Platform.resolvedExecutable).parent.path,
         "unins000.exe", // created by inno setup
@@ -146,8 +146,8 @@ class _GeneralScreenState extends State<GeneralScreen> {
             },
           ),
         ),
-      if (platform.isWindows ||
-          (!global.isElevated && (platform.isLinux || platform.isMacOS)))
+      if (RuntimePlatform.isWindows ||
+          (!global.isElevated && (RuntimePlatform.isLinux || RuntimePlatform.isMacOS)))
         ListTile(
           title: Text(context.loc.auto_launch),
           subtitle: Text(
@@ -171,7 +171,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
                   final snackBar = SnackBar(
                     content: Text(context.loc
                         .warning_you_need_to_be_elevated_user_to_modify_this_setting(
-                            platform.isWindows ? context.loc.administrator : "root")),
+                            RuntimePlatform.isWindows ? context.loc.administrator : "root")),
                   );
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
@@ -179,10 +179,10 @@ class _GeneralScreenState extends State<GeneralScreen> {
             },
           ),
         ),
-      if (platform.isWindows)
+      if (RuntimePlatform.isWindows)
         ListTile(
           enabled: global.isElevated,
-          title: Text(context.loc.run_as_elevated_user(platform.isWindows ? context.loc.administrator : "root")),
+          title: Text(context.loc.run_as_elevated_user(RuntimePlatform.isWindows ? context.loc.administrator : "root")),
           subtitle: Text(context.loc.typically_required_by_tun),
           trailing: Switch(
             value: _runElevated,
@@ -191,7 +191,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
                 final snackBar = SnackBar(
                   content: Text(context.loc
                       .warning_you_need_to_be_elevated_user_to_modify_this_setting(
-                          platform.isWindows ? context.loc.administrator : "root")),
+                          RuntimePlatform.isWindows ? context.loc.administrator : "root")),
                 );
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -220,7 +220,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
             },
           ),
         ),
-      if (platform.isWindows || platform.isLinux || platform.isMacOS)
+      if (RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS)
         ListTile(
           title: Text(context.loc.close_to_tray),
           subtitle:
@@ -235,7 +235,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
             },
           ),
         ),
-      if (platform.isWindows || platform.isLinux || platform.isMacOS)
+      if (RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS)
         ListTile(
           title: Text(context.loc.auto_connect_at_app_launch),
           subtitle:
@@ -250,7 +250,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
             },
           ),
         ),
-      if (platform.isAndroid)
+      if (RuntimePlatform.isAndroid)
         ListTile(
           title: Text(context.loc.auto_connect_at_device_boot),
           subtitle:
@@ -331,7 +331,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
           },
         ),
       ),
-      if (platform.isAndroid)
+      if (RuntimePlatform.isAndroid)
         Container(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           child: Text(
@@ -339,7 +339,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
             style: TextStyle(color: Theme.of(context).colorScheme.primary),
           ),
         ),
-      if (platform.isAndroid)
+      if (RuntimePlatform.isAndroid)
         ListTile(
           title: Text(context.loc.foreground),
           subtitle: Text(context.loc
