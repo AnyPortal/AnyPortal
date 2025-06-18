@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:anyportal/extensions/localization.dart';
+import '../extensions/localization.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 

@@ -1,13 +1,14 @@
 import 'dart:async';
 
 import 'package:tray_manager/tray_manager.dart';
-import 'package:anyportal/extensions/localization.dart';
 
-import 'package:anyportal/utils/logger.dart';
+import '../extensions/localization.dart';
+
 import 'global.dart';
-import 'runtime_platform.dart';
+import 'logger.dart';
 import 'platform_system_proxy_user.dart';
 import 'prefs.dart';
+import 'runtime_platform.dart';
 import 'vpn_manager.dart';
 
 class TrayMenuManager {

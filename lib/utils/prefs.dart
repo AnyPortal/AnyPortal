@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:anyportal/models/log_level.dart';
-import 'package:anyportal/models/send_through_binding_stratagy.dart';
+import '../models/log_level.dart';
+import '../models/send_through_binding_stratagy.dart';
 
-import 'runtime_platform.dart';
 import 'logger.dart';
+import 'runtime_platform.dart';
 import 'shared_preferences_with_defaults.dart';
 
 class PrefsManager {

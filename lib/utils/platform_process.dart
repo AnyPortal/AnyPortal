@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:anyportal/utils/logger.dart';
-
+import 'logger.dart';
 import 'runtime_platform.dart';
 
 class PlatformProcess {

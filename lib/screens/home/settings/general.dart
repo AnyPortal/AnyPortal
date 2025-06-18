@@ -5,16 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:path/path.dart' as p;
 
-import 'package:anyportal/extensions/localization.dart';
-import 'package:anyportal/generated/l10n/app_localizations.dart';
-import 'package:anyportal/utils/locale_manager.dart';
-import 'package:anyportal/widgets/popup/radio_list_selection.dart';
+import '../../../extensions/localization.dart';
+import '../../../generated/l10n/app_localizations.dart';
 import '../../../utils/global.dart';
-import '../../../utils/runtime_platform.dart';
+import '../../../utils/locale_manager.dart';
 import '../../../utils/platform_launch_at_login.dart';
 import '../../../utils/prefs.dart';
+import '../../../utils/runtime_platform.dart';
 import '../../../utils/theme_manager.dart';
 import '../../../utils/vpn_manager.dart';
+import '../../../widgets/popup/radio_list_selection.dart';
 
 class GeneralScreen extends StatefulWidget {
   const GeneralScreen({

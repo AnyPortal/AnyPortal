@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:anyportal/extensions/localization.dart';
+import '../../../extensions/localization.dart';
 import '../../../utils/prefs.dart';
 import '../../../widgets/popup/text_input.dart';
 

@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 
 import 'package:path/path.dart' as p;
 
-import 'package:anyportal/extensions/localization.dart';
-import 'package:anyportal/screens/installed_app.dart';
+import '../../../extensions/localization.dart';
 import '../../../utils/global.dart';
 import '../../../utils/prefs.dart';
 import '../../../utils/vpn_manager.dart';
 import '../../../widgets/popup/text_input.dart';
+import '../../installed_app.dart';
 
 class TunHevSocks5TunnelScreen extends StatefulWidget {
   const TunHevSocks5TunnelScreen({

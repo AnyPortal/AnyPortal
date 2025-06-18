@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-import 'package:anyportal/extensions/localization.dart';
-import 'package:anyportal/utils/global.dart';
-import 'package:anyportal/utils/vpn_manager.dart';
-import '../screens/home/settings/cores.dart';
+import '../extensions/localization.dart';
 import '../screens/home/profiles.dart';
+import '../screens/home/settings/cores.dart';
+import '../utils/global.dart';
 import '../utils/logger.dart';
 import '../utils/platform_system_proxy_user.dart';
 import '../utils/prefs.dart';
 import '../utils/runtime_platform.dart';
+import '../utils/vpn_manager.dart';
 
 class VPNToggles extends StatefulWidget {
   final bool isDense;

@@ -6,8 +6,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
-import 'package:anyportal/utils/method_channel.dart';
-
+import '../../utils/method_channel.dart';
 import '../../utils/runtime_platform.dart';
 
 class LogViewer extends StatefulWidget {

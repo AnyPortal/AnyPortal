@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:drift/drift.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
-import 'package:anyportal/extensions/localization.dart';
+import '../../../extensions/localization.dart';
 import '../../../models/asset.dart';
 import '../../../screens/asset.dart';
 import '../../../utils/db.dart';

@@ -5,13 +5,13 @@ import 'package:flutter/services.dart';
 
 import 'package:path/path.dart' as p;
 
-import 'package:anyportal/extensions/localization.dart';
-import 'package:anyportal/models/log_level.dart';
+import '../../../extensions/localization.dart';
+import '../../../models/log_level.dart';
 import '../../../utils/global.dart';
 import '../../../utils/logger.dart';
-import '../../../utils/runtime_platform.dart';
 import '../../../utils/platform_file_mananger.dart';
 import '../../../utils/prefs.dart';
+import '../../../utils/runtime_platform.dart';
 import '../../../utils/vpn_manager.dart';
 import '../../../widgets/popup/radio_list_selection.dart';
 

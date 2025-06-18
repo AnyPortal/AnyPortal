@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:anyportal/extensions/localization.dart';
-import 'package:anyportal/models/core.dart';
+import '../extensions/localization.dart';
+import '../models/core.dart';
 import '../models/profile.dart';
 import '../utils/db.dart';
 import '../utils/db/update_profile.dart';

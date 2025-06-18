@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:drift/drift.dart';
 
-import 'package:anyportal/extensions/localization.dart';
+import '../extensions/localization.dart';
 import '../utils/db.dart';
 import '../utils/logger.dart';
 import '../widgets/form/progress_button.dart';

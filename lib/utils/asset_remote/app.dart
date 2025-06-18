@@ -5,8 +5,9 @@ import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:path/path.dart' as p;
 
-import '../runtime_platform.dart';
 import '../prefs.dart';
+import '../runtime_platform.dart';
+
 import 'github.dart';
 
 /// this class always extracts app since the canInstall always returns true

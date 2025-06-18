@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:anyportal/utils/permission_manager.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_acrylic/flutter_acrylic.dart';
@@ -8,14 +7,16 @@ import 'package:path/path.dart' as p;
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
-import 'package:anyportal/extensions/localization.dart';
-import 'package:anyportal/utils/global.dart';
-import 'package:anyportal/utils/tray_menu.dart';
-import 'package:anyportal/utils/vpn_manager.dart';
+import '../extensions/localization.dart';
+import '../utils/global.dart';
+import '../utils/permission_manager.dart';
 import '../utils/prefs.dart';
-import '../utils/theme_manager.dart';
 import '../utils/runtime_platform.dart';
+import '../utils/theme_manager.dart';
+import '../utils/tray_menu.dart';
+import '../utils/vpn_manager.dart';
 import '../widgets/vpn_toggles.dart';
+
 import 'home/dashboard.dart';
 import 'home/logs.dart';
 import 'home/profiles.dart';

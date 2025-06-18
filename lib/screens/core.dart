@@ -4,15 +4,16 @@ import 'package:drift/drift.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'package:anyportal/extensions/localization.dart';
-import 'package:anyportal/models/edit_status.dart';
-import 'package:anyportal/utils/permission_manager.dart';
 import '../../models/core.dart';
 import '../../utils/db.dart';
+import '../extensions/localization.dart';
 import '../models/asset.dart';
+import '../models/edit_status.dart';
 import '../utils/logger.dart';
+import '../utils/permission_manager.dart';
 import '../utils/runtime_platform.dart';
 import '../widgets/form/progress_button.dart';
+
 import 'asset.dart';
 import 'core_type.dart';
 

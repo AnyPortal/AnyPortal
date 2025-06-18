@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-
 import 'package:system_theme/system_theme.dart';
 
-import 'runtime_platform.dart';
 import 'platform_version.dart';
 import 'prefs.dart';
+import 'runtime_platform.dart';
 
 bool getIsTransparentBG() {
   bool isTransparentBG = false;

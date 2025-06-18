@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 
-import 'package:anyportal/models/core.dart';
-import 'package:anyportal/models/profile_group.dart';
+import 'core.dart';
+import 'profile_group.dart';
 
 class Profile extends Table {
   IntColumn get id => integer().autoIncrement()();

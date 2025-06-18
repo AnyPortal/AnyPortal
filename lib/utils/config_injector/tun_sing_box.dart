@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
-import 'package:anyportal/utils/vpn_manager.dart';
+import '../vpn_manager.dart';
 import '../../models/core.dart';
 import '../../models/log_level.dart';
 import '../global.dart';

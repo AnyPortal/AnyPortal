@@ -4,12 +4,12 @@ import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:drift/drift.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
-import 'package:anyportal/extensions/localization.dart';
-import 'package:anyportal/utils/vpn_manager.dart';
+import '../../extensions/localization.dart';
 import '../../models/profile_group.dart';
 import '../../screens/profile_group.dart';
 import '../../utils/db.dart';
 import '../../utils/prefs.dart';
+import '../../utils/vpn_manager.dart';
 import '../profile.dart';
 
 class ProfileList extends StatefulWidget {

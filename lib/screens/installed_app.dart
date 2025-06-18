@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:anyportal/extensions/localization.dart';
-import 'package:anyportal/widgets/installed_app_list.dart';
+import '../extensions/localization.dart';
+import '../widgets/installed_app_list.dart';
 
 class InstalledAppScreen extends StatefulWidget {
   late final Set<String> selectedApps;

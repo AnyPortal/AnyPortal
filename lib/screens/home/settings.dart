@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:anyportal/extensions/localization.dart';
-import 'package:anyportal/screens/home/settings/tun_hev_socks5_tunnel.dart';
+import '../../extensions/localization.dart';
+import '../../utils/runtime_platform.dart';
+
 import 'settings/about.dart';
 import 'settings/assets.dart';
 import 'settings/connectivity_basic.dart';
@@ -9,8 +10,8 @@ import 'settings/cores.dart';
 import 'settings/general.dart';
 import 'settings/profile_override.dart';
 import 'settings/system_proxy.dart';
+import 'settings/tun_hev_socks5_tunnel.dart';
 import 'settings/tun_sing_box.dart';
-import '../../utils/runtime_platform.dart';
 
 class SettingList extends StatefulWidget {
   const SettingList({

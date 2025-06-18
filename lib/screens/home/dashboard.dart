@@ -1,4 +1,3 @@
-// import 'package:anyportal/widgets/vpn_toggles.dart';
 import 'package:flutter/material.dart';
 
 import 'package:drift/drift.dart';
@@ -8,10 +7,12 @@ import 'package:anyportal/extensions/localization.dart';
 import 'package:anyportal/screens/home/dashboard/direct_speed.dart';
 import 'package:anyportal/screens/home/dashboard/proxy_speed.dart';
 import 'package:anyportal/screens/home/dashboard/speed_chart.dart';
+
 import '../../utils/db.dart';
 import '../../utils/prefs.dart';
 import '../../widgets/ray_toggle.dart';
 import '../../widgets/vpn_toggles.dart';
+
 import 'dashboard/perf_stats.dart';
 import 'dashboard/traffic_stats.dart';
 

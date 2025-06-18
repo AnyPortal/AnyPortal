@@ -1,5 +1,4 @@
 import 'dart:async'; // Add Completer for async handling
-
 import 'dart:io';
 
 import 'package:drift/drift.dart' as drift;
@@ -11,8 +10,9 @@ import '../models/asset.dart';
 import '../models/core.dart';
 import '../models/profile.dart';
 import '../models/profile_group.dart';
-import 'db/connection.dart' as impl;
+
 import 'db.steps.dart';
+import 'db/connection.dart' as impl;
 import 'global.dart';
 import 'logger.dart';
 import 'runtime_platform.dart';

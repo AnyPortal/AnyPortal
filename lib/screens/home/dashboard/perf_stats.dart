@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:anyportal/extensions/localization.dart';
-import 'package:anyportal/utils/core_data_notifier.dart';
+import '../../../extensions/localization.dart';
+import '../../../utils/core_data_notifier.dart';
 import '../../../utils/format_byte.dart';
 
 class PerfStats extends StatefulWidget {
