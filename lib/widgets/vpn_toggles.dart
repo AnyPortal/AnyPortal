@@ -8,6 +8,7 @@ import '../utils/logger.dart';
 import '../utils/platform_system_proxy_user.dart';
 import '../utils/prefs.dart';
 import '../utils/runtime_platform.dart';
+import '../utils/show_snack_bar_now.dart';
 import '../utils/vpn_manager.dart';
 
 class VPNToggles extends StatefulWidget {
@@ -30,12 +31,7 @@ class VPNTogglesState extends State<VPNToggles> {
 
   void handleError(Object e) {
     logger.e("tun: $e");
-    final snackBar = SnackBar(
-      content: Text("$e"),
-    );
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
+    if (mounted) showSnackBarNow(context, Text("tun: $e"));
   }
 
   void toggleAll(bool shouldEnable) async {
@@ -53,10 +49,10 @@ class VPNTogglesState extends State<VPNToggles> {
           context,
           MaterialPageRoute(builder: (context) => const CoresScreen()),
         );
-        const snackBar = SnackBar(
-          content: Text("Please specify v2ray-core executable path"),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        if (mounted) {
+          showSnackBarNow(
+              context, Text("Please specify v2ray-core executable path"));
+        }
       }
     } on ExceptionNoSelectedProfile catch (e) {
       err = e;
@@ -65,10 +61,7 @@ class VPNTogglesState extends State<VPNToggles> {
           context,
           MaterialPageRoute(builder: (context) => const ProfileList()),
         );
-        const snackBar = SnackBar(
-          content: Text("Please select a profile"),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        if (mounted) showSnackBarNow(context, Text("Please select a profile"));
       }
     } on Exception catch (e) {
       err = e;
@@ -76,12 +69,7 @@ class VPNTogglesState extends State<VPNToggles> {
     } finally {
       if (err != null) {
         vPNMan.setisTogglingAll(false);
-        final snackBar = SnackBar(
-          content: Text("toggle: $err"),
-        );
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        }
+        if (mounted) showSnackBarNow(context, Text("toggle: $err"));
       }
     }
   }
@@ -104,13 +92,15 @@ class VPNTogglesState extends State<VPNToggles> {
 
   void toggleTun(bool shouldEnable) async {
     if (!prefs.getBool('tun.useEmbedded')! && !global.isElevated) {
-      final snackBar = SnackBar(
-        content: Text(context.loc
-            .warning_you_need_to_be_elevated_user_to_modify_this_setting(
-                RuntimePlatform.isWindows ? context.loc.administrator : "root")),
-      );
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      if (mounted) {
+        showSnackBarNow(
+          context,
+          Text(context.loc
+              .warning_you_need_to_be_elevated_user_to_modify_this_setting(
+                  RuntimePlatform.isWindows
+                      ? context.loc.administrator
+                      : "root")),
+        );
       }
       return;
     }

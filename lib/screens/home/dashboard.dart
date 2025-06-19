@@ -10,6 +10,7 @@ import 'package:anyportal/screens/home/dashboard/speed_chart.dart';
 
 import '../../utils/db.dart';
 import '../../utils/prefs.dart';
+import '../../utils/show_snack_bar_now.dart';
 import '../../widgets/ray_toggle.dart';
 import '../../widgets/vpn_toggles.dart';
 
@@ -112,13 +113,11 @@ class _DashboardState extends State<Dashboard> {
                       _profiles.isNotEmpty
                           ? widget.setSelectedIndex(2)
                           : () {
-                              final snackBar = SnackBar(
-                                content: Text(context
-                                    .loc.no_profile_yet_create_one_first),
-                              );
                               if (mounted) {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackBar);
+                                showSnackBarNow(
+                                    context,
+                                    Text(context
+                                        .loc.no_profile_yet_create_one_first));
                               }
                               widget.setSelectedIndex(2);
                             }();

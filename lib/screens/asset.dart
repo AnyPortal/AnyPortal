@@ -10,6 +10,7 @@ import '../models/edit_status.dart';
 import '../utils/asset_remote/github.dart';
 import '../utils/logger.dart';
 import '../utils/runtime_platform.dart';
+import '../utils/show_snack_bar_now.dart';
 import '../widgets/form/progress_button.dart';
 
 class AssetScreen extends StatefulWidget {
@@ -109,10 +110,7 @@ class _AssetScreenState extends State<AssetScreen> {
       ok = true;
     } catch (e) {
       logger.e("_submitForm: $e");
-      final snackBar = SnackBar(
-        content: Text("$e"),
-      );
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      if (mounted) showSnackBarNow(context, Text("_submitForm: $e"));
     }
 
     setState(() {

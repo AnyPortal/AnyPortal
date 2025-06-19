@@ -12,6 +12,7 @@ import '../../../utils/logger.dart';
 import '../../../utils/platform_file_mananger.dart';
 import '../../../utils/prefs.dart';
 import '../../../utils/runtime_platform.dart';
+import '../../../utils/show_snack_bar_now.dart';
 import '../../../utils/vpn_manager.dart';
 import '../../../widgets/popup/radio_list_selection.dart';
 
@@ -43,20 +44,12 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
 
   void handleError(Object e) {
     logger.e("tun: $e");
-    final snackBar = SnackBar(
-      content: Text("$e"),
-    );
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
+    if (mounted) showSnackBarNow(context, Text("tun: $e"));
   }
 
   Future<void> copyTextThenNotify(String text) async {
     Clipboard.setData(ClipboardData(text: text)).then((_) {
-      final snackBar = SnackBar(
-        content: Text("Copied"),
-      );
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      if (mounted) showSnackBarNow(context, Text("Copied"));
     });
   }
 
@@ -76,15 +69,14 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
           value: _tun && !_tunUseEmbedded,
           onChanged: (shouldEnable) {
             if (!global.isElevated) {
-              final snackBar = SnackBar(
-                content: Text(context.loc
-                    .warning_you_need_to_be_elevated_user_to_modify_this_setting(
-                        RuntimePlatform.isWindows
-                            ? context.loc.administrator
-                            : "root")),
-              );
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              if (mounted) {
+                showSnackBarNow(
+                    context,
+                    Text(context.loc
+                        .warning_you_need_to_be_elevated_user_to_modify_this_setting(
+                            RuntimePlatform.isWindows
+                                ? context.loc.administrator
+                                : "root")));
               }
               return;
             }
@@ -177,7 +169,8 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
       const Divider(),
       Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-        child: Text(context.loc.routing_rule_additional_rules,
+        child: Text(
+          context.loc.routing_rule_additional_rules,
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
       ),

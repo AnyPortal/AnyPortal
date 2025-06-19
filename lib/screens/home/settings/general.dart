@@ -9,6 +9,7 @@ import '../../../utils/locale_manager.dart';
 import '../../../utils/platform_launch_at_login.dart';
 import '../../../utils/prefs.dart';
 import '../../../utils/runtime_platform.dart';
+import '../../../utils/show_snack_bar_now.dart';
 import '../../../utils/theme_manager.dart';
 import '../../../utils/vpn_manager.dart';
 import '../../../widgets/popup/radio_list_selection.dart';
@@ -28,7 +29,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
   bool _connectAtStartup = prefs.getBool('app.connectAtStartup')!;
   bool _connectAtLaunch = prefs.getBool('app.connectAtLaunch')!;
   bool _runElevated = prefs.getBool('app.runElevated')!;
-      
+
   bool _brightnessIsDark = prefs.getBool('app.brightness.dark')!;
   bool _isBlackDark = prefs.getBool('app.brightness.dark.black')!;
   bool _brightnessFollowSystem = prefs.getBool('app.brightness.followSystem')!;
@@ -36,7 +37,8 @@ class _GeneralScreenState extends State<GeneralScreen> {
   bool _notificationForeground = prefs.getBool('app.notification.foreground')!;
   late Locale _locale = localeManager.locale;
   bool _localeFollowSystem = prefs.getBool('app.locale.followSystem')!;
-  bool _isFloatingActionButton = prefs.getBool('app.dashboard.floatingActionButton')!;
+  bool _isFloatingActionButton =
+      prefs.getBool('app.dashboard.floatingActionButton')!;
 
   @override
   void initState() {
@@ -45,7 +47,9 @@ class _GeneralScreenState extends State<GeneralScreen> {
   }
 
   void _loadLaunchAtLogin() {
-    if (RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS) {
+    if (RuntimePlatform.isWindows ||
+        RuntimePlatform.isLinux ||
+        RuntimePlatform.isMacOS) {
       platformLaunchAtLogin.isEnabled().then((value) {
         setState(() {
           _launchAtLogin = value;
@@ -56,7 +60,8 @@ class _GeneralScreenState extends State<GeneralScreen> {
 
   String getLanguageName(String localeCode) {
     // return LocaleNames.of(context)?.nameOf(localeCode) ?? localeCode;
-    return LocaleNamesLocalizationsDelegate.nativeLocaleNames[localeCode] ?? localeCode;
+    return LocaleNamesLocalizationsDelegate.nativeLocaleNames[localeCode] ??
+        localeCode;
   }
 
   @override
@@ -120,8 +125,8 @@ class _GeneralScreenState extends State<GeneralScreen> {
       ),
       ListTile(
         title: Text(context.loc.auto_update),
-        subtitle: Text(context
-            .loc.auto_download_installer_and_update_on_next_app_launch),
+        subtitle: Text(
+            context.loc.auto_download_installer_and_update_on_next_app_launch),
         trailing: Switch(
           value: _autoUpdate,
           onChanged: (value) async {
@@ -133,11 +138,11 @@ class _GeneralScreenState extends State<GeneralScreen> {
         ),
       ),
       if (RuntimePlatform.isWindows ||
-          (!global.isElevated && (RuntimePlatform.isLinux || RuntimePlatform.isMacOS)))
+          (!global.isElevated &&
+              (RuntimePlatform.isLinux || RuntimePlatform.isMacOS)))
         ListTile(
           title: Text(context.loc.auto_launch),
-          subtitle: Text(
-              context.loc.auto_launch_at_login),
+          subtitle: Text(context.loc.auto_launch_at_login),
           trailing: Switch(
             value: _launchAtLogin,
             onChanged: (value) async {
@@ -154,12 +159,16 @@ class _GeneralScreenState extends State<GeneralScreen> {
                 });
               } else {
                 if (context.mounted) {
-                  final snackBar = SnackBar(
-                    content: Text(context.loc
-                        .warning_you_need_to_be_elevated_user_to_modify_this_setting(
-                            RuntimePlatform.isWindows ? context.loc.administrator : "root")),
+                  showSnackBarNow(
+                    context,
+                    Text(
+                      context.loc
+                          .warning_you_need_to_be_elevated_user_to_modify_this_setting(
+                              RuntimePlatform.isWindows
+                                  ? context.loc.administrator
+                                  : "root"),
+                    ),
                   );
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
               }
             },
@@ -168,19 +177,24 @@ class _GeneralScreenState extends State<GeneralScreen> {
       if (RuntimePlatform.isWindows)
         ListTile(
           enabled: global.isElevated,
-          title: Text(context.loc.run_as_elevated_user(RuntimePlatform.isWindows ? context.loc.administrator : "root")),
+          title: Text(context.loc.run_as_elevated_user(
+              RuntimePlatform.isWindows ? context.loc.administrator : "root")),
           subtitle: Text(context.loc.typically_required_by_tun),
           trailing: Switch(
             value: _runElevated,
             onChanged: (value) async {
               if (!global.isElevated) {
-                final snackBar = SnackBar(
-                  content: Text(context.loc
-                      .warning_you_need_to_be_elevated_user_to_modify_this_setting(
-                          RuntimePlatform.isWindows ? context.loc.administrator : "root")),
-                );
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  showSnackBarNow(
+                    context,
+                    Text(
+                      context.loc
+                          .warning_you_need_to_be_elevated_user_to_modify_this_setting(
+                              RuntimePlatform.isWindows
+                                  ? context.loc.administrator
+                                  : "root"),
+                    ),
+                  );
                 }
                 return;
               }
@@ -190,11 +204,17 @@ class _GeneralScreenState extends State<GeneralScreen> {
                 ok = await platformLaunchAtLogin.enable(isElevated: value);
                 if (!ok) {
                   if (context.mounted) {
-                    final snackBar = SnackBar(
-                      content: Text(context.loc
-                          .warning_failed_due_to_unable_to_update_launch_at_login),
+                    showSnackBarNow(
+                      context,
+                      Text(
+                        context.loc
+                            .warning_you_need_to_be_elevated_user_to_modify_this_setting(
+                                RuntimePlatform.isWindows
+                                    ? context.loc
+                                        .warning_failed_due_to_unable_to_update_launch_at_login
+                                    : "root"),
+                      ),
                     );
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   }
                   return;
                 }
@@ -206,7 +226,9 @@ class _GeneralScreenState extends State<GeneralScreen> {
             },
           ),
         ),
-      if (RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS)
+      if (RuntimePlatform.isWindows ||
+          RuntimePlatform.isLinux ||
+          RuntimePlatform.isMacOS)
         ListTile(
           title: Text(context.loc.close_to_tray),
           subtitle:
@@ -221,7 +243,9 @@ class _GeneralScreenState extends State<GeneralScreen> {
             },
           ),
         ),
-      if (RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS)
+      if (RuntimePlatform.isWindows ||
+          RuntimePlatform.isLinux ||
+          RuntimePlatform.isMacOS)
         ListTile(
           title: Text(context.loc.auto_connect_at_app_launch),
           subtitle:
@@ -306,7 +330,8 @@ class _GeneralScreenState extends State<GeneralScreen> {
       ),
       ListTile(
         title: Text(context.loc.show_dashboard_floating_button),
-        subtitle: Text(context.loc.disable_to_show_all_toggles_inside_a_dashboard_pane_instead),
+        subtitle: Text(context
+            .loc.disable_to_show_all_toggles_inside_a_dashboard_pane_instead),
         trailing: Switch(
           value: _isFloatingActionButton,
           onChanged: (value) async {

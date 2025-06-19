@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../screens/home/settings/cores.dart';
 import '../utils/logger.dart';
+import '../utils/show_snack_bar_now.dart';
 import '../utils/vpn_manager.dart';
 
 class RayToggle extends StatefulWidget {
@@ -43,10 +44,8 @@ class RayToggleState extends State<RayToggle> {
           context,
           MaterialPageRoute(builder: (context) => const CoresScreen()),
         );
-        const snackBar = SnackBar(
-          content: Text("Please specify v2ray-core executable path"),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        showSnackBarNow(
+            context, Text("Please specify v2ray-core executable path"));
       }
     } on ExceptionNoSelectedProfile catch (e) {
       err = e;
@@ -57,10 +56,7 @@ class RayToggleState extends State<RayToggle> {
     } finally {
       if (err != null) {
         vPNMan.setisTogglingAll(false);
-        final snackBar = SnackBar(
-          content: Text("toggle: $err"),
-        );
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        if (mounted) showSnackBarNow(context, Text("toggle: $err"));
       }
     }
   }
@@ -78,9 +74,7 @@ class RayToggleState extends State<RayToggle> {
         builder: (BuildContext context, Widget? child) {
           return FloatingActionButton(
               onPressed: vPNMan.isTogglingAll ? null : _toggle,
-              tooltip: vPNMan.isCoreActive
-                  ? 'disconnect'
-                  : 'connect',
+              tooltip: vPNMan.isCoreActive ? 'disconnect' : 'connect',
               child: vPNMan.isTogglingAll
                   ? Transform.scale(
                       scale: 0.5,

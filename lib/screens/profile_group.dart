@@ -5,6 +5,7 @@ import '../models/profile_group.dart';
 import '../utils/db.dart';
 import '../utils/db/update_profile_group.dart';
 import '../utils/logger.dart';
+import '../utils/show_snack_bar_now.dart';
 import '../widgets/form/progress_button.dart';
 
 class ProfileGroupScreen extends StatefulWidget {
@@ -77,10 +78,7 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
       ok = true;
     } catch (e) {
       logger.e("_submitForm: $e");
-      final snackBar = SnackBar(
-        content: Text("$e"),
-      );
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      if (mounted) showSnackBarNow(context, Text("_submitForm: $e"));
     }
 
     if (mounted) {

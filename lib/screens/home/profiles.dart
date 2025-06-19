@@ -9,6 +9,7 @@ import '../../models/profile_group.dart';
 import '../../screens/profile_group.dart';
 import '../../utils/db.dart';
 import '../../utils/prefs.dart';
+import '../../utils/show_snack_bar_now.dart';
 import '../../utils/vpn_manager.dart';
 import '../profile.dart';
 
@@ -309,14 +310,8 @@ class _ProfileListState extends State<ProfileList> {
                             _selectedProfileId = value;
                           });
                           if (await vPNMan.getIsCoreActive()) {
-                            const snackBar = SnackBar(
-                              content: Text("Reconnecting"),
-                            );
                             if (context.mounted) {
-                              ScaffoldMessenger.of(context)
-                                  .hideCurrentSnackBar();
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackBar);
+                              showSnackBarNow(context, Text("Reconnecting"));
                             }
 
                             await vPNMan.stopAll();
@@ -329,15 +324,7 @@ class _ProfileListState extends State<ProfileList> {
                               } else {
                                 msg = context.loc.warning_failed_to_reconnect;
                               }
-                            }
-                            final snackBar2 = SnackBar(
-                              content: Text(msg),
-                            );
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context)
-                                  .hideCurrentSnackBar();
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackBar2);
+                              showSnackBarNow(context, Text(msg));
                             }
                           }
                         },

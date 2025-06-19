@@ -15,6 +15,7 @@ import '../../../utils/logger.dart';
 import '../../../utils/platform_file_mananger.dart';
 import '../../../utils/prefs.dart';
 import '../../../utils/runtime_platform.dart';
+import '../../../utils/show_snack_bar_now.dart';
 import '../../../widgets/blockquote.dart';
 
 class AboutScreen extends StatefulWidget {
@@ -73,10 +74,7 @@ class _AboutScreenState extends State<AboutScreen> {
 
   void copyTextThenNotify(String text) {
     Clipboard.setData(ClipboardData(text: text)).then((_) {
-      final snackBar = SnackBar(
-        content: Text("Copied"),
-      );
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      if (mounted) showSnackBarNow(context, Text("Copied"));
     });
   }
 

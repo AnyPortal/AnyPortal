@@ -17,7 +17,7 @@ import '../db.dart';
 import '../global.dart';
 import '../logger.dart';
 import '../prefs.dart';
-import '../show_snack_bar.dart';
+import '../show_snack_bar_now.dart';
 import '../undmg.dart';
 import '../unzip.dart';
 import '../vpn_manager.dart';
@@ -259,7 +259,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
   void logStatus(BuildContext? context, String text) {
     logger.d(text);
     if (context != null) {
-      showSnackBar(context, Text(text));
+      showSnackBarNow(context, Text(text));
     }
   }
 

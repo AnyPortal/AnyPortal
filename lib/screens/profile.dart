@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:anyportal/utils/show_snack_bar_now.dart';
+
 import '../extensions/localization.dart';
 import '../models/core.dart';
 import '../models/profile.dart';
@@ -92,10 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ok = true;
     } catch (e) {
       logger.e("_submitForm: $e");
-      final snackBar = SnackBar(
-        content: Text("$e"),
-      );
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      if (mounted) showSnackBarNow(context, Text("_submitForm: $e"));
     }
 
     setState(() {
