@@ -50,16 +50,6 @@ void main(List<String> args) async {
     exit(0);
   }
 
-  if (prefs.getBool("app.autoUpdate")!) {
-    String? downloadedFilePath =
-        prefs.getString("app.github.downloadedFilePath");
-    if (downloadedFilePath != null) {
-      prefs.remove("app.github.downloadedFilePath");
-      await AssetRemoteProtocolApp.init().install(File(downloadedFilePath));
-      exit(0);
-    }
-  }
-
   await Future.wait([
     DatabaseManager().init(),
     ThemeManager().init(),
@@ -80,7 +70,9 @@ void main(List<String> args) async {
 
   if (RuntimePlatform.isAndroid || RuntimePlatform.isIOS) {
     await tProxyConfInit();
-  } else if (RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS) {
+  } else if (RuntimePlatform.isWindows ||
+      RuntimePlatform.isLinux ||
+      RuntimePlatform.isMacOS) {
     /// auto launch at login
     initLaunchAtStartup();
 
@@ -115,7 +107,7 @@ void main(List<String> args) async {
     }
   }
 
-  if (RuntimePlatform.isWeb) {
+  if (!RuntimePlatform.isWeb) {
     /// copy assets
     await copyAssetsToDefaultLocation();
 
@@ -139,7 +131,9 @@ void main(List<String> args) async {
     logger.w("vPNMan.initCore: ${e.toString()}");
   }
 
-  if (RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS) {
+  if (RuntimePlatform.isWindows ||
+      RuntimePlatform.isLinux ||
+      RuntimePlatform.isMacOS) {
     /// connect at launch
     Exception? err;
     if (prefs.getBool('app.connectAtLaunch')!) {
@@ -155,6 +149,16 @@ void main(List<String> args) async {
           vPNMan.setisTogglingAll(false);
         }
       }
+    }
+  }
+
+  if (prefs.getBool("app.autoUpdate")!) {
+    final assetRemoteProtocolApp = AssetRemoteProtocolApp();
+    if (await assetRemoteProtocolApp.init()) {
+      await assetRemoteProtocolApp.update(
+        context: global.navigatorKey.currentContext,
+        shouldInstall: true,
+      );
     }
   }
 }

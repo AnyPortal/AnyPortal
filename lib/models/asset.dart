@@ -23,6 +23,7 @@ class AssetRemote extends Table {
   TextColumn get meta => text().withDefault(const Constant("{}"))();
   IntColumn get autoUpdateInterval => integer()();
   TextColumn get downloadedFilePath => text().nullable()();
+  DateTimeColumn get checkedAt => dateTime().nullable()();
 
   @override
   Set<Column<Object>>? get primaryKey => {assetId};

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:system_theme/system_theme.dart';
 
 import 'platform_version.dart';

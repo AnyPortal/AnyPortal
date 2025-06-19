@@ -54,17 +54,19 @@ Future<bool> checkAllAssetRemotes() async {
   for (var assetRemote in assetRemotes) {
     final autoUpdateInterval =
         assetRemote.read(db.assetRemote.autoUpdateInterval)!;
-    if (autoUpdateInterval > 0 &&
-        assetRemote
-            .read(db.asset.updatedAt)!
-            .add(Duration(seconds: autoUpdateInterval))
-            .isAfter(DateTime.now())) {
-      AssetRemoteProtocolGithub.fromUrl(
-        assetRemote.read(db.assetRemote.url)!,
-      ).update(
-        oldAsset: assetRemote,
-        autoUpdateInterval: autoUpdateInterval,
-      );
+    if (autoUpdateInterval > 0) {
+      final checkedAt = assetRemote.read(db.assetRemote.checkedAt);
+      if (checkedAt == null ||
+          checkedAt
+              .add(Duration(seconds: autoUpdateInterval))
+              .isAfter(DateTime.now())) {
+        AssetRemoteProtocolGithub.fromUrl(
+          assetRemote.read(db.assetRemote.url)!,
+        ).update(
+          oldAsset: assetRemote,
+          autoUpdateInterval: autoUpdateInterval,
+        );
+      }
     }
   }
   return true;
@@ -112,17 +114,20 @@ Future<bool> checkAllProfileRemotes() async {
   return true;
 }
 
+/// return ok
 Future<bool> checkAppRemote() async {
   if (prefs.getBool("app.autoUpdate")!) {
     final autoUpdateInterval = 86400;
     final checkedAt = prefs.getInt("app.autoUpdate.checkedAt")!;
     if (checkedAt + autoUpdateInterval <
         DateTime.now().millisecondsSinceEpoch / 1000) {
-      final ok = await AssetRemoteProtocolApp.init().update();
-      if (ok) {
-        prefs.setInt("app.autoUpdate.checkedAt",
-            (DateTime.now().millisecondsSinceEpoch / 1000).toInt());
-      }
+      final assetRemoteProtocolApp = AssetRemoteProtocolApp();
+      bool ok = await assetRemoteProtocolApp.init();
+      if (!ok) return false;
+      ok = await assetRemoteProtocolApp.update();
+      if (!ok) return false;
+      prefs.setInt("app.autoUpdate.checkedAt",
+          (DateTime.now().millisecondsSinceEpoch / 1000).toInt());
     }
   }
   return true;
@@ -142,7 +147,9 @@ class PlatformTaskScheduler {
           constraints: Constraints(
             networkType: NetworkType.connected,
           ));
-    } else if (RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS) {
+    } else if (RuntimePlatform.isWindows ||
+        RuntimePlatform.isLinux ||
+        RuntimePlatform.isMacOS) {
       // checkAllRemotes();
       final delayedMinutes = DateTime.now().minute % 15;
       cron.schedule(Schedule.parse('*/15 * * * *'), () async {

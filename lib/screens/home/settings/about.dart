@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -8,8 +9,11 @@ import 'package:path/path.dart' as p;
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../extensions/localization.dart';
+import '../../../utils/asset_remote/app.dart';
 import '../../../utils/global.dart';
+import '../../../utils/logger.dart';
 import '../../../utils/platform_file_mananger.dart';
+import '../../../utils/prefs.dart';
 import '../../../utils/runtime_platform.dart';
 import '../../../widgets/blockquote.dart';
 
@@ -24,21 +28,50 @@ class AboutScreen extends StatefulWidget {
 
 class _AboutScreenState extends State<AboutScreen> {
   String version = "";
+  String? newTagName;
+  int buildNumber = 0;
+  int? newBuildNumber;
+  int lastChecked = prefs.getInt("app.autoUpdate.checkedAt")!;
 
   @override
   void initState() {
     super.initState();
     _loadPackageInfo();
+    _updateNewVersion();
   }
 
   Future<void> _loadPackageInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     setState(() {
+      buildNumber = int.parse(packageInfo.buildNumber);
       version = "v${packageInfo.version}+${packageInfo.buildNumber}";
     });
   }
 
-  Future<void> copyTextThenNotify(String text) async {
+  void _updateNewVersion() {
+    String appGithubMeta = prefs.getString("app.github.meta")!;
+    Map<String, dynamic> appGithubMetaObj = {};
+    try {
+      appGithubMetaObj = jsonDecode(appGithubMeta) as Map<String, dynamic>;
+    } catch (e) {
+      logger.w("jsonDecode(appGithubMeta): $e");
+    }
+
+    if (appGithubMetaObj.containsKey("tag_name")) {
+      setState(() {
+        newTagName = appGithubMetaObj["tag_name"];
+        newBuildNumber = int.parse(newTagName!.split("+").last);
+      });
+    }
+  }
+
+  void _updateLastChecked() {
+    setState(() {
+      lastChecked = prefs.getInt("app.autoUpdate.checkedAt")!;
+    });
+  }
+
+  void copyTextThenNotify(String text) {
     Clipboard.setData(ClipboardData(text: text)).then((_) {
       final snackBar = SnackBar(
         content: Text("Copied"),
@@ -70,6 +103,29 @@ We hope you choose well between your home world and Wonderlands.""")),
         subtitle: Text(version),
       ),
       ListTile(
+        title: Text(
+          newBuildNumber != null && newBuildNumber! > buildNumber
+              ? "Install now"
+              : "Check update",
+        ),
+        subtitle: Text(
+          newBuildNumber != null && newBuildNumber! > buildNumber
+              ? "Pending install: $newTagName"
+              : "Last checked: ${DateTime.fromMillisecondsSinceEpoch(lastChecked * 1000).toLocal()}",
+        ),
+        onTap: () async {
+          final assetRemoteProtocolApp = AssetRemoteProtocolApp();
+          if (await assetRemoteProtocolApp.init()) {
+            await assetRemoteProtocolApp.update(
+              context: mounted ? context : null,
+              shouldInstall: true,
+            );
+          }
+          _updateNewVersion();
+          _updateLastChecked();
+        },
+      ),
+      ListTile(
         title: const Text("Github"),
         subtitle: const Text("https://github.com/anyportal/anyportal"),
         trailing: const Icon(Icons.open_in_new),
@@ -80,45 +136,49 @@ We hope you choose well between your home world and Wonderlands.""")),
         },
       ),
       if (!RuntimePlatform.isWeb) const Divider(),
-      if (!RuntimePlatform.isWeb) Container(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-        child: Text(
-          "Local directory",
-          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+      if (!RuntimePlatform.isWeb)
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          child: Text(
+            "Local directory",
+            style: TextStyle(color: Theme.of(context).colorScheme.primary),
+          ),
         ),
-      ),
-      if (!RuntimePlatform.isWeb) ListTile(
-        title: Text(context.loc.app),
-        subtitle: Text(File(Platform.resolvedExecutable).parent.path),
-        trailing: const Icon(Icons.folder_open),
-        onTap: () {
-          PlatformFileMananger.highlightFileInFolder(
-              Platform.resolvedExecutable);
-          copyTextThenNotify(Platform.resolvedExecutable);
-        },
-      ),
-      if (!RuntimePlatform.isWeb) ListTile(
-        title: Text(context.loc.user_data),
-        subtitle: Text(
-            p.join(global.applicationDocumentsDirectory.path, "AnyPortal")),
-        trailing: const Icon(Icons.folder_open),
-        onTap: () {
-          PlatformFileMananger.openFolder(
-              p.join(global.applicationDocumentsDirectory.path, "AnyPortal"));
-          copyTextThenNotify(
-              p.join(global.applicationDocumentsDirectory.path, "AnyPortal"));
-        },
-      ),
-      if (!RuntimePlatform.isWeb) ListTile(
-        title: Text(context.loc.generated_assets),
-        subtitle: Text(global.applicationSupportDirectory.path),
-        trailing: const Icon(Icons.folder_open),
-        onTap: () {
-          PlatformFileMananger.openFolder(
-              global.applicationSupportDirectory.path);
-          copyTextThenNotify(global.applicationSupportDirectory.path);
-        },
-      ),
+      if (!RuntimePlatform.isWeb)
+        ListTile(
+          title: Text(context.loc.app),
+          subtitle: Text(File(Platform.resolvedExecutable).parent.path),
+          trailing: const Icon(Icons.folder_open),
+          onTap: () {
+            PlatformFileMananger.highlightFileInFolder(
+                Platform.resolvedExecutable);
+            copyTextThenNotify(Platform.resolvedExecutable);
+          },
+        ),
+      if (!RuntimePlatform.isWeb)
+        ListTile(
+          title: Text(context.loc.user_data),
+          subtitle: Text(
+              p.join(global.applicationDocumentsDirectory.path, "AnyPortal")),
+          trailing: const Icon(Icons.folder_open),
+          onTap: () {
+            PlatformFileMananger.openFolder(
+                p.join(global.applicationDocumentsDirectory.path, "AnyPortal"));
+            copyTextThenNotify(
+                p.join(global.applicationDocumentsDirectory.path, "AnyPortal"));
+          },
+        ),
+      if (!RuntimePlatform.isWeb)
+        ListTile(
+          title: Text(context.loc.generated_assets),
+          subtitle: Text(global.applicationSupportDirectory.path),
+          trailing: const Icon(Icons.folder_open),
+          onTap: () {
+            PlatformFileMananger.openFolder(
+                global.applicationSupportDirectory.path);
+            copyTextThenNotify(global.applicationSupportDirectory.path);
+          },
+        ),
     ];
     return Scaffold(
         appBar: AppBar(

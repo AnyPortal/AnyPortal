@@ -23,7 +23,8 @@ class PrefsManager {
     'app.connectAtLaunch': RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS,
     'app.connectAtStartup': false,
     // 'app.github.downloadedFilePath': null,
-    'app.github.meta': '{"created_at": "1970-01-01T00:00:00Z"}',
+    // 'app.github.meta': '{"tag_name":"v0.0.1+1"}'
+    'app.github.meta': '{}',
     'app.http.port': 15492,
     'app.notification.foreground': RuntimePlatform.isAndroid,
     'app.window.size.width': 1280.0,

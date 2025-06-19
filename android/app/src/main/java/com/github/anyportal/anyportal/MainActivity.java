@@ -8,15 +8,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.net.VpnService;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.FileObserver;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Handler;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
 
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
@@ -24,6 +26,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
 import java.io.File;
+import java.util.Arrays;
 
 public class MainActivity extends FlutterActivity {
     private static final String CHANNEL = "com.github.anyportal.anyportal";
@@ -202,6 +205,25 @@ public class MainActivity extends FlutterActivity {
                 fileObserver.startWatching();
                 break;
 
+            case "os.abis":
+                result.success(Arrays.asList(Build.SUPPORTED_ABIS));
+                break;
+
+            case "app.osArch":
+                result.success(System.getProperty("os.arch"));
+                break;
+
+            case "app.targetSdkVersion":
+                int targetSdk = getApplicationInfo().targetSdkVersion;
+                result.success(targetSdk);
+                break;
+
+            case "os.installApk":
+                String path = call.argument("path");
+                installApk(path);
+                result.success(null);
+                break;
+
             default:
                 result.notImplemented();
                 break;
@@ -222,5 +244,23 @@ public class MainActivity extends FlutterActivity {
 
         registerReceiver(broadcastReceiver, new IntentFilter(MainTileService.ACTION_TILE_TOGGLED),
                 RECEIVER_NOT_EXPORTED);
+    }
+
+    private void installApk(String filePath) {
+        File apkFile = new File(filePath);
+        if (!apkFile.exists()) return;
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Uri apkUri = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", apkFile);
+            intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            intent.setDataAndType(Uri.fromFile(apkFile), "application/vnd.android.package-archive");
+        }
+
+        startActivity(intent);
     }
 }

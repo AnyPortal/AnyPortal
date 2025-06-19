@@ -1,6 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import 'package:drift/drift.dart';
 import 'package:flutter_socks_proxy/socks_proxy.dart';
@@ -12,9 +17,11 @@ import '../db.dart';
 import '../global.dart';
 import '../logger.dart';
 import '../prefs.dart';
+import '../show_snack_bar.dart';
 import '../undmg.dart';
 import '../unzip.dart';
 import '../vpn_manager.dart';
+
 import 'protocol.dart';
 
 class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
@@ -78,12 +85,12 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     return oldAsset?.read(db.assetRemote.meta);
   }
 
-  bool isUpdated(
+  bool getIsMetaUpdated(
     String? newMeta,
     String? oldMeta,
   ) {
     if (newMeta == null) {
-      logger.w("isUpdated: failed to get newMeta");
+      logger.w("getIsMetaUpdated: failed to get newMeta");
       return true;
     }
 
@@ -91,7 +98,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
       return false;
     }
 
-    try{
+    try {
       final oldCreatedAt =
           (jsonDecode(oldMeta) as Map<String, dynamic>)["created_at"];
       final newCreatedAt =
@@ -99,7 +106,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
 
       return oldCreatedAt == newCreatedAt;
     } catch (e) {
-      logger.w("isUpdated: failed to read created_at");
+      logger.w("getIsMetaUpdated: failed to read created_at");
       return false;
     }
   }
@@ -204,6 +211,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     return assetId;
   }
 
+  /// return installOK
   Future<bool> install(
     File downloadedFile,
   ) async {
@@ -228,6 +236,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     return true;
   }
 
+  /// remove downloaded file and path record
   Future<bool> postInstall(int assetId) async {
     /// remove pending install status
     await (db.update(db.assetRemote)..where((e) => e.assetId.equals(assetId)))
@@ -239,7 +248,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     return true;
   }
 
-  bool canInstallNow(TypedResult? oldAsset) {
+  bool canInstallNow({TypedResult? oldAsset}) {
     if (oldAsset == null) {
       return true;
     }
@@ -247,58 +256,100 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     return !(assetPath == vPNMan.corePath && vPNMan.isCoreActive);
   }
 
+  void logStatus(BuildContext? context, String text) {
+    logger.d(text);
+    if (context != null) {
+      showSnackBar(context, Text(text));
+    }
+  }
+
+  String? getDownloadedFilePath({TypedResult? oldAsset}) {
+    return oldAsset?.read(db.asset.path);
+  }
+
+  /// save last checked timestamp
+  Future<void> postGetNewMeta(String newMeta, {TypedResult? oldAsset}) async {
+    if (oldAsset == null) return;
+    final assetId = oldAsset.read(db.asset.id)!;
+    await db.into(db.assetRemote).insertOnConflictUpdate(AssetRemoteCompanion(
+          assetId: Value(assetId),
+          checkedAt: Value(DateTime.now()),
+        ));
+  }
+
+  /// return isUpdated
   @override
   Future<bool> update({
     TypedResult? oldAsset,
     int autoUpdateInterval = 0,
+    BuildContext? context,
   }) async {
     /// check if need to update
-    logger.d("to update: $url");
+    logStatus(context, "to update: $url");
     final oldMeta = getOldMeta(oldAsset: oldAsset);
     final newMeta = await getNewMeta(useSocks: vPNMan.isCoreActive);
-    if (isUpdated(newMeta, oldMeta)) {
-      logger.d("already updated: $url");
+    if (newMeta == null) {
+      logStatus(context, "failed to get meta: $url");
       return true;
     }
+    await postGetNewMeta(newMeta, oldAsset: oldAsset);
+    final isMetaUpdated = getIsMetaUpdated(newMeta, oldMeta);
 
-    /// get download url
-    logger.d("need update: $url");
-    final downloadUrl = getDownloadUrl(newMeta!);
-    if (downloadUrl == null) {
-      logger.w("downloadUrl == null: $url");
-      return true;
-    }
-
-    /// download
-    logger.d("downloading: $downloadUrl");
-    final downloadedFile = await download(
-      downloadUrl,
-      useSocks: vPNMan.isCoreActive,
-    );
-    if (downloadedFile == null) {
-      logger.w("download failed: $downloadUrl");
-      return false;
-    }
-    logger.d("downloaded: $downloadUrl");
-    final assetId = await postDownload(
-      downloadedFile,
-      oldAsset,
-      newMeta,
-      autoUpdateInterval,
-    );
-
-    if (canInstallNow(oldAsset)) {
-      /// install only if not using
-      logger.d("installing: $url");
-      final installOk = await install(downloadedFile);
-      if (installOk) {
-        await postInstall(assetId);
-        logger.d("installed: $url");
+    /// if meta updated, must have downloaded (could be deleted)
+    /// check if installed by checking downloadedFilePath
+    int? assetId = oldAsset?.read(db.asset.id);
+    String? downloadedFilePath = getDownloadedFilePath(oldAsset: oldAsset);
+    File? downloadedFile;
+    if (isMetaUpdated) {
+      if (downloadedFilePath != null) {
+        logStatus(context, "already downloaded: $url");
+        downloadedFile = File(downloadedFilePath);
       } else {
-        logger.w("install failed: $url");
+        logStatus(context, "already up to date: $url");
+        return true;
       }
     } else {
-      logger.d("pending install: $url");
+      /// get download url
+      logStatus(context, "need download: $url");
+      final downloadUrl = getDownloadUrl(newMeta);
+      if (downloadUrl == null) {
+        logStatus(context, "downloadUrl == null: $url");
+        return true;
+      }
+
+      /// download
+      logStatus(context, "downloading: $downloadUrl");
+      downloadedFile = await download(
+        downloadUrl,
+        useSocks: vPNMan.isCoreActive,
+      );
+      if (downloadedFile == null) {
+        logStatus(context, "download failed: $downloadUrl");
+        return false;
+      }
+      logStatus(context, "downloaded: $downloadUrl");
+
+      /// record newMeta after download
+      assetId = await postDownload(
+        downloadedFile,
+        oldAsset,
+        newMeta,
+        autoUpdateInterval,
+      );
+    }
+
+    if (canInstallNow(oldAsset: oldAsset)) {
+      /// install only if not using
+      logStatus(context, "installing: $url");
+      final installOk = await install(downloadedFile);
+      if (installOk) {
+        await postInstall(assetId!);
+        logStatus(context, "installed: $url");
+      } else {
+        logStatus(context, "install failed: $url");
+      }
+    } else {
+      logStatus(context, "pending install: $url");
     }
     return true;
   }

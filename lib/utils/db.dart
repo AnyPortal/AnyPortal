@@ -35,7 +35,7 @@ class DatabaseManager {
   // Async initializer (call once at app startup)
   Future<void> init() async {
     logger.d("starting: DatabaseManager.init");
-    if (!RuntimePlatform.isWeb){
+    if (!RuntimePlatform.isWeb) {
       final dbFolder = global.applicationDocumentsDirectory;
       final file = File(p.join(dbFolder.path, "AnyPortal", "db.sqlite"));
       if (!file.existsSync()) {
@@ -104,7 +104,7 @@ class Database extends _$Database {
         );
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -151,6 +151,9 @@ class Database extends _$Database {
           from2To3: (m, schema) async {
             await m.alterTable(TableMigration(schema.assetLocal));
             await m.alterTable(TableMigration(schema.assetRemote));
+          },
+          from3To4: (m, schema) async {
+            await m.addColumn(schema.assetRemote, schema.assetRemote.checkedAt);
           },
         ),
         beforeOpen: (details) async {

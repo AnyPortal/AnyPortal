@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
-import 'package:path/path.dart' as p;
 
 import '../../../extensions/localization.dart';
 import '../../../generated/l10n/app_localizations.dart';
@@ -55,16 +52,6 @@ class _GeneralScreenState extends State<GeneralScreen> {
         });
       });
     }
-  }
-
-  bool getCanAutoUpdate() {
-    if (RuntimePlatform.isWindows) {
-      return File(p.join(
-        File(Platform.resolvedExecutable).parent.path,
-        "unins000.exe", // created by inno setup
-      )).existsSync();
-    }
-    return false;
   }
 
   String getLanguageName(String localeCode) {
@@ -131,21 +118,20 @@ class _GeneralScreenState extends State<GeneralScreen> {
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
       ),
-      if (getCanAutoUpdate())
-        ListTile(
-          title: Text(context.loc.auto_update),
-          subtitle: Text(context
-              .loc.auto_download_installer_and_update_on_next_app_launch),
-          trailing: Switch(
-            value: _autoUpdate,
-            onChanged: (value) async {
-              prefs.setBool('app.autoUpdate', value);
-              setState(() {
-                _autoUpdate = value;
-              });
-            },
-          ),
+      ListTile(
+        title: Text(context.loc.auto_update),
+        subtitle: Text(context
+            .loc.auto_download_installer_and_update_on_next_app_launch),
+        trailing: Switch(
+          value: _autoUpdate,
+          onChanged: (value) async {
+            prefs.setBool('app.autoUpdate', value);
+            setState(() {
+              _autoUpdate = value;
+            });
+          },
         ),
+      ),
       if (RuntimePlatform.isWindows ||
           (!global.isElevated && (RuntimePlatform.isLinux || RuntimePlatform.isMacOS)))
         ListTile(
