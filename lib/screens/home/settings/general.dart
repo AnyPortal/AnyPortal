@@ -116,6 +116,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
                   ));
         },
       ),
+      const Divider(),
       Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Text(
@@ -275,6 +276,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
             },
           ),
         ),
+      const Divider(),
       Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Text(
@@ -342,6 +344,8 @@ class _GeneralScreenState extends State<GeneralScreen> {
           },
         ),
       ),
+      if (RuntimePlatform.isAndroid)
+      const Divider(),
       if (RuntimePlatform.isAndroid)
         Container(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),

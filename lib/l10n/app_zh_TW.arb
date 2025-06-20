@@ -11,6 +11,7 @@
   "all_apps_are_proxied_if_disabled": null,
   "all_apps_in_allowed_list_will_be_proxied": null,
   "all_apps_not_in_disallowed_list_will_be_proxied": null,
+  "all_ipv4_defined_in_dns_servers_will_not_be_proxied": null,
   "allowed_all_apps_in_allowed_list_will_be_proxied": null,
   "allowed_applications": null,
   "api_config": null,
@@ -37,12 +38,16 @@
   "binding_interface": null,
   "binding_ip": null,
   "black_dark": null,
+  "cancel": null,
+  "check_update": null,
   "close_to_tray": null,
   "connect": null,
   "connectivity": null,
   "connectivity_basic_settings": null,
+  "copied": null,
   "core": null,
   "core_executable": null,
+  "core_path_does_not_exist": null,
   "core_type": null,
   "cores": null,
   "dark_theme": null,
@@ -78,6 +83,15 @@
   "enable_tun_via_root_": null,
   "envs": null,
   "exit": null,
+  "failed_to_fetch_url": null,
+  "@failed_to_fetch_url": {
+    "placeholders": {
+      "url": {
+        "example": "https://www.example.com",
+        "type": "String"
+      }
+    }
+  },
   "follow_system_brightness": null,
   "follow_system_locale": null,
   "foreground": null,
@@ -97,13 +111,33 @@
   "inject_send_through": null,
   "inject_socks_inbound": null,
   "inject_socks_outbound": null,
+  "install_now": null,
   "installed_apps": null,
+  "ip_not_found_for_binding_interface_binding_interface": null,
+  "@ip_not_found_for_binding_interface_binding_interface": {
+    "placeholders": {
+      "bindingInterface": {
+        "example": "Ethernet",
+        "type": "String"
+      }
+    }
+  },
   "ipv4": null,
   "ipv6": null,
   "language": null,
   "language_settings": null,
+  "last_checked_datetime": null,
+  "@last_checked_datetime": {
+    "placeholders": {
+      "datetime": {
+        "example": "2000-01-01 00:00:00.000",
+        "type": "String"
+      }
+    }
+  },
   "launch_settings": null,
   "live_objects": null,
+  "local_directory": null,
   "local_profile_group": null,
   "log_config": null,
   "log_config_override": null,
@@ -116,13 +150,26 @@
   "no_profile_yet_create_one_first": null,
   "notification": null,
   "notification_permission_is_required_for_quick_tiles_to_work_properly": null,
+  "open_settings": null,
   "outbound_config_additional_socks_outbound": null,
   "outbound_config_send_through": null,
   "override_log_config": null,
   "path_of_core_exectuable_assets_etc_": null,
+  "pending_install_tag_name": null,
+  "@pending_install_tag_name": {
+    "placeholders": {
+      "tagName": {
+        "example": "v1.2.3+45",
+        "type": "String"
+      }
+    }
+  },
   "per_app_proxy": null,
   "per_app_proxy_mode": null,
   "performance": null,
+  "permission_required": null,
+  "please_select_a_profile": null,
+  "please_specify_v2ray_core_executable_path": null,
   "port": null,
   "profile": null,
   "profile_override": null,
@@ -132,6 +179,7 @@
   "proxy": null,
   "proxy_speed": null,
   "reconnected": null,
+  "reconnecting": null,
   "routing_rule_additional_rules": null,
   "routing_rule_additionally_exclude_core_path": null,
   "run_as_elevated_user": null,
@@ -152,6 +200,7 @@
   "server_address": null,
   "settings": null,
   "show_dashboard_floating_button": null,
+  "sing_box_path_is_null": null,
   "socks_and_http": null,
   "socks_password": null,
   "socks_port": null,
@@ -163,6 +212,7 @@
   "theme_settings": null,
   "toggles": null,
   "traffic": null,
+  "tun_needs_additionally_a_sing_box_core": null,
   "tun_settings": null,
   "tun_via_platform_api_": null,
   "tun_via_root_": null,

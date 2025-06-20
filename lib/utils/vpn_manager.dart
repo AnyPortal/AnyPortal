@@ -2,14 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:drift/drift.dart';
 import 'package:path/path.dart' as p;
 import 'package:tuple/tuple.dart';
 
+import '../../extensions/localization.dart';
 import '../models/core.dart';
+import '../screens/home/profiles.dart';
+import '../screens/home/settings/cores.dart';
 
 import 'asset_remote/github.dart';
 import 'config_injector/core_ray.dart';
@@ -24,21 +27,8 @@ import 'platform_process.dart';
 import 'platform_system_proxy_user.dart';
 import 'prefs.dart';
 import 'runtime_platform.dart';
-
-class ExceptionInvalidCorePath implements Exception {
-  String message;
-  ExceptionInvalidCorePath(this.message);
-}
-
-class ExceptionNoSelectedProfile implements Exception {
-  String message;
-  ExceptionNoSelectedProfile(this.message);
-}
-
-class ExceptionInvalidSelectedProfile implements Exception {
-  String message;
-  ExceptionInvalidSelectedProfile(this.message);
-}
+import 'show_snack_bar_now.dart';
+import 'with_context.dart';
 
 abstract class VPNManager with ChangeNotifier {
   bool isAllActive = false;
@@ -123,7 +113,10 @@ abstract class VPNManager with ChangeNotifier {
           updateIsAllActive(force: true);
           final errMsg = "all toggled for $timeoutSec sec, force stopped";
           logger.w(errMsg);
-          // throw Exception(errMsg);
+          withContext((context) {
+            showSnackBarNow(
+                context, Text(errMsg));
+          });
         }
       });
     }
@@ -146,7 +139,10 @@ abstract class VPNManager with ChangeNotifier {
           updateIsCoreActive(force: true);
           final errMsg = "core toggled for $timeoutSec sec, force stopped";
           logger.w(errMsg);
-          // throw Exception(errMsg);
+          withContext((context) {
+            showSnackBarNow(
+                context, Text(errMsg));
+          });
         }
       });
     }
@@ -170,7 +166,10 @@ abstract class VPNManager with ChangeNotifier {
           final errMsg =
               "system proxy toggled for $timeoutSec sec, force stopped";
           logger.w(errMsg);
-          // throw Exception(errMsg);
+          withContext((context) {
+            showSnackBarNow(
+                context, Text(errMsg));
+          });
         }
       });
     }
@@ -193,7 +192,10 @@ abstract class VPNManager with ChangeNotifier {
           updateIsTunActive(force: true);
           final errMsg = "tun toggled for $timeoutSec sec, force stopped";
           logger.w(errMsg);
-          // throw Exception(errMsg);
+          withContext((context) {
+            showSnackBarNow(
+                context, Text(errMsg));
+          });
         }
       });
     }
@@ -203,7 +205,10 @@ abstract class VPNManager with ChangeNotifier {
   /// as "all" just means starts everything needed when the core starts
   /// a failed tun does not mean that all is not active
   /// therefore getIsAllActive is defined eqivalent to getIsCoreActive
-  Future<bool> getIsAllActive() async {return await getIsCoreActive();}
+  Future<bool> getIsAllActive() async {
+    return await getIsCoreActive();
+  }
+
   Future<bool> getIsCoreActive();
   Future<bool> getIsTunActive();
   Future<bool> getIsSystemProxyActive();
@@ -480,7 +485,9 @@ abstract class VPNManager with ChangeNotifier {
 
   bool getIsTunProcess() {
     return prefs.getBool("tun")! &&
-        (RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS);
+        (RuntimePlatform.isWindows ||
+            RuntimePlatform.isLinux ||
+            RuntimePlatform.isMacOS);
   }
 
   Future<void> initCore() async {
@@ -488,13 +495,27 @@ abstract class VPNManager with ChangeNotifier {
     // get selectedProfile
     _selectedProfileId = prefs.getInt('app.selectedProfileId');
     if (_selectedProfileId == null) {
-      throw ExceptionNoSelectedProfile("Please select a profile first.");
+      withContext((context) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ProfileList()),
+        );
+        showSnackBarNow(context, Text(context.loc.please_select_a_profile));
+      });
+      return;
     }
     _selectedProfile = await (db.select(db.profile)
           ..where((p) => p.id.equals(_selectedProfileId!)))
         .getSingleOrNull();
     if (_selectedProfile == null) {
-      throw ExceptionInvalidSelectedProfile("Please select a profile first.");
+      withContext((context) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ProfileList()),
+        );
+        showSnackBarNow(context, Text(context.loc.please_select_a_profile));
+      });
+      return;
     }
 
     // check update
@@ -530,8 +551,14 @@ abstract class VPNManager with ChangeNotifier {
           ..where(db.coreTypeSelected.coreTypeId.equals(coreTypeId)))
         .getSingleOrNull();
     if (core == null) {
-      throw ExceptionInvalidCorePath(
-          "No core of type specified by the profile is selected.");
+      withContext((context) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ProfileList()),
+        );
+        showSnackBarNow(context, Text(context.loc.please_select_a_profile));
+      });
+      return;
     }
 
     // get is exec
@@ -540,7 +567,15 @@ abstract class VPNManager with ChangeNotifier {
       await prefs.setBool("cache.core.useEmbedded", false);
       corePath = core.read(db.asset.path);
       if (corePath == null) {
-        throw ExceptionInvalidCorePath("Core path is null.");
+        withContext((context) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CoresScreen()),
+          );
+          showSnackBarNow(context,
+              Text(context.loc.please_specify_v2ray_core_executable_path));
+        });
+        return;
       } else {
         prefs.setString('cache.core.path', corePath!);
       }
@@ -628,11 +663,18 @@ abstract class VPNManager with ChangeNotifier {
 
       if (prefs.getBool("tun")!) {
         if (core == null) {
-          throw Exception("Tun needs a sing-box core.");
+          withContext((context) {
+            showSnackBarNow(
+                context, Text(context.loc.tun_needs_additionally_a_sing_box_core));
+          });
+          return;
         } else {
           _tunSingBoxCorePath = core.read(db.asset.path);
           if (_tunSingBoxCorePath == null) {
-            throw Exception("sing-box path is null.");
+            withContext((context) {
+              showSnackBarNow(context, Text(context.loc.sing_box_path_is_null));
+            });
+            return;
           } else {
             prefs.setString(
                 'cache.tun.singBox.core.path', _tunSingBoxCorePath!);
@@ -773,11 +815,16 @@ class VPNManagerExec extends VPNManager {
     return false;
   }
 
-  Future<void> ensureServerAddressPort(String name, int port) async {
+  Future<bool> ensureServerAddressPort(String portName, int port) async {
     final serverAddress = prefs.getString("app.server.address")!;
     if (await isServerAddressPortInUse(serverAddress, port)) {
-      throw Exception("$name: $serverAddress:$port in use");
+      withContext((context) {
+        showSnackBarNow(
+            context, Text("$portName: $serverAddress:$port in use"));
+      });
+      return false;
     }
+    return true;
   }
 
   Future<bool> isServerAddressPortInUse(String serverAddress, int port) async {
@@ -790,7 +837,8 @@ class VPNManagerExec extends VPNManager {
     }
   }
 
-  Future<void> ensureServerAddressPorts() async {
+  /// return true if all ports clear
+  Future<bool> ensureServerAddressPorts() async {
     final apiPort = prefs.getInt('inject.api.port')!;
     final httpPort = prefs.getInt('app.http.port')!;
     final socksPort = prefs.getInt('app.socks.port')!;
@@ -798,11 +846,20 @@ class VPNManagerExec extends VPNManager {
     final shouldCheckApiPort = prefs.getBool('inject.api')!;
     final shouldCheckHttpPort = httpPort != socksPort;
 
-    await Future.wait([
-      if (shouldCheckApiPort) ensureServerAddressPort("API", apiPort),
-      if (shouldCheckHttpPort) ensureServerAddressPort("HTTP", httpPort),
-      ensureServerAddressPort("SOCKS", socksPort),
-    ]);
+    if (!await ensureServerAddressPort("SOCKS", socksPort)) {
+      return false;
+    }
+    if (shouldCheckApiPort) {
+      if (!await ensureServerAddressPort("API", apiPort)) {
+        return false;
+      }
+    }
+    if (shouldCheckHttpPort) {
+      if (!await ensureServerAddressPort("HTTP", httpPort)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   @override
@@ -816,11 +873,15 @@ class VPNManagerExec extends VPNManager {
     logger.d("coreEnvs: $_coreEnvs");
 
     if (!File(corePath!).existsSync()) {
+      withContext((context) {
+        showSnackBarNow(context, Text(context.loc.core_path_does_not_exist));
+      });
       logger.w("core path does not exist");
-      throw Exception("core path does not exist");
     }
 
-    if (RuntimePlatform.isLinux || RuntimePlatform.isMacOS || RuntimePlatform.isAndroid) {
+    if (RuntimePlatform.isLinux ||
+        RuntimePlatform.isMacOS ||
+        RuntimePlatform.isAndroid) {
       final executableTestRes = await Process.run("test", ["-x", corePath!]);
       if (executableTestRes.exitCode != 0) {
         logger.i("core path not executable, fixing");
@@ -831,7 +892,7 @@ class VPNManagerExec extends VPNManager {
       }
     }
 
-    await ensureServerAddressPorts();
+    if (!await ensureServerAddressPorts()) return false;
 
     final processCore = await Process.start(
       corePath!,
@@ -918,6 +979,7 @@ class VPNManagerExec extends VPNManager {
     logger.d("finished: _stopTun");
     return true;
   }
+
   @override
   _startAll() async {
     final res = await _startCore();

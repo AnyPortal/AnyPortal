@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../extensions/localization.dart';
-import '../screens/home/profiles.dart';
-import '../screens/home/settings/cores.dart';
 import '../utils/global.dart';
 import '../utils/logger.dart';
 import '../utils/platform_system_proxy_user.dart';
@@ -41,27 +39,6 @@ class VPNTogglesState extends State<VPNToggles> {
         await vPNMan.stopAll();
       } else {
         await vPNMan.startAll();
-      }
-    } on ExceptionInvalidCorePath catch (e) {
-      err = e;
-      if (mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const CoresScreen()),
-        );
-        if (mounted) {
-          showSnackBarNow(
-              context, Text("Please specify v2ray-core executable path"));
-        }
-      }
-    } on ExceptionNoSelectedProfile catch (e) {
-      err = e;
-      if (mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const ProfileList()),
-        );
-        if (mounted) showSnackBarNow(context, Text("Please select a profile"));
       }
     } on Exception catch (e) {
       err = e;

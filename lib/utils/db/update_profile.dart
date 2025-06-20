@@ -1,8 +1,12 @@
+import 'package:flutter/widgets.dart';
+
 import 'package:drift/drift.dart' as drift;
 import 'package:http/http.dart' as http;
 
 import '../../../../models/profile.dart';
 import '../../../../utils/db.dart';
+import '../show_snack_bar_now.dart';
+import '../with_context.dart';
 
 Future<bool> updateProfile({
   ProfileData? oldProfile,
@@ -51,7 +55,10 @@ Future<bool> updateProfile({
         if (response.statusCode == 200) {
           coreCfg = response.body;
         } else {
-          throw Exception('failed to fetch url');
+          withContext((context) {
+            showSnackBarNow(context, Text("failed to fetch: $url"));
+          });
+          throw Exception("failed to fetch: $url");
         }
 
         await db.into(db.profile).insertOnConflictUpdate(ProfileCompanion(

@@ -311,7 +311,7 @@ class _ProfileListState extends State<ProfileList> {
                           });
                           if (await vPNMan.getIsCoreActive()) {
                             if (context.mounted) {
-                              showSnackBarNow(context, Text("Reconnecting"));
+                              showSnackBarNow(context, Text(context.loc.reconnecting));
                             }
 
                             await vPNMan.stopAll();

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../screens/home/settings/cores.dart';
 import '../utils/logger.dart';
 import '../utils/show_snack_bar_now.dart';
 import '../utils/vpn_manager.dart';
@@ -37,19 +36,6 @@ class RayToggleState extends State<RayToggle> {
       } else {
         await vPNMan.startAll();
       }
-    } on ExceptionInvalidCorePath catch (e) {
-      err = e;
-      if (mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const CoresScreen()),
-        );
-        showSnackBarNow(
-            context, Text("Please specify v2ray-core executable path"));
-      }
-    } on ExceptionNoSelectedProfile catch (e) {
-      err = e;
-      widget.setHighlightSelectProfile();
     } on Exception catch (e) {
       err = e;
       logger.w(e);

@@ -11,6 +11,7 @@
   "all_apps_are_proxied_if_disabled": "همه برنامه‌ها در صورت غیرفعال شدن پروکسی می‌شوند",
   "all_apps_in_allowed_list_will_be_proxied": "همه برنامه‌های موجود در لیست مجاز پروکسی خواهند شد",
   "all_apps_not_in_disallowed_list_will_be_proxied": "همه برنامه‌هایی که در لیست غیرمجاز نیستند پروکسی خواهند شد",
+  "all_ipv4_defined_in_dns_servers_will_not_be_proxied": "تمامی آدرسهای IPv4 تعریفشده در dns.servers به پروکسی نخواهند شد",
   "allowed_all_apps_in_allowed_list_will_be_proxied": "مجاز: همه برنامه‌های موجود در لیست مجاز پروکسی خواهند شد",
   "allowed_applications": "برنامه‌های مجاز",
   "api_config": "پیکربندی API",
@@ -37,12 +38,16 @@
   "binding_interface": "رابط اتصال",
   "binding_ip": "آدرس IP اتصال",
   "black_dark": "سیاه تیره",
+  "cancel": "لغو",
+  "check_update": "بررسی به‌روزرسانی",
   "close_to_tray": "بستن به سینی سیستم",
   "connect": "اتصال",
   "connectivity": "اتصال",
   "connectivity_basic_settings": "تنظیمات اولیه اتصال",
+  "copied": "کپی شده",
   "core": "هسته",
   "core_executable": "اجرای هسته",
+  "core_path_does_not_exist": "مسیر هسته وجود ندارد",
   "core_type": "نوع هسته",
   "cores": "هسته‌ها",
   "dark_theme": "تم تاریک",
@@ -78,6 +83,15 @@
   "enable_tun_via_root_": "فعال‌سازی تونل (از طریق روت)",
   "envs": "محیط‌ها",
   "exit": "خروج",
+  "failed_to_fetch_url": "ناتوان در دریافت: {url}",
+  "@failed_to_fetch_url": {
+    "placeholders": {
+      "url": {
+        "example": "https://www.example.com",
+        "type": "String"
+      }
+    }
+  },
   "follow_system_brightness": "پیروی از روشنایی سیستم",
   "follow_system_locale": "پیروی از زبان سیستم",
   "foreground": "پیش‌زمینه",
@@ -97,13 +111,33 @@
   "inject_send_through": "تزریق sendThrough",
   "inject_socks_inbound": "تزریق ورودی SOCKS",
   "inject_socks_outbound": "تزریق خروجی SOCKS",
+  "install_now": "نصب کنون",
   "installed_apps": "برنامه‌های نصب‌شده",
+  "ip_not_found_for_binding_interface_binding_interface": "آی‌پی پیدا نشد برای رابط اتصال: {bindingInterface}",
+  "@ip_not_found_for_binding_interface_binding_interface": {
+    "placeholders": {
+      "bindingInterface": {
+        "example": "Ethernet",
+        "type": "String"
+      }
+    }
+  },
   "ipv4": "IPv4",
   "ipv6": "IPv6",
   "language": "زبان",
   "language_settings": "تنظیمات زبان",
+  "last_checked_datetime": "آخرین بررسی در: {datetime}",
+  "@last_checked_datetime": {
+    "placeholders": {
+      "datetime": {
+        "example": "2000-01-01 00:00:00.000",
+        "type": "String"
+      }
+    }
+  },
   "launch_settings": "تنظیمات راه‌اندازی",
   "live_objects": "اشیای زنده",
+  "local_directory": "دایرکتوری محلی",
   "local_profile_group": "گروه پروفایل محلی",
   "log_config": "پیکربندی لاگ",
   "log_config_override": "جای‌گذاری پیکربندی لاگ",
@@ -116,13 +150,26 @@
   "no_profile_yet_create_one_first": "هنوز پروفایلی وجود ندارد، ابتدا یکی ایجاد کنید",
   "notification": "اعلان",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "مجوز اعلان برای عملکرد صحیح کاشی‌های سریع مورد نیاز است",
+  "open_settings": "باز کردن تنظیمات",
   "outbound_config_additional_socks_outbound": "پیکربندی خروجی: خروجی SOCKS اضافی",
   "outbound_config_send_through": "پیکربندی خروجی: ارسال از طریق",
   "override_log_config": "جای‌گذاری پیکربندی لاگ",
   "path_of_core_exectuable_assets_etc_": "مسیر فایل اجرایی هسته، دارایی‌ها و غیره",
+  "pending_install_tag_name": "در انتظار نصب: {tagName}",
+  "@pending_install_tag_name": {
+    "placeholders": {
+      "tagName": {
+        "example": "v1.2.3+45",
+        "type": "String"
+      }
+    }
+  },
   "per_app_proxy": "پروکسی برای هر برنامه",
   "per_app_proxy_mode": "حالت پروکسی برای هر برنامه",
   "performance": "عملکرد",
+  "permission_required": "اجازه مورد نیاز است",
+  "please_select_a_profile": "لطفاً یک پروفایل انتخاب کنید",
+  "please_specify_v2ray_core_executable_path": "لطفاً مسیر اجرایی v2ray-core را مشخص کنید",
   "port": "پورت",
   "profile": "پروفایل",
   "profile_override": "جای‌گذاری پروفایل",
@@ -132,6 +179,7 @@
   "proxy": "پروکسی",
   "proxy_speed": "سرعت پروکسی",
   "reconnected": "اتصال مجدد برقرار شد",
+  "reconnecting": "در حال اتصال مجدد",
   "routing_rule_additional_rules": "قانون مسیریابی: قوانین اضافی",
   "routing_rule_additionally_exclude_core_path": "قانون مسیریابی: حذف مسیر هسته به‌صورت اضافی",
   "run_as_elevated_user": "اجرا به عنوان {elevatedUser}",
@@ -152,6 +200,7 @@
   "server_address": "آدرس سرور",
   "settings": "تنظیمات",
   "show_dashboard_floating_button": "نمایش دکمه شناور در پانل نظرات",
+  "sing_box_path_is_null": "مسیر sing-box برابر با nulla است",
   "socks_and_http": "SOCKS و HTTP",
   "socks_password": "رمز عبور SOCKS",
   "socks_port": "پورت SOCKS",
@@ -163,6 +212,7 @@
   "theme_settings": "تنظیمات پوسته",
   "toggles": "کلیدهای روشن و خاموش",
   "traffic": "ترافیک",
+  "tun_needs_additionally_a_sing_box_core": "تون به یک هسته sing-box نیاز دارد",
   "tun_settings": "تنظیمات TUN",
   "tun_via_platform_api_": "TUN (از طریق API پلتفرم)",
   "tun_via_root_": "TUN (از طریق روت)",

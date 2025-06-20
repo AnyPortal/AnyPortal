@@ -14,13 +14,15 @@ class JSONWithCommentsDecoder(json.JSONDecoder):
 
 def extract_json(text) -> dict:
     cleaned = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
-    match = re.search(r"({[\s\S]*})", cleaned)
-
-    if match:
-        json_str = match.group(1).strip()
-        try:
-            return json.loads(json_str, cls=JSONWithCommentsDecoder)
-        except json.JSONDecodeError:
-            return {}
+    matches: list[re.Match[str]] = []
+    matches.append(re.search(r"({[\s\S]*})", cleaned))
+    matches.append(re.search(r"```.*({[\s\S]*}).*```", cleaned))
+    for match in matches:
+        if match:
+            json_str = match.group(1).strip()
+            try:
+                return json.loads(json_str, cls=JSONWithCommentsDecoder)
+            except json.JSONDecodeError:
+                pass
 
     raise ValueError("No valid JSON block found in the input.")

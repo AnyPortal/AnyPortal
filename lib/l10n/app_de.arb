@@ -11,6 +11,7 @@
   "all_apps_are_proxied_if_disabled": "Alle Apps werden über einen Proxy geleitet, wenn deaktiviert",
   "all_apps_in_allowed_list_will_be_proxied": "Alle Apps in der erlaubten Liste werden über einen Proxy geleitet",
   "all_apps_not_in_disallowed_list_will_be_proxied": "Alle Apps, die nicht in der verbotenen Liste stehen, werden über einen Proxy geleitet",
+  "all_ipv4_defined_in_dns_servers_will_not_be_proxied": "Alle IPv4, die in DNS-Servern definiert sind, werden nicht proxiert",
   "allowed_all_apps_in_allowed_list_will_be_proxied": "Erlaubt: Alle Apps in der erlaubten Liste werden über einen Proxy geleitet",
   "allowed_applications": "Erlaubte Anwendungen",
   "api_config": "API-Konfiguration",
@@ -37,12 +38,16 @@
   "binding_interface": "Bindungsschnittstelle",
   "binding_ip": "Bindungs-IP",
   "black_dark": "Schwarz (dunkel)",
+  "cancel": "Abbrechen",
+  "check_update": "Aktualisierung überprüfen",
   "close_to_tray": "In Tray minimieren",
   "connect": "Verbinden",
   "connectivity": "Konnektivität",
   "connectivity_basic_settings": "Grundlegende Konnektivitätseinstellungen",
+  "copied": "Kopiert",
   "core": "Kern",
   "core_executable": "Core-Programmdatei",
+  "core_path_does_not_exist": "Kernpfad existiert nicht",
   "core_type": "Core-Typ",
   "cores": "Cores",
   "dark_theme": "Dunkles Design",
@@ -78,6 +83,15 @@
   "enable_tun_via_root_": "TUN über Root aktivieren",
   "envs": "Umgebungen",
   "exit": "Beenden",
+  "failed_to_fetch_url": "Fehlgeschlagen, {url} abzurufen",
+  "@failed_to_fetch_url": {
+    "placeholders": {
+      "url": {
+        "example": "https://www.example.com",
+        "type": "String"
+      }
+    }
+  },
   "follow_system_brightness": "Systemhelligkeit folgen",
   "follow_system_locale": "Systemsprache folgen",
   "foreground": "Vordergrund",
@@ -97,13 +111,33 @@
   "inject_send_through": "sendThrough injizieren",
   "inject_socks_inbound": "SOCKS-Inbound injizieren",
   "inject_socks_outbound": "SOCKS-Outbound injizieren",
+  "install_now": "Jetzt installieren",
   "installed_apps": "Installierte Apps",
+  "ip_not_found_for_binding_interface_binding_interface": "Keine IP für die Bindungschnittstelle gefunden: {bindingInterface}",
+  "@ip_not_found_for_binding_interface_binding_interface": {
+    "placeholders": {
+      "bindingInterface": {
+        "example": "Ethernet",
+        "type": "String"
+      }
+    }
+  },
   "ipv4": "IPv4",
   "ipv6": "IPv6",
   "language": "Sprache",
   "language_settings": "Spracheinstellungen",
+  "last_checked_datetime": "Zuletzt überprüft am: {datetime}",
+  "@last_checked_datetime": {
+    "placeholders": {
+      "datetime": {
+        "example": "2000-01-01 00:00:00.000",
+        "type": "String"
+      }
+    }
+  },
   "launch_settings": "Starteinstellungen",
   "live_objects": "Live-Objekte",
+  "local_directory": "Lokales Verzeichnis",
   "local_profile_group": "Lokale Profilgruppe",
   "log_config": "Protokollkonfiguration",
   "log_config_override": "Protokollkonfiguration überschreiben",
@@ -116,13 +150,26 @@
   "no_profile_yet_create_one_first": "Noch kein Profil vorhanden, erstelle zuerst eines",
   "notification": "Benachrichtigung",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "Die Benachrichtigungsberechtigung ist erforderlich, damit Schnellkacheln ordnungsgemäß funktionieren",
+  "open_settings": "Einstellungen öffnen",
   "outbound_config_additional_socks_outbound": "Ausgehende Konfiguration: zusätzliche SOCKS-Ausgabe",
   "outbound_config_send_through": "Ausgehende Konfiguration: sendThrough",
   "override_log_config": "Protokollkonfiguration überschreiben",
   "path_of_core_exectuable_assets_etc_": "Pfad der Kernanwendung, Assets usw.",
+  "pending_install_tag_name": "Wartend auf Installation: {tagName}",
+  "@pending_install_tag_name": {
+    "placeholders": {
+      "tagName": {
+        "example": "v1.2.3+45",
+        "type": "String"
+      }
+    }
+  },
   "per_app_proxy": "Pro-App-Proxy",
   "per_app_proxy_mode": "Pro-App-Proxy-Modus",
   "performance": "Leistung",
+  "permission_required": "Berechtigung erforderlich",
+  "please_select_a_profile": "Bitte wählen Sie ein Profil aus",
+  "please_specify_v2ray_core_executable_path": "Bitte geben Sie den Pfad zur v2ray-Core-Ausführungsdatei an",
   "port": "Port",
   "profile": "Profil",
   "profile_override": "Profilüberschreibung",
@@ -132,6 +179,7 @@
   "proxy": "Proxy",
   "proxy_speed": "Proxy-Geschwindigkeit",
   "reconnected": "Wiederverbunden",
+  "reconnecting": "Neu verbinden",
   "routing_rule_additional_rules": "Routing-Regel: zusätzliche Regeln",
   "routing_rule_additionally_exclude_core_path": "Routing-Regel: zusätzlich Kernpfad ausschließen",
   "run_as_elevated_user": "Ausführen als {elevatedUser}",
@@ -152,6 +200,7 @@
   "server_address": "Serveradresse",
   "settings": "Einstellungen",
   "show_dashboard_floating_button": "Zeige schwebende Schaltfläche im Dashboard",
+  "sing_box_path_is_null": "sing-box-Pfad ist null",
   "socks_and_http": "SOCKS und HTTP",
   "socks_password": "SOCKS-Passwort",
   "socks_port": "SOCKS-Port",
@@ -163,6 +212,7 @@
   "theme_settings": "Design-Einstellungen",
   "toggles": "Schalter",
   "traffic": "Datenverkehr",
+  "tun_needs_additionally_a_sing_box_core": "TUN benötigt zusätzlich einen sing-box-Core",
   "tun_settings": "TUN-Einstellungen",
   "tun_via_platform_api_": "TUN (über Plattform-API)",
   "tun_via_root_": "TUN (über Root)",

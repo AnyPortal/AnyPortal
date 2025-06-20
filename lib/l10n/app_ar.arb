@@ -11,6 +11,7 @@
   "all_apps_are_proxied_if_disabled": "جميع التطبيقات يتم توجيهها إذا تم تعطيلها",
   "all_apps_in_allowed_list_will_be_proxied": "جميع التطبيقات في القائمة المسموح بها سيتم توجيهها",
   "all_apps_not_in_disallowed_list_will_be_proxied": "جميع التطبيقات غير الموجودة في القائمة غير المسموح بها سيتم توجيهها",
+  "all_ipv4_defined_in_dns_servers_will_not_be_proxied": "جميع IPv4 المحددة في dns.servers لن يتم توجيهها عبر البروكسي",
   "allowed_all_apps_in_allowed_list_will_be_proxied": "المسموح: جميع التطبيقات في القائمة المسموح بها سيتم توجيهها",
   "allowed_applications": "التطبيقات المسموح بها",
   "api_config": "إعدادات API",
@@ -37,12 +38,16 @@
   "binding_interface": "واجهة الربط",
   "binding_ip": "IP الربط",
   "black_dark": "أسود داكن",
+  "cancel": "الغاء",
+  "check_update": "تحقق من التحديث",
   "close_to_tray": "إغلاق إلى العلبة",
   "connect": "اتصل",
   "connectivity": "الاتصال",
   "connectivity_basic_settings": "إعدادات الاتصال الأساسية",
+  "copied": "نسخ",
   "core": "النواة",
   "core_executable": "الملف التنفيذي للنواة",
+  "core_path_does_not_exist": "مسار النواة غير موجود",
   "core_type": "نوع النواة",
   "cores": "النوى",
   "dark_theme": "الوضع الداكن",
@@ -78,6 +83,15 @@
   "enable_tun_via_root_": "تمكين tun عبر الروت",
   "envs": "المتغيرات البيئية",
   "exit": "خروج",
+  "failed_to_fetch_url": "فشل في الجلب: {url}",
+  "@failed_to_fetch_url": {
+    "placeholders": {
+      "url": {
+        "example": "https://www.example.com",
+        "type": "String"
+      }
+    }
+  },
   "follow_system_brightness": "اتباع سطوع النظام",
   "follow_system_locale": "اتباع لغة النظام",
   "foreground": "المقدمة",
@@ -97,13 +111,33 @@
   "inject_send_through": "حقن sendThrough",
   "inject_socks_inbound": "حقن اتصال SOCKS الوارد",
   "inject_socks_outbound": "حقن اتصال SOCKS الصادر",
+  "install_now": "تثبيت الآن",
   "installed_apps": "التطبيقات المثبتة",
+  "ip_not_found_for_binding_interface_binding_interface": "لم يتم العثور على IP ل واجهة ربط: {bindingInterface}",
+  "@ip_not_found_for_binding_interface_binding_interface": {
+    "placeholders": {
+      "bindingInterface": {
+        "example": "Ethernet",
+        "type": "String"
+      }
+    }
+  },
   "ipv4": "IPv4",
   "ipv6": "IPv6",
   "language": "اللغة",
   "language_settings": "إعدادات اللغة",
+  "last_checked_datetime": "تم التحقق آخر مرة في: {datetime}",
+  "@last_checked_datetime": {
+    "placeholders": {
+      "datetime": {
+        "example": "2000-01-01 00:00:00.000",
+        "type": "String"
+      }
+    }
+  },
   "launch_settings": "إعدادات التشغيل",
   "live_objects": "الكائنات الحية",
+  "local_directory": "الدليل المحلي",
   "local_profile_group": "مجموعة الملفات الشخصية المحلية",
   "log_config": "إعدادات السجل",
   "log_config_override": "تجاوز إعدادات السجل",
@@ -116,13 +150,26 @@
   "no_profile_yet_create_one_first": "لا يوجد ملف شخصي بعد، قم بإنشاء واحد أولاً",
   "notification": "الإشعارات",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "إذن الإشعارات مطلوب لعمل المربعات السريعة بشكل صحيح",
+  "open_settings": "فتح الإعدادات",
   "outbound_config_additional_socks_outbound": "إعدادات الخروج: خروج إضافي لـ Socks",
   "outbound_config_send_through": "إعدادات الخروج: الإرسال عبر",
   "override_log_config": "تجاوز إعدادات السجل",
   "path_of_core_exectuable_assets_etc_": "مسار الملفات التنفيذية الأساسية، الأصول، إلخ.",
+  "pending_install_tag_name": "في انتظار التثبيت: {tagName}",
+  "@pending_install_tag_name": {
+    "placeholders": {
+      "tagName": {
+        "example": "v1.2.3+45",
+        "type": "String"
+      }
+    }
+  },
   "per_app_proxy": "بروكسي لكل تطبيق",
   "per_app_proxy_mode": "وضع البروكسي لكل تطبيق",
   "performance": "الأداء",
+  "permission_required": "مطلوب إذن",
+  "please_select_a_profile": "يرجى اختيار ملف تعريف",
+  "please_specify_v2ray_core_executable_path": "يرجى تحديد مسار تنفيذي.Core-v2ray",
   "port": "المنفذ",
   "profile": "الملف الشخصي",
   "profile_override": "تجاوز الملف الشخصي",
@@ -132,6 +179,7 @@
   "proxy": "البروكسي",
   "proxy_speed": "سرعة البروكسي",
   "reconnected": "تم إعادة الاتصال",
+  "reconnecting": "جاري إعادة الاتصال",
   "routing_rule_additional_rules": "قاعدة التوجيه: القواعد الإضافية",
   "routing_rule_additionally_exclude_core_path": "قاعدة التوجيه: استبعاد مسار النواة إضافيًا",
   "run_as_elevated_user": "تشغيل كـ {elevatedUser}",
@@ -152,6 +200,7 @@
   "server_address": "عنوان الخادم",
   "settings": "الإعدادات",
   "show_dashboard_floating_button": "أظهر زر الطفو في لوحة القيادة",
+  "sing_box_path_is_null": "مسار sing-box غير موجود",
   "socks_and_http": "Socks و HTTP",
   "socks_password": "كلمة مرور Socks",
   "socks_port": "منفذ Socks",
@@ -163,6 +212,7 @@
   "theme_settings": "إعدادات المظهر",
   "toggles": "التoggles",
   "traffic": "حركة المرور",
+  "tun_needs_additionally_a_sing_box_core": "يحتاج Tun إلى (إضافي)核心-صندوق",
   "tun_settings": "إعدادات Tun",
   "tun_via_platform_api_": "Tun (عبر API النظام الأساسي)",
   "tun_via_root_": "Tun (عبر الروت)",

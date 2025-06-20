@@ -1,13 +1,18 @@
 import 'dart:io';
 
+import 'package:flutter/widgets.dart';
+
 import 'package:path/path.dart' as p;
 
+import '../../extensions/localization.dart';
 import '../../models/log_level.dart';
 import '../../models/send_through_binding_stratagy.dart';
 import '../get_local_ip.dart';
 import '../global.dart';
 import '../prefs.dart';
 import '../runtime_platform.dart';
+import '../show_snack_bar_now.dart';
+import '../with_context.dart';
 
 Future<Map<String, dynamic>> getInjectedConfig(Map<String, dynamic> cfg) async {
   final injectLog = prefs.getBool('inject.log')!;
@@ -21,7 +26,7 @@ Future<Map<String, dynamic>> getInjectedConfig(Map<String, dynamic> cfg) async {
   final sendThroughBindingStratagy = SendThroughBindingStratagy
       .values[prefs.getInt('inject.sendThrough.bindingStratagy')!];
   String sendThrough = "0.0.0.0";
-  if (injectSendThrough){
+  if (injectSendThrough) {
     switch (sendThroughBindingStratagy) {
       // case SendThroughBindingStratagy.internet:
       //   final autoDetectedSendThrough = await getIPAddr();
@@ -35,7 +40,14 @@ Future<Map<String, dynamic>> getInjectedConfig(Map<String, dynamic> cfg) async {
             prefs.getString('inject.sendThrough.bindingInterface')!;
         final ip = await getIPv4OfInterface(bindingInterface);
         if (ip == null) {
-          throw Exception('ip not found for binding interface $bindingInterface');
+          withContext((context) {
+            showSnackBarNow(
+                context,
+                Text(context.loc
+                    .ip_not_found_for_binding_interface_binding_interface(
+                        bindingInterface)));
+          });
+          throw Exception('IP not found for binding interface: $bindingInterface');
         }
         sendThrough = ip;
     }

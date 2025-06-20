@@ -11,6 +11,7 @@
   "all_apps_are_proxied_if_disabled": "無効にするとすべてのアプリがプロキシされます",
   "all_apps_in_allowed_list_will_be_proxied": "許可リスト内のすべてのアプリがプロキシされます",
   "all_apps_not_in_disallowed_list_will_be_proxied": "拒否リストにないすべてのアプリがプロキシされます",
+  "all_ipv4_defined_in_dns_servers_will_not_be_proxied": "DNSサーバーに定義されたIPv4はプロキシされません",
   "allowed_all_apps_in_allowed_list_will_be_proxied": "許可: 許可リスト内のすべてのアプリがプロキシされます",
   "allowed_applications": "許可されたアプリ",
   "api_config": "API 設定",
@@ -37,12 +38,16 @@
   "binding_interface": "バインドインターフェース",
   "binding_ip": "バインドIP",
   "black_dark": "ブラック（ダーク）",
+  "cancel": "キャンセル",
+  "check_update": "更新を確認する",
   "close_to_tray": "トレイに格納",
   "connect": "接続",
   "connectivity": "接続性",
   "connectivity_basic_settings": "接続の基本設定",
+  "copied": "コピーしました",
   "core": "コア",
   "core_executable": "コア実行ファイル",
+  "core_path_does_not_exist": "コアパスが存在しません",
   "core_type": "コアタイプ",
   "cores": "コア",
   "dark_theme": "ダークテーマ",
@@ -78,6 +83,15 @@
   "enable_tun_via_root_": "Root経由でTunを有効化",
   "envs": "環境変数",
   "exit": "終了",
+  "failed_to_fetch_url": "URLの取得に失敗しました: {url}",
+  "@failed_to_fetch_url": {
+    "placeholders": {
+      "url": {
+        "example": "https://www.example.com",
+        "type": "String"
+      }
+    }
+  },
   "follow_system_brightness": "システムの明るさ設定に従う",
   "follow_system_locale": "システムのロケールに従う",
   "foreground": "前景",
@@ -97,13 +111,33 @@
   "inject_send_through": "送信経路を挿入",
   "inject_socks_inbound": "SOCKSインバウンドを挿入",
   "inject_socks_outbound": "SOCKSアウトバウンドを挿入",
+  "install_now": "今すぐインストール",
   "installed_apps": "インストール済みアプリ",
+  "ip_not_found_for_binding_interface_binding_interface": "バインディングインターフェースに対応するIPが見つかりませんでした: {bindingInterface}",
+  "@ip_not_found_for_binding_interface_binding_interface": {
+    "placeholders": {
+      "bindingInterface": {
+        "example": "Ethernet",
+        "type": "String"
+      }
+    }
+  },
   "ipv4": "IPv4",
   "ipv6": "IPv6",
   "language": "言語",
   "language_settings": "言語設定",
+  "last_checked_datetime": "最終確認時刻：{datetime}",
+  "@last_checked_datetime": {
+    "placeholders": {
+      "datetime": {
+        "example": "2000-01-01 00:00:00.000",
+        "type": "String"
+      }
+    }
+  },
   "launch_settings": "起動設定",
   "live_objects": "ライブオブジェクト",
+  "local_directory": "ローカルディレクトリ",
   "local_profile_group": "ローカルプロファイルグループ",
   "log_config": "ログ設定",
   "log_config_override": "ログ設定オーバーライド",
@@ -116,13 +150,26 @@
   "no_profile_yet_create_one_first": "まだプロファイルがありません。まず1つ作成してください",
   "notification": "通知",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "クイックタイルが正常に動作するためには通知の許可が必要です",
+  "open_settings": "設定を開く",
   "outbound_config_additional_socks_outbound": "アウトバウンド設定：追加のSOCKSアウトバウンド",
   "outbound_config_send_through": "アウトバウンド設定：送信先",
   "override_log_config": "ログ設定をオーバーライド",
   "path_of_core_exectuable_assets_etc_": "コア実行ファイル、アセットなどのパス",
+  "pending_install_tag_name": "インストール待機：{tagName}",
+  "@pending_install_tag_name": {
+    "placeholders": {
+      "tagName": {
+        "example": "v1.2.3+45",
+        "type": "String"
+      }
+    }
+  },
   "per_app_proxy": "アプリごとのプロキシ",
   "per_app_proxy_mode": "アプリごとのプロキシモード",
   "performance": "パフォーマンス",
+  "permission_required": "権限が必要です",
+  "please_select_a_profile": "プロファイルを選択してください",
+  "please_specify_v2ray_core_executable_path": "v2ray-coreの実行可能パスを指定してください",
   "port": "ポート",
   "profile": "プロファイル",
   "profile_override": "プロファイルオーバーライド",
@@ -132,6 +179,7 @@
   "proxy": "プロキシ",
   "proxy_speed": "プロキシ速度",
   "reconnected": "再接続されました",
+  "reconnecting": "再接続中",
   "routing_rule_additional_rules": "ルーティングルール：追加のルール",
   "routing_rule_additionally_exclude_core_path": "ルーティングルール：コアパスを追加で除外",
   "run_as_elevated_user": "{elevatedUser}として実行",
@@ -152,6 +200,7 @@
   "server_address": "サーバーアドレス",
   "settings": "設定",
   "show_dashboard_floating_button": "ダッシュボードの浮動ボタンを表示",
+  "sing_box_path_is_null": "sing-boxのパスがnullです",
   "socks_and_http": "SOCKSとHTTP",
   "socks_password": "SOCKSパスワード",
   "socks_port": "SOCKSポート",
@@ -163,6 +212,7 @@
   "theme_settings": "テーマ設定",
   "toggles": "トグル",
   "traffic": "トラフィック",
+  "tun_needs_additionally_a_sing_box_core": "TUNには追加的にSing-Boxコアが必要です",
   "tun_settings": "Tun設定",
   "tun_via_platform_api_": "Tun（プラットフォームAPI経由）",
   "tun_via_root_": "Tun（ルート経由）",

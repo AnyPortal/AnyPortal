@@ -11,6 +11,7 @@
   "all_apps_are_proxied_if_disabled": "Devre dışı bırakılırsa tüm uygulamalar proxylenir",
   "all_apps_in_allowed_list_will_be_proxied": "İzin verilen listedeki tüm uygulamalar proxylenir",
   "all_apps_not_in_disallowed_list_will_be_proxied": "Yasaklı listede olmayan tüm uygulamalar proxylenir",
+  "all_ipv4_defined_in_dns_servers_will_not_be_proxied": "DNS sunucularında tanımlanan tüm IPv4'ler vekil sunucu üzerinden yönlendirilmeyecektir",
   "allowed_all_apps_in_allowed_list_will_be_proxied": "İzin verilen: izin verilen listedeki tüm uygulamalar proxylenir",
   "allowed_applications": "İzin verilen uygulamalar",
   "api_config": "API yapılandırması",
@@ -37,12 +38,16 @@
   "binding_interface": "Bağlantı arayüzü",
   "binding_ip": "Bağlantı IP’si",
   "black_dark": "Siyah koyu",
+  "cancel": "İptal",
+  "check_update": "Güncellemeyi Kontrol Et",
   "close_to_tray": "Sistem tepsisine küçült",
   "connect": "Bağlan",
   "connectivity": "Bağlantı",
   "connectivity_basic_settings": "Bağlantı temel ayarları",
+  "copied": "Kopyalandı",
   "core": "Çekirdek",
   "core_executable": "Çekirdek çalıştırılabilir dosyası",
+  "core_path_does_not_exist": "Çekirdek yolu mevcut değil",
   "core_type": "Çekirdek türü",
   "cores": "Çekirdekler",
   "dark_theme": "Koyu tema",
@@ -78,6 +83,15 @@
   "enable_tun_via_root_": "Tun’u root üzerinden etkinleştir",
   "envs": "Çevresel değişkenler",
   "exit": "Çıkış",
+  "failed_to_fetch_url": "Yükleme Başarısız: {url}",
+  "@failed_to_fetch_url": {
+    "placeholders": {
+      "url": {
+        "example": "https://www.example.com",
+        "type": "String"
+      }
+    }
+  },
   "follow_system_brightness": "Sistem parlaklığını takip et",
   "follow_system_locale": "Sistem dilini takip et",
   "foreground": "Ön plan",
@@ -97,13 +111,33 @@
   "inject_send_through": "sendThrough enjekte et",
   "inject_socks_inbound": "SOCKS gelen bağlantısını enjekte et",
   "inject_socks_outbound": "SOCKS giden bağlantısını enjekte et",
+  "install_now": "Şimdi Yükle",
   "installed_apps": "Yüklü uygulamalar",
+  "ip_not_found_for_binding_interface_binding_interface": "Bağlama arayüzü için IP bulunamadı: {bindingInterface}",
+  "@ip_not_found_for_binding_interface_binding_interface": {
+    "placeholders": {
+      "bindingInterface": {
+        "example": "Ethernet",
+        "type": "String"
+      }
+    }
+  },
   "ipv4": "IPv4",
   "ipv6": "IPv6",
   "language": "Dil",
   "language_settings": "Dil ayarları",
+  "last_checked_datetime": "Son kontrol tarihi: {datetime}",
+  "@last_checked_datetime": {
+    "placeholders": {
+      "datetime": {
+        "example": "2000-01-01 00:00:00.000",
+        "type": "String"
+      }
+    }
+  },
   "launch_settings": "Başlatma ayarları",
   "live_objects": "Canlı nesneler",
+  "local_directory": "Yerel dizin",
   "local_profile_group": "Yerel profil grubu",
   "log_config": "Günlük yapılandırması",
   "log_config_override": "Günlük yapılandırmasını geçersiz kıl",
@@ -116,13 +150,26 @@
   "no_profile_yet_create_one_first": "Henüz profil yok, önce bir tane oluşturun",
   "notification": "Bildirim",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "Hızlı kutucukların düzgün çalışması için bildirim izni gereklidir",
+  "open_settings": "Ayarları Aç",
   "outbound_config_additional_socks_outbound": "Giden yapılandırma: ek socks çıkışı",
   "outbound_config_send_through": "Giden yapılandırma: sendThrough",
   "override_log_config": "Günlük yapılandırmasını geçersiz kıl",
   "path_of_core_exectuable_assets_etc_": "Çekirdek yürütülebilir dosya, varlıklar vb. yolu",
+  "pending_install_tag_name": "Beklemede olan yükleme: {tagName}",
+  "@pending_install_tag_name": {
+    "placeholders": {
+      "tagName": {
+        "example": "v1.2.3+45",
+        "type": "String"
+      }
+    }
+  },
   "per_app_proxy": "Uygulamaya özel proxy",
   "per_app_proxy_mode": "Uygulamaya özel proxy modu",
   "performance": "Performans",
+  "permission_required": "İzin Gereklidir",
+  "please_select_a_profile": "Lütfen bir profil seçin",
+  "please_specify_v2ray_core_executable_path": "Lütfen v2ray çekirdek yürütülebilir dosya yolunu belirtin",
   "port": "Bağlantı noktası",
   "profile": "Profil",
   "profile_override": "Profil geçersiz kılma",
@@ -132,6 +179,7 @@
   "proxy": "Vekil sunucu",
   "proxy_speed": "Proxy hızı",
   "reconnected": "Yeniden bağlandı",
+  "reconnecting": "Yeniden bağlanıyor",
   "routing_rule_additional_rules": "Yönlendirme kuralına ek kurallar",
   "routing_rule_additionally_exclude_core_path": "Yönlendirme kuralı: çekirdek yolunu ayrıca hariç tut",
   "run_as_elevated_user": "{elevatedUser} olarak çalıştır",
@@ -152,6 +200,7 @@
   "server_address": "Sunucu adresi",
   "settings": "Ayarlar",
   "show_dashboard_floating_button": "Gösterge tablosu döner düğmesini aç",
+  "sing_box_path_is_null": "sing-box yolu null",
   "socks_and_http": "Socks ve HTTP",
   "socks_password": "Socks parolası",
   "socks_port": "Socks bağlantı noktası",
@@ -163,6 +212,7 @@
   "theme_settings": "Tema ayarları",
   "toggles": "Açma/Kapama Anahtarları",
   "traffic": "Trafik",
+  "tun_needs_additionally_a_sing_box_core": "Tun'a ek olarak bir sing-box çekirdeği gereklidir",
   "tun_settings": "Tun ayarları",
   "tun_via_platform_api_": "Tun (platform API üzerinden)",
   "tun_via_root_": "Tun (root ile)",

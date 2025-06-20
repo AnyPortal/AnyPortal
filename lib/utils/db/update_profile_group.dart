@@ -1,12 +1,17 @@
 import 'dart:convert';
 
+import 'package:flutter/widgets.dart';
+
 import 'package:drift/drift.dart' as drift;
 import 'package:http/http.dart' as http;
 
-import '../../models/profile.dart';
 import '../../../../models/profile_group.dart';
 import '../../../../models/profile_group_remote/anyportal_rest.dart';
 import '../../../../utils/db.dart';
+import '../../extensions/localization.dart';
+import '../../models/profile.dart';
+import '../show_snack_bar_now.dart';
+import '../with_context.dart';
 
 Future<bool> updateProfileGroup({
   ProfileGroupData? oldProfileGroup,
@@ -63,7 +68,10 @@ Future<bool> updateProfileGroup({
         oldNameSet = oldProfileList.map((e) => e.name).toSet();
       }
     } else {
-      throw Exception('failed to fetch url');
+      withContext((context) {
+        showSnackBarNow(context, Text(context.loc.failed_to_fetch_url(url!)));
+      });
+      throw Exception("failed to fetch: $url");
     }
   }
 

@@ -11,6 +11,7 @@
   "all_apps_are_proxied_if_disabled": "Semua aplikasi diproksi jika dinonaktifkan",
   "all_apps_in_allowed_list_will_be_proxied": "Semua aplikasi dalam daftar yang diizinkan akan diproksi",
   "all_apps_not_in_disallowed_list_will_be_proxied": "Semua aplikasi yang tidak ada dalam daftar yang tidak diizinkan akan diproksi",
+  "all_ipv4_defined_in_dns_servers_will_not_be_proxied": "Semua IPv4 yang didefinisikan dalam dns.servers tidak akan diproksi",
   "allowed_all_apps_in_allowed_list_will_be_proxied": "Diizinkan: semua aplikasi dalam daftar yang diizinkan akan diproksi",
   "allowed_applications": "Aplikasi yang diizinkan",
   "api_config": "Konfigurasi API",
@@ -37,12 +38,16 @@
   "binding_interface": "Antarmuka pengikatan",
   "binding_ip": "IP pengikatan",
   "black_dark": "Hitam gelap",
+  "cancel": "Batalkan",
+  "check_update": "Periksa pembaruan",
   "close_to_tray": "Tutup ke baki",
   "connect": "Hubungkan",
   "connectivity": "Konektivitas",
   "connectivity_basic_settings": "Pengaturan dasar konektivitas",
+  "copied": "Disalin",
   "core": "Inti",
   "core_executable": "File eksekusi inti",
+  "core_path_does_not_exist": "Jalur inti tidak ada",
   "core_type": "Jenis inti",
   "cores": "Inti",
   "dark_theme": "Tema gelap",
@@ -78,6 +83,15 @@
   "enable_tun_via_root_": "Aktifkan tun (melalui root)",
   "envs": "Lingkungan",
   "exit": "Keluar",
+  "failed_to_fetch_url": "Gagal mengambil: {url}",
+  "@failed_to_fetch_url": {
+    "placeholders": {
+      "url": {
+        "example": "https://www.example.com",
+        "type": "String"
+      }
+    }
+  },
   "follow_system_brightness": "Ikuti kecerahan sistem",
   "follow_system_locale": "Ikuti lokal sistem",
   "foreground": "Latar depan",
@@ -97,13 +111,33 @@
   "inject_send_through": "Sisipkan sendThrough",
   "inject_socks_inbound": "Sisipkan SOCKS masuk",
   "inject_socks_outbound": "Sisipkan SOCKS keluar",
+  "install_now": "Pasang sekarang",
   "installed_apps": "Aplikasi terinstal",
+  "ip_not_found_for_binding_interface_binding_interface": "IP tidak ditemukan untuk antarmuka pengikatan: {bindingInterface}",
+  "@ip_not_found_for_binding_interface_binding_interface": {
+    "placeholders": {
+      "bindingInterface": {
+        "example": "Ethernet",
+        "type": "String"
+      }
+    }
+  },
   "ipv4": "IPv4",
   "ipv6": "IPv6",
   "language": "Bahasa",
   "language_settings": "Pengaturan bahasa",
+  "last_checked_datetime": "Diperiksa terakhir: {datetime}",
+  "@last_checked_datetime": {
+    "placeholders": {
+      "datetime": {
+        "example": "2000-01-01 00:00:00.000",
+        "type": "String"
+      }
+    }
+  },
   "launch_settings": "Pengaturan peluncuran",
   "live_objects": "Objek langsung",
+  "local_directory": "Direktori lokal",
   "local_profile_group": "Grup profil lokal",
   "log_config": "Konfigurasi log",
   "log_config_override": "Timpa konfigurasi log",
@@ -116,13 +150,26 @@
   "no_profile_yet_create_one_first": "Belum ada profil, buat satu terlebih dahulu",
   "notification": "Notifikasi",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "Izin notifikasi diperlukan agar ubin cepat berfungsi dengan baik",
+  "open_settings": "Buka Pengaturan",
   "outbound_config_additional_socks_outbound": "Konfigurasi keluar: tambahan socks outbound",
   "outbound_config_send_through": "Konfigurasi keluar: sendThrough",
   "override_log_config": "Timpa konfigurasi log",
   "path_of_core_exectuable_assets_etc_": "Jalur eksekusi inti, aset, dll.",
+  "pending_install_tag_name": "Menunggu pemasangan: {tagName}",
+  "@pending_install_tag_name": {
+    "placeholders": {
+      "tagName": {
+        "example": "v1.2.3+45",
+        "type": "String"
+      }
+    }
+  },
   "per_app_proxy": "Proxy per aplikasi",
   "per_app_proxy_mode": "Mode proxy per aplikasi",
   "performance": "Performa",
+  "permission_required": "Izin Diperlukan",
+  "please_select_a_profile": "Silakan pilih profil",
+  "please_specify_v2ray_core_executable_path": "Silakan tentukan jalur eksekusi v2ray-core",
   "port": "Port",
   "profile": "Profil",
   "profile_override": "Timpa profil",
@@ -132,6 +179,7 @@
   "proxy": "Proxy",
   "proxy_speed": "Kecepatan proxy",
   "reconnected": "Tersambung kembali",
+  "reconnecting": "Menghubungkan kembali",
   "routing_rule_additional_rules": "Aturan perutean: aturan tambahan",
   "routing_rule_additionally_exclude_core_path": "Aturan perutean: tambahkan pengecualian jalur inti",
   "run_as_elevated_user": "Jalankan sebagai {elevatedUser}",
@@ -152,6 +200,7 @@
   "server_address": "Alamat server",
   "settings": "Pengaturan",
   "show_dashboard_floating_button": "Tampilkan tombol mengapung di dasbor",
+  "sing_box_path_is_null": "Jalur sing-box adalah null",
   "socks_and_http": "Socks dan HTTP",
   "socks_password": "Kata sandi Socks",
   "socks_port": "Port Socks",
@@ -163,6 +212,7 @@
   "theme_settings": "Pengaturan tema",
   "toggles": "Toggle",
   "traffic": "Lalu lintas",
+  "tun_needs_additionally_a_sing_box_core": "Tun memerlukan (secara tambahan) inti sing-box",
   "tun_settings": "Pengaturan Tun",
   "tun_via_platform_api_": "Tun (melalui API platform)",
   "tun_via_root_": "Tun (melalui root)",

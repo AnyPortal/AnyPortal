@@ -11,6 +11,7 @@
   "all_apps_are_proxied_if_disabled": "Tất cả ứng dụng sẽ được proxy nếu bị vô hiệu hóa",
   "all_apps_in_allowed_list_will_be_proxied": "Tất cả ứng dụng trong danh sách được phép sẽ được proxy",
   "all_apps_not_in_disallowed_list_will_be_proxied": "Tất cả ứng dụng không có trong danh sách bị cấm sẽ được proxy",
+  "all_ipv4_defined_in_dns_servers_will_not_be_proxied": "Tất cả IPv4 được định nghĩa trong máy chủ DNS sẽ không bị proxy",
   "allowed_all_apps_in_allowed_list_will_be_proxied": "Được phép: Tất cả ứng dụng trong danh sách được phép sẽ được proxy",
   "allowed_applications": "Ứng dụng được phép",
   "api_config": "Cấu hình API",
@@ -37,12 +38,16 @@
   "binding_interface": "Giao diện ràng buộc",
   "binding_ip": "IP ràng buộc",
   "black_dark": "Đen tối",
+  "cancel": "Hủy",
+  "check_update": "Kiểm tra cập nhật",
   "close_to_tray": "Thu nhỏ vào khay hệ thống",
   "connect": "Kết nối",
   "connectivity": "Kết nối",
   "connectivity_basic_settings": "Cài đặt kết nối cơ bản",
+  "copied": "Đã sao chép",
   "core": "Lõi",
   "core_executable": "Tệp thực thi lõi",
+  "core_path_does_not_exist": "Đường dẫn lõi không tồn tại",
   "core_type": "Loại lõi",
   "cores": "Lõi",
   "dark_theme": "Chủ đề tối",
@@ -78,6 +83,15 @@
   "enable_tun_via_root_": "Bật tun (qua root)",
   "envs": "Môi trường",
   "exit": "Thoát",
+  "failed_to_fetch_url": "Không thể lấy dữ liệu từ: {url}",
+  "@failed_to_fetch_url": {
+    "placeholders": {
+      "url": {
+        "example": "https://www.example.com",
+        "type": "String"
+      }
+    }
+  },
   "follow_system_brightness": "Theo độ sáng hệ thống",
   "follow_system_locale": "Theo ngôn ngữ hệ thống",
   "foreground": "Tiền cảnh",
@@ -97,13 +111,33 @@
   "inject_send_through": "Tiêm sendThrough",
   "inject_socks_inbound": "Tiêm socks inbound",
   "inject_socks_outbound": "Tiêm socks outbound",
+  "install_now": "Cài đặt ngay",
   "installed_apps": "Ứng dụng đã cài đặt",
+  "ip_not_found_for_binding_interface_binding_interface": "Không tìm thấy IP cho giao diện ràng buộc: {bindingInterface}",
+  "@ip_not_found_for_binding_interface_binding_interface": {
+    "placeholders": {
+      "bindingInterface": {
+        "example": "Ethernet",
+        "type": "String"
+      }
+    }
+  },
   "ipv4": "IPv4",
   "ipv6": "IPv6",
   "language": "Ngôn ngữ",
   "language_settings": "Cài đặt ngôn ngữ",
+  "last_checked_datetime": "Kiểm tra lần cuối: {datetime}",
+  "@last_checked_datetime": {
+    "placeholders": {
+      "datetime": {
+        "example": "2000-01-01 00:00:00.000",
+        "type": "String"
+      }
+    }
+  },
   "launch_settings": "Cài đặt khởi chạy",
   "live_objects": "Đối tượng trực tiếp",
+  "local_directory": "Thư mục cục bộ",
   "local_profile_group": "Nhóm hồ sơ cục bộ",
   "log_config": "Cấu hình nhật ký",
   "log_config_override": "Ghi đè cấu hình nhật ký",
@@ -116,13 +150,26 @@
   "no_profile_yet_create_one_first": "Chưa có hồ sơ, hãy tạo một cái trước",
   "notification": "Thông báo",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "Cần có quyền thông báo để các ô nhanh hoạt động đúng cách",
+  "open_settings": "Mở cài đặt",
   "outbound_config_additional_socks_outbound": "Cấu hình đầu ra: bổ sung đầu ra socks",
   "outbound_config_send_through": "Cấu hình đầu ra: gửi qua",
   "override_log_config": "Ghi đè cấu hình nhật ký",
   "path_of_core_exectuable_assets_etc_": "Đường dẫn của tệp thực thi lõi, tài nguyên, v.v.",
+  "pending_install_tag_name": "Đang chờ cài đặt: {tagName}",
+  "@pending_install_tag_name": {
+    "placeholders": {
+      "tagName": {
+        "example": "v1.2.3+45",
+        "type": "String"
+      }
+    }
+  },
   "per_app_proxy": "Proxy theo ứng dụng",
   "per_app_proxy_mode": "Chế độ proxy theo ứng dụng",
   "performance": "Hiệu suất",
+  "permission_required": "Yêu cầu quyền",
+  "please_select_a_profile": "Vui lòng chọn một hồ sơ",
+  "please_specify_v2ray_core_executable_path": "Vui lòng chỉ định đường dẫn thực thi lõi v2ray",
   "port": "Cổng",
   "profile": "Hồ sơ",
   "profile_override": "Ghi đè hồ sơ",
@@ -132,6 +179,7 @@
   "proxy": "Proxy",
   "proxy_speed": "Tốc độ proxy",
   "reconnected": "Đã kết nối lại",
+  "reconnecting": "Đang kết nối lại",
   "routing_rule_additional_rules": "Quy tắc định tuyến: quy tắc bổ sung",
   "routing_rule_additionally_exclude_core_path": "Quy tắc định tuyến: loại trừ thêm đường dẫn lõi",
   "run_as_elevated_user": "Chạy với tư cách {elevatedUser}",
@@ -152,6 +200,7 @@
   "server_address": "Địa chỉ máy chủ",
   "settings": "Cài đặt",
   "show_dashboard_floating_button": "Hiển thị nút nổi trên bảng điều khiển",
+  "sing_box_path_is_null": "đường dẫn sing-box là không",
   "socks_and_http": "Socks và HTTP",
   "socks_password": "Mật khẩu Socks",
   "socks_port": "Cổng Socks",
@@ -163,6 +212,7 @@
   "theme_settings": "Cài đặt giao diện",
   "toggles": "Công tắc",
   "traffic": "Lưu lượng",
+  "tun_needs_additionally_a_sing_box_core": "Tun cần thêm một lõi sing-box",
   "tun_settings": "Cài đặt Tun",
   "tun_via_platform_api_": "Tun (qua API nền tảng)",
   "tun_via_root_": "Tun (qua root)",

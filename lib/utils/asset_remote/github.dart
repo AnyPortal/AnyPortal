@@ -21,6 +21,7 @@ import '../show_snack_bar_now.dart';
 import '../undmg.dart';
 import '../unzip.dart';
 import '../vpn_manager.dart';
+import '../with_context.dart';
 
 import 'protocol.dart';
 
@@ -48,7 +49,10 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
       subPath = match.group(4); // Nullable
     } else {
       logger.w("match failed: $url");
-      throw Exception();
+      withContext((context) {
+        showSnackBarNow(context, Text("match failed: $url"));
+      });
+      throw Exception("match failed: $url");
     }
   }
 
@@ -256,11 +260,11 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     return !(assetPath == vPNMan.corePath && vPNMan.isCoreActive);
   }
 
-  void logStatus(BuildContext? context, String text) {
+  void loggerD(String text) {
     logger.d(text);
-    if (context != null) {
+    withContext((context) {
       showSnackBarNow(context, Text(text));
-    }
+    });
   }
 
   String? getDownloadedFilePath({TypedResult? oldAsset}) {
@@ -282,14 +286,13 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
   Future<bool> update({
     TypedResult? oldAsset,
     int autoUpdateInterval = 0,
-    BuildContext? context,
   }) async {
     /// check if need to update
-    logStatus(context, "to update: $url");
+    loggerD("to update: $url");
     final oldMeta = getOldMeta(oldAsset: oldAsset);
     final newMeta = await getNewMeta(useSocks: vPNMan.isCoreActive);
     if (newMeta == null) {
-      logStatus(context, "failed to get meta: $url");
+      loggerD("failed to get meta: $url");
       return true;
     }
     await postGetNewMeta(newMeta, oldAsset: oldAsset);
@@ -302,32 +305,32 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     File? downloadedFile;
     if (isMetaUpdated) {
       if (downloadedFilePath != null) {
-        logStatus(context, "already downloaded: $url");
+        loggerD("already downloaded: $url");
         downloadedFile = File(downloadedFilePath);
       } else {
-        logStatus(context, "already up to date: $url");
+        loggerD("already up to date: $url");
         return true;
       }
     } else {
       /// get download url
-      logStatus(context, "need download: $url");
+      loggerD("need download: $url");
       final downloadUrl = getDownloadUrl(newMeta);
       if (downloadUrl == null) {
-        logStatus(context, "downloadUrl == null: $url");
+        loggerD("downloadUrl == null: $url");
         return true;
       }
 
       /// download
-      logStatus(context, "downloading: $downloadUrl");
+      loggerD("downloading: $downloadUrl");
       downloadedFile = await download(
         downloadUrl,
         useSocks: vPNMan.isCoreActive,
       );
       if (downloadedFile == null) {
-        logStatus(context, "download failed: $downloadUrl");
+        loggerD("download failed: $downloadUrl");
         return false;
       }
-      logStatus(context, "downloaded: $downloadUrl");
+      loggerD("downloaded: $downloadUrl");
 
       /// record newMeta after download
       assetId = await postDownload(
@@ -340,16 +343,16 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
 
     if (canInstallNow(oldAsset: oldAsset)) {
       /// install only if not using
-      logStatus(context, "installing: $url");
+      loggerD("installing: $url");
       final installOk = await install(downloadedFile);
       if (installOk) {
         await postInstall(assetId!);
-        logStatus(context, "installed: $url");
+        loggerD("installed: $url");
       } else {
-        logStatus(context, "install failed: $url");
+        loggerD("install failed: $url");
       }
     } else {
-      logStatus(context, "pending install: $url");
+      loggerD("pending install: $url");
     }
     return true;
   }

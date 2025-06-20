@@ -11,6 +11,7 @@
   "all_apps_are_proxied_if_disabled": "All apps are proxied if disabled",
   "all_apps_in_allowed_list_will_be_proxied": "All apps in allowed list will be proxied",
   "all_apps_not_in_disallowed_list_will_be_proxied": "All apps not in disallowed list will be proxied",
+  "all_ipv4_defined_in_dns_servers_will_not_be_proxied": "All IPv4 defined in dns.servers will not be proxied",
   "allowed_all_apps_in_allowed_list_will_be_proxied": "Allowed: all apps in allowed list will be proxied",
   "allowed_applications": "Allowed applications",
   "api_config": "Api config",
@@ -37,12 +38,16 @@
   "binding_interface": "Binding interface",
   "binding_ip": "Binding ip",
   "black_dark": "Black dark",
+  "cancel": "Cancel",
+  "check_update": "Check update",
   "close_to_tray": "Close to tray",
   "connect": "Connect",
   "connectivity": "Connectivity",
   "connectivity_basic_settings": "Connectivity basic settings",
+  "copied": "Copied",
   "core": "Core",
   "core_executable": "Core executable",
+  "core_path_does_not_exist": "Core path does not exist",
   "core_type": "Core type",
   "cores": "Cores",
   "dark_theme": "Dark theme",
@@ -78,6 +83,15 @@
   "enable_tun_via_root_": "Enable tun (via root)",
   "envs": "Envs",
   "exit": "Exit",
+  "failed_to_fetch_url": "Failed to fetch: {url}",
+  "@failed_to_fetch_url": {
+    "placeholders": {
+      "url": {
+        "example": "https://www.example.com",
+        "type": "String"
+      }
+    }
+  },
   "follow_system_brightness": "Follow system brightness",
   "follow_system_locale": "Follow system locale",
   "foreground": "Foreground",
@@ -97,13 +111,33 @@
   "inject_send_through": "Inject sendThrough",
   "inject_socks_inbound": "Inject socks inbound",
   "inject_socks_outbound": "Inject socks outbound",
+  "install_now": "Install now",
   "installed_apps": "Installed apps",
+  "ip_not_found_for_binding_interface_binding_interface": "IP not found for binding interface: {bindingInterface}",
+  "@ip_not_found_for_binding_interface_binding_interface": {
+    "placeholders": {
+      "bindingInterface": {
+        "example": "Ethernet",
+        "type": "String"
+      }
+    }
+  },
   "ipv4": "IPv4",
   "ipv6": "IPv6",
   "language": "Language",
   "language_settings": "Language settings",
+  "last_checked_datetime": "Last checked: {datetime}",
+  "@last_checked_datetime": {
+    "placeholders": {
+      "datetime": {
+        "example": "2000-01-01 00:00:00.000",
+        "type": "String"
+      }
+    }
+  },
   "launch_settings": "Launch settings",
   "live_objects": "Live obj.",
+  "local_directory": "Local directory",
   "local_profile_group": "Local profile group",
   "log_config": "Log config",
   "log_config_override": "Log config override",
@@ -116,13 +150,26 @@
   "no_profile_yet_create_one_first": "No profile yet, create one first",
   "notification": "Notification",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "Notification permission is required for quick tiles to work properly",
+  "open_settings": "Open Settings",
   "outbound_config_additional_socks_outbound": "Outbound config: additional socks outbound",
   "outbound_config_send_through": "Outbound config: sendThrough",
   "override_log_config": "Override log config",
   "path_of_core_exectuable_assets_etc_": "Path of core exectuable, assets, etc.",
+  "pending_install_tag_name": "Pending install: {tagName}",
+  "@pending_install_tag_name": {
+    "placeholders": {
+      "tagName": {
+        "example": "v1.2.3+45",
+        "type": "String"
+      }
+    }
+  },
   "per_app_proxy": "Per-app proxy",
   "per_app_proxy_mode": "Per-app proxy mode",
   "performance": "Performance",
+  "permission_required": "Permission Required",
+  "please_select_a_profile": "Please select a profile",
+  "please_specify_v2ray_core_executable_path": "Please specify v2ray-core executable path",
   "port": "Port",
   "profile": "Profile",
   "profile_override": "Profile override",
@@ -132,6 +179,7 @@
   "proxy": "Proxy",
   "proxy_speed": "Proxy speed",
   "reconnected": "Reconnected",
+  "reconnecting": "Reconnecting",
   "routing_rule_additional_rules": "Routing rule: additional rules",
   "routing_rule_additionally_exclude_core_path": "Routing rule: additionally exclude core path",
   "run_as_elevated_user": "Run as {elevatedUser}",
@@ -152,6 +200,7 @@
   "server_address": "Server address",
   "settings": "Settings",
   "show_dashboard_floating_button": "Show dashboard floating button",
+  "sing_box_path_is_null": "sing-box path is null",
   "socks_and_http": "Socks and HTTP",
   "socks_password": "Socks password",
   "socks_port": "Socks port",
@@ -163,6 +212,7 @@
   "theme_settings": "Theme settings",
   "toggles": "Toggles",
   "traffic": "Traffic",
+  "tun_needs_additionally_a_sing_box_core": "Tun needs (additionally) a sing-box core",
   "tun_settings": "Tun settings",
   "tun_via_platform_api_": "Tun (via platform api)",
   "tun_via_root_": "Tun (via root)",

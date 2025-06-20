@@ -11,6 +11,7 @@
   "all_apps_are_proxied_if_disabled": "แอปทั้งหมดจะถูกพร็อกซีหากปิดใช้งาน",
   "all_apps_in_allowed_list_will_be_proxied": "แอปทั้งหมดในรายการที่อนุญาตจะถูกพร็อกซี",
   "all_apps_not_in_disallowed_list_will_be_proxied": "แอปทั้งหมดที่ไม่อยู่ในรายการที่ไม่อนุญาตจะถูกพร็อกซี",
+  "all_ipv4_defined_in_dns_servers_will_not_be_proxied": "IPv4 ทั้งหมดที่กำหนดไว้ใน dns.servers จะไม่ผ่านพร็อกซี",
   "allowed_all_apps_in_allowed_list_will_be_proxied": "อนุญาต: แอปทั้งหมดในรายการที่อนุญาตจะถูกพร็อกซี",
   "allowed_applications": "แอปพลิเคชันที่อนุญาต",
   "api_config": "การตั้งค่า API",
@@ -37,12 +38,16 @@
   "binding_interface": "การเชื่อมต่ออินเทอร์เฟซ",
   "binding_ip": "การเชื่อมต่อ IP",
   "black_dark": "ดำเข้ม",
+  "cancel": "ยกเลิก",
+  "check_update": "ตรวจสอบการอัปเดต",
   "close_to_tray": "ปิดไปที่ถาด",
   "connect": "เชื่อมต่อ",
   "connectivity": "การเชื่อมต่อ",
   "connectivity_basic_settings": "การตั้งค่าการเชื่อมต่อพื้นฐาน",
+  "copied": "คัดลอกแล้ว",
   "core": "แกนหลัก",
   "core_executable": "ไฟล์ปฏิบัติการของคอร์",
+  "core_path_does_not_exist": "เส้นทางของไฟล์หลักไม่มีอยู่",
   "core_type": "ประเภทคอร์",
   "cores": "คอร์",
   "dark_theme": "ธีมมืด",
@@ -78,6 +83,15 @@
   "enable_tun_via_root_": "เปิดใช้งาน TUN ผ่าน root",
   "envs": "สภาพแวดล้อม",
   "exit": "ออก",
+  "failed_to_fetch_url": "ไม่สามารถดึงข้อมูลได้: {url}",
+  "@failed_to_fetch_url": {
+    "placeholders": {
+      "url": {
+        "example": "https://www.example.com",
+        "type": "String"
+      }
+    }
+  },
   "follow_system_brightness": "ปฏิบัติตามความสว่างของระบบ",
   "follow_system_locale": "ปฏิบัติตามภาษาและภูมิภาคของระบบ",
   "foreground": "เบื้องหน้า",
@@ -97,13 +111,33 @@
   "inject_send_through": "แทรก sendThrough",
   "inject_socks_inbound": "แทรก SOCKS ขาเข้า",
   "inject_socks_outbound": "แทรก SOCKS ขาออก",
+  "install_now": "ติดตั้งตอนนี้",
   "installed_apps": "แอปที่ติดตั้ง",
+  "ip_not_found_for_binding_interface_binding_interface": "ไม่พบที่อยู่ IP สำหรับอินเตอร์เฟซการผูก: {bindingInterface}",
+  "@ip_not_found_for_binding_interface_binding_interface": {
+    "placeholders": {
+      "bindingInterface": {
+        "example": "Ethernet",
+        "type": "String"
+      }
+    }
+  },
   "ipv4": "IPv4",
   "ipv6": "IPv6",
   "language": "ภาษา",
   "language_settings": "การตั้งค่าภาษา",
+  "last_checked_datetime": "ตรวจสอบล่าสุด: {datetime}",
+  "@last_checked_datetime": {
+    "placeholders": {
+      "datetime": {
+        "example": "2000-01-01 00:00:00.000",
+        "type": "String"
+      }
+    }
+  },
   "launch_settings": "การตั้งค่าการเปิดใช้งาน",
   "live_objects": "วัตถุสด",
+  "local_directory": "ไดเรกทอรีท้องถิ่น",
   "local_profile_group": "กลุ่มโปรไฟล์ท้องถิ่น",
   "log_config": "การกำหนดค่าบันทึก",
   "log_config_override": "การแทนที่การกำหนดค่าบันทึก",
@@ -116,13 +150,26 @@
   "no_profile_yet_create_one_first": "ยังไม่มีโปรไฟล์ โปรดสร้างโปรไฟล์ก่อน",
   "notification": "การแจ้งเตือน",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "ต้องได้รับอนุญาตการแจ้งเตือนเพื่อให้ไทล์ด่วนทำงานได้อย่างถูกต้อง",
+  "open_settings": "เปิดการตั้งค่า",
   "outbound_config_additional_socks_outbound": "การกำหนดค่าออก: SOCKS ออกเพิ่มเติม",
   "outbound_config_send_through": "การกำหนดค่าออก: ส่งผ่าน",
   "override_log_config": "แทนที่การกำหนดค่าบันทึก",
   "path_of_core_exectuable_assets_etc_": "เส้นทางของไฟล์หลักที่สามารถเรียกใช้, ทรัพย์สิน ฯลฯ",
+  "pending_install_tag_name": "กำลังติดตั้ง: {tagName}",
+  "@pending_install_tag_name": {
+    "placeholders": {
+      "tagName": {
+        "example": "v1.2.3+45",
+        "type": "String"
+      }
+    }
+  },
   "per_app_proxy": "พร็อกซีรายแอป",
   "per_app_proxy_mode": "โหมดพร็อกซีรายแอป",
   "performance": "ประสิทธิภาพ",
+  "permission_required": "ต้องได้รับอนุญาต",
+  "please_select_a_profile": "กรุณาเลือกโปรไฟล์",
+  "please_specify_v2ray_core_executable_path": "กรุณาระบุเส้นทางไฟล์ v2ray-core ที่สามารถเรียกใช้ได้",
   "port": "พอร์ต",
   "profile": "โปรไฟล์",
   "profile_override": "แทนที่โปรไฟล์",
@@ -132,6 +179,7 @@
   "proxy": "พร็อกซี",
   "proxy_speed": "ความเร็วพร็อกซี",
   "reconnected": "เชื่อมต่อใหม่แล้ว",
+  "reconnecting": "กำลังเชื่อมต่อใหม่",
   "routing_rule_additional_rules": "กฎการกำหนดเส้นทาง: กฎเพิ่มเติม",
   "routing_rule_additionally_exclude_core_path": "กฎการกำหนดเส้นทาง: แยกเส้นทางหลักออกเพิ่มเติม",
   "run_as_elevated_user": "เรียกใช้เป็น {elevatedUser}",
@@ -152,6 +200,7 @@
   "server_address": "ที่อยู่เซิร์ฟเวอร์",
   "settings": "การตั้งค่า",
   "show_dashboard_floating_button": "แสดงปุ่มลอยบนแดชบอร์ด",
+  "sing_box_path_is_null": "เส้นทาง sing-box เป็นค่า null",
   "socks_and_http": "SOCKS และ HTTP",
   "socks_password": "รหัสผ่าน SOCKS",
   "socks_port": "พอร์ต SOCKS",
@@ -163,6 +212,7 @@
   "theme_settings": "การตั้งค่าธีม",
   "toggles": "ตัวสลับ",
   "traffic": "ทราฟฟิก",
+  "tun_needs_additionally_a_sing_box_core": "TUN ต้องการคอร์ sing-box เป็นเพิ่มเติม",
   "tun_settings": "การตั้งค่า TUN",
   "tun_via_platform_api_": "TUN (ผ่าน API ของแพลตฟอร์ม)",
   "tun_via_root_": "TUN (ผ่านรูท)",

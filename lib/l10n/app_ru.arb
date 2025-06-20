@@ -11,6 +11,7 @@
   "all_apps_are_proxied_if_disabled": "Все приложения проксируются, если отключено",
   "all_apps_in_allowed_list_will_be_proxied": "Все приложения в списке разрешённых будут проксироваться",
   "all_apps_not_in_disallowed_list_will_be_proxied": "Все приложения, отсутствующие в списке запрещённых, будут проксироваться",
+  "all_ipv4_defined_in_dns_servers_will_not_be_proxied": "Все IPv4, определенные в dns-серверах, не будут проксируются",
   "allowed_all_apps_in_allowed_list_will_be_proxied": "Разрешено: все приложения в списке разрешённых будут проксироваться",
   "allowed_applications": "Разрешённые приложения",
   "api_config": "Конфигурация API",
@@ -37,12 +38,16 @@
   "binding_interface": "Привязка к интерфейсу",
   "binding_ip": "Привязка к IP",
   "black_dark": "Чёрная тёмная тема",
+  "cancel": "Отмена",
+  "check_update": "Проверить обновление",
   "close_to_tray": "Сворачивать в трей",
   "connect": "Подключить",
   "connectivity": "Подключение",
   "connectivity_basic_settings": "Основные настройки подключения",
+  "copied": "Скопировано",
   "core": "Ядро",
   "core_executable": "Исполняемый файл ядра",
+  "core_path_does_not_exist": "Путь к ядру не существует",
   "core_type": "Тип ядра",
   "cores": "Ядра",
   "dark_theme": "Тёмная тема",
@@ -78,6 +83,15 @@
   "enable_tun_via_root_": "Включить TUN (с root-доступом)",
   "envs": "Переменные окружения",
   "exit": "Выход",
+  "failed_to_fetch_url": "Не удалось загрузить: {url}",
+  "@failed_to_fetch_url": {
+    "placeholders": {
+      "url": {
+        "example": "https://www.example.com",
+        "type": "String"
+      }
+    }
+  },
   "follow_system_brightness": "Следовать системной яркости",
   "follow_system_locale": "Следовать системному языку",
   "foreground": "Передний план",
@@ -97,13 +111,33 @@
   "inject_send_through": "Внедрить sendThrough",
   "inject_socks_inbound": "Внедрить SOCKS-входящее соединение",
   "inject_socks_outbound": "Внедрить SOCKS-исходящее соединение",
+  "install_now": "Установить сейчас",
   "installed_apps": "Установленные приложения",
+  "ip_not_found_for_binding_interface_binding_interface": "IP-адрес не найден для интерфейса привязки: {bindingInterface}",
+  "@ip_not_found_for_binding_interface_binding_interface": {
+    "placeholders": {
+      "bindingInterface": {
+        "example": "Ethernet",
+        "type": "String"
+      }
+    }
+  },
   "ipv4": "IPv4",
   "ipv6": "IPv6",
   "language": "Язык",
   "language_settings": "Настройки языка",
+  "last_checked_datetime": "Последний раз проверено: {datetime}",
+  "@last_checked_datetime": {
+    "placeholders": {
+      "datetime": {
+        "example": "2000-01-01 00:00:00.000",
+        "type": "String"
+      }
+    }
+  },
   "launch_settings": "Настройки запуска",
   "live_objects": "Живые объекты",
+  "local_directory": "Локальный каталог",
   "local_profile_group": "Локальная группа профилей",
   "log_config": "Конфигурация логов",
   "log_config_override": "Переопределение конфигурации логов",
@@ -116,13 +150,26 @@
   "no_profile_yet_create_one_first": "Профиль еще не создан, создайте его первым",
   "notification": "Уведомление",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "Необходимо разрешение на уведомления для корректной работы быстрых плиток",
+  "open_settings": "Открыть настройки",
   "outbound_config_additional_socks_outbound": "Конфигурация исходящих соединений: дополнительные исходящие SOCKS",
   "outbound_config_send_through": "Конфигурация исходящих соединений: отправить через",
   "override_log_config": "Переопределить конфигурацию журнала",
   "path_of_core_exectuable_assets_etc_": "Путь к исполнимому файлу ядра, ресурсам и т.д.",
+  "pending_install_tag_name": "Ожидает установки: {tagName}",
+  "@pending_install_tag_name": {
+    "placeholders": {
+      "tagName": {
+        "example": "v1.2.3+45",
+        "type": "String"
+      }
+    }
+  },
   "per_app_proxy": "Прокси для каждого приложения",
   "per_app_proxy_mode": "Режим прокси для каждого приложения",
   "performance": "Производительность",
+  "permission_required": "Требуется разрешение",
+  "please_select_a_profile": "Пожалуйста, выберите профиль",
+  "please_specify_v2ray_core_executable_path": "Пожалуйста, укажите путь к исполняемому файлу v2ray-core",
   "port": "Порт",
   "profile": "Профиль",
   "profile_override": "Переопределение профиля",
@@ -132,6 +179,7 @@
   "proxy": "Прокси",
   "proxy_speed": "Скорость прокси",
   "reconnected": "Переподключено",
+  "reconnecting": "Переподключение",
   "routing_rule_additional_rules": "Дополнительные правила маршрутизации",
   "routing_rule_additionally_exclude_core_path": "Правило маршрутизации: дополнительно исключить путь к ядру",
   "run_as_elevated_user": "Запуск от имени {elevatedUser}",
@@ -152,6 +200,7 @@
   "server_address": "Адрес сервера",
   "settings": "Настройки",
   "show_dashboard_floating_button": "Показать плавающую кнопку на панели управления",
+  "sing_box_path_is_null": "Путь к sing-box не задан",
   "socks_and_http": "Socks и HTTP",
   "socks_password": "Пароль Socks",
   "socks_port": "Порт Socks",
@@ -163,6 +212,7 @@
   "theme_settings": "Настройки темы",
   "toggles": "Переключатели",
   "traffic": "Трафик",
+  "tun_needs_additionally_a_sing_box_core": "Tun дополнительно требует ядро sing-box",
   "tun_settings": "Настройки Tun",
   "tun_via_platform_api_": "Tun (через API платформы)",
   "tun_via_root_": "Tun (через root)",

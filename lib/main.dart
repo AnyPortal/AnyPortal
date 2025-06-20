@@ -156,7 +156,6 @@ void main(List<String> args) async {
     final assetRemoteProtocolApp = AssetRemoteProtocolApp();
     if (await assetRemoteProtocolApp.init()) {
       await assetRemoteProtocolApp.update(
-        context: global.navigatorKey.currentContext,
         shouldInstall: true,
       );
     }

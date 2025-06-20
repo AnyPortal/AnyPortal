@@ -74,7 +74,7 @@ class _AboutScreenState extends State<AboutScreen> {
 
   void copyTextThenNotify(String text) {
     Clipboard.setData(ClipboardData(text: text)).then((_) {
-      if (mounted) showSnackBarNow(context, Text("Copied"));
+      if (mounted) showSnackBarNow(context, Text(context.loc.copied));
     });
   }
 
@@ -103,19 +103,22 @@ We hope you choose well between your home world and Wonderlands.""")),
       ListTile(
         title: Text(
           newBuildNumber != null && newBuildNumber! > buildNumber
-              ? "Install now"
-              : "Check update",
+              ? context.loc.install_now
+              : context.loc.check_update,
         ),
         subtitle: Text(
           newBuildNumber != null && newBuildNumber! > buildNumber
-              ? "Pending install: $newTagName"
-              : "Last checked: ${DateTime.fromMillisecondsSinceEpoch(lastChecked * 1000).toLocal()}",
+              ? context.loc.pending_install_tag_name(
+                  newTagName != null ? newTagName! : "")
+              : context.loc.last_checked_datetime(
+                  DateTime.fromMillisecondsSinceEpoch(lastChecked * 1000)
+                      .toLocal()
+                      .toIso8601String()),
         ),
         onTap: () async {
           final assetRemoteProtocolApp = AssetRemoteProtocolApp();
           if (await assetRemoteProtocolApp.init()) {
             await assetRemoteProtocolApp.update(
-              context: mounted ? context : null,
               shouldInstall: true,
             );
           }
@@ -138,7 +141,7 @@ We hope you choose well between your home world and Wonderlands.""")),
         Container(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
           child: Text(
-            "Local directory",
+            context.loc.local_directory,
             style: TextStyle(color: Theme.of(context).colorScheme.primary),
           ),
         ),

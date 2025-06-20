@@ -5,7 +5,6 @@ import 'dart:core';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 
 import 'package:drift/drift.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -128,14 +127,13 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
   Future<bool> update({
     TypedResult? oldAsset,
     int autoUpdateInterval = 0,
-    BuildContext? context,
     bool shouldInstall = false,
   }) async {
     /// check if need to update
-    logStatus(context, "to update: $url");
+    loggerD("to update: $url");
     final newMeta = await getNewMeta(useSocks: vPNMan.isCoreActive);
     if (newMeta == null) {
-      logStatus(context, "failed to get meta: $url");
+      loggerD("failed to get meta: $url");
       return true;
     }
     await postGetNewMeta(newMeta);
@@ -153,33 +151,33 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
     File? downloadedFile;
     if (isAppUpdated) {
       if (downloadedFilePath != null) {
-        logStatus(context, "upgraded to: $newTagName");
+        loggerD("upgraded to: $newTagName");
         prefs.remove("app.github.downloadedFilePath");
         return true;
       } else {
-        logStatus(context, "already up to date: $url");
+        loggerD("already up to date: $url");
         return true;
       }
     } else {
       /// get download url
-      logStatus(context, "need download: $url");
+      loggerD("need download: $url");
       final downloadUrl = getDownloadUrl(newMeta);
       if (downloadUrl == null) {
-        logStatus(context, "downloadUrl == null: $url");
+        loggerD("downloadUrl == null: $url");
         return true;
       }
 
       /// download
-      logStatus(context, "downloading: $downloadUrl");
+      loggerD("downloading: $downloadUrl");
       downloadedFile = await download(
         downloadUrl,
         useSocks: vPNMan.isCoreActive,
       );
       if (downloadedFile == null) {
-        logStatus(context, "download failed: $downloadUrl");
+        loggerD("download failed: $downloadUrl");
         return false;
       }
-      logStatus(context, "downloaded: $downloadUrl");
+      loggerD("downloaded: $downloadUrl");
 
       /// record newMeta after download
       await postDownload(
@@ -192,15 +190,15 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
 
     if (shouldInstall) {
       /// install only if not using
-      logStatus(context, "to install: $url");
+      loggerD("to install: $url");
       final isInstalling = await install(downloadedFile);
       if (isInstalling) {
-        logStatus(context, "installing: $url");
+        loggerD("installing: $url");
       } else {
-        logStatus(context, "install failed: $url");
+        loggerD("install failed: $url");
       }
     } else {
-      logStatus(context, "pending install: $url");
+      loggerD("pending install: $url");
     }
     return true;
   }

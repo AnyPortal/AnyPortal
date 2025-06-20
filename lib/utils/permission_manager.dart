@@ -22,21 +22,21 @@ class PermissionManagerAndroid extends PermissionManager {
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: const Text("Permission Required"),
+        title: Text(context.loc.permission_required),
         content: Text(reason),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.of(context).pop(); // Close the dialog
             },
-            child: const Text("Cancel"),
+            child: Text(context.loc.cancel),
           ),
           TextButton(
             onPressed: () {
               openAppSettings(); // Open the Android app's settings page
               Navigator.of(context).pop(); // Close the dialog
             },
-            child: const Text("Open Settings"),
+            child: Text(context.loc.open_settings),
           ),
         ],
       ),

@@ -11,6 +11,7 @@
   "all_apps_are_proxied_if_disabled": "如果禁用，则所有应用程序都将被代理",
   "all_apps_in_allowed_list_will_be_proxied": "允许列表中的所有应用程序都将被代理",
   "all_apps_not_in_disallowed_list_will_be_proxied": "不在禁止列表中的所有应用程序都将被代理",
+  "all_ipv4_defined_in_dns_servers_will_not_be_proxied": "DNS服务器中定义的所有IPv4将不会被代理",
   "allowed_all_apps_in_allowed_list_will_be_proxied": "允许：允许列表中的所有应用程序都将被代理",
   "allowed_applications": "允许的应用程序",
   "api_config": "API 配置",
@@ -37,12 +38,16 @@
   "binding_interface": "绑定接口",
   "binding_ip": "绑定 IP",
   "black_dark": "黑色暗色模式",
+  "cancel": "取消",
+  "check_update": "检查更新",
   "close_to_tray": "最小化到托盘",
   "connect": "连接",
   "connectivity": "连接",
   "connectivity_basic_settings": "连接基本设置",
+  "copied": "已复制",
   "core": "核心",
   "core_executable": "核心可执行文件",
+  "core_path_does_not_exist": "核心路径不存在",
   "core_type": "核心类型",
   "cores": "核心",
   "dark_theme": "暗色主题",
@@ -78,6 +83,15 @@
   "enable_tun_via_root_": "通过 root 启用 TUN",
   "envs": "环境变量",
   "exit": "退出",
+  "failed_to_fetch_url": "无法获取：{url}",
+  "@failed_to_fetch_url": {
+    "placeholders": {
+      "url": {
+        "example": "https://www.example.com",
+        "type": "String"
+      }
+    }
+  },
   "follow_system_brightness": "跟随系统亮度",
   "follow_system_locale": "跟随系统语言",
   "foreground": "前台",
@@ -97,13 +111,33 @@
   "inject_send_through": "注入 sendThrough",
   "inject_socks_inbound": "注入 socks 入站",
   "inject_socks_outbound": "注入 socks 出站",
+  "install_now": "立即安装",
   "installed_apps": "已安装的应用程序",
+  "ip_not_found_for_binding_interface_binding_interface": "绑定接口'{bindingInterface}'未找到IP地址",
+  "@ip_not_found_for_binding_interface_binding_interface": {
+    "placeholders": {
+      "bindingInterface": {
+        "example": "Ethernet",
+        "type": "String"
+      }
+    }
+  },
   "ipv4": "IPv4",
   "ipv6": "IPv6",
   "language": "语言",
   "language_settings": "语言设置",
+  "last_checked_datetime": "上次检查时间：{datetime}",
+  "@last_checked_datetime": {
+    "placeholders": {
+      "datetime": {
+        "example": "2000-01-01 00:00:00.000",
+        "type": "String"
+      }
+    }
+  },
   "launch_settings": "启动设置",
   "live_objects": "实时对象",
+  "local_directory": "本地目录",
   "local_profile_group": "本地配置组",
   "log_config": "日志配置",
   "log_config_override": "日志配置覆盖",
@@ -116,13 +150,26 @@
   "no_profile_yet_create_one_first": "尚无配置，请先创建一个",
   "notification": "通知",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "快速开关正常工作需要通知权限",
+  "open_settings": "打开设置",
   "outbound_config_additional_socks_outbound": "出站配置：额外的 socks 出站",
   "outbound_config_send_through": "出站配置：sendThrough",
   "override_log_config": "覆盖日志配置",
   "path_of_core_exectuable_assets_etc_": "核心可执行文件、资源等的路径",
+  "pending_install_tag_name": "等待安装的版本：{tagName}",
+  "@pending_install_tag_name": {
+    "placeholders": {
+      "tagName": {
+        "example": "v1.2.3+45",
+        "type": "String"
+      }
+    }
+  },
   "per_app_proxy": "应用级代理",
   "per_app_proxy_mode": "应用级代理模式",
   "performance": "性能",
+  "permission_required": "需要权限",
+  "please_select_a_profile": "请选择一个配置",
+  "please_specify_v2ray_core_executable_path": "请指定v2ray核心可执行文件路径",
   "port": "端口",
   "profile": "配置",
   "profile_override": "配置覆盖",
@@ -132,6 +179,7 @@
   "proxy": "代理",
   "proxy_speed": "代理速度",
   "reconnected": "已重新连接",
+  "reconnecting": "重新连接中",
   "routing_rule_additional_rules": "路由规则：附加规则",
   "routing_rule_additionally_exclude_core_path": "路由规则：额外排除核心路径",
   "run_as_elevated_user": "以{elevatedUser}身份运行",
@@ -152,6 +200,7 @@
   "server_address": "服务器地址",
   "settings": "设置",
   "show_dashboard_floating_button": "显示仪表板悬浮按钮",
+  "sing_box_path_is_null": "sing-box路径为空",
   "socks_and_http": "Socks 和 HTTP",
   "socks_password": "Socks 密码",
   "socks_port": "Socks 端口",
@@ -163,6 +212,7 @@
   "theme_settings": "主题设置",
   "toggles": "开关",
   "traffic": "流量",
+  "tun_needs_additionally_a_sing_box_core": "Tun额外需要一个Sing-Box核心",
   "tun_settings": "Tun 设置",
   "tun_via_platform_api_": "Tun（通过平台 API）",
   "tun_via_root_": "Tun（通过 Root）",

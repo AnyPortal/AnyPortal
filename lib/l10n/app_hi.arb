@@ -11,6 +11,7 @@
   "all_apps_are_proxied_if_disabled": "यदि अक्षम किया गया तो सभी ऐप्स प्रॉक्सी किए जाएंगे",
   "all_apps_in_allowed_list_will_be_proxied": "अनुमत सूची में सभी ऐप्स प्रॉक्सी किए जाएंगे",
   "all_apps_not_in_disallowed_list_will_be_proxied": "अस्वीकृत सूची में न होने वाले सभी ऐप्स प्रॉक्सी किए जाएंगे",
+  "all_ipv4_defined_in_dns_servers_will_not_be_proxied": "DNS सर्वरों में परिभाषित सभी IPv4 प्रॉक्सीड नहीं होंगे",
   "allowed_all_apps_in_allowed_list_will_be_proxied": "अनुमत: अनुमत सूची में सभी ऐप्स प्रॉक्सी किए जाएंगे",
   "allowed_applications": "अनुमत अनुप्रयोग",
   "api_config": "एपीआई कॉन्फ़िगरेशन",
@@ -37,12 +38,16 @@
   "binding_interface": "बाइंडिंग इंटरफेस",
   "binding_ip": "बाइंडिंग आईपी",
   "black_dark": "काला गहरा",
+  "cancel": "रद्द करें",
+  "check_update": "अद्यतन जाँचें",
   "close_to_tray": "ट्रे में बंद करें",
   "connect": "कनेक्ट",
   "connectivity": "कनेक्टिविटी",
   "connectivity_basic_settings": "कनेक्टिविटी की मूल सेटिंग्स",
+  "copied": "कॉपी किया गया",
   "core": "कोर",
   "core_executable": "कोर निष्पादन योग्य",
+  "core_path_does_not_exist": "कोर पथ मौजूद नहीं है",
   "core_type": "कोर प्रकार",
   "cores": "कोर",
   "dark_theme": "डार्क थीम",
@@ -78,6 +83,15 @@
   "enable_tun_via_root_": "रूट के माध्यम से TUN सक्षम करें",
   "envs": "पर्यावरण सेटिंग्स",
   "exit": "EXIT",
+  "failed_to_fetch_url": "फetch करने में विफल: {url}",
+  "@failed_to_fetch_url": {
+    "placeholders": {
+      "url": {
+        "example": "https://www.example.com",
+        "type": "String"
+      }
+    }
+  },
   "follow_system_brightness": "सिस्टम चमक का पालन करें",
   "follow_system_locale": "सिस्टम भाषा का पालन करें",
   "foreground": "अग्रभूमि",
@@ -97,13 +111,33 @@
   "inject_send_through": "SendThrough सम्मिलित करें",
   "inject_socks_inbound": "SOCKS इनबाउंड सम्मिलित करें",
   "inject_socks_outbound": "SOCKS आउटबाउंड सम्मिलित करें",
+  "install_now": "अब स्थापित करें",
   "installed_apps": "इंस्टॉल किए गए ऐप्स",
+  "ip_not_found_for_binding_interface_binding_interface": "बाइंडिंग इंटरफ़ेस के लिए आईपी नहीं मिला: {bindingInterface}",
+  "@ip_not_found_for_binding_interface_binding_interface": {
+    "placeholders": {
+      "bindingInterface": {
+        "example": "Ethernet",
+        "type": "String"
+      }
+    }
+  },
   "ipv4": "IPv4",
   "ipv6": "IPv6",
   "language": "भाषा",
   "language_settings": "भाषा सेटिंग्स",
+  "last_checked_datetime": "अंतिम जाँच तिथि: {datetime}",
+  "@last_checked_datetime": {
+    "placeholders": {
+      "datetime": {
+        "example": "2000-01-01 00:00:00.000",
+        "type": "String"
+      }
+    }
+  },
   "launch_settings": "लॉन्च सेटिंग्स",
   "live_objects": "लाइव ऑब्जेक्ट्स",
+  "local_directory": "स्थानीय निर्देशिका",
   "local_profile_group": "स्थानीय प्रोफ़ाइल समूह",
   "log_config": "लॉग कॉन्फ़िगरेशन",
   "log_config_override": "लॉग कॉन्फ़िगरेशन ओवरराइड",
@@ -116,13 +150,26 @@
   "no_profile_yet_create_one_first": "कोई प्रोफ़ाइल नहीं, पहले एक बनाएं",
   "notification": "सूचना",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "क्विक टाइल्स को सही ढंग से काम करने के लिए सूचना अनुमति आवश्यक है",
+  "open_settings": "सेटिंग्स खोलें",
   "outbound_config_additional_socks_outbound": "आउटबाउंड कॉन्फ़िगरेशन: अतिरिक्त सॉक्स आउटबाउंड",
   "outbound_config_send_through": "आउटबाउंड कॉन्फ़िगरेशन: sendThrough",
   "override_log_config": "लॉग कॉन्फ़िगरेशन ओवरराइड करें",
   "path_of_core_exectuable_assets_etc_": "कोर निष्पादन योग्य, संपत्तियों आदि का पथ",
+  "pending_install_tag_name": "लंबित स्थापना: {tagName}",
+  "@pending_install_tag_name": {
+    "placeholders": {
+      "tagName": {
+        "example": "v1.2.3+45",
+        "type": "String"
+      }
+    }
+  },
   "per_app_proxy": "प्रति-ऐप प्रॉक्सी",
   "per_app_proxy_mode": "प्रति-ऐप प्रॉक्सी मोड",
   "performance": "प्रदर्शन",
+  "permission_required": "अनुमति आवश्यक",
+  "please_select_a_profile": "कृपया एक प्रोफ़ाइल चुनें",
+  "please_specify_v2ray_core_executable_path": "कृपया v2ray-कोर निष्पादन योग्य पथ निर्दिष्ट करें",
   "port": "पोर्ट",
   "profile": "प्रोफ़ाइल",
   "profile_override": "प्रोफ़ाइल ओवरराइड",
@@ -132,6 +179,7 @@
   "proxy": "प्रॉक्सी",
   "proxy_speed": "प्रॉक्सी गति",
   "reconnected": "पुन: कनेक्ट किया गया",
+  "reconnecting": "पुनः कनेक्ट हो रहा है",
   "routing_rule_additional_rules": "रूटिंग नियम: अतिरिक्त नियम",
   "routing_rule_additionally_exclude_core_path": "रूटिंग नियम: अतिरिक्त रूप से कोर पथ को बाहर करें",
   "run_as_elevated_user": "{elevatedUser} के रूप में चलाएँ",
@@ -152,6 +200,7 @@
   "server_address": "सर्वर पता",
   "settings": "सेटिंग्स",
   "show_dashboard_floating_button": "डैशबोर्ड फ्लोटिंग बटन दिखाएं",
+  "sing_box_path_is_null": "sing-box पथ है null",
   "socks_and_http": "सॉक्स और HTTP",
   "socks_password": "सॉक्स पासवर्ड",
   "socks_port": "सॉक्स पोर्ट",
@@ -163,6 +212,7 @@
   "theme_settings": "थीम सेटिंग्स",
   "toggles": "टॉगल्स",
   "traffic": "ट्रैफ़िक",
+  "tun_needs_additionally_a_sing_box_core": "TUN को अतिरिक्त रूप से एक सिंग-बॉक्स कोर की आवश्यकता होती है",
   "tun_settings": "TUN सेटिंग्स",
   "tun_via_platform_api_": "TUN (प्लेटफ़ॉर्म एपीआई के माध्यम से)",
   "tun_via_root_": "TUN (रूट के माध्यम से)",

@@ -49,7 +49,7 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
 
   Future<void> copyTextThenNotify(String text) async {
     Clipboard.setData(ClipboardData(text: text)).then((_) {
-      if (mounted) showSnackBarNow(context, Text("Copied"));
+      if (mounted) showSnackBarNow(context, Text(context.loc.copied));
     });
   }
 
@@ -190,7 +190,7 @@ class _TunSingBoxScreenState extends State<TunSingBoxScreen> {
       ),
       ListTile(
         title: Text(context.loc.inject_rule_to_exclude_core_dns),
-        subtitle: Text("All IPv4 defined in dns.servers will not be proxied"),
+        subtitle: Text(context.loc.all_ipv4_defined_in_dns_servers_will_not_be_proxied),
         trailing: Switch(
           value: _injectExcludeCoreDNS,
           onChanged: (value) {
