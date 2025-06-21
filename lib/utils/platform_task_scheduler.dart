@@ -14,6 +14,7 @@ import 'db/update_profile.dart';
 import 'db/update_profile_group.dart';
 import 'global.dart';
 import 'logger.dart';
+import 'method_channel.dart';
 import 'prefs.dart';
 import 'runtime_platform.dart';
 
@@ -24,6 +25,7 @@ Future<void> workManagerTaskInit() async {
   await Future.wait([
     PrefsManager().init(),
     GlobalManager().init(),
+    MethodChannelManager().init(),
   ]);
   await DatabaseManager().init();
 }

@@ -244,23 +244,20 @@ class _GeneralScreenState extends State<GeneralScreen> {
             },
           ),
         ),
-      if (RuntimePlatform.isWindows ||
-          RuntimePlatform.isLinux ||
-          RuntimePlatform.isMacOS)
-        ListTile(
-          title: Text(context.loc.auto_connect_at_app_launch),
-          subtitle:
-              Text(context.loc.auto_connect_selected_profile_at_app_launch),
-          trailing: Switch(
-            value: _connectAtLaunch,
-            onChanged: (value) async {
-              prefs.setBool('app.connectAtLaunch', value);
-              setState(() {
-                _connectAtLaunch = value;
-              });
-            },
-          ),
+      ListTile(
+        title: Text(context.loc.auto_connect_at_app_launch),
+        subtitle:
+            Text(context.loc.auto_connect_selected_profile_at_app_launch),
+        trailing: Switch(
+          value: _connectAtLaunch,
+          onChanged: (value) async {
+            prefs.setBool('app.connectAtLaunch', value);
+            setState(() {
+              _connectAtLaunch = value;
+            });
+          },
         ),
+      ),
       if (RuntimePlatform.isAndroid)
         ListTile(
           title: Text(context.loc.auto_connect_at_device_boot),

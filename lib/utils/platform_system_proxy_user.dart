@@ -1,13 +1,12 @@
 import 'dart:io';
 
-import 'package:flutter/services.dart';
-
 import 'package:process_run/shell.dart';
 import 'package:tuple/tuple.dart';
 
 import 'logger.dart';
-import 'runtime_platform.dart';
+import 'method_channel.dart';
 import 'prefs.dart';
+import 'runtime_platform.dart';
 
 class PlatformSystemProxyUser {
   /// return true, false, or null when system proxy is not available
@@ -345,7 +344,7 @@ class PlatformSystemProxyUserLinux extends PlatformSystemProxyUser {
 }
 
 class PlatformSystemProxyUserAndroid extends PlatformSystemProxyUser {
-  static const platform = MethodChannel('com.github.anyportal.anyportal');
+  static final platform = mCMan.methodChannel;
 
   @override
   Future<bool?> _isEnabled() async {

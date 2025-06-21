@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'package:drift/drift.dart';
 import 'package:path/path.dart' as p;
@@ -1006,7 +1005,7 @@ class VPNManagerExec extends VPNManager {
 }
 
 class VPNManagerMC extends VPNManager {
-  static const platform = MethodChannel('com.github.anyportal.anyportal');
+  static final platform = mCMan.methodChannel;
 
   VPNManagerMC() {
     mCMan.addHandler("onCoreToggled", (call) async {

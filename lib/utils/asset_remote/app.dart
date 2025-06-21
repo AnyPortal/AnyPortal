@@ -11,6 +11,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path/path.dart' as p;
 
 import '../logger.dart';
+import '../method_channel.dart';
 import '../platform_file_mananger.dart';
 import '../prefs.dart';
 import '../runtime_platform.dart';
@@ -41,7 +42,7 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
 
   /// return update success
   Future<bool> updateAssetNameAndroid() async {
-    final platform = MethodChannel('com.github.anyportal.anyportal');
+    final platform = mCMan.methodChannel;
     final abis = await platform.invokeMethod<List<Object?>>('os.abis');
     if (abis == null || abis.isEmpty) return false;
     String abi = abis[0] as String;
@@ -109,7 +110,7 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
       return true;
     } else if (RuntimePlatform.isAndroid) {
       try {
-        final platform = MethodChannel('com.github.anyportal.anyportal');
+        final platform = mCMan.methodChannel;
         await platform
             .invokeMethod('os.installApk', {'path': downloadedFile.path});
         return true;
