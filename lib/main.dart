@@ -131,23 +131,19 @@ void main(List<String> args) async {
     logger.w("vPNMan.initCore: ${e.toString()}");
   }
 
-  if (RuntimePlatform.isWindows ||
-      RuntimePlatform.isLinux ||
-      RuntimePlatform.isMacOS) {
-    /// connect at launch
-    Exception? err;
-    if (prefs.getBool('app.connectAtLaunch')!) {
-      try {
-        if (!await vPNMan.getIsCoreActive()) {
-          await vPNMan.startAll();
-        }
-      } on Exception catch (e) {
-        logger.w("$e");
-        err = e;
-      } finally {
-        if (err != null) {
-          vPNMan.setisTogglingAll(false);
-        }
+  /// connect at launch
+  Exception? err;
+  if (prefs.getBool('app.connectAtLaunch')!) {
+    try {
+      if (!await vPNMan.getIsCoreActive()) {
+        await vPNMan.startAll();
+      }
+    } on Exception catch (e) {
+      logger.w("$e");
+      err = e;
+    } finally {
+      if (err != null) {
+        vPNMan.setisTogglingAll(false);
       }
     }
   }
