@@ -131,7 +131,7 @@ class Database extends _$Database {
                 await into(core).insertOnConflictUpdate(CoreCompanion(
               coreTypeId: Value(CoreTypeDefault.xray.index),
               version: const Value("libv2raymobile"),
-              updatedAt: Value(DateTime.now()),
+              updatedAt: Value(DateTime.fromMicrosecondsSinceEpoch(0)),
               isExec: const Value(false),
               workingDir: const Value(""),
               envs: const Value("{}"),
