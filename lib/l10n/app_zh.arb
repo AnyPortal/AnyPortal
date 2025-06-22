@@ -77,6 +77,7 @@
   "enable_ipv4": "启用 IPv4",
   "enable_ipv6": "启用 IPv6",
   "enable_system_proxy": "启用系统代理",
+  "enable_tun": "启用Tun",
   "enable_tun2socks_so_a_socks_proxy_works_like_a_vpn": "启用 tun2socks，使 socks 代理像 VPN 一样工作",
   "enable_tun2socks_so_a_socks_proxy_works_like_a_vpn_requires_elevation_": "启用 tun2socks，使 socks 代理像 VPN 一样工作\n需要提升权限",
   "enable_tun_via_platform_api_": "通过平台 API 启用 TUN",
@@ -214,6 +215,7 @@
   "traffic": "流量",
   "tun_needs_additionally_a_sing_box_core": "Tun额外需要一个Sing-Box核心",
   "tun_settings": "Tun 设置",
+  "tun_stack": "Tun堆栈",
   "tun_via_platform_api_": "Tun（通过平台 API）",
   "tun_via_root_": "Tun（通过 Root）",
   "type": "类型",
@@ -229,6 +231,15 @@
   "warning_invalid_asset": "警告：无效资源",
   "warning_invalid_url": "警告：无效 URL",
   "warning_no_core_selected_": "警告：未选择核心！",
+  "warning_you_need_to_be_elevated_user_to_enable_tun": "警告：您需要以{elevatedUser}身份启用Tun",
+  "@warning_you_need_to_be_elevated_user_to_enable_tun": {
+    "placeholders": {
+      "elevatedUser": {
+        "example": "Administrator",
+        "type": "String"
+      }
+    }
+  },
   "warning_you_need_to_be_elevated_user_to_modify_this_setting": "警告：您需要是{elevatedUser}才能修改此设置",
   "@warning_you_need_to_be_elevated_user_to_modify_this_setting": {
     "placeholders": {

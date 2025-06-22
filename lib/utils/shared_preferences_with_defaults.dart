@@ -130,9 +130,8 @@ class SharedPreferencesWithDefaults with ChangeNotifier {
     return false;
   }
 
-  Future<bool> setWithNotification(String key, dynamic value) async {
-    final ok = await set(key, value);
-    notifyListeners();
-    return ok;
+  @override
+  void notifyListeners() {
+    super.notifyListeners();
   }
 }

@@ -77,6 +77,7 @@
   "enable_ipv4": "IPv4 を有効化",
   "enable_ipv6": "IPv6 を有効化",
   "enable_system_proxy": "システムプロキシを有効化",
+  "enable_tun": "TUNを有効にする",
   "enable_tun2socks_so_a_socks_proxy_works_like_a_vpn": "Tun2socks を有効化して SOCKS プロキシをVPNのように動作させる",
   "enable_tun2socks_so_a_socks_proxy_works_like_a_vpn_requires_elevation_": "Tun2socks を有効化して SOCKS プロキシをVPNのように動作させる（管理者権限が必要）",
   "enable_tun_via_platform_api_": "プラットフォームAPI経由でTunを有効化",
@@ -214,6 +215,7 @@
   "traffic": "トラフィック",
   "tun_needs_additionally_a_sing_box_core": "TUNには追加的にSing-Boxコアが必要です",
   "tun_settings": "Tun設定",
+  "tun_stack": "TUNスタック",
   "tun_via_platform_api_": "Tun（プラットフォームAPI経由）",
   "tun_via_root_": "Tun（ルート経由）",
   "type": "タイプ",
@@ -229,6 +231,15 @@
   "warning_invalid_asset": "警告：無効なアセット",
   "warning_invalid_url": "警告：無効なURL",
   "warning_no_core_selected_": "警告：コアが選択されていません！",
+  "warning_you_need_to_be_elevated_user_to_enable_tun": "警告：TUNを有効にするには{elevatedUser}である必要があります",
+  "@warning_you_need_to_be_elevated_user_to_enable_tun": {
+    "placeholders": {
+      "elevatedUser": {
+        "example": "Administrator",
+        "type": "String"
+      }
+    }
+  },
   "warning_you_need_to_be_elevated_user_to_modify_this_setting": "警告：この設定を変更するには{elevatedUser}である必要があります",
   "@warning_you_need_to_be_elevated_user_to_modify_this_setting": {
     "placeholders": {

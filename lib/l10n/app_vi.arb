@@ -77,6 +77,7 @@
   "enable_ipv4": "Bật IPv4",
   "enable_ipv6": "Bật IPv6",
   "enable_system_proxy": "Bật proxy hệ thống",
+  "enable_tun": "Bật Tun",
   "enable_tun2socks_so_a_socks_proxy_works_like_a_vpn": "Bật tun2socks để proxy socks hoạt động như một VPN",
   "enable_tun2socks_so_a_socks_proxy_works_like_a_vpn_requires_elevation_": "Bật tun2socks để proxy socks hoạt động như một VPN\nYêu cầu quyền nâng cao",
   "enable_tun_via_platform_api_": "Bật tun (qua API nền tảng)",
@@ -214,6 +215,7 @@
   "traffic": "Lưu lượng",
   "tun_needs_additionally_a_sing_box_core": "Tun cần thêm một lõi sing-box",
   "tun_settings": "Cài đặt Tun",
+  "tun_stack": "Ngăn xếp Tun",
   "tun_via_platform_api_": "Tun (qua API nền tảng)",
   "tun_via_root_": "Tun (qua root)",
   "type": "Loại",
@@ -229,6 +231,15 @@
   "warning_invalid_asset": "CẢNH BÁO: Tài nguyên không hợp lệ",
   "warning_invalid_url": "CẢNH BÁO: URL không hợp lệ",
   "warning_no_core_selected_": "CẢNH BÁO: chưa chọn lõi!",
+  "warning_you_need_to_be_elevated_user_to_enable_tun": "CẢNH BÁO: bạn cần là {elevatedUser} để bật Tun",
+  "@warning_you_need_to_be_elevated_user_to_enable_tun": {
+    "placeholders": {
+      "elevatedUser": {
+        "example": "Administrator",
+        "type": "String"
+      }
+    }
+  },
   "warning_you_need_to_be_elevated_user_to_modify_this_setting": "CẢNH BÁO: bạn cần là {elevatedUser} để chỉnh sửa cài đặt này",
   "@warning_you_need_to_be_elevated_user_to_modify_this_setting": {
     "placeholders": {

@@ -77,6 +77,7 @@
   "enable_ipv4": "Habilitar IPv4",
   "enable_ipv6": "Habilitar IPv6",
   "enable_system_proxy": "Habilitar proxy del sistema",
+  "enable_tun": "Habilitar TUN",
   "enable_tun2socks_so_a_socks_proxy_works_like_a_vpn": "Habilitar tun2socks para que un proxy SOCKS funcione como una VPN",
   "enable_tun2socks_so_a_socks_proxy_works_like_a_vpn_requires_elevation_": "Habilitar tun2socks para que un proxy SOCKS funcione como una VPN\nRequiere privilegios elevados",
   "enable_tun_via_platform_api_": "Habilitar tun (a través de la API de la plataforma)",
@@ -214,6 +215,7 @@
   "traffic": "Tráfico",
   "tun_needs_additionally_a_sing_box_core": "TUN necesita adicionalmente un núcleo sing-box",
   "tun_settings": "Configuración de TUN",
+  "tun_stack": "Pila TUN",
   "tun_via_platform_api_": "TUN (a través de la API de la plataforma)",
   "tun_via_root_": "TUN (a través de root)",
   "type": "Tipo",
@@ -229,6 +231,15 @@
   "warning_invalid_asset": "ADVERTENCIA: activo inválido",
   "warning_invalid_url": "ADVERTENCIA: URL inválida",
   "warning_no_core_selected_": "ADVERTENCIA: ¡ningún núcleo seleccionado!",
+  "warning_you_need_to_be_elevated_user_to_enable_tun": "ADVERTENCIA: necesitas ser {elevatedUser} para habilitar TUN",
+  "@warning_you_need_to_be_elevated_user_to_enable_tun": {
+    "placeholders": {
+      "elevatedUser": {
+        "example": "Administrator",
+        "type": "String"
+      }
+    }
+  },
   "warning_you_need_to_be_elevated_user_to_modify_this_setting": "ADVERTENCIA: necesitas ser {elevatedUser} para modificar esta configuración",
   "@warning_you_need_to_be_elevated_user_to_modify_this_setting": {
     "placeholders": {

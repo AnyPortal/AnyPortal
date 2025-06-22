@@ -77,6 +77,7 @@
   "enable_ipv4": "เปิดใช้งาน IPv4",
   "enable_ipv6": "เปิดใช้งาน IPv6",
   "enable_system_proxy": "เปิดใช้งานพร็อกซีระบบ",
+  "enable_tun": "เปิดใช้งาน Tun",
   "enable_tun2socks_so_a_socks_proxy_works_like_a_vpn": "เปิดใช้งาน tun2socks เพื่อให้พร็อกซี SOCKS ทำงานเหมือน VPN",
   "enable_tun2socks_so_a_socks_proxy_works_like_a_vpn_requires_elevation_": "เปิดใช้งาน tun2socks เพื่อให้พร็อกซี SOCKS ทำงานเหมือน VPN\nต้องใช้สิทธิ์ระดับสูง",
   "enable_tun_via_platform_api_": "เปิดใช้งาน TUN ผ่าน API ของแพลตฟอร์ม",
@@ -214,6 +215,7 @@
   "traffic": "ทราฟฟิก",
   "tun_needs_additionally_a_sing_box_core": "TUN ต้องการคอร์ sing-box เป็นเพิ่มเติม",
   "tun_settings": "การตั้งค่า TUN",
+  "tun_stack": "สแตก Tun",
   "tun_via_platform_api_": "TUN (ผ่าน API ของแพลตฟอร์ม)",
   "tun_via_root_": "TUN (ผ่านรูท)",
   "type": "ประเภท",
@@ -229,6 +231,15 @@
   "warning_invalid_asset": "คำเตือน: ทรัพย์สินไม่ถูกต้อง",
   "warning_invalid_url": "คำเตือน: URL ไม่ถูกต้อง",
   "warning_no_core_selected_": "คำเตือน: ไม่มีไฟล์หลักที่เลือก!",
+  "warning_you_need_to_be_elevated_user_to_enable_tun": "คำเตือน: คุณจำเป็นต้องเป็น {elevatedUser} เพื่อเปิดใช้งาน Tun",
+  "@warning_you_need_to_be_elevated_user_to_enable_tun": {
+    "placeholders": {
+      "elevatedUser": {
+        "example": "Administrator",
+        "type": "String"
+      }
+    }
+  },
   "warning_you_need_to_be_elevated_user_to_modify_this_setting": "คำเตือน: คุณต้องเป็น {elevatedUser} เพื่อแก้ไขการตั้งค่านี้",
   "@warning_you_need_to_be_elevated_user_to_modify_this_setting": {
     "placeholders": {

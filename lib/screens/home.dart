@@ -258,7 +258,8 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
       case 'toggle_tun':
         final shouldEnable = !menuItem.checked!;
         menuItem.checked = shouldEnable;
-        await prefs.setWithNotification("tun", shouldEnable);
+        await prefs.setBool("tun", shouldEnable);
+        prefs.notifyListeners();
         if (await vPNMan.getIsCoreActive()) {
           if (shouldEnable) {
             await vPNMan.startTun();
@@ -269,7 +270,8 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
       case 'toggle_system_proxy':
         final shouldEnable = !menuItem.checked!;
         menuItem.checked = shouldEnable;
-        await prefs.setWithNotification("systemProxy", shouldEnable);
+        await prefs.setBool("systemProxy", shouldEnable);
+        prefs.notifyListeners();
         if (await vPNMan.getIsCoreActive()) {
           if (shouldEnable) {
             await vPNMan.startSystemProxy();

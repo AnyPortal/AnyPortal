@@ -113,8 +113,7 @@ abstract class VPNManager with ChangeNotifier {
           final errMsg = "all toggled for $timeoutSec sec, force stopped";
           logger.w(errMsg);
           withContext((context) {
-            showSnackBarNow(
-                context, Text(errMsg));
+            showSnackBarNow(context, Text(errMsg));
           });
         }
       });
@@ -139,8 +138,7 @@ abstract class VPNManager with ChangeNotifier {
           final errMsg = "core toggled for $timeoutSec sec, force stopped";
           logger.w(errMsg);
           withContext((context) {
-            showSnackBarNow(
-                context, Text(errMsg));
+            showSnackBarNow(context, Text(errMsg));
           });
         }
       });
@@ -166,8 +164,7 @@ abstract class VPNManager with ChangeNotifier {
               "system proxy toggled for $timeoutSec sec, force stopped";
           logger.w(errMsg);
           withContext((context) {
-            showSnackBarNow(
-                context, Text(errMsg));
+            showSnackBarNow(context, Text(errMsg));
           });
         }
       });
@@ -192,8 +189,7 @@ abstract class VPNManager with ChangeNotifier {
           final errMsg = "tun toggled for $timeoutSec sec, force stopped";
           logger.w(errMsg);
           withContext((context) {
-            showSnackBarNow(
-                context, Text(errMsg));
+            showSnackBarNow(context, Text(errMsg));
           });
         }
       });
@@ -663,8 +659,8 @@ abstract class VPNManager with ChangeNotifier {
       if (prefs.getBool("tun")!) {
         if (core == null) {
           withContext((context) {
-            showSnackBarNow(
-                context, Text(context.loc.tun_needs_additionally_a_sing_box_core));
+            showSnackBarNow(context,
+                Text(context.loc.tun_needs_additionally_a_sing_box_core));
           });
           return;
         } else {
@@ -935,6 +931,19 @@ class VPNManagerExec extends VPNManager {
   @override
   _startTun() async {
     logger.d("starting: _startTun");
+    if (!global.isElevated) {
+      withContext((context) {
+        showSnackBarNow(
+            context,
+            Text(context.loc.warning_you_need_to_be_elevated_user_to_enable_tun(
+                RuntimePlatform.isWindows
+                    ? context.loc.administrator
+                    : "root")));
+      });
+      setisTogglingTun(false);
+      return false;
+    }
+
     if (getIsTunProcess() && pidTun == null) {
       await initTunExec();
       logger.d("tunSingBoxCorePath: $_tunSingBoxCorePath");
@@ -1072,6 +1081,19 @@ class VPNManagerMC extends VPNManager {
   @override
   _startTun() async {
     if (!prefs.getBool("tun.useEmbedded")!) {
+      if (!global.isElevated) {
+        withContext((context) {
+          showSnackBarNow(
+              context,
+              Text(context.loc
+                  .warning_you_need_to_be_elevated_user_to_enable_tun(
+                      RuntimePlatform.isWindows
+                          ? context.loc.administrator
+                          : "root")));
+        });
+        setisTogglingTun(false);
+        return false;
+      }
       await initTunExec();
     }
     final res = await platform.invokeMethod('vpn.startTun') as bool;

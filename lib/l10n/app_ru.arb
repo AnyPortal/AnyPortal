@@ -77,6 +77,7 @@
   "enable_ipv4": "Включить IPv4",
   "enable_ipv6": "Включить IPv6",
   "enable_system_proxy": "Включить системный прокси",
+  "enable_tun": "Включить Tun",
   "enable_tun2socks_so_a_socks_proxy_works_like_a_vpn": "Включить tun2socks, чтобы SOCKS-прокси работал как VPN",
   "enable_tun2socks_so_a_socks_proxy_works_like_a_vpn_requires_elevation_": "Включить tun2socks, чтобы SOCKS-прокси работал как VPN\nТребуются права администратора",
   "enable_tun_via_platform_api_": "Включить TUN (через API платформы)",
@@ -214,6 +215,7 @@
   "traffic": "Трафик",
   "tun_needs_additionally_a_sing_box_core": "Tun дополнительно требует ядро sing-box",
   "tun_settings": "Настройки Tun",
+  "tun_stack": "Стек Tun",
   "tun_via_platform_api_": "Tun (через API платформы)",
   "tun_via_root_": "Tun (через root)",
   "type": "Тип",
@@ -229,6 +231,15 @@
   "warning_invalid_asset": "ПРЕДУПРЕЖДЕНИЕ: недопустимый ресурс",
   "warning_invalid_url": "ПРЕДУПРЕЖДЕНИЕ: недопустимый URL",
   "warning_no_core_selected_": "ПРЕДУПРЕЖДЕНИЕ: ядро не выбрано!",
+  "warning_you_need_to_be_elevated_user_to_enable_tun": "ПРЕДУПРЕЖДЕНИЕ: вам нужно быть {elevatedUser}, чтобы включить Tun",
+  "@warning_you_need_to_be_elevated_user_to_enable_tun": {
+    "placeholders": {
+      "elevatedUser": {
+        "example": "Administrator",
+        "type": "String"
+      }
+    }
+  },
   "warning_you_need_to_be_elevated_user_to_modify_this_setting": "ПРЕДУПРЕЖДЕНИЕ: вам нужно быть {elevatedUser}, чтобы изменить этот параметр",
   "@warning_you_need_to_be_elevated_user_to_modify_this_setting": {
     "placeholders": {

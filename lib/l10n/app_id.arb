@@ -77,6 +77,7 @@
   "enable_ipv4": "Aktifkan IPv4",
   "enable_ipv6": "Aktifkan IPv6",
   "enable_system_proxy": "Aktifkan proxy sistem",
+  "enable_tun": "Aktifkan Tun",
   "enable_tun2socks_so_a_socks_proxy_works_like_a_vpn": "Aktifkan tun2socks agar proxy SOCKS berfungsi seperti VPN",
   "enable_tun2socks_so_a_socks_proxy_works_like_a_vpn_requires_elevation_": "Aktifkan tun2socks agar proxy SOCKS berfungsi seperti VPN\nMembutuhkan izin administratif",
   "enable_tun_via_platform_api_": "Aktifkan tun (melalui API platform)",
@@ -214,6 +215,7 @@
   "traffic": "Lalu lintas",
   "tun_needs_additionally_a_sing_box_core": "Tun memerlukan (secara tambahan) inti sing-box",
   "tun_settings": "Pengaturan Tun",
+  "tun_stack": "Tumpukan Tun",
   "tun_via_platform_api_": "Tun (melalui API platform)",
   "tun_via_root_": "Tun (melalui root)",
   "type": "Jenis",
@@ -229,6 +231,15 @@
   "warning_invalid_asset": "PERINGATAN: Aset tidak valid",
   "warning_invalid_url": "PERINGATAN: URL tidak valid",
   "warning_no_core_selected_": "PERINGATAN: tidak ada inti yang dipilih!",
+  "warning_you_need_to_be_elevated_user_to_enable_tun": "PERINGATAN: Anda perlu menjadi {elevatedUser} untuk mengaktifkan Tun",
+  "@warning_you_need_to_be_elevated_user_to_enable_tun": {
+    "placeholders": {
+      "elevatedUser": {
+        "example": "Administrator",
+        "type": "String"
+      }
+    }
+  },
   "warning_you_need_to_be_elevated_user_to_modify_this_setting": "PERINGATAN: Anda harus menjadi {elevatedUser} untuk mengubah pengaturan ini",
   "@warning_you_need_to_be_elevated_user_to_modify_this_setting": {
     "placeholders": {

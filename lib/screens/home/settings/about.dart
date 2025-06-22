@@ -116,11 +116,15 @@ We hope you choose well between your home world and Wonderlands.""")),
                       .toIso8601String()),
         ),
         onTap: () async {
-          final assetRemoteProtocolApp = AssetRemoteProtocolApp();
-          if (await assetRemoteProtocolApp.init()) {
-            await assetRemoteProtocolApp.update(
-              shouldInstall: true,
-            );
+          try {
+            final assetRemoteProtocolApp = AssetRemoteProtocolApp();
+            if (await assetRemoteProtocolApp.init()) {
+              await assetRemoteProtocolApp.update(
+                shouldInstall: true,
+              );
+            }
+          } catch (e) {
+            logger.w(e.toString());
           }
           _updateDownloadedVersion();
           _updateLastChecked();

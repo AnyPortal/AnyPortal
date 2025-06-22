@@ -10,7 +10,7 @@ import 'package:window_manager/window_manager.dart';
 
 import 'generated/l10n/app_localizations.dart';
 import 'screens/home.dart';
-import 'screens/home/settings/tun_hev_socks5_tunnel.dart';
+import 'screens/home/settings/tun.dart';
 import 'utils/arg_parser.dart';
 import 'utils/asset_remote/app.dart';
 import 'utils/copy_assets.dart';
@@ -69,7 +69,7 @@ void main(List<String> args) async {
   }
 
   if (RuntimePlatform.isAndroid || RuntimePlatform.isIOS) {
-    await tProxyConfInit();
+    await tunHevSocks5TunnelConfInit();
   } else if (RuntimePlatform.isWindows ||
       RuntimePlatform.isLinux ||
       RuntimePlatform.isMacOS) {
@@ -149,11 +149,15 @@ void main(List<String> args) async {
   }
 
   if (prefs.getBool("app.autoUpdate")!) {
-    final assetRemoteProtocolApp = AssetRemoteProtocolApp();
-    if (await assetRemoteProtocolApp.init()) {
-      await assetRemoteProtocolApp.update(
-        shouldInstall: true,
-      );
+    try{
+      final assetRemoteProtocolApp = AssetRemoteProtocolApp();
+      if (await assetRemoteProtocolApp.init()) {
+        await assetRemoteProtocolApp.update(
+          shouldInstall: true,
+        );
+      }
+    } catch (e) {
+      logger.w("app.autoUpdate: ${e.toString()}");
     }
   }
 }

@@ -77,6 +77,7 @@
   "enable_ipv4": "IPv4’ü etkinleştir",
   "enable_ipv6": "IPv6’yı etkinleştir",
   "enable_system_proxy": "Sistem proxy’sini etkinleştir",
+  "enable_tun": "Tun'u Etkinleştir",
   "enable_tun2socks_so_a_socks_proxy_works_like_a_vpn": "tun2socks’u etkinleştir, böylece SOCKS proxy’si VPN gibi çalışır",
   "enable_tun2socks_so_a_socks_proxy_works_like_a_vpn_requires_elevation_": "tun2socks’u etkinleştir, böylece SOCKS proxy’si VPN gibi çalışır\nYönetici izni gerektirir",
   "enable_tun_via_platform_api_": "Tun’u platform API’si üzerinden etkinleştir",
@@ -214,6 +215,7 @@
   "traffic": "Trafik",
   "tun_needs_additionally_a_sing_box_core": "Tun'a ek olarak bir sing-box çekirdeği gereklidir",
   "tun_settings": "Tun ayarları",
+  "tun_stack": "Tun Yığını",
   "tun_via_platform_api_": "Tun (platform API üzerinden)",
   "tun_via_root_": "Tun (root ile)",
   "type": "Tür",
@@ -229,6 +231,15 @@
   "warning_invalid_asset": "UYARI: Geçersiz varlık",
   "warning_invalid_url": "UYARI: Geçersiz URL",
   "warning_no_core_selected_": "UYARI: Seçili çekirdek yok!",
+  "warning_you_need_to_be_elevated_user_to_enable_tun": "UYARI: Tun'u etkinleştirmek için {elevatedUser} olmalısınız",
+  "@warning_you_need_to_be_elevated_user_to_enable_tun": {
+    "placeholders": {
+      "elevatedUser": {
+        "example": "Administrator",
+        "type": "String"
+      }
+    }
+  },
   "warning_you_need_to_be_elevated_user_to_modify_this_setting": "UYARI: Bu ayarı değiştirmek için {elevatedUser} olmalısınız",
   "@warning_you_need_to_be_elevated_user_to_modify_this_setting": {
     "placeholders": {

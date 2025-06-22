@@ -10,8 +10,7 @@ import 'settings/cores.dart';
 import 'settings/general.dart';
 import 'settings/profile_override.dart';
 import 'settings/system_proxy.dart';
-import 'settings/tun_hev_socks5_tunnel.dart';
-import 'settings/tun_sing_box.dart';
+import 'settings/tun.dart';
 
 class SettingList extends StatefulWidget {
   const SettingList({
@@ -28,7 +27,7 @@ class _SettingListState extends State<SettingList> {
     return Scaffold(
       appBar: AppBar(
         title: Text(context.loc.settings),
-              ),
+      ),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Wrap(children: [
@@ -44,7 +43,8 @@ class _SettingListState extends State<SettingList> {
           ),
           const Divider(),
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             child: Text(
               context.loc.connectivity,
               style: TextStyle(color: Theme.of(context).colorScheme.primary),
@@ -52,46 +52,43 @@ class _SettingListState extends State<SettingList> {
           ),
           ListTile(
               title: Text(context.loc.socks_and_http),
-              subtitle: Text(context.loc.either_to_match_predefined_profile_or_for_profile_injection),
+              subtitle: Text(context.loc
+                  .either_to_match_predefined_profile_or_for_profile_injection),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ConnectivityBasicScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const ConnectivityBasicScreen()),
                 );
               }),
-          if (RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS || RuntimePlatform.isAndroid)
+          if (RuntimePlatform.isWindows ||
+              RuntimePlatform.isLinux ||
+              RuntimePlatform.isMacOS ||
+              RuntimePlatform.isAndroid)
             ListTile(
                 title: Text(context.loc.system_proxy),
-                subtitle: Text(context.loc.provided_by_os_not_all_apps_respect_this_setting),
+                subtitle: Text(context
+                    .loc.provided_by_os_not_all_apps_respect_this_setting),
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const SystemProxyScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => const SystemProxyScreen()),
                   );
                 }),
-          if (RuntimePlatform.isAndroid || RuntimePlatform.isIOS)
-            ListTile(
-                title: Text(context.loc.tun_via_platform_api_),
-                subtitle: Text(context.loc.vitual_network_adaptor),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const TunHevSocks5TunnelScreen()),
-                  );
-                }),
-          if (RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS || RuntimePlatform.isAndroid)
-            ListTile(
-                title: Text(context.loc.tun_via_root_),
-                subtitle: Text(context.loc.vitual_network_adaptor),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const TunSingBoxScreen()),
-                  );
-                }),
+          ListTile(
+              title: Text("Tun"),
+              subtitle: Text(context.loc.vitual_network_adaptor),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const TunScreen()),
+                );
+              }),
           const Divider(),
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             child: Text(
               context.loc.assets,
               style: TextStyle(color: Theme.of(context).colorScheme.primary),
@@ -119,7 +116,8 @@ class _SettingListState extends State<SettingList> {
           ),
           const Divider(),
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             child: Text(
               context.loc.profile,
               style: TextStyle(color: Theme.of(context).colorScheme.primary),
@@ -127,7 +125,8 @@ class _SettingListState extends State<SettingList> {
           ),
           ListTile(
             title: Text(context.loc.profile_override),
-            subtitle: Text(context.loc.inject_configuration_into_v2ray_xray_profile),
+            subtitle:
+                Text(context.loc.inject_configuration_into_v2ray_xray_profile),
             onTap: () {
               Navigator.push(
                 context,
@@ -138,7 +137,8 @@ class _SettingListState extends State<SettingList> {
           ),
           const Divider(),
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
             child: Text(
               context.loc.about,
               style: TextStyle(color: Theme.of(context).colorScheme.primary),
