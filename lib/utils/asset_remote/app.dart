@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-import 'dart:core';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -55,19 +54,19 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
   }
 
   @override
-  String? getOldMeta({
-    TypedResult? oldAsset,
+  String? getDownloadedMeta({
+    TypedResult? asset,
   }) {
     return prefs.getString("app.github.meta");
   }
 
   @override
-  String? getDownloadedFilePath({TypedResult? oldAsset}) {
+  String? getDownloadedFilePath({TypedResult? asset}) {
     return prefs.getString("app.github.downloadedFilePath");
   }
 
   @override
-  Future<void> postGetNewMeta(String newMeta, {TypedResult? oldAsset}) async {
+  Future<void> postGetRemoteMeta(String remoteMeta, {TypedResult? asset}) async {
     prefs.setInt("app.autoUpdate.checkedAt",
         (DateTime.now().millisecondsSinceEpoch / 1000).toInt());
   }
@@ -76,8 +75,8 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
   @override
   Future<int> postDownload(
     File downloadedFile,
-    TypedResult? oldAsset,
-    String newMeta,
+    TypedResult? asset,
+    String remoteMeta,
     int autoUpdateInterval,
   ) async {
     String assetPath = downloadedFile.path;
@@ -89,9 +88,9 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
 
     prefs.setString("app.github.downloadedFilePath", assetPath);
 
-    final newMetaObj = jsonDecode(newMeta) as Map<String, dynamic>;
-    final createdAt = newMetaObj["created_at"];
-    final tagName = newMetaObj["tag_name"];
+    final remoteMetaObj = jsonDecode(remoteMeta) as Map<String, dynamic>;
+    final createdAt = remoteMetaObj["created_at"];
+    final tagName = remoteMetaObj["tag_name"];
     prefs.setString(
       "app.github.meta",
       '{"created_at": "$createdAt", "tag_name": "$tagName"}',
@@ -124,35 +123,48 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
     }
   }
 
+  /// return isUpdated
   @override
   Future<bool> update({
-    TypedResult? oldAsset,
+    TypedResult? asset,
     int autoUpdateInterval = 0,
     bool shouldInstall = false,
   }) async {
     /// check if need to update
     loggerD("to update: $url");
-    final newMeta = await getNewMeta(useSocks: vPNMan.isCoreActive);
-    if (newMeta == null) {
+    final downloadedMeta = getDownloadedMeta();
+    final remoteMeta = await getRemoteMeta(useSocks: vPNMan.isCoreActive);
+    if (remoteMeta == null) {
       loggerD("failed to get meta: $url");
       return true;
     }
-    await postGetNewMeta(newMeta);
+    await postGetRemoteMeta(remoteMeta);
 
-    final newMetaObj = jsonDecode(newMeta) as Map<String, dynamic>;
-    final newTagName = newMetaObj["tag_name"] as String;
-    final newBuildNumber = int.parse(newTagName.split("+").last);
+    final remoteMetaObj = jsonDecode(remoteMeta) as Map<String, dynamic>;
+    final remoteTagName = remoteMetaObj["tag_name"] as String;
+    final remoteBuildNumber = int.parse(remoteTagName.split("+").last);
     final packageInfo = await PackageInfo.fromPlatform();
     final buildNumber = int.parse(packageInfo.buildNumber);
-    final isAppUpdated = newBuildNumber <= buildNumber;
+    final isAppUpdated = remoteBuildNumber <= buildNumber;
 
-    /// if app updated, must have downloaded (could be deleted)
-    /// check if installed by checking downloadedFilePath
+    Map<String, dynamic> downloadedMetaObj = {};
+    int downloadedBuildNumber = 0;
+    try {
+      downloadedMetaObj = jsonDecode(downloadedMeta!) as Map<String, dynamic>;
+      final downloadedTagName = downloadedMetaObj["tag_name"] as String;
+      downloadedBuildNumber = int.parse(downloadedTagName.split("+").last);
+    } catch (e) {
+      logger.w("jsonDecode(appGithubMeta): $e");
+    }
+    final isDownloadedMetaUpdated = remoteBuildNumber <= downloadedBuildNumber;
+
     String? downloadedFilePath = getDownloadedFilePath();
     File? downloadedFile;
     if (isAppUpdated) {
+      /// if app updated, must have installed
+      /// check if upgraded by checking downloadedFilePath
       if (downloadedFilePath != null) {
-        loggerD("upgraded to: $newTagName");
+        loggerD("upgraded to: $remoteTagName");
         prefs.remove("app.github.downloadedFilePath");
         return true;
       } else {
@@ -160,37 +172,41 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
         return true;
       }
     } else {
-      /// get download url
-      loggerD("need download: $url");
-      final downloadUrl = getDownloadUrl(newMeta);
-      if (downloadUrl == null) {
-        loggerD("downloadUrl == null: $url");
-        return true;
-      }
+      if (isDownloadedMetaUpdated && downloadedFilePath != null){
+        loggerD("already downloaded: $url");
+        downloadedFile = File(downloadedFilePath);
+      } else {
+        /// get download url
+        loggerD("need download: $url");
+        final downloadUrl = getDownloadUrl(remoteMeta);
+        if (downloadUrl == null) {
+          loggerD("downloadUrl == null: $url");
+          return true;
+        }
 
-      /// download
-      loggerD("downloading: $downloadUrl");
-      downloadedFile = await download(
-        downloadUrl,
-        useSocks: vPNMan.isCoreActive,
-      );
-      if (downloadedFile == null) {
-        loggerD("download failed: $downloadUrl");
-        return false;
-      }
-      loggerD("downloaded: $downloadUrl");
+        /// download
+        loggerD("downloading: $downloadUrl");
+        downloadedFile = await download(
+          downloadUrl,
+          useSocks: vPNMan.isCoreActive,
+        );
+        if (downloadedFile == null) {
+          loggerD("download failed: $downloadUrl");
+          return false;
+        }
+        loggerD("downloaded: $downloadUrl");
 
-      /// record newMeta after download
-      await postDownload(
-        downloadedFile,
-        oldAsset,
-        newMeta,
-        autoUpdateInterval,
-      );
+        /// record remoteMeta after download
+        await postDownload(
+          downloadedFile,
+          asset,
+          remoteMeta,
+          autoUpdateInterval,
+        );
+      }
     }
 
     if (shouldInstall) {
-      /// install only if not using
       loggerD("to install: $url");
       final isInstalling = await install(downloadedFile);
       if (isInstalling) {

@@ -29,16 +29,16 @@ class AboutScreen extends StatefulWidget {
 
 class _AboutScreenState extends State<AboutScreen> {
   String version = "";
-  String? newTagName;
+  String? downloadedTagName;
   int buildNumber = 0;
-  int? newBuildNumber;
+  int? downloadedBuildNumber;
   int lastChecked = prefs.getInt("app.autoUpdate.checkedAt")!;
 
   @override
   void initState() {
     super.initState();
     _loadPackageInfo();
-    _updateNewVersion();
+    _updateDownloadedVersion();
   }
 
   Future<void> _loadPackageInfo() async {
@@ -49,19 +49,19 @@ class _AboutScreenState extends State<AboutScreen> {
     });
   }
 
-  void _updateNewVersion() {
-    String appGithubMeta = prefs.getString("app.github.meta")!;
-    Map<String, dynamic> appGithubMetaObj = {};
+  void _updateDownloadedVersion() {
+    String downloadedMeta = prefs.getString("app.github.meta")!;
+    Map<String, dynamic> downloadedMetaObj = {};
     try {
-      appGithubMetaObj = jsonDecode(appGithubMeta) as Map<String, dynamic>;
+      downloadedMetaObj = jsonDecode(downloadedMeta) as Map<String, dynamic>;
     } catch (e) {
-      logger.w("jsonDecode(appGithubMeta): $e");
+      logger.w("jsonDecode(downloadedMeta): $e");
     }
 
-    if (appGithubMetaObj.containsKey("tag_name")) {
+    if (downloadedMetaObj.containsKey("tag_name")) {
       setState(() {
-        newTagName = appGithubMetaObj["tag_name"];
-        newBuildNumber = int.parse(newTagName!.split("+").last);
+        downloadedTagName = downloadedMetaObj["tag_name"];
+        downloadedBuildNumber = int.parse(downloadedTagName!.split("+").last);
       });
     }
   }
@@ -102,14 +102,14 @@ We hope you choose well between your home world and Wonderlands.""")),
       ),
       ListTile(
         title: Text(
-          newBuildNumber != null && newBuildNumber! > buildNumber
+          downloadedBuildNumber != null && downloadedBuildNumber! > buildNumber
               ? context.loc.install_now
               : context.loc.check_update,
         ),
         subtitle: Text(
-          newBuildNumber != null && newBuildNumber! > buildNumber
+          downloadedBuildNumber != null && downloadedBuildNumber! > buildNumber
               ? context.loc.pending_install_tag_name(
-                  newTagName != null ? newTagName! : "")
+                  downloadedTagName != null ? downloadedTagName! : "")
               : context.loc.last_checked_datetime(
                   DateTime.fromMillisecondsSinceEpoch(lastChecked * 1000)
                       .toLocal()
@@ -122,7 +122,7 @@ We hope you choose well between your home world and Wonderlands.""")),
               shouldInstall: true,
             );
           }
-          _updateNewVersion();
+          _updateDownloadedVersion();
           _updateLastChecked();
         },
       ),

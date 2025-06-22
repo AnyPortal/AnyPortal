@@ -65,7 +65,7 @@ Future<bool> checkAllAssetRemotes() async {
         AssetRemoteProtocolGithub.fromUrl(
           assetRemote.read(db.assetRemote.url)!,
         ).update(
-          oldAsset: assetRemote,
+          asset: assetRemote,
           autoUpdateInterval: autoUpdateInterval,
         );
       }

@@ -83,7 +83,7 @@ class _AssetScreenState extends State<AssetScreen> {
           final assetRemote =
               AssetRemoteProtocolGithub.fromUrl(_urlController.text);
           await assetRemote.update(
-            oldAsset: oldAsset,
+            asset: oldAsset,
             autoUpdateInterval: int.parse(autoUpdateInterval),
           );
         } else if (_assetType == AssetType.local) {

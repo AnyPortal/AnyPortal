@@ -56,7 +56,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     }
   }
 
-  Future<String?> getNewMeta({bool useSocks = true}) async {
+  Future<String?> getRemoteMeta({bool useSocks = true}) async {
     final metaUrl = "https://api.github.com/repos/$owner/$repo/releases/latest";
     if (useSocks) {
       final client = createProxyHttpClient()
@@ -83,34 +83,34 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     }
   }
 
-  String? getOldMeta({
-    TypedResult? oldAsset,
+  String? getDownloadedMeta({
+    TypedResult? asset,
   }) {
-    return oldAsset?.read(db.assetRemote.meta);
+    return asset?.read(db.assetRemote.meta);
   }
 
-  bool getIsMetaUpdated(
-    String? newMeta,
-    String? oldMeta,
+  bool getIsDownloadedMetaUpdated(
+    String? remoteMeta,
+    String? downloadedMeta,
   ) {
-    if (newMeta == null) {
-      logger.w("getIsMetaUpdated: failed to get newMeta");
+    if (remoteMeta == null) {
+      logger.w("getIsDownloadedMetaUpdated: failed to get remoteMeta");
       return true;
     }
 
-    if (oldMeta == null) {
+    if (downloadedMeta == null) {
       return false;
     }
 
     try {
-      final oldCreatedAt =
-          (jsonDecode(oldMeta) as Map<String, dynamic>)["created_at"];
-      final newCreatedAt =
-          (jsonDecode(newMeta) as Map<String, dynamic>)["created_at"];
+      final downloadedCreatedAt =
+          (jsonDecode(downloadedMeta) as Map<String, dynamic>)["created_at"];
+      final remoteCreatedAt =
+          (jsonDecode(remoteMeta) as Map<String, dynamic>)["created_at"];
 
-      return oldCreatedAt == newCreatedAt;
+      return downloadedCreatedAt == remoteCreatedAt;
     } catch (e) {
-      logger.w("getIsMetaUpdated: failed to read created_at");
+      logger.w("getIsDownloadedMetaUpdated: failed to read created_at");
       return false;
     }
   }
@@ -172,8 +172,8 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
   /// if everythings fine, record to db
   Future<int> postDownload(
     File downloadedFile,
-    TypedResult? oldAsset,
-    String newMeta,
+    TypedResult? asset,
+    String remoteMeta,
     int autoUpdateInterval,
   ) async {
     String assetPath = downloadedFile.path;
@@ -184,11 +184,11 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     }
     late int assetId;
     await db.transaction(() async {
-      if (oldAsset != null) {
+      if (asset != null) {
         /// update old asset record
-        assetId = oldAsset.read(db.assetRemote.assetId)!;
+        assetId = asset.read(db.assetRemote.assetId)!;
         await db.into(db.asset).insertOnConflictUpdate(AssetCompanion(
-              id: Value(oldAsset.read(db.assetRemote.assetId)!),
+              id: Value(asset.read(db.assetRemote.assetId)!),
               type: const Value(AssetType.remote),
               path: Value(assetPath),
               updatedAt: Value(DateTime.now()),
@@ -206,7 +206,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
       await db.into(db.assetRemote).insertOnConflictUpdate(AssetRemoteCompanion(
             assetId: Value(assetId),
             url: Value(url),
-            meta: Value(newMeta),
+            meta: Value(remoteMeta),
             autoUpdateInterval: Value(autoUpdateInterval),
             downloadedFilePath: Value(downloadedFile.path),
           ));
@@ -252,11 +252,11 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     return true;
   }
 
-  bool canInstallNow({TypedResult? oldAsset}) {
-    if (oldAsset == null) {
+  bool canInstallNow({TypedResult? asset}) {
+    if (asset == null) {
       return true;
     }
-    final assetPath = oldAsset.read(db.asset.path);
+    final assetPath = asset.read(db.asset.path);
     return !(assetPath == vPNMan.corePath && vPNMan.isCoreActive);
   }
 
@@ -267,14 +267,14 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     });
   }
 
-  String? getDownloadedFilePath({TypedResult? oldAsset}) {
-    return oldAsset?.read(db.asset.path);
+  String? getDownloadedFilePath({TypedResult? asset}) {
+    return asset?.read(db.asset.path);
   }
 
   /// save last checked timestamp
-  Future<void> postGetNewMeta(String newMeta, {TypedResult? oldAsset}) async {
-    if (oldAsset == null) return;
-    final assetId = oldAsset.read(db.asset.id)!;
+  Future<void> postGetRemoteMeta(String remoteMeta, {TypedResult? asset}) async {
+    if (asset == null) return;
+    final assetId = asset.read(db.asset.id)!;
     await db.into(db.assetRemote).insertOnConflictUpdate(AssetRemoteCompanion(
           assetId: Value(assetId),
           checkedAt: Value(DateTime.now()),
@@ -284,26 +284,26 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
   /// return isUpdated
   @override
   Future<bool> update({
-    TypedResult? oldAsset,
+    TypedResult? asset,
     int autoUpdateInterval = 0,
   }) async {
     /// check if need to update
     loggerD("to update: $url");
-    final oldMeta = getOldMeta(oldAsset: oldAsset);
-    final newMeta = await getNewMeta(useSocks: vPNMan.isCoreActive);
-    if (newMeta == null) {
+    final downloadedMeta = getDownloadedMeta(asset: asset);
+    final remoteMeta = await getRemoteMeta(useSocks: vPNMan.isCoreActive);
+    if (remoteMeta == null) {
       loggerD("failed to get meta: $url");
       return true;
     }
-    await postGetNewMeta(newMeta, oldAsset: oldAsset);
-    final isMetaUpdated = getIsMetaUpdated(newMeta, oldMeta);
+    await postGetRemoteMeta(remoteMeta, asset: asset);
+    final isDownloadedMetaUpdated = getIsDownloadedMetaUpdated(remoteMeta, downloadedMeta);
 
-    /// if meta updated, must have downloaded (could be deleted)
-    /// check if installed by checking downloadedFilePath
-    int? assetId = oldAsset?.read(db.asset.id);
-    String? downloadedFilePath = getDownloadedFilePath(oldAsset: oldAsset);
+    int? assetId = asset?.read(db.asset.id);
+    String? downloadedFilePath = getDownloadedFilePath(asset: asset);
     File? downloadedFile;
-    if (isMetaUpdated) {
+    if (isDownloadedMetaUpdated) {
+      /// if meta updated, must have downloaded (could have installed, thus deleted)
+      /// check if installed by checking downloadedFilePath
       if (downloadedFilePath != null) {
         loggerD("already downloaded: $url");
         downloadedFile = File(downloadedFilePath);
@@ -312,9 +312,10 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
         return true;
       }
     } else {
+      /// if meta not updated, need download remote
       /// get download url
       loggerD("need download: $url");
-      final downloadUrl = getDownloadUrl(newMeta);
+      final downloadUrl = getDownloadUrl(remoteMeta);
       if (downloadUrl == null) {
         loggerD("downloadUrl == null: $url");
         return true;
@@ -332,16 +333,16 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
       }
       loggerD("downloaded: $downloadUrl");
 
-      /// record newMeta after download
+      /// record remoteMeta after download
       assetId = await postDownload(
         downloadedFile,
-        oldAsset,
-        newMeta,
+        asset,
+        remoteMeta,
         autoUpdateInterval,
       );
     }
 
-    if (canInstallNow(oldAsset: oldAsset)) {
+    if (canInstallNow(asset: asset)) {
       /// install only if not using
       loggerD("installing: $url");
       final installOk = await install(downloadedFile);
