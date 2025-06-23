@@ -22,7 +22,7 @@ class _InstalledAppListState extends State<InstalledAppList> {
     super.initState();
     updateFilteredAppList();
     updateAppList().then((_) {
-      updateAppList(withIcon: true);
+      updateAppList(ensureIcon: true);
     });
   }
 
@@ -32,11 +32,12 @@ class _InstalledAppListState extends State<InstalledAppList> {
 
   String _query = "";
 
-  Future<void> updateAppList({bool withIcon = false}) async {
+  Future<void> updateAppList({bool ensureIcon = false}) async {
     setState(() {
       isAppListLoading = true;
     });
-    await InstalledAppListManager.instance.update(withIcon: withIcon);
+    await InstalledAppListManager.instance
+        .updateInstalledApps(ensureIcon: ensureIcon);
     if (mounted) {
       setState(() {
         _allApps = InstalledAppListManager.instance.appList;
@@ -90,7 +91,7 @@ class _InstalledAppListState extends State<InstalledAppList> {
                       primary: true,
                       itemCount:
                           _filteredApps.isEmpty ? 12 : _filteredApps.length,
-                      cacheExtent: 500,
+                      cacheExtent: 5000,
                       itemBuilder: (context, i) {
                         if (_filteredApps.isEmpty) {
                           return const ListTile(

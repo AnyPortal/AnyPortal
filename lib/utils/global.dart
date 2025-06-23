@@ -11,6 +11,7 @@ import 'platform_elevation.dart';
 class GlobalManager {
   late Directory applicationDocumentsDirectory;
   late Directory applicationSupportDirectory;
+  late Directory applicationCacheDirectory;
   late bool isElevated;
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -18,7 +19,7 @@ class GlobalManager {
     logger.d("starting: GlobalManager.init");
     await Future.wait([
       updateAapplicationDocumentsDirectory(),
-      updateApplicationsupportDirectory(),
+      updateApplicationSupportDirectory(),
       updateIsElevated(),
     ]);
     _completer.complete(); // Signal that initialization is complete
@@ -29,8 +30,12 @@ class GlobalManager {
     applicationDocumentsDirectory = await getApplicationDocumentsDirectory();
   }
 
-  Future<void> updateApplicationsupportDirectory() async {
+  Future<void> updateApplicationSupportDirectory() async {
     applicationSupportDirectory = await getApplicationSupportDirectory();
+  }
+
+  Future<void> updateApplicationCacheDirectory() async {
+    applicationCacheDirectory = await getApplicationCacheDirectory();
   }
 
   Future<void> updateIsElevated() async {

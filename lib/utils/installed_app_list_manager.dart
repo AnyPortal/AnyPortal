@@ -7,24 +7,52 @@ class InstalledAppListManager {
 
   final Map<String, AppInfo> appMap = {};
   List<AppInfo> get appList => appMap.values.toList();
+  bool _isIconFetchedOnce = false;
 
-  Future<void> update({
+  /// Only the first `ensureIcon = true` will trigger batch icon fetch.
+  /// Any newly installed package after first fetch (no matter `ensureIcon`),
+  /// will fetch full package info including icon no matter `ensureIcon`.
+  Future<void> updateInstalledApps({
     bool excludeSystemApps = false,
-    bool withIcon = false,
+    bool ensureIcon = false,
   }) async {
-    final appList = await InstalledApps.getInstalledApps(
+    bool isIconFirstFetch = ensureIcon && !_isIconFetchedOnce;
+    final newAppList = await InstalledApps.getInstalledApps(
       excludeSystemApps,
-      withIcon,
+      isIconFirstFetch,
     );
-    for (final newApp in appList){
-      if (appMap.containsKey(newApp.packageName)){
-        final oldApp = appMap[newApp.packageName];
-        if (oldApp!.icon!.isNotEmpty && newApp.icon!.isEmpty){
-          newApp.icon = oldApp.icon;
+    if (isIconFirstFetch) _isIconFetchedOnce = true;
+
+    final newAppPackageNames = <String>{};
+    for (final newApp in newAppList) {
+      newAppPackageNames.add(newApp.packageName);
+      if (appMap.containsKey(newApp.packageName)) {
+        final oldApp = appMap[newApp.packageName]!;
+        if (newApp.installedTimestamp == oldApp.installedTimestamp) {
+          if (isIconFirstFetch) {
+            oldApp.icon = newApp.icon;
+          }
+        } else {
+          updateAppInfo(newApp.packageName);
+        }
+      } else {
+        if (!_isIconFetchedOnce) {
+          appMap[newApp.packageName] = newApp;
+        } else {
+          updateAppInfo(newApp.packageName);
         }
       }
-      appMap[newApp.packageName] = newApp;
+    }
+    final removedApps = appMap.keys.toSet().difference(newAppPackageNames);
+    for (final removedApp in removedApps) {
+      appMap.remove(removedApp);
     }
     return;
+  }
+
+  Future<void> updateAppInfo(String packageName) async {
+    final newAppFull =
+        await InstalledApps.getAppInfo(packageName, BuiltWith.flutter);
+    if (newAppFull != null) appMap[packageName] = newAppFull;
   }
 }
