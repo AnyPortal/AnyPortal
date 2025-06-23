@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:installed_apps/app_info.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../utils/installed_app_list_manager.dart';
 
@@ -83,37 +84,58 @@ class _InstalledAppListState extends State<InstalledAppList> {
       Expanded(
           child: Scrollbar(
               interactive: true,
-              child: ListView.builder(
-                  primary: true,
-                  itemCount: _filteredApps.length,
-                  cacheExtent: 5000,
-                  itemBuilder: (context, i) {
-                    final app = _filteredApps[i];
-                    final icon = app.icon;
-                    return ListTile(
-                      leading: SizedBox(
-                          width: 56,
-                          child: (icon != null && icon.isNotEmpty)
-                              ? Image(
-                                  image: MemoryImage(icon),
-                                  gaplessPlayback: true,
-                                )
-                              : Icon(null)),
-                      title: Text(app.name),
-                      subtitle: Text(app.packageName),
-                      trailing: Checkbox(
-                          value: widget.selectedApps.contains(app.packageName),
-                          onChanged: (selected) {
-                            setState(() {
-                              if (selected!) {
-                                widget.selectedApps.add(app.packageName);
-                              } else {
-                                widget.selectedApps.remove(app.packageName);
-                              }
-                            });
-                          }),
-                    );
-                  })))
+              child: Skeletonizer(
+                  enabled: _filteredApps.isEmpty,
+                  child: ListView.builder(
+                      primary: true,
+                      itemCount:
+                          _filteredApps.isEmpty ? 12 : _filteredApps.length,
+                      cacheExtent: 500,
+                      itemBuilder: (context, i) {
+                        if (_filteredApps.isEmpty) {
+                          return const ListTile(
+                              leading: SizedBox(
+                                width: 56,
+                                child: null,
+                              ),
+                              title: Text(""),
+                              subtitle: Text(""),
+                              trailing: Checkbox(
+                                value: false,
+                                onChanged: null,
+                              ));
+                        }
+
+                        final app = _filteredApps[i];
+                        final icon = app.icon;
+                        return ListTile(
+                          leading: SizedBox(
+                              width: 56,
+                              child: (icon != null && icon.isNotEmpty)
+                                  ? Image(
+                                      image: MemoryImage(icon),
+                                      gaplessPlayback: true,
+                                    )
+                                  : Skeletonizer.zone(
+                                      child: Bone.square(
+                                      size: 56,
+                                    ))),
+                          title: Text(app.name),
+                          subtitle: Text(app.packageName),
+                          trailing: Checkbox(
+                              value:
+                                  widget.selectedApps.contains(app.packageName),
+                              onChanged: (selected) {
+                                setState(() {
+                                  if (selected!) {
+                                    widget.selectedApps.add(app.packageName);
+                                  } else {
+                                    widget.selectedApps.remove(app.packageName);
+                                  }
+                                });
+                              }),
+                        );
+                      }))))
     ]);
   }
 
