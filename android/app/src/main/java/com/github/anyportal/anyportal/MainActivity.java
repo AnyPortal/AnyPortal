@@ -96,6 +96,12 @@ public class MainActivity extends FlutterActivity {
         unregisterReceiver(broadcastReceiver);
     }
 
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        methodChannel.invokeMethod("onTrimMemory", level);
+    }
+
     /// bind MainService
     private MainService mainService;
 

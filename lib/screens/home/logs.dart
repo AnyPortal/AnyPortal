@@ -5,6 +5,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 
 import '../../utils/method_channel.dart';
 import '../../utils/runtime_platform.dart';
@@ -42,7 +43,7 @@ class LogViewerState extends State<LogViewer> {
     if (_timer != null) {
       _timer!.cancel();
     }
-    mCMan.removeHandler('onFileChange');
+    mCMan.removeHandler('onFileChange', handleFileChange);
   }
 
   void _loadInitialLog() {
@@ -137,13 +138,15 @@ class LogViewerState extends State<LogViewer> {
     }
   }
 
+  void handleFileChange(MethodCall _){
+    onFileChange();
+  }
+
   void _startFileMonitor() async {
     if (RuntimePlatform.isAndroid) {
       mCMan.methodChannel.invokeListMethod(
           'log.core.startWatching', {"filePath": widget.filePath});
-      mCMan.addHandler('onFileChange', (_) async {
-        onFileChange();
-      });
+      mCMan.addHandler('onFileChange', handleFileChange);
     } else if (RuntimePlatform.isLinux) {
       _logFile.watch().listen((e) {
         onFileChange();

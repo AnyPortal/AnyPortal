@@ -1,13 +1,39 @@
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+
 import 'package:installed_apps/app_info.dart';
 import 'package:installed_apps/installed_apps.dart';
 
-class InstalledAppListManager {
-  InstalledAppListManager._();
-  static final InstalledAppListManager instance = InstalledAppListManager._();
+import '../models/android_trim_memory_level.dart';
+import '../utils/method_channel.dart';
 
+class InstalledAppListManager with ChangeNotifier {
+  InstalledAppListManager._(){
+    mCMan.addHandler("onTrimMemory", handleTrimMemory);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    mCMan.removeHandler("onTrimMemory", handleTrimMemory);
+  }
+
+  static final InstalledAppListManager instance = InstalledAppListManager._();
+  static final platform = mCMan.methodChannel;
+  
+  /// cached app Map
+  /// AppInfo.packageName => AppInfo
   final Map<String, AppInfo> appMap = {};
-  List<AppInfo> get appList => appMap.values.toList();
   bool _isIconFetchedOnce = false;
+
+  List<AppInfo> get appList => appMap.values.toList();
+  
+  void handleTrimMemory(MethodCall call){
+    final level = call.arguments as int;
+    if (level >= AndroidTrimMemoryLevel.uiHidden.value){
+      clearCache();
+    }
+  }
 
   /// Only the first `ensureIcon = true` will trigger batch icon fetch.
   /// Any newly installed package after first fetch (no matter `ensureIcon`),
@@ -54,5 +80,10 @@ class InstalledAppListManager {
     final newAppFull =
         await InstalledApps.getAppInfo(packageName, BuiltWith.flutter);
     if (newAppFull != null) appMap[packageName] = newAppFull;
+  }
+
+  void clearCache() {
+    _isIconFetchedOnce = false;
+    appMap.clear();
   }
 }
