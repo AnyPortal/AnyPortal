@@ -97,6 +97,7 @@ class _InstalledAppListState extends State<InstalledAppList> {
                           return const ListTile(
                               leading: SizedBox(
                                 width: 56,
+                                height: 56,
                                 child: null,
                               ),
                               title: Text(""),
@@ -112,6 +113,7 @@ class _InstalledAppListState extends State<InstalledAppList> {
                         return ListTile(
                           leading: SizedBox(
                               width: 56,
+                              height: 56,
                               child: (icon != null && icon.isNotEmpty)
                                   ? Image(
                                       image: MemoryImage(icon),
