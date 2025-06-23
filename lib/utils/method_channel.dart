@@ -8,7 +8,7 @@ import 'logger.dart';
 
 class MethodChannelManager {
   late MethodChannel methodChannel;
-  Map<String, Function(MethodCall)> handlers = {};
+  Map<String, Set<Function(MethodCall)>> handlers = {};
 
   Future<void> init() async {
     logger.d("starting: MethodChannelManager.init");
@@ -29,23 +29,27 @@ class MethodChannelManager {
     return _instance;
   }
 
-  void addHandler(String method, Function(MethodCall) callback, {force = false}){
-    if (!force && handlers.containsKey(method)){
-      throw Exception("method already exists");
+  void addHandler(String method, Function(MethodCall) callback){
+    if (!handlers.containsKey(method)){
+      handlers[method] = {};
     }
-    handlers[method] = callback;
+    handlers[method]!.add(callback);
   }
 
-  void removeHandler(String method){
-    handlers.remove(method);
+  void removeHandler(String method, Function(MethodCall) callback){
+    if (!handlers.containsKey(method)) return;
+    handlers[method]!.remove(callback);
+    if (handlers[method]!.isEmpty){
+      handlers.remove(method);
+    }
   }
 
   Future<dynamic> methodCallHandler(MethodCall call) async {
     // logger.d("methodCallHandler: ${call.method}");
     if (handlers.containsKey(call.method)){
-      handlers[call.method]!(call);
-    } else {
-      throw Exception("${call.method} does not exist");
+      for (final callback in handlers[call.method]!){
+        callback(call);
+      }
     }
     return null;
   }

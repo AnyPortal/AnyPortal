@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:drift/drift.dart';
 import 'package:path/path.dart' as p;
@@ -1016,20 +1017,24 @@ class VPNManagerExec extends VPNManager {
 class VPNManagerMC extends VPNManager {
   static final platform = mCMan.methodChannel;
 
+  void handleCoreToggled(MethodCall call){
+    setIsCoreActive(call.arguments as bool);
+  }
+
+  void handleTileToggled(MethodCall call){
+    isExpectingActive = call.arguments as bool;
+  }
+
   VPNManagerMC() {
-    mCMan.addHandler("onCoreToggled", (call) async {
-      setIsCoreActive(call.arguments as bool);
-    });
-    mCMan.addHandler("onTileToggled", (call) async {
-      isExpectingActive = call.arguments as bool;
-    });
+    mCMan.addHandler("onCoreToggled", handleCoreToggled);
+    mCMan.addHandler("onTileToggled", handleTileToggled);
   }
 
   @override
   void dispose() {
     super.dispose();
-    mCMan.removeHandler("onCoreToggled");
-    mCMan.removeHandler("onTileToggled");
+    mCMan.removeHandler("onCoreToggled", handleCoreToggled);
+    mCMan.removeHandler("onTileToggled", handleTileToggled);
   }
 
   @override
