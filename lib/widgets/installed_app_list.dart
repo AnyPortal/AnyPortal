@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:installed_apps/app_info.dart';
-import 'package:installed_apps/installed_apps.dart';
+
+import '../utils/installed_app_list_manager.dart';
 
 class InstalledAppList extends StatefulWidget {
   final Set<String> selectedApps;
@@ -18,26 +19,33 @@ class _InstalledAppListState extends State<InstalledAppList> {
   @override
   void initState() {
     super.initState();
-    _listInstalledApps();
+    updateFilteredAppList();
+    updateAppList().then((_) {
+      updateAppList(withIcon: true);
+    });
   }
 
-  bool _allAppsLoaded = false;
-  List<AppInfo> _allApps = [];
+  bool isAppListLoading = false;
+  List<AppInfo> _allApps = InstalledAppListManager.instance.appList;
   List<AppInfo> _filteredApps = [];
 
   String _query = "";
 
-  Future<void> _listInstalledApps() async {
-    _allApps = await InstalledApps.getInstalledApps(false, true);
+  Future<void> updateAppList({bool withIcon = false}) async {
+    setState(() {
+      isAppListLoading = true;
+    });
+    await InstalledAppListManager.instance.update(withIcon: withIcon);
     if (mounted) {
       setState(() {
-        _allAppsLoaded = true;
+        _allApps = InstalledAppListManager.instance.appList;
+        isAppListLoading = false;
       });
-      updateAppList();
+      updateFilteredAppList();
     }
   }
 
-  void updateAppList() {
+  void updateFilteredAppList() {
     setState(() {
       if (_query == "") {
         _filteredApps = _allApps;
@@ -58,23 +66,39 @@ class _InstalledAppListState extends State<InstalledAppList> {
       Padding(
         padding: const EdgeInsets.all(16),
         child: SearchBar(
+          padding: const WidgetStatePropertyAll<EdgeInsets>(
+            EdgeInsets.symmetric(horizontal: 16.0),
+          ),
           onChanged: (value) {
             _query = value;
-            updateAppList();
+            updateFilteredAppList();
           },
           leading: const Icon(Icons.search),
         ),
       ),
+      SizedBox(
+        height: 4,
+        child: isAppListLoading ? LinearProgressIndicator() : null,
+      ),
       Expanded(
-          child: !_allAppsLoaded
-              ? const Center(child: CircularProgressIndicator())
-              : ListView.builder(
+          child: Scrollbar(
+              interactive: true,
+              child: ListView.builder(
+                  primary: true,
                   itemCount: _filteredApps.length,
+                  cacheExtent: 5000,
                   itemBuilder: (context, i) {
                     final app = _filteredApps[i];
                     final icon = app.icon;
                     return ListTile(
-                      leading: (icon == null) ? null : Image.memory(icon),
+                      leading: SizedBox(
+                          width: 56,
+                          child: (icon != null && icon.isNotEmpty)
+                              ? Image(
+                                  image: MemoryImage(icon),
+                                  gaplessPlayback: true,
+                                )
+                              : Icon(null)),
                       title: Text(app.name),
                       subtitle: Text(app.packageName),
                       trailing: Checkbox(
@@ -87,10 +111,9 @@ class _InstalledAppListState extends State<InstalledAppList> {
                                 widget.selectedApps.remove(app.packageName);
                               }
                             });
-
                           }),
                     );
-                  }))
+                  })))
     ]);
   }
 
