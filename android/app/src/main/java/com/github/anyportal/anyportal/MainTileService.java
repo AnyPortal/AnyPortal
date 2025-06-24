@@ -16,20 +16,21 @@ public class MainTileService extends TileService {
     public static final String ACTION_TILE_TOGGLED = "com.github.anyportal.anyportal.ACTION_TILE_TOGGLED";
     public static final String EXTRA_IS_ACTIVE = "is_active";
 
-    /// bind MainService
-    private MainService mainService = null;
+    /// bind TProxyService
+    private TProxyService tProxyService = null;
     private ServiceConnection serviceConnection = null;
 
-    private void bindMainService(ServiceConnection serviceConnection) {
-        Intent intent = new Intent(getApplicationContext(), MainService.class);
+    private void bindTProxyService(ServiceConnection serviceConnection) {
+        Intent intent = new Intent(getApplicationContext(), TProxyService.class);
+        intent.setAction(TProxyService.ACTION_NULL);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
     public void onStartListening() {
-        if (mainService != null) {
+        if (tProxyService != null) {
             updateTileText();
-            onMainServiceReady(mainService);
+            onTProxyServiceReady(tProxyService);
         } else {
             if (serviceConnection != null) {
                 unbindService(serviceConnection);
@@ -37,16 +38,17 @@ public class MainTileService extends TileService {
             serviceConnection = new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName className, IBinder service) {
-                    MainService.LocalBinder binder = (MainService.LocalBinder) service;
-                    mainService = binder.getService();
+                    TProxyService.LocalBinder binder = (TProxyService.LocalBinder) service;
+                    tProxyService = binder.getService();
                     updateTileText();
-                    onMainServiceReady(mainService);
+                    onTProxyServiceReady(tProxyService);
                 }
-        
+
                 @Override
-                public void onServiceDisconnected(ComponentName className) {}
+                public void onServiceDisconnected(ComponentName className) {
+                }
             };
-            bindMainService(serviceConnection);
+            bindTProxyService(serviceConnection);
         }
     }
 
@@ -66,16 +68,16 @@ public class MainTileService extends TileService {
 
     public void onClick() {
         super.onClick();
-        toggleMainService();
+        toggleTProxyService();
     }
 
-    private void toggleMainService() {
-        waitForMainServiceThenConnect(getApplicationContext());
+    private void toggleTProxyService() {
+        connectTProxyService(getApplicationContext());
     }
 
-    private void connectMainService(Context context) {
-        if (mainService != null) {
-            toggleTile(mainService);
+    private void connectTProxyService(Context context) {
+        if (tProxyService != null) {
+            toggleTile(tProxyService);
         } else {
             if (serviceConnection != null) {
                 unbindService(serviceConnection);
@@ -83,39 +85,16 @@ public class MainTileService extends TileService {
             serviceConnection = new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName className, IBinder service) {
-                    MainService.LocalBinder binder = (MainService.LocalBinder) service;
-                    mainService = binder.getService();
-                    toggleTile(mainService);
+                    TProxyService.LocalBinder binder = (TProxyService.LocalBinder) service;
+                    tProxyService = binder.getService();
+                    toggleTile(tProxyService);
                 }
-        
+
                 @Override
-                public void onServiceDisconnected(ComponentName className) {}
-            };
-            bindMainService(serviceConnection);
-        }
-    }
-
-    /// if started directly by MainTileService, MainService could be killed shortly after
-    /// MainServiceActivity helps ensure surviving
-    private void waitForMainServiceThenConnect(Context context) {
-        if (MainService.isRunning) {
-            connectMainService(context);
-        } else {
-            Intent activityIntent = new Intent(context, MainServiceActivity.class);
-            activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(activityIntent);
-            new Thread(() -> {
-                long start = System.currentTimeMillis();
-                while (!MainService.isRunning && System.currentTimeMillis() - start < 5000) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException ignored) {
-                    }
+                public void onServiceDisconnected(ComponentName className) {
                 }
-
-                // Now connect
-                connectMainService(context);
-            }).start();
+            };
+            bindTProxyService(serviceConnection);
         }
     }
 
@@ -126,10 +105,10 @@ public class MainTileService extends TileService {
         sendBroadcast(broadcastIntent);
     }
 
-    private void onMainServiceReady(MainService mainService) {
+    private void onTProxyServiceReady(TProxyService tProxyService) {
         Tile tile = getQsTile();
-        if (tile != null && mainService != null) {
-            boolean isCoreActive = mainService.isCoreActive;
+        if (tile != null && tProxyService != null) {
+            boolean isCoreActive = tProxyService.isCoreActive;
             tile.setState(isCoreActive ? Tile.STATE_ACTIVE : Tile.STATE_INACTIVE);
             tile.updateTile();
         }
@@ -137,10 +116,10 @@ public class MainTileService extends TileService {
 
     private void updateTileText() {
         Tile tile = getQsTile();
-        if (tile == null){
+        if (tile == null) {
             return;
         }
-        
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             tile.setSubtitle("AnyPortal");
         }
@@ -153,26 +132,26 @@ public class MainTileService extends TileService {
         tile.updateTile();
     }
 
-    private void toggleTile(MainService mainService) {
-        if (mainService == null) {
+    private void toggleTile(TProxyService tProxyService) {
+        if (tProxyService == null) {
             return;
         }
 
         Tile tile = getQsTile();
-        if (tile == null){
+        if (tile == null) {
             return;
         }
 
         if (tile.getState() == Tile.STATE_ACTIVE) {
             tile.setState(Tile.STATE_UNAVAILABLE);
             notifyMainActivity(false);
-            mainService.tryStopAll();
+            tProxyService.tryStopAll();
         } else {
             tile.setState(Tile.STATE_UNAVAILABLE);
             notifyMainActivity(true);
-            mainService.tryStartAll();
+            tProxyService.tryStartAll();
         }
 
-        onMainServiceReady(mainService);
+        onTProxyServiceReady(tProxyService);
     }
 }

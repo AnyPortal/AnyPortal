@@ -24,25 +24,25 @@ public class BootReceiver extends BroadcastReceiver {
         prefs = context.getSharedPreferences("FlutterSharedPreferences", context.MODE_PRIVATE);
 
         if (prefs.getBoolean("flutter.app.connectAtStartup", false)) {
-            // no need for waitForMainServiceThenConnect(context);
-            connectMainService(context);
+            connectTProxyService(context);
         }
     }
 
-    private void connectMainService(Context context) {
+    private void connectTProxyService(Context context) {
         ServiceConnection serviceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName className, IBinder service) {
-                MainService.LocalBinder binder = (MainService.LocalBinder) service;
-                MainService mainService = binder.getService();
-                mainService.tryStartAll();
+                TProxyService.LocalBinder binder = (TProxyService.LocalBinder) service;
+                TProxyService tProxyService = binder.getService();
+                tProxyService.tryStartAll();
             }
 
             @Override
             public void onServiceDisconnected(ComponentName className) {
             }
         };
-        Intent intent = new Intent(context, MainService.class);
+        Intent intent = new Intent(context, TProxyService.class);
+        intent.setAction(TProxyService.ACTION_NULL);
         context.getApplicationContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 }

@@ -4,13 +4,9 @@
         android:label="AnyPortal"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
-        <service
-            android:name=".MainService"
-            android:exported="true"
-            android:foregroundServiceType="specialUse" />
         <service android:name=".TProxyService"
             android:exported="true"
-            android:process=":tproxy_process"
+            android:foregroundServiceType="specialUse"
             android:permission="android.permission.BIND_VPN_SERVICE">
             <intent-filter>
                 <action android:name="android.net.VpnService" />
@@ -29,7 +25,7 @@
             <meta-data android:name="android.service.quicksettings.ACTIVE_TILE" android:value="true" />
         </service>
         <service
-            android:name=".LibV2rayService"
+            android:name=".LibV2RayService"
             android:process=":libv2ray_process"
             android:exported="false" />
         <receiver android:name=".BootReceiver" android:exported="true">
@@ -62,10 +58,6 @@
                 <action android:name="com.github.anyportal.anyportal.DISCONNECTED" />
                 <action android:name="com.github.anyportal.anyportal.TILE_TOGGLED" />
             </intent-filter>
-        </activity>
-        <activity android:name=".MainServiceActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:exported="true">
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

@@ -46,7 +46,8 @@ public class MainActivity extends FlutterActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Intent intent = new Intent(this, MainService.class);
+        Intent intent = new Intent(this, TProxyService.class);
+        intent.setAction(TProxyService.ACTION_NULL);
         bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -102,17 +103,17 @@ public class MainActivity extends FlutterActivity {
         methodChannel.invokeMethod("onTrimMemory", level);
     }
 
-    /// bind MainService
-    private MainService mainService;
+    /// bind TProxyService
+    private TProxyService tProxyService;
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            MainService.LocalBinder binder = (MainService.LocalBinder) service;
-            mainService = binder.getService();
+            TProxyService.LocalBinder binder = (TProxyService.LocalBinder) service;
+            tProxyService = binder.getService();
 
             // Set the status listener to receive updates
-            mainService.setStatusUpdateListener(isCoreActive -> {
+            tProxyService.setStatusUpdateListener(isCoreActive -> {
                 Log.d(TAG, "isCoreActive: " + isCoreActive);
                 // Handle VPN status update in MainActivity
                 methodChannel.invokeMethod("onCoreToggled", isCoreActive);
@@ -130,67 +131,67 @@ public class MainActivity extends FlutterActivity {
     private void onMethodCall(MethodCall call, MethodChannel.Result result) {
         switch (call.method) {
             case "vpn.startAll":
-                mainService.tryStartAll();
+                tProxyService.tryStartAll();
                 result.success(true);
                 break;
 
             case "vpn.stopAll":
-                mainService.tryStopAll();
+                tProxyService.tryStopAll();
                 result.success(true);
                 break;
 
             case "vpn.startCore":
-                mainService.tryStartCore();
+                tProxyService.tryStartCore();
                 result.success(true);
                 break;
 
             case "vpn.stopCore":
-                mainService.tryStopCore();
+                tProxyService.tryStopCore();
                 result.success(true);
                 break;
 
             case "vpn.startNotificationForeground":
-                mainService.tryStartNotificationForeground();
+                tProxyService.tryStartNotificationForeground();
                 result.success(true);
                 break;
 
             case "vpn.stopNotificationForeground":
-                mainService.tryStopNotificationForeground();
+                tProxyService.tryStopNotificationForeground();
                 result.success(true);
                 break;
 
             case "vpn.startTun":
-                mainService.tryStartTun();
+                tProxyService.tryStartTun();
                 result.success(true);
                 break;
 
             case "vpn.stopTun":
-                mainService.tryStopTun();
+                tProxyService.tryStopTun();
                 result.success(true);
                 break;
 
             case "vpn.startSystemProxy":
-                result.success(mainService.tryStartSystemProxy());
+                result.success(tProxyService.tryStartSystemProxy());
                 break;
 
             case "vpn.stopSystemProxy":
-                result.success(mainService.tryStopSystemProxy());
+                result.success(tProxyService.tryStopSystemProxy());
                 break;
 
             case "vpn.getIsSystemProxyEnabled":
-                result.success(mainService.tryGetIsSystemProxyEnabled());
+                result.success(tProxyService.tryGetIsSystemProxyEnabled());
                 break;
 
             case "vpn.isCoreActive":
-                result.success(mainService.isCoreActive);
+                result.success(tProxyService.isCoreActive);
                 break;
 
             case "vpn.isTunActive":
-                result.success(mainService.isTunActive);
+                result.success(tProxyService.isTunActive);
                 break;
 
             case "vpn.isSystemProxyActive":
-                result.success(mainService.isSystemProxyActive);
+                result.success(tProxyService.isSystemProxyActive);
                 break;
 
             case "log.core.startWatching":
@@ -254,7 +255,8 @@ public class MainActivity extends FlutterActivity {
 
     private void installApk(String filePath) {
         File apkFile = new File(filePath);
-        if (!apkFile.exists()) return;
+        if (!apkFile.exists())
+            return;
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
