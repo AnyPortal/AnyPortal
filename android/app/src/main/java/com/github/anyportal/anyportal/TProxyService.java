@@ -53,9 +53,11 @@ public class TProxyService extends VpnService {
         }
     }
 
-    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        if (VpnService.SERVICE_INTERFACE.equals(intent.getAction())) {
+            return super.onBind(intent);
+        }
         return binder;
     }
 
@@ -92,15 +94,14 @@ public class TProxyService extends VpnService {
 
     @Override
     public void onRevoke() {
+        tryStopAll();
         super.onRevoke();
-        onDestroy();
     }
 
     @Override
     public void onDestroy() {
         tryStopAll();
         super.onDestroy();
-        isRunning = false;
     }
 
     private void createNotificationChannel() {

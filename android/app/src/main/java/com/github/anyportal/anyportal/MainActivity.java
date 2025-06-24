@@ -116,7 +116,9 @@ public class MainActivity extends FlutterActivity {
             tProxyService.setStatusUpdateListener(isCoreActive -> {
                 Log.d(TAG, "isCoreActive: " + isCoreActive);
                 // Handle VPN status update in MainActivity
-                methodChannel.invokeMethod("onCoreToggled", isCoreActive);
+                runOnUiThread(() -> {
+                    methodChannel.invokeMethod("onCoreToggled", isCoreActive);
+                });
             });
         }
 
