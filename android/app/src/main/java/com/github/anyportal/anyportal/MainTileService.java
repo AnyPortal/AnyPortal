@@ -70,6 +70,10 @@ public class MainTileService extends TileService {
     }
 
     private void toggleMainService() {
+        waitForMainServiceThenConnect(getApplicationContext());
+    }
+
+    private void connectMainService(Context context) {
         if (mainService != null) {
             toggleTile(mainService);
         } else {
@@ -88,6 +92,30 @@ public class MainTileService extends TileService {
                 public void onServiceDisconnected(ComponentName className) {}
             };
             bindMainService(serviceConnection);
+        }
+    }
+
+    /// if started directly by MainTileService, MainService could be killed shortly after
+    /// MainServiceActivity helps ensure surviving
+    private void waitForMainServiceThenConnect(Context context) {
+        if (MainService.isRunning) {
+            connectMainService(context);
+        } else {
+            Intent activityIntent = new Intent(context, MainServiceActivity.class);
+            activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(activityIntent);
+            new Thread(() -> {
+                long start = System.currentTimeMillis();
+                while (!MainService.isRunning && System.currentTimeMillis() - start < 5000) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ignored) {
+                    }
+                }
+
+                // Now connect
+                connectMainService(context);
+            }).start();
         }
     }
 

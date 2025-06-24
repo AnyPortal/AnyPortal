@@ -1,12 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools">
     <application
         android:label="AnyPortal"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <service
             android:name=".MainService"
-            android:exported="true" 
+            android:exported="true"
             android:foregroundServiceType="specialUse" />
         <service android:name=".TProxyService"
             android:exported="true"
@@ -16,15 +16,15 @@
                 <action android:name="android.net.VpnService" />
             </intent-filter>
             <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="VPN service"/>
-		</service>
+                android:value="VPN service" />
+        </service>
         <service
             android:name=".MainTileService"
             android:exported="true"
             android:icon="@drawable/ic_launcher_monochrome"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
-                <action android:name="android.service.quicksettings.action.QS_TILE"/>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
             <meta-data android:name="android.service.quicksettings.ACTIVE_TILE" android:value="true" />
         </service>
@@ -52,19 +52,20 @@
                  while the Flutter UI initializes. After that, this theme continues
                  to determine the Window background behind the Flutter UI. -->
             <meta-data
-              android:name="io.flutter.embedding.android.NormalTheme"
-              android:resource="@style/NormalTheme"
-              />
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme"
+            />
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-                <action android:name="com.github.anyportal.anyportal.CONNECTED"/>
-                <action android:name="com.github.anyportal.anyportal.DISCONNECTED"/>
-                <action android:name="com.github.anyportal.anyportal.TILE_TOGGLED"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="com.github.anyportal.anyportal.CONNECTED" />
+                <action android:name="com.github.anyportal.anyportal.DISCONNECTED" />
+                <action android:name="com.github.anyportal.anyportal.TILE_TOGGLED" />
             </intent-filter>
         </activity>
-        <activity android:name=".MinActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+        <activity android:name=".MainServiceActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:exported="true">
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
@@ -88,22 +89,26 @@
          In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
     <queries>
         <intent>
-            <action android:name="android.intent.action.PROCESS_TEXT"/>
-            <data android:mimeType="text/plain"/>
+            <action android:name="android.intent.action.PROCESS_TEXT" />
+            <data android:mimeType="text/plain" />
         </intent>
     </queries>
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <!-- <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="QueryAllPackagesPermission" /> -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" android:minSdkVersion="34" />
-    
-    <uses-permission android:name="android.permission.BIND_QUICK_SETTINGS_TILE" android:minSdkVersion="24" />
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
-    <!-- <uses-sdk tools:overrideLibrary="rikka.shizuku.api, rikka.shizuku.shared, rikka.shizuku.aidl" /> -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+    tools:ignore="QueryAllPackagesPermission" /> -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"
+        android:minSdkVersion="34" />
+
+    <uses-permission android:name="android.permission.BIND_QUICK_SETTINGS_TILE"
+        android:minSdkVersion="24" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- <uses-sdk tools:overrideLibrary="rikka.shizuku.api, rikka.shizuku.shared,
+    rikka.shizuku.aidl" /> -->
 </manifest>

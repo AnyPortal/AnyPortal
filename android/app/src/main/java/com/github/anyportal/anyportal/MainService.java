@@ -83,9 +83,12 @@ public class MainService extends Service {
                 .build();
     }
 
+    public static volatile boolean isRunning = false;
+
     @Override
     public void onCreate() {
         super.onCreate();
+        isRunning = true;
         prefs = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE);
     }
 
