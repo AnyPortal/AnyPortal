@@ -13,6 +13,7 @@ import '../../../utils/show_snack_bar_now.dart';
 import '../../../utils/theme_manager.dart';
 import '../../../utils/vpn_manager.dart';
 import '../../../widgets/popup/radio_list_selection.dart';
+import '../../../widgets/popup/text_input.dart';
 
 class GeneralScreen extends StatefulWidget {
   const GeneralScreen({
@@ -39,6 +40,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
   bool _localeFollowSystem = prefs.getBool('app.locale.followSystem')!;
   bool _isFloatingActionButton =
       prefs.getBool('app.dashboard.floatingActionButton')!;
+  String? _githubToken = prefs.getString('app.github.token');
 
   @override
   void initState() {
@@ -246,8 +248,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
         ),
       ListTile(
         title: Text(context.loc.auto_connect_at_app_launch),
-        subtitle:
-            Text(context.loc.auto_connect_selected_profile_at_app_launch),
+        subtitle: Text(context.loc.auto_connect_selected_profile_at_app_launch),
         trailing: Switch(
           value: _connectAtLaunch,
           onChanged: (value) async {
@@ -341,8 +342,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
           },
         ),
       ),
-      if (RuntimePlatform.isAndroid)
-      const Divider(),
+      if (RuntimePlatform.isAndroid) const Divider(),
       if (RuntimePlatform.isAndroid)
         Container(
           padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -373,6 +373,33 @@ class _GeneralScreenState extends State<GeneralScreen> {
             },
           ),
         ),
+      const Divider(),
+      Container(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        child: Text(
+          context.loc.advanced,
+          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+        ),
+      ),
+      ListTile(
+        title: Text(context.loc.github_token),
+        subtitle: Text(context.loc.github_token_increase_rate_limits),
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (context) => TextInputPopup(
+                title: context.loc.github_token,
+                text: context.loc.github_token_increase_rate_limits,
+                initialValue: _githubToken == null ? "" : _githubToken!,
+                onSaved: (String value) {
+                  prefs.setString('app.github.token', value);
+                  setState(() {
+                    _githubToken = value;
+                  });
+                }),
+          );
+        },
+      ),
     ];
 
     return Scaffold(

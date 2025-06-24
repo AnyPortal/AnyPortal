@@ -99,6 +99,8 @@
   "general": "Общие",
   "general_settings": "Общие настройки",
   "generated_assets": "Сгенерированные ресурсы",
+  "github_token": "Токен GitHub",
+  "github_token_increase_rate_limits": "Увеличение лимитов скорости с помощью токена GitHub",
   "go_coroutines": "Go-корутины",
   "http_port": "HTTP-порт",
   "inbound_config": "Конфигурация входящих соединений",

@@ -99,6 +99,8 @@
   "general": "عام",
   "general_settings": "الإعدادات العامة",
   "generated_assets": "الأصول المولدة",
+  "github_token": "تOKEN_GITHUB",
+  "github_token_increase_rate_limits": "زيادة حدود المعدل باستخدام توكن GitHub",
   "go_coroutines": "روتينات Go المتزامنة",
   "http_port": "منفذ HTTP",
   "inbound_config": "إعدادات الاتصال الوارد",

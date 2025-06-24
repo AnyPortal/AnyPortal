@@ -99,6 +99,8 @@
   "general": "一般",
   "general_settings": "一般設定",
   "generated_assets": "生成されたアセット",
+  "github_token": "GitHubトークン",
+  "github_token_increase_rate_limits": "GitHubのレート制限を増やすためのトークン",
   "go_coroutines": "Goコルーチン",
   "http_port": "HTTPポート",
   "inbound_config": "インバウンド設定",

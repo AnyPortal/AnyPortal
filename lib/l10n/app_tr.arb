@@ -99,6 +99,8 @@
   "general": "Genel",
   "general_settings": "Genel ayarlar",
   "generated_assets": "Oluşturulan varlıklar",
+  "github_token": "GitHub token",
+  "github_token_increase_rate_limits": "GitHub token ile oran sınırlarını artırma",
   "go_coroutines": "Go eş zamanlı görevleri",
   "http_port": "HTTP portu",
   "inbound_config": "Gelen bağlantı yapılandırması",

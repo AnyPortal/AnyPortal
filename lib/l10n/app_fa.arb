@@ -99,6 +99,8 @@
   "general": "عمومی",
   "general_settings": "تنظیمات عمومی",
   "generated_assets": "دارایی‌های تولید‌شده",
+  "github_token": "Token de GitHub",
+  "github_token_increase_rate_limits": "Token de GitHub para aumentar los límites de tasa",
   "go_coroutines": "روال‌های همزمان Go",
   "http_port": "درگاه HTTP",
   "inbound_config": "پیکربندی ورودی",

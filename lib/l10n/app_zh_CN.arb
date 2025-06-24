@@ -99,6 +99,8 @@
   "general": null,
   "general_settings": null,
   "generated_assets": null,
+  "github_token": null,
+  "github_token_increase_rate_limits": null,
   "go_coroutines": null,
   "http_port": null,
   "inbound_config": null,

@@ -99,6 +99,8 @@
   "general": "सामान्य",
   "general_settings": "सामान्य सेटिंग्स",
   "generated_assets": "उत्पन्न संपत्तियां",
+  "github_token": "गिटहब टोकन",
+  "github_token_increase_rate_limits": "गिटहब टोकन दर सीमाओं को बढ़ाने के लिए",
   "go_coroutines": "गो कोरूटीन",
   "http_port": "HTTP पोर्ट",
   "inbound_config": "इनबाउंड कॉन्फ़िगरेशन",

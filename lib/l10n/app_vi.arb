@@ -99,6 +99,8 @@
   "general": "Chung",
   "general_settings": "Cài đặt chung",
   "generated_assets": "Tài sản được tạo",
+  "github_token": "Mã thông báo GitHub",
+  "github_token_increase_rate_limits": "Mã thông báo GitHub tăng giới hạn tỷ lệ",
   "go_coroutines": "Go coroutines",
   "http_port": "Cổng HTTP",
   "inbound_config": "Cấu hình luồng vào",

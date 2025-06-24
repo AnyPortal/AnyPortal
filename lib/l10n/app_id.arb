@@ -99,6 +99,8 @@
   "general": "Umum",
   "general_settings": "Pengaturan umum",
   "generated_assets": "Aset yang dihasilkan",
+  "github_token": "Token GitHub",
+  "github_token_increase_rate_limits": "Token GitHub untuk meningkatkan batas laju",
   "go_coroutines": "Go coroutines",
   "http_port": "Port HTTP",
   "inbound_config": "Konfigurasi masuk",

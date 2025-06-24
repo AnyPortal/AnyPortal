@@ -99,6 +99,8 @@
   "general": "ทั่วไป",
   "general_settings": "การตั้งค่าทั่วไป",
   "generated_assets": "สินทรัพย์ที่สร้างขึ้น",
+  "github_token": "โทเค็น GitHub",
+  "github_token_increase_rate_limits": "โทเค็น GitHub เพื่อเพิ่มหรือยกเลิกจำกัดอัตรา",
   "go_coroutines": "Go coroutines",
   "http_port": "พอร์ต HTTP",
   "inbound_config": "การตั้งค่าขาเข้า",

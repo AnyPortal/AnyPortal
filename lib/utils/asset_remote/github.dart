@@ -10,6 +10,7 @@ import 'package:flutter/widgets.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter_socks_proxy/socks_proxy.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 import 'package:path/path.dart' as p;
 
 import '../../models/asset.dart';
@@ -59,13 +60,23 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
   Future<String?> getRemoteMeta({bool useSocks = true}) async {
     final metaUrl = "https://api.github.com/repos/$owner/$repo/releases/latest";
     if (useSocks) {
-      final client = createProxyHttpClient()
-        ..findProxy = (url) =>
-            'SOCKS5 ${prefs.getString('app.server.address')!}:${prefs.getInt('app.socks.port')!}';
-      final request = await client.getUrl(Uri.parse(metaUrl));
-      final response = await request.close();
+      final httpClient = createProxyHttpClient();
+      httpClient.findProxy = (url) =>
+          'SOCKS5 ${prefs.getString('app.server.address')!}:${prefs.getInt('app.socks.port')!}';
+      final client = IOClient(httpClient);
+      final token = prefs.getString('app.github.token');
+      final headers = token == null
+          ? null
+          : {
+              'Authorization': 'Bearer $token',
+              'X-GitHub-Api-Version': '2022-11-28',
+            };
+      final response = await client.get(
+        Uri.parse(metaUrl),
+        headers: headers,
+      );
       if (response.statusCode == 200) {
-        return await utf8.decodeStream(response);
+        return response.body;
       } else {
         logger.w(
             "${response.statusCode} when accessing $metaUrl. If using shared ip address/exceeding api limit consider add a github token");
@@ -272,7 +283,8 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
   }
 
   /// save last checked timestamp
-  Future<void> postGetRemoteMeta(String remoteMeta, {TypedResult? asset}) async {
+  Future<void> postGetRemoteMeta(String remoteMeta,
+      {TypedResult? asset}) async {
     if (asset == null) return;
     final assetId = asset.read(db.asset.id)!;
     await db.into(db.assetRemote).insertOnConflictUpdate(AssetRemoteCompanion(
@@ -296,7 +308,8 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
       return true;
     }
     await postGetRemoteMeta(remoteMeta, asset: asset);
-    final isDownloadedMetaUpdated = getIsDownloadedMetaUpdated(remoteMeta, downloadedMeta);
+    final isDownloadedMetaUpdated =
+        getIsDownloadedMetaUpdated(remoteMeta, downloadedMeta);
 
     int? assetId = asset?.read(db.asset.id);
     String? downloadedFilePath = getDownloadedFilePath(asset: asset);

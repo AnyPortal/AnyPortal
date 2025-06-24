@@ -99,6 +99,8 @@
   "general": "Général",
   "general_settings": "Paramètres généraux",
   "generated_assets": "Actifs générés",
+  "github_token": "Jeton GitHub",
+  "github_token_increase_rate_limits": "Jeton GitHub pour augmenter les limites de débit",
   "go_coroutines": "Go coroutines",
   "http_port": "Port HTTP",
   "inbound_config": "Configuration entrante",

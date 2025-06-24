@@ -25,6 +25,7 @@ class PrefsManager {
     // 'app.github.downloadedFilePath': null,
     // 'app.github.meta': '{"tag_name":"v0.0.1+1"}'
     'app.github.meta': '{}',
+    // 'app.github.token': "",
     'app.http.port': 15492,
     'app.notification.foreground': RuntimePlatform.isAndroid,
     'app.window.size.width': 1280.0,

@@ -99,6 +99,8 @@
   "general": "일반",
   "general_settings": "일반 설정",
   "generated_assets": "생성된 자산",
+  "github_token": "깃허브 토큰",
+  "github_token_increase_rate_limits": "깃허브 토큰을 통해 비율 제한 증가",
   "go_coroutines": "Go 코루틴",
   "http_port": "HTTP 포트",
   "inbound_config": "인바운드 설정",

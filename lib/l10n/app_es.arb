@@ -99,6 +99,8 @@
   "general": "General",
   "general_settings": "Configuraciones generales",
   "generated_assets": "Recursos generados",
+  "github_token": "Token de GitHub",
+  "github_token_increase_rate_limits": "Token de GitHub para aumentar los límites de tasa",
   "go_coroutines": "Corrutinas de Go",
   "http_port": "Puerto HTTP",
   "inbound_config": "Configuración de entrada",

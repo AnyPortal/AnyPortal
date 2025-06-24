@@ -99,6 +99,8 @@
   "general": "通用",
   "general_settings": "通用设置",
   "generated_assets": "生成的资源",
+  "github_token": "GitHub令牌",
+  "github_token_increase_rate_limits": "用于增加速率限制的GitHub令牌",
   "go_coroutines": "Go 协程",
   "http_port": "HTTP 端口",
   "inbound_config": "入站配置",
