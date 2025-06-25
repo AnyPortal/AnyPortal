@@ -314,6 +314,7 @@ class _ProfileListState extends State<ProfileList> {
                               showSnackBarNow(context, Text(context.loc.reconnecting));
                             }
 
+                            /// tun config may rely on core config, so don't restart core only
                             await vPNMan.stopAll();
                             final res = await vPNMan.startAll();
 

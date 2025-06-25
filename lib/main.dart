@@ -123,10 +123,7 @@ void main(List<String> args) async {
 
   /// find active core and tun
   try {
-    await Future.wait([
-      vPNMan.updateDetachedCore(),
-      vPNMan.updateDetachedTun(),
-    ]);
+    await vPNMan.updateDetachedAll();
   } catch (e) {
     logger.w("vPNMan.initCore: ${e.toString()}");
   }

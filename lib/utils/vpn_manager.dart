@@ -31,12 +31,14 @@ import 'show_snack_bar_now.dart';
 import 'with_context.dart';
 
 abstract class VPNManager with ChangeNotifier {
+  /// it's possible to toggle core alone, so distinguish beween all and core
   bool isAllActive = false;
   bool isCoreActive = false;
   bool isTunActive = false;
   bool isSystemProxyActive = false;
 
   bool isExpectingActive = false;
+  /// it's possible to toggle core alone, so distinguish beween all and core
   bool isTogglingAll = false;
   bool isTogglingCore = false;
   bool isTogglingTun = false;
@@ -46,6 +48,19 @@ abstract class VPNManager with ChangeNotifier {
   Future<bool> _stopAll();
   Future<bool> _startCore();
   Future<bool> _stopCore();
+
+  Future<bool> prepareCore() async {
+    // clear core log
+    await File(p.join(
+      global.applicationSupportDirectory.path,
+      'log',
+      'core.log',
+    )).writeAsString("");
+
+    if (!RuntimePlatform.isWeb) await installPendingAssetRemote();
+    await initCore();
+    return true;
+  }
 
   Future<void> _startSystemProxy() async {
     if (prefs.getBool("systemProxy")!) {
@@ -216,7 +231,7 @@ abstract class VPNManager with ChangeNotifier {
   }) {
     if (!force && value == isAllActive) {
       if (value == isAllActive) {
-        logger.d("isAllActive: no need, already $isAllActive");
+        logger.d("setIsAllActive: no need, already $isAllActive");
         return;
       }
     }
@@ -247,11 +262,11 @@ abstract class VPNManager with ChangeNotifier {
     }
   }
 
-  Future<void> setIsTunActive(
+  void setIsTunActive(
     bool value, {
     bool force = false,
     bool isToNotify = true,
-  }) async {
+  }) {
     if (!force && value == isTunActive) {
       if (value == isTunActive) {
         logger.d("setIsTunActive: no need, already $isTunActive");
@@ -265,11 +280,11 @@ abstract class VPNManager with ChangeNotifier {
     }
   }
 
-  Future<void> setIsSystemProxyActive(
+  void setIsSystemProxyActive(
     bool value, {
     bool force = false,
     bool isToNotify = true,
-  }) async {
+  }) {
     if (!force && value == isSystemProxyActive) {
       if (value == isSystemProxyActive) {
         logger
@@ -310,7 +325,7 @@ abstract class VPNManager with ChangeNotifier {
     bool force = false,
     bool isToNotify = true,
   }) async {
-    await setIsTunActive(
+    setIsTunActive(
       await getIsTunActive(),
       force: force,
       isToNotify: isToNotify,
@@ -321,7 +336,7 @@ abstract class VPNManager with ChangeNotifier {
     bool force = false,
     bool isToNotify = true,
   }) async {
-    await setIsSystemProxyActive(
+    setIsSystemProxyActive(
       await getIsSystemProxyActive(),
       force: force,
       isToNotify: isToNotify,
@@ -334,6 +349,19 @@ abstract class VPNManager with ChangeNotifier {
 
   Future<void> updateDetachedTun() async {
     await updateIsTunActive();
+  }
+
+  Future<void> updateDetachedSystemProxy() async {
+    await updateIsSystemProxyActive();
+  }
+
+  Future<void> updateDetachedAll() async {
+    await Future.wait([
+      updateDetachedCore(),
+      updateDetachedTun(),
+      updateDetachedSystemProxy(),
+    ]);
+    await updateIsAllActive();
   }
 
   Future<bool> startAll() async {
@@ -608,12 +636,6 @@ abstract class VPNManager with ChangeNotifier {
         .map((k, v) => MapEntry(k, v as String));
     await prefs.setString('cache.core.envs', jsonEncode(_coreEnvs));
 
-    // clear core log
-    await File(p.join(
-      global.applicationSupportDirectory.path,
-      'log',
-      'core.log',
-    )).writeAsString("");
     logger.d("finished: initCore");
   }
 
@@ -783,7 +805,7 @@ class VPNManagerExec extends VPNManager {
     final tunCommandLine =
         "$_tunSingBoxCorePath ${_tunSingBoxCoreArgList.join(' ')}";
     pidTun = await PlatformProcess.getProcessPid(tunCommandLine);
-    await setIsTunActive(pidTun != null);
+    setIsTunActive(pidTun != null);
   }
 
   @override
@@ -861,8 +883,7 @@ class VPNManagerExec extends VPNManager {
   @override
   _startCore() async {
     logger.d("starting: _startCore");
-    if (!RuntimePlatform.isWeb) await installPendingAssetRemote();
-    await initCore();
+    await prepareCore();
     logger.d("corePath: $corePath");
     logger.d("coreArgList: $_coreArgList");
     logger.d("coreWorkingDir: $_coreWorkingDir");
@@ -959,11 +980,11 @@ class VPNManagerExec extends VPNManager {
         environment: _tunSingBoxCoreEnvs,
       );
       pidTun = processTun.pid;
-      await setIsTunActive(true);
+      setIsTunActive(true);
       processTun.exitCode.then((exitCode) async {
         logger.d("processTun: exited: $exitCode");
         pidTun = null;
-        await setIsTunActive(false);
+        setIsTunActive(false);
       });
     }
     logger.d("finished: _startTun");
@@ -977,7 +998,7 @@ class VPNManagerExec extends VPNManager {
       final res = await PlatformProcess.killProcess(pidTun!);
       if (res) {
         pidTun = null;
-        await setIsTunActive(false);
+        setIsTunActive(false);
       } else {
         pidTun = null;
         logger.w("stopTun: failed");
@@ -1017,11 +1038,11 @@ class VPNManagerExec extends VPNManager {
 class VPNManagerMC extends VPNManager {
   static final platform = mCMan.methodChannel;
 
-  void handleCoreToggled(MethodCall call){
+  void handleCoreToggled(MethodCall call) {
     setIsCoreActive(call.arguments as bool);
   }
 
-  void handleTileToggled(MethodCall call){
+  void handleTileToggled(MethodCall call) {
     isExpectingActive = call.arguments as bool;
   }
 
@@ -1054,8 +1075,8 @@ class VPNManagerMC extends VPNManager {
 
   @override
   _startAll() async {
-    await initCore();
-    await installPendingAssetRemote();
+    await prepareCore();
+
     if (!prefs.getBool("tun.useEmbedded")!) {
       await initTunExec();
     }
@@ -1103,7 +1124,7 @@ class VPNManagerMC extends VPNManager {
     }
     final res = await platform.invokeMethod('vpn.startTun') as bool;
     if (res == true) {
-      await setIsTunActive(true);
+      setIsTunActive(true);
     }
     return res;
   }
@@ -1112,15 +1133,15 @@ class VPNManagerMC extends VPNManager {
   _stopTun() async {
     final res = await platform.invokeMethod('vpn.stopTun') as bool;
     if (res == true) {
-      await setIsTunActive(false);
+      setIsTunActive(false);
     }
     return res;
   }
 
   @override
   _startCore() async {
-    await initCore();
-    await installPendingAssetRemote();
+    await prepareCore();
+
     final res = await platform.invokeMethod('vpn.startCore') as bool;
     if (res == true) {
       setIsCoreActive(true);
