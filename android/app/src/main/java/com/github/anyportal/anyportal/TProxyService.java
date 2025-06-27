@@ -470,7 +470,7 @@ public class TProxyService extends VpnService {
                         Log.w(TAG, e);
                     }
                 }
-                if (selectedAppsString != "[]") {
+                if (!selectedAppsString.equals("[]")) {
                     disallowSelf = false;
                 }
             } else {
