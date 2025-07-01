@@ -687,7 +687,9 @@ public class TProxyService extends VpnService {
             reader.close();
 
             // Check if the output is ":0"
-            return output.toString().equals(":0");
+            boolean res = output.toString().equals(":0");
+            Log.d(TAG, "finished: getIsSystemProxyEnabled");
+            return res;
         } catch (Exception e) {
             e.printStackTrace();
         }

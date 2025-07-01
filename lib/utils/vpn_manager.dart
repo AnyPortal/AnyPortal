@@ -37,8 +37,6 @@ abstract class VPNManager with ChangeNotifier {
   bool isTunActive = false;
   bool isSystemProxyActive = false;
 
-  bool isExpectingActive = false;
-
   /// it's possible to toggle core alone, so distinguish beween all and core
   bool isTogglingAll = false;
   bool isTogglingCore = false;
@@ -369,7 +367,6 @@ abstract class VPNManager with ChangeNotifier {
     /// check is toggling
     if (isTogglingAll) return false;
     setisTogglingAll(true);
-    isExpectingActive = true;
 
     /// check is already active
     if (await getIsAllActive()) {
@@ -385,7 +382,6 @@ abstract class VPNManager with ChangeNotifier {
     /// check is toggling
     if (isTogglingAll) return false;
     setisTogglingAll(true);
-    isExpectingActive = false;
 
     /// check is already inactive
     if (!await getIsCoreActive()) {
@@ -401,7 +397,6 @@ abstract class VPNManager with ChangeNotifier {
     /// check is toggling
     if (isTogglingCore) return false;
     setisTogglingCore(true);
-    isExpectingActive = true;
 
     /// check is already active
     if (await getIsCoreActive()) {
@@ -417,7 +412,6 @@ abstract class VPNManager with ChangeNotifier {
     /// check is toggling
     if (isTogglingCore) return false;
     setisTogglingCore(true);
-    isExpectingActive = false;
 
     /// check is already inactive
     if (!await getIsCoreActive()) {
@@ -448,7 +442,6 @@ abstract class VPNManager with ChangeNotifier {
     /// check is toggling
     if (isTogglingTun) return;
     setisTogglingTun(true);
-    isExpectingActive = false;
 
     /// check is already inactive
     if (!await getIsTunActive()) {
@@ -479,7 +472,6 @@ abstract class VPNManager with ChangeNotifier {
     /// check is toggling
     if (isTogglingSystemProxy) return;
     setisTogglingSystemProxy(true);
-    isExpectingActive = false;
 
     /// check is already inactive
     if (!await getIsCoreActive()) {
@@ -1037,23 +1029,18 @@ class VPNManagerExec extends VPNManager {
 class VPNManagerMC extends VPNManager {
   static final platform = mCMan.methodChannel;
 
-  void handleCoreToggled(MethodCall call) {
-    setIsCoreActive(call.arguments as bool);
-  }
-
   void handleTileToggled(MethodCall call) {
-    isExpectingActive = call.arguments as bool;
+    // final isExpectingActive = call.arguments as bool;
+    updateDetachedAll();
   }
 
   VPNManagerMC() {
-    mCMan.addHandler("onCoreToggled", handleCoreToggled);
     mCMan.addHandler("onTileToggled", handleTileToggled);
   }
 
   @override
   void dispose() {
     super.dispose();
-    mCMan.removeHandler("onCoreToggled", handleCoreToggled);
     mCMan.removeHandler("onTileToggled", handleTileToggled);
   }
 
