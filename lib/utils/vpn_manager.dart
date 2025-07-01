@@ -38,6 +38,7 @@ abstract class VPNManager with ChangeNotifier {
   bool isSystemProxyActive = false;
 
   bool isExpectingActive = false;
+
   /// it's possible to toggle core alone, so distinguish beween all and core
   bool isTogglingAll = false;
   bool isTogglingCore = false;
@@ -507,13 +508,6 @@ abstract class VPNManager with ChangeNotifier {
 
   late Map<String, dynamic> coreRawCfgMap;
 
-  bool getIsTunProcess() {
-    return prefs.getBool("tun")! &&
-        (RuntimePlatform.isWindows ||
-            RuntimePlatform.isLinux ||
-            RuntimePlatform.isMacOS);
-  }
-
   Future<void> initCore() async {
     logger.d("starting: initCore");
     // get selectedProfile
@@ -953,20 +947,25 @@ class VPNManagerExec extends VPNManager {
   @override
   _startTun() async {
     logger.d("starting: _startTun");
-    if (!global.isElevated) {
-      withContext((context) {
-        showSnackBarNow(
-            context,
-            Text(context.loc.warning_you_need_to_be_elevated_user_to_enable_tun(
-                RuntimePlatform.isWindows
-                    ? context.loc.administrator
-                    : "root")));
-      });
-      setisTogglingTun(false);
-      return false;
-    }
+    if (prefs.getBool("tun")! &&
+        pidTun == null) {
+      /// should start but not started yet
 
-    if (getIsTunProcess() && pidTun == null) {
+      /// check permission
+      if (!global.isElevated) {
+        withContext((context) {
+          showSnackBarNow(
+              context,
+              Text(context.loc
+                  .warning_you_need_to_be_elevated_user_to_enable_tun(
+                      RuntimePlatform.isWindows
+                          ? context.loc.administrator
+                          : "root")));
+        });
+        setisTogglingTun(false);
+        return false;
+      }
+
       await initTunExec();
       logger.d("tunSingBoxCorePath: $_tunSingBoxCorePath");
       logger.d("tunSingBoxCoreArgList: $_tunSingBoxCoreArgList");
