@@ -138,14 +138,17 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     return null;
   }
 
+  /// where the freshly downloaded, not yet installed file should be
+  File getAssetFile(){
+    return File(p.join(global.applicationSupportDirectory.path, 'asset', 'github', owner, repo, assetName));
+  }
+
   Future<File?> download(
     String downloadUrl, {
     bool useSocks = true,
   }) async {
     /// prepare file
-    final folder = global.applicationSupportDirectory;
-    final file =
-        File(p.join(folder.path, 'asset', 'github', owner, repo, assetName));
+    final file = getAssetFile();
     if (await file.exists()) {
       try {
         await file.delete();
@@ -278,6 +281,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     });
   }
 
+  /// where the downloaded file is, could be null if have installed and then deleted
   String? getDownloadedFilePath({TypedResult? asset}) {
     return asset?.read(db.asset.path);
   }

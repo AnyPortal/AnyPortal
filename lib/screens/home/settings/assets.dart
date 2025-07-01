@@ -1,12 +1,19 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:drift/drift.dart';
+import 'package:path/path.dart' as p;
 import 'package:smooth_highlight/smooth_highlight.dart';
+
+import 'package:anyportal/utils/asset_remote/github.dart';
+import 'package:anyportal/utils/runtime_platform.dart';
 
 import '../../../extensions/localization.dart';
 import '../../../models/asset.dart';
 import '../../../screens/asset.dart';
 import '../../../utils/db.dart';
+import '../../../utils/logger.dart';
 
 class AssetsScreen extends StatefulWidget {
   const AssetsScreen({
@@ -109,6 +116,66 @@ class _AssetsScreenState extends State<AssetsScreen> {
     }
   }
 
+  /// Deletes the timestamp folder inside the file_picker cache for a given picked file path.
+  Future<void> deleteFilePickerAsset(TypedResult asset) async {
+    final path = asset.read(db.asset.path)!;
+    final file = File(path);
+    if (!await file.exists()) {
+      logger.d('File does not exist: $path');
+      return;
+    }
+
+    final fileDir = file.parent;
+    final filePickerDirName =
+        fileDir.parent.path.split(Platform.pathSeparator).last;
+
+    /// Ensure it's inside the file_picker cache directory and matches expected structure
+    if (filePickerDirName != 'file_picker') {
+      logger.d('File is not inside file_picker folder');
+      return;
+    }
+
+    if (await fileDir.exists()) {
+      try {
+        await fileDir.delete(recursive: true);
+        logger.d('Deleted folder: ${fileDir.path}');
+      } catch (e) {
+        logger.d('Failed to delete folder: $e');
+      }
+    } else {
+      logger.d('Timestamp folder does not exist: ${fileDir.path}');
+    }
+  }
+
+  Future<void> deleteAssetRemoteProtocolGithub(TypedResult asset) async {
+    final assetRemoteProtocolGithub = AssetRemoteProtocolGithub.fromUrl(
+      asset.read(db.assetRemote.url)!,
+    );
+    final assetName = assetRemoteProtocolGithub.assetName;
+    final file = assetRemoteProtocolGithub.getAssetFile();
+    if (assetName.toLowerCase().endsWith(".zip")) {
+      final fileDirPath = p.withoutExtension(file.path);
+      final fileDir = Directory(fileDirPath);
+      if (await fileDir.exists()) {
+        try {
+          await fileDir.delete(recursive: true);
+          logger.d('Deleted folder: ${fileDir.path}');
+        } catch (e) {
+          logger.d('Failed to delete folder: $e');
+        }
+      } else {
+        logger.d('Unzipped folder does not exist: ${fileDir.path}');
+      }
+    } else {
+      try {
+        await file.delete();
+        logger.d('Deleted file: ${file.path}');
+      } catch (e) {
+        logger.d('Failed to delete file: $e');
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -118,6 +185,12 @@ class _AssetsScreenState extends State<AssetsScreen> {
   void handleAssetAction(TypedResult asset, AssetAction action) async {
     switch (action) {
       case AssetAction.delete:
+        if (RuntimePlatform.isAndroid) {
+          await deleteFilePickerAsset(asset);
+        }
+        if (asset.readWithConverter(db.asset.type) == AssetType.remote) {
+          await deleteAssetRemoteProtocolGithub(asset);
+        }
         await (db.delete(db.asset)
               ..where((e) => e.id.equals(asset.read(db.asset.id)!)))
             .go();
