@@ -13,9 +13,6 @@ import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 
 public class MainTileService extends TileService {
-    public static final String ACTION_TILE_TOGGLED = "com.github.anyportal.anyportal.ACTION_TILE_TOGGLED";
-    public static final String EXTRA_IS_ACTIVE = "is_active";
-
     /// bind TProxyService
     private TProxyService tProxyService = null;
     private ServiceConnection serviceConnection = null;
@@ -98,13 +95,6 @@ public class MainTileService extends TileService {
         }
     }
 
-    public void notifyMainActivity(boolean isExpectingActive) {
-        // Send broadcast to notify MainActivity
-        Intent broadcastIntent = new Intent(ACTION_TILE_TOGGLED);
-        broadcastIntent.putExtra(EXTRA_IS_ACTIVE, isExpectingActive);
-        sendBroadcast(broadcastIntent);
-    }
-
     private void onTProxyServiceReady(TProxyService tProxyService) {
         Tile tile = getQsTile();
         if (tile != null && tProxyService != null) {
@@ -144,11 +134,9 @@ public class MainTileService extends TileService {
 
         if (tile.getState() == Tile.STATE_ACTIVE) {
             tile.setState(Tile.STATE_UNAVAILABLE);
-            notifyMainActivity(false);
             tProxyService.tryStopAll();
         } else {
             tile.setState(Tile.STATE_UNAVAILABLE);
-            notifyMainActivity(true);
             tProxyService.tryStartAll();
         }
 

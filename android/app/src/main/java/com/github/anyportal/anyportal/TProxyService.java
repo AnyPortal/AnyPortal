@@ -144,27 +144,42 @@ public class TProxyService extends VpnService {
         TileService.requestListeningState(this, componentName);
     }
 
-    /// Interface for MainActivity to receive status updates
-    public interface StatusUpdateListener {
-        void onStatusUpdate(boolean isCoreActive);
+    /// Interface for MainActivity to receive status change
+    public static interface StatusChangeListener {
+        void onAllStatusChange(boolean isCoreActive);
+        void onCoreStatusChange(boolean isCoreActive);
+        void onTunStatusChange(boolean isTunActive);
+        void onSystemProxyStatusChange(boolean isSystemProxyActive);
     }
 
-    private StatusUpdateListener statusListener;
+    private StatusChangeListener statusChangeListener;
 
-    /// Set listener for MainActivity to receive updates
-    public void setStatusUpdateListener(StatusUpdateListener listener) {
-        this.statusListener = listener;
+    public void setStatusChangeListener(StatusChangeListener listener) {
+        this.statusChangeListener = listener;
     }
 
-    /// Notify MainActivity of VPN status updates
-    private void notifyMainActivity() {
-        Log.d(TAG, "starting: notifyMainActivity");
-        if (statusListener != null) {
-            statusListener.onStatusUpdate(isCoreActive);
-        } else {
-            Log.w(TAG, "statusListener == null");
+    private void notifyMainActivityAllStatusChange() {
+        if (statusChangeListener != null) {
+            statusChangeListener.onAllStatusChange(isCoreActive);
         }
-        Log.d(TAG, "finished: notifyMainActivity");
+    }
+
+    private void notifyMainActivityCoreStatusChange() {
+        if (statusChangeListener != null) {
+            statusChangeListener.onCoreStatusChange(isCoreActive);
+        }
+    }
+
+    private void notifyMainActivityTunStatusChange() {
+        if (statusChangeListener != null) {
+            statusChangeListener.onTunStatusChange(isTunActive);
+        }
+    }
+
+    private void notifyMainActivitySystemProxyStatusChange() {
+        if (statusChangeListener != null) {
+            statusChangeListener.onSystemProxyStatusChange(isSystemProxyActive);
+        }
     }
 
     /// vpn
@@ -294,7 +309,7 @@ public class TProxyService extends VpnService {
             startSystemProxy();
         }
 
-        notifyMainActivity();
+        notifyMainActivityAllStatusChange();
         updateTile();
 
         Log.d(TAG, "finished: startAll");
@@ -312,7 +327,7 @@ public class TProxyService extends VpnService {
             stopSystemProxy();
         }
 
-        notifyMainActivity();
+        notifyMainActivityAllStatusChange();
         updateTile();
 
         stopNotificationForeground();
@@ -527,6 +542,7 @@ public class TProxyService extends VpnService {
             startTunExec();
         }
         isTunActive = true;
+        notifyMainActivityTunStatusChange();
         Log.d(TAG, "finished: startTun");
     }
 
@@ -538,6 +554,7 @@ public class TProxyService extends VpnService {
         stopTunExec();
 
         isTunActive = false;
+        notifyMainActivityTunStatusChange();
         Log.d(TAG, "finished: stopTun");
     }
 
@@ -581,6 +598,7 @@ public class TProxyService extends VpnService {
         }
 
         isCoreActive = true;
+        notifyMainActivityCoreStatusChange();
         Log.d(TAG, "finished: startCore");
     }
 
@@ -608,6 +626,7 @@ public class TProxyService extends VpnService {
         stopService(new Intent(getApplicationContext(), LibV2RayService.class));
 
         isCoreActive = false;
+        notifyMainActivityCoreStatusChange();
         Log.d(TAG, "finished: stopCore");
     }
 
@@ -639,6 +658,7 @@ public class TProxyService extends VpnService {
             isSystemProxyActive = true;
         }
 
+        notifyMainActivitySystemProxyStatusChange();
         Log.d(TAG, "finished: startSystemProxy");
         return exitCode;
     }
@@ -661,6 +681,7 @@ public class TProxyService extends VpnService {
             isSystemProxyActive = false;
         }
 
+        notifyMainActivitySystemProxyStatusChange();
         Log.d(TAG, "finished: stopSystemProxy");
         return exitCode;
     }

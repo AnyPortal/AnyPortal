@@ -1029,19 +1029,43 @@ class VPNManagerExec extends VPNManager {
 class VPNManagerMC extends VPNManager {
   static final platform = mCMan.methodChannel;
 
-  void handleTileToggled(MethodCall call) {
-    // final isExpectingActive = call.arguments as bool;
-    updateDetachedAll();
+  void handleAllStatusChange(MethodCall call) {
+    final isActive = call.arguments as bool;
+    // logger.d("handleAllStatusChange: $isActive");
+    setIsAllActive(isActive);
+  }
+
+  void handleCoreStatusChange(MethodCall call) {
+    final isActive = call.arguments as bool;
+    // logger.d("handleCoreStatusChange: $isActive");
+    setIsCoreActive(isActive);
+  }
+
+  void handleTunStatusChange(MethodCall call) {
+    final isActive = call.arguments as bool;
+    // logger.d("handleTunStatusChange: $isActive");
+    setIsTunActive(isActive);
+  }
+
+  void handleSystemProxyStatusChange(MethodCall call) {
+    final isActive = call.arguments as bool;
+    // logger.d("handleSystemProxyStatusChange: $isActive");
+    setIsSystemProxyActive(isActive);
   }
 
   VPNManagerMC() {
-    mCMan.addHandler("onTileToggled", handleTileToggled);
+    mCMan.addHandler("onAllStatusChange", handleAllStatusChange);
+    mCMan.addHandler("onCoreStatusChange", handleCoreStatusChange);
+    mCMan.addHandler("onTunStatusChange", handleTunStatusChange);
+    mCMan.addHandler("onSystemProxyStatusChange", handleSystemProxyStatusChange);
   }
 
   @override
   void dispose() {
     super.dispose();
-    mCMan.removeHandler("onTileToggled", handleTileToggled);
+    mCMan.removeHandler("onCoreStatusChange", handleCoreStatusChange);
+    mCMan.removeHandler("onTunStatusChange", handleTunStatusChange);
+    mCMan.removeHandler("onSystemProxyStatusChange", handleSystemProxyStatusChange);
   }
 
   @override
@@ -1063,30 +1087,30 @@ class VPNManagerMC extends VPNManager {
   _startAll() async {
     await prepareCore();
 
-    if (!prefs.getBool("tun.useEmbedded")!) {
+    if (prefs.getBool("tun")! && !prefs.getBool("tun.useEmbedded")!) {
       await initTunExec();
     }
     final res = await platform.invokeMethod('vpn.startAll') as bool;
-    if (res == true) {
-      setIsCoreActive(true, isToNotify: false);
-      setIsAllActive(true, isToNotify: false);
-      await updateIsSystemProxyActive(isToNotify: false);
-      await updateIsTunActive(isToNotify: false);
-      notifyListeners();
-    }
+    // if (res == true) {
+    //   setIsCoreActive(true, isToNotify: false);
+    //   setIsAllActive(true, isToNotify: false);
+    //   await updateIsSystemProxyActive(isToNotify: false);
+    //   await updateIsTunActive(isToNotify: false);
+    //   notifyListeners();
+    // }
     return res;
   }
 
   @override
   _stopAll() async {
     final res = await platform.invokeMethod('vpn.stopAll') as bool;
-    if (res == true) {
-      setIsCoreActive(false, isToNotify: false);
-      setIsAllActive(false, isToNotify: false);
-      await updateIsSystemProxyActive(isToNotify: false);
-      await updateIsTunActive(isToNotify: false);
-      notifyListeners();
-    }
+    // if (res == true) {
+    //   setIsCoreActive(false, isToNotify: false);
+    //   setIsAllActive(false, isToNotify: false);
+    //   await updateIsSystemProxyActive(isToNotify: false);
+    //   await updateIsTunActive(isToNotify: false);
+    //   notifyListeners();
+    // }
     return res;
   }
 
@@ -1109,18 +1133,18 @@ class VPNManagerMC extends VPNManager {
       await initTunExec();
     }
     final res = await platform.invokeMethod('vpn.startTun') as bool;
-    if (res == true) {
-      setIsTunActive(true);
-    }
+    // if (res == true) {
+    //   setIsTunActive(true);
+    // }
     return res;
   }
 
   @override
   _stopTun() async {
     final res = await platform.invokeMethod('vpn.stopTun') as bool;
-    if (res == true) {
-      setIsTunActive(false);
-    }
+    // if (res == true) {
+    //   setIsTunActive(false);
+    // }
     return res;
   }
 
@@ -1129,18 +1153,18 @@ class VPNManagerMC extends VPNManager {
     await prepareCore();
 
     final res = await platform.invokeMethod('vpn.startCore') as bool;
-    if (res == true) {
-      setIsCoreActive(true);
-    }
+    // if (res == true) {
+    //   setIsCoreActive(true);
+    // }
     return res;
   }
 
   @override
   _stopCore() async {
     final res = await platform.invokeMethod('vpn.stopCore') as bool;
-    if (res == true) {
-      setIsCoreActive(false);
-    }
+    // if (res == true) {
+    //   setIsCoreActive(false);
+    // }
     return res;
   }
 

@@ -2,7 +2,6 @@ package com.github.anyportal.anyportal;
 
 import com.github.anyportal.anyportal.utils.AssetUtils;
 
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -33,8 +32,6 @@ public class MainActivity extends FlutterActivity {
     private static MethodChannel methodChannel;
     private static final String TAG = "MainActivity";
 
-    private BroadcastReceiver broadcastReceiver;
-
     @Override
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
         super.configureFlutterEngine(flutterEngine);
@@ -48,7 +45,7 @@ public class MainActivity extends FlutterActivity {
         super.onStart();
         Intent intent = new Intent(this, TProxyService.class);
         intent.setAction(TProxyService.ACTION_NULL);
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+        bindService(intent, tProxyServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -66,9 +63,6 @@ public class MainActivity extends FlutterActivity {
         }
         // Copy geoip.dat and geosite.dat to the documents directory if needed
         AssetUtils.copyAssetsIfNeeded(this);
-
-        // listen for broadcast
-        registerBroadcastReceiver();
     }
 
     @Override
@@ -90,11 +84,10 @@ public class MainActivity extends FlutterActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (serviceConnection != null) {
-            unbindService(serviceConnection);
-            serviceConnection = null;
+        if (tProxyServiceConnection != null) {
+            unbindService(tProxyServiceConnection);
+            tProxyServiceConnection = null;
         }
-        unregisterReceiver(broadcastReceiver);
     }
 
     @Override
@@ -106,20 +99,45 @@ public class MainActivity extends FlutterActivity {
     /// bind TProxyService
     private TProxyService tProxyService;
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
+    public class TProxyServiceStatusChangeListener implements TProxyService.StatusChangeListener {
+        @Override
+        public void onAllStatusChange(boolean isCoreActive) {
+            runOnUiThread(() -> {
+                methodChannel.invokeMethod("onAllStatusChange", isCoreActive);
+            });
+        };
+
+
+        @Override
+        public void onCoreStatusChange(boolean isCoreActive) {
+            runOnUiThread(() -> {
+                methodChannel.invokeMethod("onCoreStatusChange", isCoreActive);
+            });
+        };
+
+        @Override
+        public void onTunStatusChange(boolean isTunActive) {
+            runOnUiThread(() -> {
+                methodChannel.invokeMethod("onTunStatusChange", isTunActive);
+            });
+        };
+
+        @Override
+        public void onSystemProxyStatusChange(boolean isSystemProxyActive) {
+            runOnUiThread(() -> {
+                methodChannel.invokeMethod("onSystemProxyStatusChange", isSystemProxyActive);
+            });
+        };
+    }
+
+    private ServiceConnection tProxyServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
             TProxyService.LocalBinder binder = (TProxyService.LocalBinder) service;
             tProxyService = binder.getService();
 
             // Set the status listener to receive updates
-            tProxyService.setStatusUpdateListener(isCoreActive -> {
-                Log.d(TAG, "isCoreActive: " + isCoreActive);
-                // Handle VPN status update in MainActivity
-                runOnUiThread(() -> {
-                    methodChannel.invokeMethod("onCoreToggled", isCoreActive);
-                });
-            });
+            tProxyService.setStatusChangeListener(new TProxyServiceStatusChangeListener());
         }
 
         @Override
@@ -237,22 +255,6 @@ public class MainActivity extends FlutterActivity {
                 result.notImplemented();
                 break;
         }
-    }
-
-    private void registerBroadcastReceiver() {
-        broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                if (action.equals(MainTileService.ACTION_TILE_TOGGLED)) {
-                    boolean isCoreActive = intent.getBooleanExtra(MainTileService.EXTRA_IS_ACTIVE, false);
-                    methodChannel.invokeMethod("onTileToggled", isCoreActive);
-                }
-            }
-        };
-
-        registerReceiver(broadcastReceiver, new IntentFilter(MainTileService.ACTION_TILE_TOGGLED),
-                RECEIVER_NOT_EXPORTED);
     }
 
     private void installApk(String filePath) {
