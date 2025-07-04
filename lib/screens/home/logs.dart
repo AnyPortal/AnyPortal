@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 
 import '../../utils/method_channel.dart';
 import '../../utils/runtime_platform.dart';
+import '../../widgets/log_highlighter.dart';
 
 class LogViewer extends StatefulWidget {
   final String filePath;
@@ -184,60 +185,11 @@ class LogViewerState extends State<LogViewer> {
             controller: _scrollController,
             itemCount: _logLines.length,
             itemBuilder: (context, index) {
-              return colorizeLogLine(_logLines[_logLines.length - 1 - index]);
+              return LogHighlighter(logLine:_logLines[_logLines.length - 1 - index]);
             },
             physics: const ClampingScrollPhysics(),
             cacheExtent: 99999,
           ),
         )));
   }
-}
-
-Widget colorizeLogLine(String logline) {
-  // Regular expression to capture datetime, protocol, IP, ports, and other parts.
-  final RegExp regex = RegExp(
-      r'(\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}:\d{2}(?:\.\d{6})?)(?: from)? ([^\s]+) accepted ([^\s]+) (.*)');
-  final match = regex.firstMatch(logline);
-
-  if (match == null) {
-    return Text(
-        logline); // Return plain text if the line doesn't match the pattern
-  }
-
-  // Extract matched groups
-  final datetime = match.group(1); // e.g. 2024/09/06 20:48:34
-  final address1 = match.group(2); // e.g. tcp:127.0.0.1
-  final address2 = match.group(3); // e.g. tcp:alive.github.com
-  final extra = match.group(4); // e.g. in_9511 -> ot_lp_bl_29_57_25_cf.vultr
-
-  return RichText(
-    text: TextSpan(
-      children: [
-        TextSpan(
-          text: '$datetime ', // DateTime part
-          style: const TextStyle(color: Color(0xff90c4f9)),
-        ),
-        const TextSpan(
-          text: 'from ', // Accepted text
-          style: TextStyle(color: Colors.grey),
-        ),
-        TextSpan(
-          text: '$address1 ', // First protocol, IP, and port
-          style: const TextStyle(color: Color(0xfffb9d51)),
-        ),
-        const TextSpan(
-          text: 'accepted ', // Accepted text
-          style: TextStyle(color: Colors.grey),
-        ),
-        TextSpan(
-          text: '$address2 ', // Second protocol, address, and port
-          style: const TextStyle(color: Color(0xfffb9d51)),
-        ),
-        TextSpan(
-          text: '[$extra]', // Extra information in brackets
-          style: const TextStyle(color: Colors.grey),
-        ),
-      ],
-    ),
-  );
 }

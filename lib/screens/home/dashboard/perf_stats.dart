@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../extensions/localization.dart';
-import '../../../utils/data_notifier/core/v2ray.dart';
+import '../../../utils/core/base/plugin.dart';
 import '../../../utils/format_byte.dart';
 
 class PerfStats extends StatefulWidget {
@@ -36,7 +36,7 @@ class _PerfStatsState extends State<PerfStats> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: coreDataNotifier,
+      listenable: CorePluginManager().instance.dataNotifier,
       builder: (BuildContext context, Widget? child) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -44,23 +44,23 @@ class _PerfStatsState extends State<PerfStats> {
           children: [
             keyValueRow(
                 context.loc.uptime,
-                coreDataNotifier.sysStats != null
-                    ? coreDataNotifier.sysStats!.uptime.toString()
+                CorePluginManager().instance.dataNotifier.sysStats != null
+                    ? CorePluginManager().instance.dataNotifier.sysStats!.uptime.toString()
                     : "0"),
             keyValueRow(
                 context.loc.memory,
-                coreDataNotifier.sysStats != null
-                    ? formatBytes(coreDataNotifier.sysStats!.alloc.toInt())
+                CorePluginManager().instance.dataNotifier.sysStats != null
+                    ? formatBytes(CorePluginManager().instance.dataNotifier.sysStats!.alloc.toInt())
                     : formatBytes(0)),
             keyValueRow(
                 context.loc.go_coroutines,
-                coreDataNotifier.sysStats != null
-                    ? coreDataNotifier.sysStats!.numGC.toString()
+                CorePluginManager().instance.dataNotifier.sysStats != null
+                    ? CorePluginManager().instance.dataNotifier.sysStats!.numGC.toString()
                     : "0"),
             keyValueRow(
                 context.loc.live_objects,
-                coreDataNotifier.sysStats != null
-                    ? coreDataNotifier.sysStats!.liveObjects .toString()
+                CorePluginManager().instance.dataNotifier.sysStats != null
+                    ? CorePluginManager().instance.dataNotifier.sysStats!.liveObjects .toString()
                     : "0"),
           ],
         );

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 import '../../../extensions/localization.dart';
-import '../../../utils/data_notifier/core/v2ray.dart';
+import '../../../models/traffic_stat_type.dart';
+import '../../../utils/core/base/plugin.dart';
 
 class SpeedChart extends StatefulWidget {
   const SpeedChart({super.key});
@@ -31,7 +32,7 @@ class _SpeedChartState extends State<SpeedChart> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: coreDataNotifier,
+      listenable: CorePluginManager().instance.dataNotifier,
       builder: (BuildContext context, Widget? child) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -47,7 +48,7 @@ class _SpeedChartState extends State<SpeedChart> {
                   child: LineChart(
                     LineChartData(
                         minY: 0,
-                        lineBarsData: coreDataNotifier.trafficQs
+                        lineBarsData: CorePluginManager().instance.dataNotifier.trafficQs
                             .map((t, q) {
                               return MapEntry(
                                   t,

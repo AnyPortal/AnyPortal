@@ -9,15 +9,14 @@ import 'package:drift/drift.dart';
 import 'package:path/path.dart' as p;
 import 'package:tuple/tuple.dart';
 
+import 'package:anyportal/utils/core/base/plugin.dart';
+
 import '../../extensions/localization.dart';
 import '../models/core.dart';
 import '../screens/home/profiles.dart';
 import '../screens/home/settings/cores.dart';
 
 import 'asset_remote/github.dart';
-import 'config_injector/core/v2ray.dart';
-import 'config_injector/tun/sing_box.dart';
-import 'data_notifier/core/v2ray.dart';
 import 'db.dart';
 import 'db/update_profile_with_group_remote.dart';
 import 'global.dart';
@@ -28,6 +27,7 @@ import 'platform_system_proxy_user.dart';
 import 'prefs.dart';
 import 'runtime_platform.dart';
 import 'show_snack_bar_now.dart';
+import 'tun/sing_box/config_injector.dart';
 import 'with_context.dart';
 
 abstract class VPNManager with ChangeNotifier {
@@ -92,18 +92,17 @@ abstract class VPNManager with ChangeNotifier {
 
   Future<void> notifyCoreDataNotifier() async {
     if (isCoreActive &&
-        !coreDataNotifier.on &&
-        vPNMan.coreTypeId <= CoreTypeDefault.xray.index) {
+        !CorePluginManager().instance.dataNotifier.on) {
       try {
-        coreDataNotifier.loadCfg(vPNMan.coreRawCfgMap);
+        CorePluginManager().instance.dataNotifier.init(cfgStr: vPNMan.coreRawCfg);
         // should do atomic check
-        if (!coreDataNotifier.on) coreDataNotifier.start();
+        if (!CorePluginManager().instance.dataNotifier.on) CorePluginManager().instance.dataNotifier.start();
       } catch (e) {
         logger.e("notifyCoreDataNotifier: $e");
       }
-    } else if (!isCoreActive && coreDataNotifier.on) {
+    } else if (!isCoreActive && CorePluginManager().instance.dataNotifier.on) {
       // should do atomic check
-      coreDataNotifier.stop();
+      CorePluginManager().instance.dataNotifier.stop();
     }
   }
 
@@ -488,6 +487,7 @@ abstract class VPNManager with ChangeNotifier {
   late bool _isExec;
 
   late int coreTypeId;
+  late String coreTypeName;
   String? corePath;
   List<String> _coreArgList = [];
   String? _coreWorkingDir;
@@ -498,7 +498,7 @@ abstract class VPNManager with ChangeNotifier {
   String? _tunSingBoxCoreWorkingDir;
   Map<String, String>? _tunSingBoxCoreEnvs;
 
-  late Map<String, dynamic> coreRawCfgMap;
+  late String coreRawCfg;
 
   Future<void> initCore() async {
     logger.d("starting: initCore");
@@ -531,23 +531,6 @@ abstract class VPNManager with ChangeNotifier {
     // check update
     updateProfileWithGroupRemote(_selectedProfile!);
 
-    // gen config.json
-    coreRawCfgMap =
-        jsonDecode(_selectedProfile!.coreCfg) as Map<String, dynamic>;
-    if (_selectedProfile!.coreTypeId == CoreTypeDefault.v2ray.index ||
-        _selectedProfile!.coreTypeId == CoreTypeDefault.xray.index) {
-      coreRawCfgMap = await getInjectedConfig(coreRawCfgMap);
-    }
-
-    final config = File(p.join(
-        global.applicationSupportDirectory.path, 'conf', 'core.gen.json'));
-    if (!RuntimePlatform.isWeb) {
-      if (!await config.exists()) {
-        await config.create(recursive: true);
-      }
-      await config.writeAsString(jsonEncode(coreRawCfgMap));
-    }
-
     coreTypeId = _selectedProfile!.coreTypeId;
 
     // check core path
@@ -569,6 +552,20 @@ abstract class VPNManager with ChangeNotifier {
         showSnackBarNow(context, Text(context.loc.please_select_a_profile));
       });
       return;
+    }
+
+    // gen config.json
+    coreTypeName = core.read(db.coreType.name)!;
+    coreRawCfg = _selectedProfile!.coreCfg;
+    CorePluginManager().switchTo(coreTypeName);
+    String coreCfg = await CorePluginManager().instance.getInjectedConfig(coreRawCfg);
+    final coreCfgFile = File(p.join(
+        global.applicationSupportDirectory.path, 'conf', 'core.gen.json'));
+    if (!RuntimePlatform.isWeb) {
+      if (!await coreCfgFile.exists()) {
+        await coreCfgFile.create(recursive: true);
+      }
+      await coreCfgFile.writeAsString(coreCfg);
     }
 
     // get is exec
@@ -597,7 +594,7 @@ abstract class VPNManager with ChangeNotifier {
 
       // get core args
       final replacements = {
-        "{config.path}": config.path,
+        "{config.path}": coreCfgFile.path,
       };
       List<String> rawCoreArgList =
           (jsonDecode(core.read(db.coreExec.args)!) as List<dynamic>)
@@ -939,8 +936,7 @@ class VPNManagerExec extends VPNManager {
   @override
   _startTun() async {
     logger.d("starting: _startTun");
-    if (prefs.getBool("tun")! &&
-        pidTun == null) {
+    if (prefs.getBool("tun")! && pidTun == null) {
       /// should start but not started yet
 
       /// check permission
@@ -1057,7 +1053,8 @@ class VPNManagerMC extends VPNManager {
     mCMan.addHandler("onAllStatusChange", handleAllStatusChange);
     mCMan.addHandler("onCoreStatusChange", handleCoreStatusChange);
     mCMan.addHandler("onTunStatusChange", handleTunStatusChange);
-    mCMan.addHandler("onSystemProxyStatusChange", handleSystemProxyStatusChange);
+    mCMan.addHandler(
+        "onSystemProxyStatusChange", handleSystemProxyStatusChange);
   }
 
   @override
@@ -1066,7 +1063,8 @@ class VPNManagerMC extends VPNManager {
     mCMan.removeHandler("onAllStatusChange", handleAllStatusChange);
     mCMan.removeHandler("onCoreStatusChange", handleCoreStatusChange);
     mCMan.removeHandler("onTunStatusChange", handleTunStatusChange);
-    mCMan.removeHandler("onSystemProxyStatusChange", handleSystemProxyStatusChange);
+    mCMan.removeHandler(
+        "onSystemProxyStatusChange", handleSystemProxyStatusChange);
   }
 
   @override

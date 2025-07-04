@@ -1,17 +1,17 @@
 import 'package:grpc/grpc.dart';
 
-import '../generated/grpc/v2ray-core/app/stats/command/command.pbgrpc.dart';
+import '../../../generated/grpc/v2ray-core/app/stats/command/command.pbgrpc.dart';
 
 enum TrafficType{
   uplink,
   downlink,
 }
 
-class V2ApiServer{
+class V2RayAPI{
   late ClientChannel channel;
   late StatsServiceClient statsServiceClient;
 
-  V2ApiServer(String address, int port){
+  V2RayAPI(String address, int port){
     channel = ClientChannel(
       address,
       port: port,

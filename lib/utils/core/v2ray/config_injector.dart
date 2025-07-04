@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/widgets.dart';
@@ -14,11 +15,14 @@ import '../../runtime_platform.dart';
 import '../../show_snack_bar_now.dart';
 import '../../with_context.dart';
 
-Future<Map<String, dynamic>> getInjectedConfig(Map<String, dynamic> cfg) async {
+Future<String> getInjectedConfig(String cfgStr) async {
+  Map<String, dynamic> cfg = jsonDecode(cfgStr) as Map<String, dynamic>;
+
   final injectLog = prefs.getBool('inject.log')!;
   final injectApi = prefs.getBool('inject.api')!;
   final injectSendThrough = prefs.getBool('inject.sendThrough')!;
   final logLevel = LogLevel.values[prefs.getInt('inject.log.level')!];
+  final serverAddress = prefs.getString('app.server.address')!;
   final apiPort = prefs.getInt('inject.api.port')!;
   final injectSocks = prefs.getBool('inject.socks')!;
   final injectSocksPort = prefs.getInt('app.socks.port')!;
@@ -47,7 +51,8 @@ Future<Map<String, dynamic>> getInjectedConfig(Map<String, dynamic> cfg) async {
                     .ip_not_found_for_binding_interface_binding_interface(
                         bindingInterface)));
           });
-          throw Exception('IP not found for binding interface: $bindingInterface');
+          throw Exception(
+              'IP not found for binding interface: $bindingInterface');
         }
         sendThrough = ip;
     }
@@ -78,10 +83,10 @@ Future<Map<String, dynamic>> getInjectedConfig(Map<String, dynamic> cfg) async {
 
     cfg["inbounds"] += [
       {
-        "listen": "127.0.0.1",
+        "listen": serverAddress,
         "port": apiPort,
         "protocol": "dokodemo-door",
-        "settings": {"address": "127.0.0.1"},
+        "settings": {"address": serverAddress},
         "tag": "in_api"
       }
     ];
@@ -147,5 +152,5 @@ Future<Map<String, dynamic>> getInjectedConfig(Map<String, dynamic> cfg) async {
   //   }
   // };
 
-  return cfg;
+  return jsonEncode(cfg);
 }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../extensions/localization.dart';
-import '../../../utils/data_notifier/core/v2ray.dart';
+import '../../../models/traffic_stat_type.dart';
+import '../../../utils/core/base/plugin.dart';
 import '../../../utils/format_byte.dart';
 
 class TrafficStats extends StatefulWidget {
@@ -36,7 +37,7 @@ class _TrafficStatsState extends State<TrafficStats> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: coreDataNotifier,
+      listenable: CorePluginManager().instance.dataNotifier,
       builder: (BuildContext context, Widget? child) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -45,20 +46,20 @@ class _TrafficStatsState extends State<TrafficStats> {
             keyValueRow(
               "${context.loc.direct} ↑",
               formatBytes(
-                  coreDataNotifier.trafficStatAgg[TrafficStatType.directUp]!),
+                  CorePluginManager().instance.dataNotifier.trafficStatAgg[TrafficStatType.directUp]!),
             ),
             keyValueRow(
               "${context.loc.direct} ↓",
               formatBytes(
-                  coreDataNotifier.trafficStatAgg[TrafficStatType.directDn]!),
+                  CorePluginManager().instance.dataNotifier.trafficStatAgg[TrafficStatType.directDn]!),
             ),
             keyValueRow(
               "${context.loc.proxy} ↑",
-              formatBytes(coreDataNotifier.trafficStatAgg[TrafficStatType.proxyUp]!),
+              formatBytes(CorePluginManager().instance.dataNotifier.trafficStatAgg[TrafficStatType.proxyUp]!),
             ),
             keyValueRow(
               "${context.loc.proxy} ↓",
-              formatBytes(coreDataNotifier.trafficStatAgg[TrafficStatType.proxyDn]!),
+              formatBytes(CorePluginManager().instance.dataNotifier.trafficStatAgg[TrafficStatType.proxyDn]!),
             ),
           ],
         );

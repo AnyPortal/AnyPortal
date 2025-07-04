@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../utils/data_notifier/core/v2ray.dart';
+import '../../../models/traffic_stat_type.dart';
+import '../../../utils/core/base/plugin.dart';
 import '../../../utils/format_byte.dart';
 
 class ProxySpeeds extends StatefulWidget {
@@ -35,7 +36,7 @@ class _ProxySpeedsState extends State<ProxySpeeds> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: coreDataNotifier,
+      listenable: CorePluginManager().instance.dataNotifier,
       builder: (BuildContext context, Widget? child) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -43,11 +44,11 @@ class _ProxySpeedsState extends State<ProxySpeeds> {
           children: [
             keyValueRow(
               "↑",
-              "${formatBytes(coreDataNotifier.trafficStatCur[TrafficStatType.proxyUp]!)}ps",
+              "${formatBytes(CorePluginManager().instance.dataNotifier.trafficStatCur[TrafficStatType.proxyUp]!)}ps",
             ),
             keyValueRow(
               "↓",
-              "${formatBytes(coreDataNotifier.trafficStatCur[TrafficStatType.proxyDn]!)}ps",
+              "${formatBytes(CorePluginManager().instance.dataNotifier.trafficStatCur[TrafficStatType.proxyDn]!)}ps",
             ),
           ],
         );

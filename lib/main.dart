@@ -14,7 +14,7 @@ import 'screens/home/settings/tun.dart';
 import 'utils/arg_parser.dart';
 import 'utils/asset_remote/app.dart';
 import 'utils/copy_assets.dart';
-import 'utils/data_notifier/core/v2ray.dart';
+import 'utils/core/base/plugin.dart';
 import 'utils/db.dart';
 import 'utils/global.dart';
 import 'utils/launch_at_startup.dart';
@@ -56,9 +56,10 @@ void main(List<String> args) async {
     LocaleManager().init(),
   ]);
 
+  await CorePluginManager().init();
+
   await Future.wait([
     VPNManManager().init(),
-    CoreDataNotifierManager().init(),
     PlatformTaskSchedulerManager().init(),
   ]);
 

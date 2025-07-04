@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../utils/data_notifier/core/v2ray.dart';
+import '../../../models/traffic_stat_type.dart';
+import '../../../utils/core/base/plugin.dart';
 import '../../../utils/format_byte.dart';
 
 class DirectSpeeds extends StatefulWidget {
@@ -35,7 +36,7 @@ class _DirectSpeedsState extends State<DirectSpeeds> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: coreDataNotifier,
+      listenable: CorePluginManager().instance.dataNotifier,
       builder: (BuildContext context, Widget? child) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -44,12 +45,12 @@ class _DirectSpeedsState extends State<DirectSpeeds> {
             keyValueRow(
               "↑",
               "${formatBytes(
-                  coreDataNotifier.trafficStatCur[TrafficStatType.directUp]!)}ps",
+                  CorePluginManager().instance.dataNotifier.trafficStatCur[TrafficStatType.directUp]!)}ps",
             ),
             keyValueRow(
               "↓",
               "${formatBytes(
-                  coreDataNotifier.trafficStatCur[TrafficStatType.directDn]!)}ps",
+                  CorePluginManager().instance.dataNotifier.trafficStatCur[TrafficStatType.directDn]!)}ps",
             ),
 
           ],
