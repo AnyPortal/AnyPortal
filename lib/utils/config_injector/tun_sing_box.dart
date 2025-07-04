@@ -3,13 +3,13 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
-import '../vpn_manager.dart';
 import '../../models/core.dart';
 import '../../models/log_level.dart';
 import '../global.dart';
 import '../logger.dart';
-import '../runtime_platform.dart';
 import '../prefs.dart';
+import '../runtime_platform.dart';
+import '../vpn_manager.dart';
 
 Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
     Map<String, dynamic> cfg) async {
@@ -63,10 +63,16 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
   final rules = route["rules"] as List<dynamic>;
   if (injectExcludeCore) {
     if (corePath != null) {
-      rules.add({
+      rules.insert(0, {
         "process_path": [corePath],
-        "outbound": "ot_direct"
+        "outbound": "ot_direct",
       });
+
+      /// not working
+      // cfg["dns"]["rules"].insert(0, {
+      //   "process_path": [corePath],
+      //   "server": "dn_auto",
+      // });
     }
   }
   if (RuntimePlatform.isAndroid) {
@@ -100,13 +106,13 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
     }
   }
 
-  if (injectExcludeCoreDNS && vPNMan.coreTypeId <= CoreTypeDefault.xray.index){
+  if (injectExcludeCoreDNS && vPNMan.coreTypeId <= CoreTypeDefault.xray.index) {
     /// all ips in coreCfg["dns"]["servers"] are potentially direct dns records
     /// if the DNS is proxied, it won't reach sing-box
     /// otherwise they should be sent to ot_direct
     /// therefore all of them can be excluded
     List<String>? ips;
-    try{
+    try {
       final coreCfg = vPNMan.coreRawCfgMap;
       final coreCfgDns = coreCfg["dns"] as Map<String, dynamic>;
       final coreCfgDnsServers = coreCfgDns["servers"] as List<dynamic>;
@@ -115,11 +121,11 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
     } catch (e) {
       logger.w("injectExcludeCoreDNS: ${e.toString()}");
     }
-    if (ips != null){
+    if (ips != null) {
       rules.insert(0, {
         "ip_cidr": ips,
         "port": 53,
-        "outbound": "ot_direct"
+        "outbound": "ot_direct",
       });
     }
   }
@@ -131,7 +137,8 @@ List<String> extractIps(String jsonString) {
   final ipRegex = RegExp(r'''\s*"((?:\d{1,3}\.){3}\d{1,3})"''');
 
   final matches = ipRegex.allMatches(jsonString);
-  final ipAddresses = matches.map((m) => m.group(1)).whereType<String>().toList();
+  final ipAddresses =
+      matches.map((m) => m.group(1)).whereType<String>().toList();
 
   return ipAddresses;
 }
