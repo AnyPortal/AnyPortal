@@ -1063,6 +1063,7 @@ class VPNManagerMC extends VPNManager {
   @override
   void dispose() {
     super.dispose();
+    mCMan.removeHandler("onAllStatusChange", handleAllStatusChange);
     mCMan.removeHandler("onCoreStatusChange", handleCoreStatusChange);
     mCMan.removeHandler("onTunStatusChange", handleTunStatusChange);
     mCMan.removeHandler("onSystemProxyStatusChange", handleSystemProxyStatusChange);
