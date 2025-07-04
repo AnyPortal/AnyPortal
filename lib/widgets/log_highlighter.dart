@@ -24,8 +24,12 @@ class LogHighlighter extends StatelessWidget {
           TextStyle(color: Color(0xff90c4f9)),
       // Address: domain:port or IP:port
       RegExp(r'\b([\w\.-]+):\d+\b'): TextStyle(color: Color(0xfffb9d51)),
+      RegExp(r'\b(tcp:|udp:)\b', caseSensitive: false):
+          TextStyle(
+        color: Color(0xfffb9d51),
+      ),
       // Log level: ERROR, Warning, debug, info, etc.
-      RegExp(r'\b(ERROR|WARNING|WARNING|INFO|DEBUG|Error|Warning|Info|Debug)\b'):
+      RegExp(r'\b(error|warning|info|debug)\b', caseSensitive: false):
           TextStyle(
         color: Colors.red,
         fontWeight: FontWeight.bold,
@@ -35,7 +39,7 @@ class LogHighlighter extends StatelessWidget {
       // Arrow symbol ->
       RegExp(r'->'): TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
       // High frequency keywords
-      RegExp(r'\b(from|accepted|failed|tcp|udp)\b', caseSensitive: false):
+      RegExp(r'\b(from|accepted|failed)\b', caseSensitive: false):
           TextStyle(
         color: Colors.grey,
         fontStyle: FontStyle.italic,
