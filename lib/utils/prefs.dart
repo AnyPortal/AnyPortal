@@ -59,9 +59,8 @@ class PrefsManager {
     'tun.inject.http': true,
     'tun.inject.socks': true,
     'tun.inject.excludeCorePath': true,
-    'tun.inject.excludeCoreDNS': true,
     'tun.useEmbedded': RuntimePlatform.isAndroid || RuntimePlatform.isIOS,
-
+    
     'android.tun.perAppProxy.allowed': true,
     'android.tun.allowedApplications': "[]",
     'android.tun.disallowedApplications': "[]",

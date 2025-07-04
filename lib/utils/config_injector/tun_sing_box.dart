@@ -3,10 +3,8 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
-import '../../models/core.dart';
 import '../../models/log_level.dart';
 import '../global.dart';
-import '../logger.dart';
 import '../prefs.dart';
 import '../runtime_platform.dart';
 import '../vpn_manager.dart';
@@ -24,7 +22,6 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
   final injectSocksPort = prefs.getInt('app.socks.port')!;
   final injectHttpPort = prefs.getInt('app.http.port')!;
   final injectExcludeCore = prefs.getBool('tun.inject.excludeCorePath')!;
-  final injectExcludeCoreDNS = prefs.getBool('tun.inject.excludeCoreDNS')!;
   final corePath = vPNMan.corePath;
 
   if (injectLog) {
@@ -102,30 +99,6 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
       rules.insert(0, {
         "package_name": "com.github.anyportal.anyportal",
         "outbound": "ot_direct"
-      });
-    }
-  }
-
-  if (injectExcludeCoreDNS && vPNMan.coreTypeId <= CoreTypeDefault.xray.index) {
-    /// all ips in coreCfg["dns"]["servers"] are potentially direct dns records
-    /// if the DNS is proxied, it won't reach sing-box
-    /// otherwise they should be sent to ot_direct
-    /// therefore all of them can be excluded
-    List<String>? ips;
-    try {
-      final coreCfg = vPNMan.coreRawCfgMap;
-      final coreCfgDns = coreCfg["dns"] as Map<String, dynamic>;
-      final coreCfgDnsServers = coreCfgDns["servers"] as List<dynamic>;
-      final serverString = json.encode(coreCfgDnsServers);
-      ips = extractIps(serverString);
-    } catch (e) {
-      logger.w("injectExcludeCoreDNS: ${e.toString()}");
-    }
-    if (ips != null) {
-      rules.insert(0, {
-        "ip_cidr": ips,
-        "port": 53,
-        "outbound": "ot_direct",
       });
     }
   }

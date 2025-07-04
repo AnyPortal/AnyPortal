@@ -56,7 +56,6 @@ class _TunScreenState extends State<TunScreen> {
   LogLevel _logLevel = LogLevel.values[prefs.getInt('tun.inject.log.level')!];
   bool _injectSocks = prefs.getBool('tun.inject.socks')!;
   bool _injectExcludeCorePath = prefs.getBool('tun.inject.excludeCorePath')!;
-  bool _injectExcludeCoreDNS = prefs.getBool('tun.inject.excludeCoreDNS')!;
 
   @override
   void initState() {
@@ -386,20 +385,6 @@ misc:
             prefs.setBool('tun.inject.excludeCorePath', value);
             setState(() {
               _injectExcludeCorePath = value;
-            });
-          },
-        ),
-      ),
-      ListTile(
-        title: Text(context.loc.inject_rule_to_exclude_core_dns),
-        subtitle: Text(
-            context.loc.all_ipv4_defined_in_dns_servers_will_not_be_proxied),
-        trailing: Switch(
-          value: _injectExcludeCoreDNS,
-          onChanged: (value) {
-            prefs.setBool('tun.inject.excludeCoreDNS', value);
-            setState(() {
-              _injectExcludeCoreDNS = value;
             });
           },
         ),
