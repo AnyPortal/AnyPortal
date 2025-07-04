@@ -3,11 +3,11 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
-import '../../models/log_level.dart';
-import '../global.dart';
-import '../prefs.dart';
-import '../runtime_platform.dart';
-import '../vpn_manager.dart';
+import '../../../models/log_level.dart';
+import '../../global.dart';
+import '../../prefs.dart';
+import '../../runtime_platform.dart';
+import '../../vpn_manager.dart';
 
 Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
     Map<String, dynamic> cfg) async {

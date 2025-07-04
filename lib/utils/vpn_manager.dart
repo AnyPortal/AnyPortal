@@ -15,9 +15,9 @@ import '../screens/home/profiles.dart';
 import '../screens/home/settings/cores.dart';
 
 import 'asset_remote/github.dart';
-import 'config_injector/core_ray.dart';
-import 'config_injector/tun_sing_box.dart';
-import 'core_data_notifier.dart';
+import 'config_injector/core/v2ray.dart';
+import 'config_injector/tun/sing_box.dart';
+import 'data_notifier/core/v2ray.dart';
 import 'db.dart';
 import 'db/update_profile_with_group_remote.dart';
 import 'global.dart';

@@ -4,11 +4,10 @@ import 'package:flutter/material.dart';
 
 import 'package:fl_chart/fl_chart.dart';
 
-import '../generated/grpc/v2ray-core/app/stats/command/command.pbgrpc.dart';
-
-import 'grpc_api.dart';
-import 'logger.dart';
-import 'prefs.dart';
+import '../../../generated/grpc/v2ray-core/app/stats/command/command.pbgrpc.dart';
+import '../../grpc_api.dart';
+import '../../logger.dart';
+import '../../prefs.dart';
 
 enum TrafficStatType {
   directUp,

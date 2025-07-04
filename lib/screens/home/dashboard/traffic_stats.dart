@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../extensions/localization.dart';
-import '../../../utils/core_data_notifier.dart';
+import '../../../utils/data_notifier/core/v2ray.dart';
 import '../../../utils/format_byte.dart';
 
 class TrafficStats extends StatefulWidget {
