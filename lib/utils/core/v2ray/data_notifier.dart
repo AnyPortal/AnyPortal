@@ -12,12 +12,12 @@ import '../base/data_notifier.dart';
 import 'api.dart';
 
 class CoreDataNotifierV2Ray extends CoreDataNotifierBase {
-  static const protocolDirect = {
+  Set<String> protocolDirect = {
     "freedom",
     "loopback",
     "blackhole",
   };
-  static const protocolProxy = {
+  Set<String> protocolProxy = {
     "dns",
     "http",
     "mtproto",
@@ -27,6 +27,7 @@ class CoreDataNotifierV2Ray extends CoreDataNotifierBase {
     "vless",
     "trojan",
   };
+  String protocolKey = "protocol";
 
   @override
   void init({String? cfgStr}) {
@@ -44,7 +45,7 @@ class CoreDataNotifierV2Ray extends CoreDataNotifierBase {
       return;
     }
     outboundProtocol = {
-      for (var map in outboundList) map['tag']: map['protocol']
+      for (var map in outboundList) map['tag']: map[protocolKey]
     };
     apiItemTrafficStatType = {};
     for (var e in outboundProtocol.entries) {
