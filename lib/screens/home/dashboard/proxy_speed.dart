@@ -35,8 +35,9 @@ class _ProxySpeedsState extends State<ProxySpeeds> {
 
   @override
   Widget build(BuildContext context) {
+    final dataNotifier = CorePluginManager().instance.dataNotifier;
     return ListenableBuilder(
-      listenable: CorePluginManager().instance.dataNotifier,
+      listenable: dataNotifier,
       builder: (BuildContext context, Widget? child) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -44,11 +45,11 @@ class _ProxySpeedsState extends State<ProxySpeeds> {
           children: [
             keyValueRow(
               "↑",
-              "${formatBytes(CorePluginManager().instance.dataNotifier.trafficStatCur[TrafficStatType.proxyUp]!)}ps",
+              "${formatBytes(dataNotifier.trafficStatCur[TrafficStatType.proxyUp]!)}ps",
             ),
             keyValueRow(
               "↓",
-              "${formatBytes(CorePluginManager().instance.dataNotifier.trafficStatCur[TrafficStatType.proxyDn]!)}ps",
+              "${formatBytes(dataNotifier.trafficStatCur[TrafficStatType.proxyDn]!)}ps",
             ),
           ],
         );

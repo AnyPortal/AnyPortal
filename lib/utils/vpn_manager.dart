@@ -91,18 +91,19 @@ abstract class VPNManager with ChangeNotifier {
   Future<void> stopNotificationForeground() async {}
 
   Future<void> notifyCoreDataNotifier() async {
+    final dataNotifier = CorePluginManager().instance.dataNotifier;
     if (isCoreActive &&
-        !CorePluginManager().instance.dataNotifier.on) {
+        !dataNotifier.on) {
       try {
-        CorePluginManager().instance.dataNotifier.init(cfgStr: vPNMan.coreRawCfg);
+        dataNotifier.init(cfgStr: vPNMan.coreRawCfg);
         // should do atomic check
-        if (!CorePluginManager().instance.dataNotifier.on) CorePluginManager().instance.dataNotifier.start();
+        if (!dataNotifier.on) dataNotifier.start();
       } catch (e) {
         logger.e("notifyCoreDataNotifier: $e");
       }
-    } else if (!isCoreActive && CorePluginManager().instance.dataNotifier.on) {
+    } else if (!isCoreActive && dataNotifier.on) {
       // should do atomic check
-      CorePluginManager().instance.dataNotifier.stop();
+      dataNotifier.stop();
     }
   }
 

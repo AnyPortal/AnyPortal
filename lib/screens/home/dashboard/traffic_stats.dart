@@ -36,8 +36,9 @@ class _TrafficStatsState extends State<TrafficStats> {
 
   @override
   Widget build(BuildContext context) {
+    final dataNotifier = CorePluginManager().instance.dataNotifier;
     return ListenableBuilder(
-      listenable: CorePluginManager().instance.dataNotifier,
+      listenable: dataNotifier,
       builder: (BuildContext context, Widget? child) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -46,20 +47,20 @@ class _TrafficStatsState extends State<TrafficStats> {
             keyValueRow(
               "${context.loc.direct} ↑",
               formatBytes(
-                  CorePluginManager().instance.dataNotifier.trafficStatAgg[TrafficStatType.directUp]!),
+                  dataNotifier.trafficStatAgg[TrafficStatType.directUp]!),
             ),
             keyValueRow(
               "${context.loc.direct} ↓",
               formatBytes(
-                  CorePluginManager().instance.dataNotifier.trafficStatAgg[TrafficStatType.directDn]!),
+                  dataNotifier.trafficStatAgg[TrafficStatType.directDn]!),
             ),
             keyValueRow(
               "${context.loc.proxy} ↑",
-              formatBytes(CorePluginManager().instance.dataNotifier.trafficStatAgg[TrafficStatType.proxyUp]!),
+              formatBytes(dataNotifier.trafficStatAgg[TrafficStatType.proxyUp]!),
             ),
             keyValueRow(
               "${context.loc.proxy} ↓",
-              formatBytes(CorePluginManager().instance.dataNotifier.trafficStatAgg[TrafficStatType.proxyDn]!),
+              formatBytes(dataNotifier.trafficStatAgg[TrafficStatType.proxyDn]!),
             ),
           ],
         );

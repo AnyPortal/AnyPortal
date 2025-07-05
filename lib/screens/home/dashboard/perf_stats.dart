@@ -35,8 +35,9 @@ class _PerfStatsState extends State<PerfStats> {
 
   @override
   Widget build(BuildContext context) {
+    final dataNotifier = CorePluginManager().instance.dataNotifier;
     return ListenableBuilder(
-      listenable: CorePluginManager().instance.dataNotifier,
+      listenable: dataNotifier,
       builder: (BuildContext context, Widget? child) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -44,23 +45,23 @@ class _PerfStatsState extends State<PerfStats> {
           children: [
             keyValueRow(
                 context.loc.uptime,
-                CorePluginManager().instance.dataNotifier.sysStats != null
-                    ? CorePluginManager().instance.dataNotifier.sysStats!.uptime.toString()
+                dataNotifier.sysStats != null
+                    ? dataNotifier.sysStats!.uptime.toString()
                     : "0"),
             keyValueRow(
                 context.loc.memory,
-                CorePluginManager().instance.dataNotifier.sysStats != null
-                    ? formatBytes(CorePluginManager().instance.dataNotifier.sysStats!.alloc.toInt())
+                dataNotifier.sysStats != null
+                    ? formatBytes(dataNotifier.sysStats!.alloc.toInt())
                     : formatBytes(0)),
             keyValueRow(
                 context.loc.go_coroutines,
-                CorePluginManager().instance.dataNotifier.sysStats != null
-                    ? CorePluginManager().instance.dataNotifier.sysStats!.numGC.toString()
+                dataNotifier.sysStats != null
+                    ? dataNotifier.sysStats!.numGC.toString()
                     : "0"),
             keyValueRow(
                 context.loc.live_objects,
-                CorePluginManager().instance.dataNotifier.sysStats != null
-                    ? CorePluginManager().instance.dataNotifier.sysStats!.liveObjects .toString()
+                dataNotifier.sysStats != null
+                    ? dataNotifier.sysStats!.liveObjects .toString()
                     : "0"),
           ],
         );

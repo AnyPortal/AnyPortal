@@ -31,8 +31,9 @@ class _SpeedChartState extends State<SpeedChart> {
 
   @override
   Widget build(BuildContext context) {
+    final dataNotifier = CorePluginManager().instance.dataNotifier;
     return ListenableBuilder(
-      listenable: CorePluginManager().instance.dataNotifier,
+      listenable: dataNotifier,
       builder: (BuildContext context, Widget? child) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -48,7 +49,7 @@ class _SpeedChartState extends State<SpeedChart> {
                   child: LineChart(
                     LineChartData(
                         minY: 0,
-                        lineBarsData: CorePluginManager().instance.dataNotifier.trafficQs
+                        lineBarsData: dataNotifier.trafficQs
                             .map((t, q) {
                               return MapEntry(
                                   t,

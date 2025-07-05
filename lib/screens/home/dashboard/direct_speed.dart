@@ -35,8 +35,9 @@ class _DirectSpeedsState extends State<DirectSpeeds> {
 
   @override
   Widget build(BuildContext context) {
+    final dataNotifier = CorePluginManager().instance.dataNotifier;
     return ListenableBuilder(
-      listenable: CorePluginManager().instance.dataNotifier,
+      listenable: dataNotifier,
       builder: (BuildContext context, Widget? child) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -44,15 +45,12 @@ class _DirectSpeedsState extends State<DirectSpeeds> {
           children: [
             keyValueRow(
               "↑",
-              "${formatBytes(
-                  CorePluginManager().instance.dataNotifier.trafficStatCur[TrafficStatType.directUp]!)}ps",
+              "${formatBytes(dataNotifier.trafficStatCur[TrafficStatType.directUp]!)}ps",
             ),
             keyValueRow(
               "↓",
-              "${formatBytes(
-                  CorePluginManager().instance.dataNotifier.trafficStatCur[TrafficStatType.directDn]!)}ps",
+              "${formatBytes(dataNotifier.trafficStatCur[TrafficStatType.directDn]!)}ps",
             ),
-
           ],
         );
       },
