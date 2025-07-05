@@ -16,6 +16,8 @@ Future<bool> updateProfile({
   int? autoUpdateInterval = 0,
   int? coreTypeId = 0,
   String? coreCfg = "",
+  String? coreCfgFmt = "json",
+  int? profileGroupId = 0,
 }) async {
   if (oldProfile != null) {
     name ??= oldProfile.name;
@@ -45,6 +47,8 @@ Future<bool> updateProfile({
                 type: drift.Value(profileType!),
                 coreTypeId: drift.Value(coreTypeId!),
                 coreCfg: drift.Value(coreCfg!),
+                coreCfgFmt: drift.Value(coreCfgFmt!),
+                profileGroupId: drift.Value(profileGroupId!),
               ));
     }
 
@@ -68,6 +72,8 @@ Future<bool> updateProfile({
               coreCfg: drift.Value(coreCfg),
               type: drift.Value(profileType),
               coreTypeId: drift.Value(coreTypeId!),
+              coreCfgFmt: drift.Value(coreCfgFmt!),
+              profileGroupId: drift.Value(profileGroupId!),
             ));
         await db
             .into(db.profileRemote)
@@ -84,6 +90,8 @@ Future<bool> updateProfile({
               coreCfg: drift.Value(coreCfg!),
               type: drift.Value(profileType),
               coreTypeId: drift.Value(coreTypeId!),
+              coreCfgFmt: drift.Value(coreCfgFmt!),
+              profileGroupId: drift.Value(profileGroupId!),
             ));
         await db.into(db.profileLocal).insertOnConflictUpdate(
             ProfileLocalCompanion(profileId: drift.Value(profileId)));

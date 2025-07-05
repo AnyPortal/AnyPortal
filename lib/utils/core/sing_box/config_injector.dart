@@ -7,7 +7,7 @@ import '../../../models/log_level.dart';
 import '../../global.dart';
 import '../../prefs.dart';
 
-Future<String> getInjectedConfig(String cfgStr) async {
+Future<String> getInjectedConfig(String cfgStr, String coreCfgFmt) async {
   Map<String, dynamic> cfg = jsonDecode(cfgStr) as Map<String, dynamic>;
   final injectLog = prefs.getBool('inject.log')!;
   final injectApi = prefs.getBool('inject.api')!;
@@ -16,7 +16,7 @@ Future<String> getInjectedConfig(String cfgStr) async {
   final serverAddress = prefs.getString('app.server.address')!;
   final apiPort = prefs.getInt('inject.api.port')!;
   final injectSocks = prefs.getBool('inject.socks')!;
-  final injectSocksPort = prefs.getInt('app.socks.port')!;
+  final socksPort = prefs.getInt('app.socks.port')!;
 
   if (injectLog) {
     final pathLog = File(p.join(
@@ -51,9 +51,12 @@ Future<String> getInjectedConfig(String cfgStr) async {
     };
   }
 
+  if (!cfg.containsKey("inbounds")) {
+    cfg["inbounds"] = [];
+  }
   if (injectSocks) {
     cfg["inbounds"].add({
-      "listen_port": injectSocksPort,
+      "listen_port": socksPort,
       "tag": "anyportal_in_socks",
       "type": "mixed"
     });

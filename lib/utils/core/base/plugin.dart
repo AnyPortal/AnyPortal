@@ -9,6 +9,8 @@ import '../../logger.dart';
 class CorePluginBase {
   static Map<String, CorePluginBase> implementations = {};
   String? coreTypeName;
+  bool isToLogStdout = false;
+  Map<String, String> environment = {};
 
   CorePluginBase() {
     register();
@@ -20,7 +22,7 @@ class CorePluginBase {
     }
   }
 
-  Future<String> getInjectedConfig(String cfgStr) async {
+  Future<String> getInjectedConfig(String cfgStr, String coreCfgFmt) async {
     return cfgStr;
   }
 

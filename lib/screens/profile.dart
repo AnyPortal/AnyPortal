@@ -32,15 +32,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _urlController = TextEditingController();
   final _autoUpdateIntervalController = TextEditingController(text: '0');
   final _coreCfgController = TextEditingController(text: '{}');
+  final _coreCfgFmtController = TextEditingController(text: 'json');
   List<CoreTypeData> _coreTypeDataList = [];
+  List<ProfileGroupData> _profileGroupDataList = [];
   ProfileType _profileType = ProfileType.remote;
   int _coreTypeId = CoreTypeDefault.v2ray.index;
+  int _profileGroupId = 0;
 
   Future<void> _loadField() async {
     _coreTypeDataList = await (db.select(db.coreType).get());
+    _profileGroupDataList = await (db.select(db.profileGroup).get());
     if (mounted) {
       setState(() {
         _coreTypeDataList = _coreTypeDataList;
+        _profileGroupDataList = _profileGroupDataList;
       });
     }
   }
@@ -51,6 +56,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _profileType = widget.profile!.type;
       _coreCfgController.text = prettyPrintJson(widget.profile!.coreCfg);
       _coreTypeId = widget.profile!.coreTypeId;
+      _profileGroupId = widget.profile!.profileGroupId;
       final profileId = widget.profile!.id;
       switch (_profileType) {
         case ProfileType.remote:
@@ -88,7 +94,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           url: _urlController.text,
           autoUpdateInterval: int.parse(_autoUpdateIntervalController.text),
           coreTypeId: _coreTypeId,
-          coreCfg: minifyJson(_coreCfgController.text),
+          coreCfg: _coreCfgFmtController.text == "json" ? minifyJson(_coreCfgController.text) : _coreCfgController.text,
+          coreCfgFmt: _coreCfgFmtController.text,
+          profileGroupId: _profileGroupId,
         );
       }
       ok = true;
@@ -109,6 +117,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final fields = [
+      DropdownButtonFormField<int>(
+        decoration: InputDecoration(
+          labelText: context.loc.profile_group,
+          border: OutlineInputBorder(),
+        ),
+        items: _profileGroupDataList.map((ProfileGroupData t) {
+          final name = t.name == "" ? context.loc.standalone : t.name;
+          return DropdownMenuItem<int>(value: t.id, child: Text(name));
+        }).toList(),
+        onChanged: (value) {
+                setState(() {
+                  _profileGroupId = value!;
+                });
+              },
+        value: _profileGroupId,
+      ),
       TextFormField(
         controller: _nameController,
         decoration: InputDecoration(
@@ -124,9 +148,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         items: _coreTypeDataList.map((e) {
           return DropdownMenuItem<int>(value: e.id, child: Text(e.name));
         }).toList(),
-        onChanged: widget.profile != null
-            ? null
-            : (value) {
+        onChanged: (value) {
                 setState(() {
                   _coreTypeId = value!;
                 });
@@ -150,6 +172,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               },
         value: _profileType,
       ),
+      TextFormField(
+        controller: _coreCfgFmtController,
+        decoration: InputDecoration(
+          labelText: context.loc.core_config_format,
+          border: OutlineInputBorder(),
+        ),
+      ),
       if (_profileType == ProfileType.remote)
         TextFormField(
           controller: _urlController,
@@ -171,8 +200,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (_profileType == ProfileType.local)
         TextFormField(
           controller: _coreCfgController,
-          decoration: const InputDecoration(
-            labelText: 'json',
+          decoration: InputDecoration(
+            labelText: context.loc.core_config,
             border: OutlineInputBorder(),
           ),
           maxLines: 16,

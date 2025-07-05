@@ -15,7 +15,7 @@ import '../../runtime_platform.dart';
 import '../../show_snack_bar_now.dart';
 import '../../with_context.dart';
 
-Future<String> getInjectedConfig(String cfgStr) async {
+Future<String> getInjectedConfig(String cfgStr, String coreCfgFmt) async {
   Map<String, dynamic> cfg = jsonDecode(cfgStr) as Map<String, dynamic>;
 
   final injectLog = prefs.getBool('inject.log')!;
@@ -25,7 +25,7 @@ Future<String> getInjectedConfig(String cfgStr) async {
   final serverAddress = prefs.getString('app.server.address')!;
   final apiPort = prefs.getInt('inject.api.port')!;
   final injectSocks = prefs.getBool('inject.socks')!;
-  final injectSocksPort = prefs.getInt('app.socks.port')!;
+  final socksPort = prefs.getInt('app.socks.port')!;
 
   final sendThroughBindingStratagy = SendThroughBindingStratagy
       .values[prefs.getInt('inject.sendThrough.bindingStratagy')!];
@@ -123,7 +123,7 @@ Future<String> getInjectedConfig(String cfgStr) async {
   if (injectSocks) {
     cfg["inbounds"].insert(0, {
       "listen": "127.0.0.1",
-      "port": injectSocksPort,
+      "port": socksPort,
       "protocol": "socks",
       "settings": {"udp": true},
       "sniffing": {"enabled": true},

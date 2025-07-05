@@ -8,6 +8,7 @@ class Profile extends Table {
   TextColumn get name => text()();
   IntColumn get coreTypeId => integer().references(CoreType, #id, onDelete: KeyAction.cascade)();
   TextColumn get coreCfg => text().withDefault(const Constant("{}"))();
+  TextColumn get coreCfgFmt => text().withDefault(const Constant("json"))();
   DateTimeColumn get updatedAt => dateTime()();
   IntColumn get type => integer().map(const ProfileTypeConverter())();
   IntColumn get profileGroupId =>

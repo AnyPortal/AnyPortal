@@ -16,8 +16,8 @@ class CorePluginSingBox extends CorePluginBase {
   String? get coreTypeName => "sing-box";
 
   @override
-  Future<String> getInjectedConfig(String cfgStr) =>
-      config_injector.getInjectedConfig(cfgStr);
+  Future<String> getInjectedConfig(String cfgStr, String coreCfgFmt) =>
+      config_injector.getInjectedConfig(cfgStr, coreCfgFmt);
 
   @override
   CoreDataNotifierBase get dataNotifier => _dataNotifier;

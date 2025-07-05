@@ -19,7 +19,7 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
   if (injectServerAddress == "0.0.0.0") {
     injectServerAddress = "127.0.0.1";
   }
-  final injectSocksPort = prefs.getInt('app.socks.port')!;
+  final socksPort = prefs.getInt('app.socks.port')!;
   final injectHttpPort = prefs.getInt('app.http.port')!;
   final injectExcludeCore = prefs.getBool('tun.inject.excludeCorePath')!;
   final corePath = vPNMan.corePath;
@@ -52,7 +52,7 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
       "type": "socks",
       "tag": "ot_socks",
       "server": injectServerAddress,
-      "server_port": injectSocksPort
+      "server_port": socksPort
     });
   }
 

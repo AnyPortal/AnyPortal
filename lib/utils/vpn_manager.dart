@@ -92,10 +92,9 @@ abstract class VPNManager with ChangeNotifier {
 
   Future<void> notifyCoreDataNotifier() async {
     final dataNotifier = CorePluginManager().instance.dataNotifier;
-    if (isCoreActive &&
-        !dataNotifier.on) {
+    if (isCoreActive && !dataNotifier.on) {
       try {
-        dataNotifier.init(cfgStr: vPNMan.coreRawCfg);
+        dataNotifier.init(cfgStr: vPNMan.coreCfgRaw);
         // should do atomic check
         if (!dataNotifier.on) dataNotifier.start();
       } catch (e) {
@@ -499,7 +498,8 @@ abstract class VPNManager with ChangeNotifier {
   String? _tunSingBoxCoreWorkingDir;
   Map<String, String>? _tunSingBoxCoreEnvs;
 
-  late String coreRawCfg;
+  late String coreCfgRaw;
+  late String coreCfgFmt;
 
   Future<void> initCore() async {
     logger.d("starting: initCore");
@@ -557,9 +557,12 @@ abstract class VPNManager with ChangeNotifier {
 
     // gen config.json
     coreTypeName = core.read(db.coreType.name)!;
-    coreRawCfg = _selectedProfile!.coreCfg;
+    coreCfgRaw = _selectedProfile!.coreCfg;
+    coreCfgFmt = _selectedProfile!.coreCfgFmt;
     CorePluginManager().switchTo(coreTypeName);
-    String coreCfg = await CorePluginManager().instance.getInjectedConfig(coreRawCfg);
+    String coreCfg = await CorePluginManager()
+        .instance
+        .getInjectedConfig(coreCfgRaw, coreCfgFmt);
     final coreCfgFile = File(p.join(
         global.applicationSupportDirectory.path, 'conf', 'core.gen.json'));
     if (!RuntimePlatform.isWeb) {
@@ -895,12 +898,27 @@ class VPNManagerExec extends VPNManager {
 
     if (!await ensureServerAddressPorts()) return false;
 
+    final Map<String, String> environment = {...CorePluginManager().instance.environment};
+    if (_coreEnvs != null){
+      environment.addAll(_coreEnvs!);
+    }
+
     final processCore = await Process.start(
       corePath!,
       _coreArgList,
       workingDirectory: _coreWorkingDir,
-      environment: _coreEnvs,
+      environment: environment,
     );
+
+    late IOSink outputFileIOSink;
+    if (CorePluginManager().instance.isToLogStdout) {
+      outputFileIOSink = File(p.join(
+        global.applicationSupportDirectory.path,
+        'log',
+        'core.log',
+      )).openWrite();
+    }
+
     setIsCoreActive(true);
     pidCore = processCore.pid;
     logger.d("processCore: started: pid: $pidCore");
@@ -908,6 +926,9 @@ class VPNManagerExec extends VPNManager {
       logger.d("processCore: exitCode: $exitCode");
       pidCore = null;
       setIsCoreActive(false);
+      if (CorePluginManager().instance.isToLogStdout) {
+        outputFileIOSink.close();
+      }
     });
 
     logger.d("finished: _startCore");

@@ -253,5 +253,8 @@
   },
   "working_dir": "Working dir",
   "you_may_want_to_check_settings_profile_override_inject_http_inbound": "You may want to check `Settings` -> `Profile override` -> `Inject http inbound`",
-  "you_may_want_to_check_settings_profile_override_inject_socks_inbound": "You may want to check `Settings` -> `Profile override` -> `Inject socks inbound`"
+  "you_may_want_to_check_settings_profile_override_inject_socks_inbound": "You may want to check `Settings` -> `Profile override` -> `Inject socks inbound`",
+  "profile_group": "Profile group",
+  "core_config": "Core config",
+  "core_config_format": "Core config format"
 }

@@ -104,7 +104,7 @@ class Database extends _$Database {
         );
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -154,6 +154,9 @@ class Database extends _$Database {
           },
           from3To4: (m, schema) async {
             await m.addColumn(schema.assetRemote, schema.assetRemote.checkedAt);
+          },
+          from4To5: (m, schema) async {
+            await m.addColumn(schema.profile, schema.profile.coreCfgFmt);
           },
         ),
         beforeOpen: (details) async {
