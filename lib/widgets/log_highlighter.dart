@@ -22,25 +22,33 @@ class LogHighlighter extends StatelessWidget {
       // Time: 15:56:20 or 15:56:47.240788
       RegExp(r'\b\d{2}:\d{2}:\d{2}(?:\.\d+)?\b'):
           TextStyle(color: Color(0xff90c4f9)),
-      // Address: domain:port or IP:port
-      RegExp(r'\b([\w\.-]+):\d+\b'): TextStyle(color: Color(0xfffb9d51)),
-      RegExp(r'\b(tcp:|udp:)\b', caseSensitive: false):
-          TextStyle(
+
+      // Address: domain:port
+      RegExp(r'([a-zA-Z0-9.-]+\.[a-zA-Z]{2,}):(\d{1,5})'):
+          TextStyle(color: Color(0xfffb9d51)),
+      // Address: ipv4:port
+      RegExp(r'((?:\d{1,3}\.){3}\d{1,3}):(\d{1,5})'):
+          TextStyle(color: Color(0xfffb9d51)),
+      // Address: domain:port
+      RegExp(r'\[([0-9a-fA-F:]+)\]:(\d{1,5})'):
+          TextStyle(color: Color(0xfffb9d51)),
+      RegExp(r'(tcp:|udp:)', caseSensitive: false): TextStyle(
         color: Color(0xfffb9d51),
       ),
+
       // Log level: ERROR, Warning, debug, info, etc.
       RegExp(r'\b(error|warning|info|debug)\b', caseSensitive: false):
           TextStyle(
         color: Colors.red,
         fontWeight: FontWeight.bold,
       ),
-      // Square brackets quoted contents
-      RegExp(r'\[.*?\]'): TextStyle(color: Colors.grey),
       // Arrow symbol ->
       RegExp(r'->'): TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+
+      // Square brackets quoted contents
+      RegExp(r'\[.*?\]'): TextStyle(color: Colors.grey),
       // High frequency keywords
-      RegExp(r'\b(from|accepted|failed)\b', caseSensitive: false):
-          TextStyle(
+      RegExp(r'\b(from|accepted|failed)\b', caseSensitive: false): TextStyle(
         color: Colors.grey,
         fontStyle: FontStyle.italic,
       ),
