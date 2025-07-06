@@ -274,32 +274,6 @@ misc:
           );
         },
       ),
-      ListTile(
-        title: Text(context.loc.ipv4),
-        subtitle: Text(context.loc.enable_ipv4),
-        trailing: Switch(
-          value: _ipv4,
-          onChanged: (value) {
-            prefs.setBool('tun.ipv4', value);
-            setState(() {
-              _ipv4 = value;
-            });
-          },
-        ),
-      ),
-      ListTile(
-        title: Text(context.loc.ipv6),
-        subtitle: Text(context.loc.enable_ipv6),
-        trailing: Switch(
-          value: _ipv6,
-          onChanged: (value) {
-            prefs.setBool('tun.ipv6', value);
-            setState(() {
-              _ipv6 = value;
-            });
-          },
-        ),
-      ),
     ];
 
     final tunSingBoxFields = [
@@ -432,34 +406,61 @@ misc:
           },
         ),
       ),
-      if (RuntimePlatform.isAndroid && global.isElevated) ListTile(
-        title: Text(context.loc.tun_stack),
-        subtitle: Text(_tunVia.name),
-        onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) => RadioListSelectionPopup<TunVia>(
-                    title: context.loc.tun_stack,
-                    items: [
-                      if (RuntimePlatform.isAndroid || RuntimePlatform.isIOS)
-                        TunVia.platform,
-                      if (RuntimePlatform.isWindows ||
-                          RuntimePlatform.isLinux ||
-                          RuntimePlatform.isMacOS ||
-                          RuntimePlatform.isAndroid)
-                        TunVia.root,
-                    ],
-                    initialValue: _tunVia,
-                    onSaved: (value) {
-                      prefs.setBool(
-                          'tun.useEmbedded', value == TunVia.platform);
-                      setState(() {
-                        _tunVia = value;
-                      });
-                    },
-                    itemToString: (e) => e.name,
-                  ));
-        },
+      if (RuntimePlatform.isAndroid && global.isElevated)
+        ListTile(
+          title: Text(context.loc.tun_stack),
+          subtitle: Text(_tunVia.name),
+          onTap: () {
+            showDialog(
+                context: context,
+                builder: (context) => RadioListSelectionPopup<TunVia>(
+                      title: context.loc.tun_stack,
+                      items: [
+                        if (RuntimePlatform.isAndroid || RuntimePlatform.isIOS)
+                          TunVia.platform,
+                        if (RuntimePlatform.isWindows ||
+                            RuntimePlatform.isLinux ||
+                            RuntimePlatform.isMacOS ||
+                            RuntimePlatform.isAndroid)
+                          TunVia.root,
+                      ],
+                      initialValue: _tunVia,
+                      onSaved: (value) {
+                        prefs.setBool(
+                            'tun.useEmbedded', value == TunVia.platform);
+                        setState(() {
+                          _tunVia = value;
+                        });
+                      },
+                      itemToString: (e) => e.name,
+                    ));
+          },
+        ),
+      ListTile(
+        title: Text(context.loc.ipv4),
+        subtitle: Text(context.loc.enable_ipv4),
+        trailing: Switch(
+          value: _ipv4,
+          onChanged: (value) {
+            prefs.setBool('tun.ipv4', value);
+            setState(() {
+              _ipv4 = value;
+            });
+          },
+        ),
+      ),
+      ListTile(
+        title: Text(context.loc.ipv6),
+        subtitle: Text(context.loc.enable_ipv6),
+        trailing: Switch(
+          value: _ipv6,
+          onChanged: (value) {
+            prefs.setBool('tun.ipv6', value);
+            setState(() {
+              _ipv6 = value;
+            });
+          },
+        ),
       ),
       if (RuntimePlatform.isAndroid) ...androidFields,
       if (_tunVia == TunVia.platform) ...tunHevSocks5TunnelFields,

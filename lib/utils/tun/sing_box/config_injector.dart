@@ -11,6 +11,8 @@ import '../../vpn_manager.dart';
 
 Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
     Map<String, dynamic> cfg) async {
+  final tunIpv4 = prefs.getBool('tun.ipv4')!;
+  final tunIpv6 = prefs.getBool('tun.ipv6')!;
   final injectLog = prefs.getBool('tun.inject.log')!;
   final logLevel = LogLevel.values[prefs.getInt('tun.inject.log.level')!];
   final injectSocks = prefs.getBool('tun.inject.socks')!;
@@ -23,6 +25,17 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
   final injectHttpPort = prefs.getInt('app.http.port')!;
   final injectExcludeCore = prefs.getBool('tun.inject.excludeCorePath')!;
   final corePath = vPNMan.corePath;
+
+  (cfg["inbounds"] as List).insert(0, {
+    "type": "tun",
+    "tag": "in_tun",
+    "address": [
+      if (tunIpv4) "172.19.0.1/30",
+      if (tunIpv6) "fdfe:dcba:9876::1/126",
+    ],
+    "auto_route": true,
+    "strict_route": true
+  });
 
   if (injectLog) {
     final pathLog = File(p.join(
