@@ -34,6 +34,8 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
       SendThroughBindingStratagy
           .values[prefs.getInt('inject.sendThrough.bindingStratagy')!];
 
+  bool _injectDnsLocal = prefs.getBool('inject.dns.local')!;
+
   @override
   Widget build(BuildContext context) {
     final fields = [
@@ -123,6 +125,28 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
       Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Text(
+          context.loc.dns_config,
+          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+        ),
+      ),
+      ListTile(
+        title: Text(context.loc.inject_local_dns),
+        subtitle: Text(context
+            .loc.replace_local_dns_with_explicit_ip_useful_when_using_tun),
+        trailing: Switch(
+          value: _injectDnsLocal,
+          onChanged: (bool value) {
+            prefs.setBool('inject.dns.local', value);
+            setState(() {
+              _injectDnsLocal = value;
+            });
+          },
+        ),
+      ),
+      const Divider(),
+      Container(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        child: Text(
           context.loc.inbound_config,
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
@@ -165,8 +189,8 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
       ),
       ListTile(
         title: Text(context.loc.inject_send_through),
-        subtitle: Text(
-            context.loc.bind_all_outbounds_to_ip_address_useful_when_using_with_some_tun_tools),
+        subtitle: Text(context.loc
+            .bind_all_outbounds_to_ip_address_useful_when_using_with_some_tun_tools),
         trailing: Switch(
           value: _injectSendThrough,
           onChanged: (bool value) {
@@ -200,51 +224,54 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
                   ));
         },
       ),
-      if (_sendThroughBindingStratagy == SendThroughBindingStratagy.interface) ListTile(
-        enabled: _injectSendThrough,
-        title: Text(context.loc.binding_interface),
-        subtitle: Text(_bindingInterface),
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (context) => TextInputPopup(
-                title: context.loc.binding_interface,
-                initialValue: _bindingInterface,
-                onSaved: (String value) {
-                  prefs.setString('inject.sendThrough.bindingInterface', value);
-                  setState(() {
-                    _bindingInterface = value;
-                  });
-                }),
-          );
-        },
-      ),
-      if (_sendThroughBindingStratagy == SendThroughBindingStratagy.ip) ListTile(
-        enabled: _injectSendThrough,
-        title: Text(context.loc.binding_ip),
-        subtitle: Text(_bindingIp),
-        onTap: () {
-          showDialog(
-            context: context,
-            builder: (context) => TextInputPopup(
-                title: context.loc.binding_ip,
-                initialValue: _bindingIp,
-                onSaved: (value) {
-                  prefs.setString('inject.sendThrough.bindingIp', value);
-                  setState(() {
-                    _bindingIp = value;
-                  });
-                }),
-          );
-        },
-      ),
+      if (_sendThroughBindingStratagy == SendThroughBindingStratagy.interface)
+        ListTile(
+          enabled: _injectSendThrough,
+          title: Text(context.loc.binding_interface),
+          subtitle: Text(_bindingInterface),
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) => TextInputPopup(
+                  title: context.loc.binding_interface,
+                  initialValue: _bindingInterface,
+                  onSaved: (String value) {
+                    prefs.setString(
+                        'inject.sendThrough.bindingInterface', value);
+                    setState(() {
+                      _bindingInterface = value;
+                    });
+                  }),
+            );
+          },
+        ),
+      if (_sendThroughBindingStratagy == SendThroughBindingStratagy.ip)
+        ListTile(
+          enabled: _injectSendThrough,
+          title: Text(context.loc.binding_ip),
+          subtitle: Text(_bindingIp),
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) => TextInputPopup(
+                  title: context.loc.binding_ip,
+                  initialValue: _bindingIp,
+                  onSaved: (value) {
+                    prefs.setString('inject.sendThrough.bindingIp', value);
+                    setState(() {
+                      _bindingIp = value;
+                    });
+                  }),
+            );
+          },
+        ),
     ];
 
     return Scaffold(
       appBar: AppBar(
         // Use the selected tab's label for the AppBar title
         title: Text(context.loc.profile_override),
-              ),
+      ),
       body: Form(
         child: ListView.builder(
           itemCount: fields.length,

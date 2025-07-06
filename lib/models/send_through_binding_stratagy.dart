@@ -1,5 +1,5 @@
 enum SendThroughBindingStratagy {
   ip,
   interface,
-  // internet,
+  internet,
 }

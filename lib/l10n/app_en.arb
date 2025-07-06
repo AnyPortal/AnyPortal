@@ -256,5 +256,8 @@
   "you_may_want_to_check_settings_profile_override_inject_socks_inbound": "You may want to check `Settings` -> `Profile override` -> `Inject socks inbound`",
   "profile_group": "Profile group",
   "core_config": "Core config",
-  "core_config_format": "Core config format"
+  "core_config_format": "Core config format",
+  "dns_config": "DNS config",
+  "inject_local_dns": "Inject local DNS",
+  "replace_local_dns_with_explicit_ip_useful_when_using_tun": "Replace local DNS with explicit IP, useful when using Tun"
 }

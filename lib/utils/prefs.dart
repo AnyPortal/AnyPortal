@@ -20,7 +20,9 @@ class PrefsManager {
     'app.dashboard.floatingActionButton': true,
     'app.locale.followSystem': true,
     'app.locale': "en_US",
-    'app.connectAtLaunch': RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS,
+    'app.connectAtLaunch': RuntimePlatform.isWindows ||
+        RuntimePlatform.isLinux ||
+        RuntimePlatform.isMacOS,
     'app.connectAtStartup': false,
     // 'app.github.downloadedFilePath': null,
     // 'app.github.meta': '{"tag_name":"v0.0.1+1"}'
@@ -31,12 +33,15 @@ class PrefsManager {
     'app.window.size.width': 1280.0,
     'app.window.size.height': 720.0,
     'app.window.isMaximized': false,
-    'app.window.closeToTray': RuntimePlatform.isWindows || RuntimePlatform.isLinux || RuntimePlatform.isMacOS,
+    'app.window.closeToTray': RuntimePlatform.isWindows ||
+        RuntimePlatform.isLinux ||
+        RuntimePlatform.isMacOS,
     'app.runElevated': false,
     'app.server.address': "127.0.0.1",
     'app.socks.port': 15491,
     'inject.api': true,
     'inject.api.port': 15490,
+    'inject.dns.local': false,
     'inject.log': true,
     'inject.log.level': LogLevel.warning.index,
     'inject.socks': true,
@@ -58,9 +63,11 @@ class PrefsManager {
     'tun.inject.log.level': LogLevel.warning.index,
     'tun.inject.http': true,
     'tun.inject.socks': true,
-    'tun.inject.excludeCorePath': true,
+    'tun.inject.excludeCorePath': RuntimePlatform.isWindows ||
+        RuntimePlatform.isLinux ||
+        RuntimePlatform.isMacOS,
     'tun.useEmbedded': RuntimePlatform.isAndroid || RuntimePlatform.isIOS,
-    
+
     'android.tun.perAppProxy.allowed': true,
     'android.tun.allowedApplications': "[]",
     'android.tun.disallowedApplications': "[]",
