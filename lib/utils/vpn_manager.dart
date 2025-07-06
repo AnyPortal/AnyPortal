@@ -562,6 +562,7 @@ abstract class VPNManager with ChangeNotifier {
     CorePluginManager().switchTo(coreTypeName);
     String coreCfg = await CorePluginManager()
         .instance
+        .configInjector
         .getInjectedConfig(coreCfgRaw, coreCfgFmt);
     final coreCfgFile = File(p.join(
         global.applicationSupportDirectory.path, 'conf', 'core.gen.json'));

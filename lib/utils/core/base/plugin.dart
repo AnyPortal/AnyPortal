@@ -1,10 +1,13 @@
 import 'dart:async';
 
+import 'package:anyportal/utils/core/base/config_injector.dart';
 import 'package:anyportal/utils/core/base/data_notifier.dart';
+import 'package:anyportal/utils/core/clash/plugin.dart';
 import 'package:anyportal/utils/core/sing_box/plugin.dart';
 import 'package:anyportal/utils/core/v2ray/plugin.dart';
 
 import '../../logger.dart';
+import '../hysteria2/plugin.dart';
 
 class CorePluginBase {
   static Map<String, CorePluginBase> implementations = {};
@@ -22,11 +25,8 @@ class CorePluginBase {
     }
   }
 
-  Future<String> getInjectedConfig(String cfgStr, String coreCfgFmt) async {
-    return cfgStr;
-  }
-
   CoreDataNotifierBase dataNotifier = CoreDataNotifierBase();
+  ConfigInjectorBase configInjector = ConfigInjectorBase();
 }
 
 class CorePluginManager {
@@ -64,6 +64,15 @@ class CorePluginManager {
           break;
         case "sing-box":
           instance = CorePluginSingBox();
+          instances[coreTypeName] = instance;
+          break;
+        case "hysteria2":
+          instance = CorePluginHysteria2();
+          instances[coreTypeName] = instance;
+          break;
+        case "clash":
+        case "mihomo":
+          instance = CorePluginClash();
           instances[coreTypeName] = instance;
           break;
       }
