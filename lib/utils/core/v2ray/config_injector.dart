@@ -186,11 +186,16 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
         if (!(cfg["routing"] as Map).containsKey("rules")) {
           cfg["routing"]["rules"] = [];
         }
-        final dnsStr = await ConnectivityManager().getEffectiveDnsStr();
+        final effectiveNetInterface =
+            await ConnectivityManager().getEffectiveNetInterface();
+        final dns = effectiveNetInterface!.dns;
         (cfg["routing"]["rules"] as List).insert(0, {
           "type": "field",
           "inboundTag": [dnsInboundTag],
-          "ip": [dnsStr],
+          "ip": [
+            ...dns.ipv4,
+            ...dns.ipv6,
+          ],
           "port": 53,
           "outboundTag": "anyportal_ot_freedom"
         });
