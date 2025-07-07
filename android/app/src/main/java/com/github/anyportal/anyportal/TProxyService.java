@@ -147,8 +147,11 @@ public class TProxyService extends VpnService {
     /// Interface for MainActivity to receive status change
     public static interface StatusChangeListener {
         void onAllStatusChange(boolean isCoreActive);
+
         void onCoreStatusChange(boolean isCoreActive);
+
         void onTunStatusChange(boolean isTunActive);
+
         void onSystemProxyStatusChange(boolean isSystemProxyActive);
     }
 
@@ -367,15 +370,22 @@ public class TProxyService extends VpnService {
 
     private void startTunExec() {
         Log.d(TAG, "starting: startTunExec");
-        String corePath = prefs.getString("flutter.cache.tun.singBox.core.path", "");
-        new File(corePath).setExecutable(true);
-        List<String> coreArgs = JsonUtils.getStringListFromJsonString(
-                prefs.getString("flutter.cache.tun.singBox.core.args", "[]"));
-        String coreWorkingDir = prefs.getString("flutter.cache.tun.singBox.core.workingDir", "");
-        Map<String, String> coreEnvs = JsonUtils.getStringStringMapFromJsonString(
-                prefs.getString("flutter.tun.singBox.cache.core.envs", "{}"));
 
+        String corePath = prefs.getString("flutter.cache.tun.singBox.core.path", "");
+        String coreArgsStr = prefs.getString("flutter.cache.tun.singBox.core.args", "[]");
+        String coreWorkingDir = prefs.getString("flutter.cache.tun.singBox.core.workingDir", "");
+        String coreEnvsStr = prefs.getString("flutter.tun.singBox.cache.core.envs", "{}");
+
+        Log.d(TAG, String.format("tunSingBoxCorePath: %s", corePath));
+        Log.d(TAG, String.format("tunSingBoxCoreArgList: %s", coreArgsStr));
+        Log.d(TAG, String.format("tunSingBoxCoreWorkingDir: %s", coreWorkingDir));
+        Log.d(TAG, String.format("tunSingBoxCoreEnvs: %s", coreEnvsStr));
+
+        new File(corePath).setExecutable(true);
+        List<String> coreArgs = JsonUtils.getStringListFromJsonString(coreArgsStr);
         coreArgs.add(0, corePath);
+        Map<String, String> coreEnvs = JsonUtils.getStringStringMapFromJsonString(coreEnvsStr);
+
         ProcessBuilder pb = new ProcessBuilder("su");
         /// external storage can not be used as working dir !!
         if (!coreWorkingDir.isEmpty()) {
@@ -573,14 +583,20 @@ public class TProxyService extends VpnService {
             }
 
             String corePath = prefs.getString("flutter.cache.core.path", "");
-            new File(corePath).setExecutable(true);
-            List<String> coreArgs = JsonUtils
-                    .getStringListFromJsonString(prefs.getString("flutter.cache.core.args", "[]"));
+            String coreArgsStr = prefs.getString("flutter.cache.core.args", "[]");
             String coreWorkingDir = prefs.getString("flutter.cache.core.workingDir", "");
-            Map<String, String> coreEnvs = JsonUtils.getStringStringMapFromJsonString(
-                    prefs.getString("flutter.cache.core.envs", "{}"));
+            String coreEnvsStr = prefs.getString("flutter.cache.core.envs", "{}");
 
+            Log.d(TAG, String.format("corePath: %s", corePath));
+            Log.d(TAG, String.format("coreArgList: %s", coreArgsStr));
+            Log.d(TAG, String.format("coreWorkingDir: %s", coreWorkingDir));
+            Log.d(TAG, String.format("coreEnvs: %s", coreEnvsStr));
+
+            new File(corePath).setExecutable(true);
+            List<String> coreArgs = JsonUtils.getStringListFromJsonString(coreArgsStr);
             coreArgs.add(0, corePath);
+            Map<String, String> coreEnvs = JsonUtils.getStringStringMapFromJsonString(coreEnvsStr);
+
             ProcessBuilder pb = new ProcessBuilder(coreArgs);
             /// external storage can not be used as working dir !!
             if (!coreWorkingDir.isEmpty()) {
