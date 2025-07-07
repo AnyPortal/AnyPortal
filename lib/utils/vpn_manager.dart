@@ -95,13 +95,11 @@ abstract class VPNManager with ChangeNotifier {
     if (isCoreActive && !dataNotifier.on) {
       try {
         dataNotifier.init(cfgStr: vPNMan.coreCfgRaw);
-        // should do atomic check
-        if (!dataNotifier.on) dataNotifier.start();
+        dataNotifier.start();
       } catch (e) {
         logger.e("notifyCoreDataNotifier: $e");
       }
     } else if (!isCoreActive && dataNotifier.on) {
-      // should do atomic check
       dataNotifier.stop();
     }
   }
@@ -899,8 +897,10 @@ class VPNManagerExec extends VPNManager {
 
     if (!await ensureServerAddressPorts()) return false;
 
-    final Map<String, String> environment = {...CorePluginManager().instance.environment};
-    if (_coreEnvs != null){
+    final Map<String, String> environment = {
+      ...CorePluginManager().instance.environment
+    };
+    if (_coreEnvs != null) {
       environment.addAll(_coreEnvs!);
     }
 
