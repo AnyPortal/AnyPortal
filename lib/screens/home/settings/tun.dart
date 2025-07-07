@@ -355,20 +355,23 @@ misc:
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
       ),
-      ListTile(
-        title: Text(context.loc.inject_rule_to_exclude_core_path),
-        subtitle: Text(context.loc
-            .disable_to_improve_performance_make_sure_you_have_bound_core_to_a_correct_interface),
-        trailing: Switch(
-          value: _injectExcludeCorePath,
-          onChanged: (value) {
-            prefs.setBool('tun.inject.excludeCorePath', value);
-            setState(() {
-              _injectExcludeCorePath = value;
-            });
-          },
+      if (RuntimePlatform.isWindows ||
+          RuntimePlatform.isLinux ||
+          RuntimePlatform.isMacOS)
+        ListTile(
+          title: Text(context.loc.inject_rule_to_exclude_core_path),
+          subtitle: Text(context.loc
+              .disable_to_improve_performance_make_sure_you_have_bound_core_to_a_correct_interface),
+          trailing: Switch(
+            value: _injectExcludeCorePath,
+            onChanged: (value) {
+              prefs.setBool('tun.inject.excludeCorePath', value);
+              setState(() {
+                _injectExcludeCorePath = value;
+              });
+            },
+          ),
         ),
-      ),
       const Divider(),
       Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
