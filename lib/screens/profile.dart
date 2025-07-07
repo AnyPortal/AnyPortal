@@ -37,7 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   List<ProfileGroupData> _profileGroupDataList = [];
   ProfileType _profileType = ProfileType.remote;
   int _coreTypeId = CoreTypeDefault.v2ray.index;
-  int _profileGroupId = 0;
+  int _profileGroupId = 1;
 
   Future<void> _loadField() async {
     _coreTypeDataList = await (db.select(db.coreType).get());
@@ -94,7 +94,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           url: _urlController.text,
           autoUpdateInterval: int.parse(_autoUpdateIntervalController.text),
           coreTypeId: _coreTypeId,
-          coreCfg: _coreCfgFmtController.text == "json" ? minifyJson(_coreCfgController.text) : _coreCfgController.text,
+          coreCfg: _coreCfgFmtController.text == "json"
+              ? minifyJson(_coreCfgController.text)
+              : _coreCfgController.text,
           coreCfgFmt: _coreCfgFmtController.text,
           profileGroupId: _profileGroupId,
         );
@@ -110,7 +112,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
 
     if (ok) {
-      if (mounted && Navigator.canPop(context)) Navigator.pop(context, {'ok': true});
+      if (mounted && Navigator.canPop(context)) {
+        Navigator.pop(context, {'ok': true});
+      }
     }
   }
 
@@ -127,10 +131,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           return DropdownMenuItem<int>(value: t.id, child: Text(name));
         }).toList(),
         onChanged: (value) {
-                setState(() {
-                  _profileGroupId = value!;
-                });
-              },
+          setState(() {
+            _profileGroupId = value!;
+          });
+        },
         value: _profileGroupId,
       ),
       TextFormField(
@@ -149,10 +153,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           return DropdownMenuItem<int>(value: e.id, child: Text(e.name));
         }).toList(),
         onChanged: (value) {
-                setState(() {
-                  _coreTypeId = value!;
-                });
-              },
+          setState(() {
+            _coreTypeId = value!;
+          });
+        },
         value: _coreTypeId,
       ),
       DropdownButtonFormField<ProfileType>(
