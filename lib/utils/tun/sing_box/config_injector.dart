@@ -99,21 +99,16 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
         });
       } else {
         rules.insert(0, {
-          "package_name": "com.github.anyportal.anyportal",
-          "outbound": "ot_direct"
-        });
-        rules.insert(0, {
           "package_name": json
               .decode(prefs.getString("android.tun.disallowedApplications")!),
           "outbound": "ot_direct"
         });
       }
-    } else {
-      rules.insert(0, {
-        "package_name": "com.github.anyportal.anyportal",
-        "outbound": "ot_direct"
-      });
     }
+    rules.insert(0, {
+      "package_name": "com.github.anyportal.anyportal",
+      "outbound": "ot_direct"
+    });
   }
 
   return cfg;
