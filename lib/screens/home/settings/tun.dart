@@ -104,9 +104,15 @@ class _TunScreenState extends State<TunScreen> {
       socksAddress = "127.0.0.1";
     }
 
+    // final logFile =
+    //     File(p.join(folder.path, 'log', 'tun.hev_socks5_tunnel.log'));
+    /// log-file: ${logFile.path}
+    /// log-level: debug
+
     await file.writeAsString("""tunnel:
   mtu: 8500
-
+  # multi-queue: true
+  
 socks5:
   port: $socksPort
   address: $socksAddress
