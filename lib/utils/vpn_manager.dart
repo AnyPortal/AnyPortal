@@ -587,6 +587,7 @@ abstract class VPNManager with ChangeNotifier {
         });
         return;
       } else {
+        corePath = File(corePath!).resolveSymbolicLinksSync();
         prefs.setString('cache.core.path', corePath!);
       }
       _coreWorkingDir = core.read(db.core.workingDir)!;
@@ -680,6 +681,7 @@ abstract class VPNManager with ChangeNotifier {
             });
             return;
           } else {
+            _tunSingBoxCorePath = File(_tunSingBoxCorePath!).resolveSymbolicLinksSync();
             prefs.setString(
                 'cache.tun.singBox.core.path', _tunSingBoxCorePath!);
           }

@@ -20,6 +20,7 @@ class GlobalManager {
     await Future.wait([
       updateAapplicationDocumentsDirectory(),
       updateApplicationSupportDirectory(),
+      updateApplicationCacheDirectory(),
       updateIsElevated(),
     ]);
     _completer.complete(); // Signal that initialization is complete
@@ -27,15 +28,19 @@ class GlobalManager {
   }
 
   Future<void> updateAapplicationDocumentsDirectory() async {
-    applicationDocumentsDirectory = await getApplicationDocumentsDirectory();
+    applicationDocumentsDirectory = Directory(
+        await (await getApplicationDocumentsDirectory())
+            .resolveSymbolicLinks());
   }
 
   Future<void> updateApplicationSupportDirectory() async {
-    applicationSupportDirectory = await getApplicationSupportDirectory();
+    applicationSupportDirectory = Directory(
+        await (await getApplicationSupportDirectory()).resolveSymbolicLinks());
   }
 
   Future<void> updateApplicationCacheDirectory() async {
-    applicationCacheDirectory = await getApplicationCacheDirectory();
+    applicationCacheDirectory = Directory(
+        await (await getApplicationCacheDirectory()).resolveSymbolicLinks());
   }
 
   Future<void> updateIsElevated() async {
