@@ -49,17 +49,21 @@ class CoreDataNotifierBase with ChangeNotifier {
   Timer? timer;
 
   Future<void> start() async {
+    if (on) {
+      return;
+    } else {
+      on = true;
+    }
     await onStartCommand();
-    timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
-      await onTick();
-      notifyListeners();
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      onTick().then((_) {
+        notifyListeners();
+      });
     });
-    on = true;
   }
 
   void stop() {
-    if (timer != null) timer!.cancel();
+    timer?.cancel();
     on = false;
   }
 }
-
