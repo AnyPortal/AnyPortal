@@ -8,10 +8,9 @@ import 'package:path/path.dart' as p;
 import '../../../extensions/localization.dart';
 import '../../../models/log_level.dart';
 import '../../../models/send_through_binding_stratagy.dart';
+import '../../connectivity_manager.dart';
 import '../../get_local_ip.dart';
 import '../../global.dart';
-import '../../logger.dart';
-import '../../platform_net_interface.dart';
 import '../../prefs.dart';
 import '../../runtime_platform.dart';
 import '../../show_snack_bar_now.dart';
@@ -21,8 +20,6 @@ import '../base/config_injector.dart';
 class ConfigInjectorV2Ray extends ConfigInjectorBase {
   @override
   Future<String> getInjectedConfig(String cfgStr, String coreCfgFmt) async {
-    _effectiveNetInterfaceCached = false;
-
     Map<String, dynamic> cfg = jsonDecode(cfgStr) as Map<String, dynamic>;
 
     if (!cfg.containsKey("outbounds")) {
@@ -48,7 +45,7 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
       switch (sendThroughBindingStratagy) {
         case SendThroughBindingStratagy.internet:
           final effectiveNetInterface =
-              await getEffectiveNetInterfaceWithCache();
+              await ConnectivityManager().getEffectiveNetInterface();
           final internetIp = effectiveNetInterface?.ip.ipv4.first ??
               effectiveNetInterface?.ip.ipv6.first;
           if (internetIp != null) {
@@ -156,7 +153,7 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
         for (final (i, server) in (cfg["dns"]["servers"] as List).indexed) {
           if (server is String) {
             if (server == "localhost") {
-              final dnsStr = await getEffectiveDnsStr();
+              final dnsStr = await ConnectivityManager().getEffectiveDnsStr();
               if (dnsStr == null) {
                 break;
               }
@@ -165,7 +162,7 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
             }
           } else if (server is Map) {
             if (server["address"] == "localhost") {
-              final dnsStr = await getEffectiveDnsStr();
+              final dnsStr = await ConnectivityManager().getEffectiveDnsStr();
               if (dnsStr == null) {
                 break;
               }
@@ -189,7 +186,7 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
         if (!(cfg["routing"] as Map).containsKey("rules")) {
           cfg["routing"]["rules"] = [];
         }
-        final dnsStr = await getEffectiveDnsStr();
+        final dnsStr = await ConnectivityManager().getEffectiveDnsStr();
         (cfg["routing"]["rules"] as List).insert(0, {
           "type": "field",
           "inboundTag": [dnsInboundTag],
@@ -238,28 +235,5 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
     // };
 
     return jsonEncode(cfg);
-  }
-
-  bool _effectiveNetInterfaceCached = false;
-  NetInterface? _effectiveNetInterface;
-  Future<NetInterface?> getEffectiveNetInterfaceWithCache() async {
-    if (_effectiveNetInterfaceCached) {
-      return _effectiveNetInterface;
-    } else {
-      _effectiveNetInterface =
-          await PlatformNetInterface().getEffectiveNetInterface(
-        excludeIPv4Set: {"172.19.0.1"},
-        excludeIPv6Set: {"fdfe:dcba:9876::1"},
-      );
-      _effectiveNetInterfaceCached = true;
-      return _effectiveNetInterface;
-    }
-  }
-
-  Future<String?> getEffectiveDnsStr() async {
-    final effectiveNetInterface = await getEffectiveNetInterfaceWithCache();
-    logger.d("effectiveNetInterface: ${effectiveNetInterface.toString()}");
-    final dns = effectiveNetInterface?.dns;
-    return dns?.ipv4.first ?? dns?.ipv6.first;
   }
 }

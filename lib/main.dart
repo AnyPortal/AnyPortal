@@ -13,6 +13,7 @@ import 'screens/home.dart';
 import 'screens/home/settings/tun.dart';
 import 'utils/arg_parser.dart';
 import 'utils/asset_remote/app.dart';
+import 'utils/connectivity_manager.dart';
 import 'utils/copy_assets.dart';
 import 'utils/core/base/plugin.dart';
 import 'utils/db.dart';
@@ -51,6 +52,7 @@ void main(List<String> args) async {
   }
 
   await Future.wait([
+    ConnectivityManager().init(),
     DatabaseManager().init(),
     ThemeManager().init(),
     LocaleManager().init(),
@@ -147,7 +149,7 @@ void main(List<String> args) async {
   }
 
   if (prefs.getBool("app.autoUpdate")!) {
-    try{
+    try {
       final assetRemoteProtocolApp = AssetRemoteProtocolApp();
       if (await assetRemoteProtocolApp.init()) {
         await assetRemoteProtocolApp.update(
