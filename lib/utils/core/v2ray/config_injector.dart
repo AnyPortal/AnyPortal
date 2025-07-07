@@ -206,19 +206,35 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
       }
     }
 
-    // cfg["services"] = {
-    //   "tun": {
-    //     "name": "tun0",
-    //     "mtu": 1500,
-    //     "tag": "tun",
-    //     "ips": [{ "ip": [198, 18, 0, 0], "prefix": 15 }],
-    //     "routes": [
-    //        { "ip": [0, 0, 0, 0], "prefix": 0 }
-    //        // , { "ip": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "prefix": 0 }
-    //     ],
-    //     "enablePromiscuousMode": true,
-    //     "enableSpoofing": true
-    //   }
+    /// still not working
+    // if (!cfg.containsKey("services")) {
+    //   cfg["services"] = {};
+    // }
+    // cfg["services"]["tun"] = {
+    //   "name": "tun0",
+    //   "mtu": 8500,
+    //   "tag": "in_tun",
+    //   "ips": [
+    //     {
+    //       "ip": [172, 19, 0, 1],
+    //       "prefix": 30
+    //     }
+    //   ],
+    //   "routes": [
+    //     {
+    //       "ip": [0, 0, 0, 0],
+    //       "prefix": 0
+    //     }
+    //     // , { "ip": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "prefix": 0 }
+    //   ],
+    //   "enablePromiscuousMode": true,
+    //   "enableSpoofing": true,
+    //   "packetEncoding": "Packet",
+    //   "sniffingSettings": {
+    //     "destinationOverride": ["fakedns+others"],
+    //     "enabled": true,
+    //     "metadataOnly": false,
+    //   },
     // };
 
     return jsonEncode(cfg);
