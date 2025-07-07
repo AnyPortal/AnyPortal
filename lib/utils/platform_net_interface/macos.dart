@@ -34,9 +34,9 @@ class PlatformNetInterfaceMacOS implements PlatformNetInterface {
         if (!inInternetSection || trimmed.isEmpty) continue;
 
         final parts = trimmed.split(RegExp(r'\s+'));
-        if (parts.length < 6) continue;
+        if (parts.length < 4) continue;
         final destination = parts[0];
-        final netif = parts[5];
+        final netif = parts[3];
 
         if (destination == 'default') {
           candidates.add({
@@ -97,27 +97,42 @@ class PlatformNetInterfaceMacOS implements PlatformNetInterface {
       final dnsLines = (scutilResult.stdout as String).split('\n');
       final Set<String> dnsIPv4AddressSet = {};
       final Set<String> dnsIPv6AddressSet = {};
+      List<String> tempServers = [];
       bool matchingBlock = false;
 
       for (final line in dnsLines) {
         final trimmed = line.trim();
+
         if (trimmed.startsWith('resolver #')) {
-          matchingBlock = false; // reset for each block
+          // New block — reset
+          tempServers = [];
+          matchingBlock = false;
         }
-        if (trimmed.startsWith('if_index') &&
-            trimmed.contains(chosenInterface)) {
-          matchingBlock = true;
-        }
-        if (matchingBlock && trimmed.startsWith('nameserver')) {
+
+        if (trimmed.startsWith('nameserver')) {
           final parts = trimmed.split(':');
           if (parts.length >= 2) {
             final ip = parts[1].trim();
+            tempServers.add(ip);
+          }
+        }
+
+        if (trimmed.startsWith('if_index') &&
+            trimmed.contains(chosenInterface)) {
+          // Found a matching interface
+          matchingBlock = true;
+        }
+
+        if (matchingBlock && tempServers.isNotEmpty) {
+          // Add collected servers
+          for (final ip in tempServers) {
             if (ip.contains(':')) {
               dnsIPv6AddressSet.add(ip);
             } else {
               dnsIPv4AddressSet.add(ip);
             }
           }
+          tempServers = []; // clear so we don’t double-count
         }
       }
 
