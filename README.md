@@ -126,6 +126,7 @@ See planning [here](https://github.com/users/anyportal/projects/1/views/1).
   - you can run custom cores (any version of v2ray, xray) with apk compiled with api target 28
   - play store always requires recent api targets, way over 28 now, so you can only use an embedded core with playstore apk
 - why do I need tun via root or system proxy on Android?
+  - tun sing-box is actually faster than hev-socks5-tunnel on web page opening, probably due to udp session reuse
   - there are apps actively detecting if you are using VPN
 
 ## License
