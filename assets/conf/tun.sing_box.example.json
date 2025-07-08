@@ -1,7 +1,7 @@
 {
   "log": {
-    "disabled": true,
-    "level": "info",
+    "disabled": false,
+    "level": "debug",
     "timestamp": true
   },
   "dns": {
@@ -10,11 +10,6 @@
         "tag": "dn_cloudflare",
         "address": "1.1.1.1",
         "detour": "ot_socks"
-      },
-      {
-        "tag": "dn_auto",
-        "address": "dhcp://auto",
-        "detour": "ot_direct"
       }
     ],
     "rules": [],
