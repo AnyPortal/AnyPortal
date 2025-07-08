@@ -48,8 +48,8 @@ class PlatformNetInterfaceWindows implements PlatformNetInterface {
     final netIPAddressList = await netIPAddressListFuture;
     Map<int, List<Map<String, dynamic>>> netIPAddressListMap =
         getListMapOfInterfaceIndex(netIPAddressList);
-    int choseInterfaceIndex = 0;
-    bool choseInterfaceFound = false;
+    int chosenInterfaceIndex = 0;
+    bool chosenInterfaceFound = false;
     final Set<String> iPv4AddressSet = {};
     final Set<String> iPv6AddressSet = {};
     for (final e in sortedEffectiveMetrics) {
@@ -69,11 +69,12 @@ class PlatformNetInterfaceWindows implements PlatformNetInterface {
           excludeIPv6Set.intersection(iPv6AddressSet).isNotEmpty) {
         continue;
       } else {
-        choseInterfaceFound = true;
-        choseInterfaceIndex = interfaceIndex;
+        chosenInterfaceFound = true;
+        chosenInterfaceIndex = interfaceIndex;
+        break;
       }
     }
-    if (!choseInterfaceFound) {
+    if (!chosenInterfaceFound) {
       return null;
     }
 
@@ -81,12 +82,12 @@ class PlatformNetInterfaceWindows implements PlatformNetInterface {
     /// new query too slow at this point, instead just query entire list at the beginning
     // final effectiveDnsClientServerAddressList =
     //     await getWindowsDnsClientServerAddressListOfNetIPInterface(
-    //         choseInterfaceIndex);
+    //         chosenInterfaceIndex);
     final dnsClientServerAddressList = await dnsClientServerAddressListFuture;
     Map<int, List<Map<String, dynamic>>> dnsClientServerAddressListMap =
         getListMapOfInterfaceIndex(dnsClientServerAddressList);
     final effectiveDnsClientServerAddressList =
-        dnsClientServerAddressListMap[choseInterfaceIndex]!;
+        dnsClientServerAddressListMap[chosenInterfaceIndex]!;
     final Set<String> dnsIPv4AddressSet = {};
     final Set<String> dnsIPv6AddressSet = {};
     for (var e in effectiveDnsClientServerAddressList) {
