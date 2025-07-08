@@ -28,7 +28,15 @@ class CoreDataNotifierBase with ChangeNotifier {
   int index = 0;
   bool on = false;
 
+  CoreDataNotifierBase() {
+    resetTraffic();
+  }
+
   void init({String? cfgStr}) {
+    resetTraffic();
+  }
+
+  void resetTraffic() {
     for (var type in TrafficStatType.values) {
       trafficStatAgg[type] = 0;
       trafficStatPre[type] = 0;
