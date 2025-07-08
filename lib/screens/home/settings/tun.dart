@@ -117,7 +117,7 @@ socks5:
   port: $socksPort
   address: $socksAddress
   udp: 'udp'
-  $usernameLine
+    $usernameLine
   $passwordLine
 
 misc:
@@ -361,7 +361,7 @@ misc:
         ListTile(
           title: Text(context.loc.inject_rule_to_exclude_core_path),
           subtitle: Text(context.loc
-              .disable_to_improve_performance_make_sure_you_have_bound_core_to_a_correct_interface),
+              .works_fine_on_windows_will_fail_on_other_systems_with_short_lived_packets_like_dns_),
           trailing: Switch(
             value: _injectExcludeCorePath,
             onChanged: (value) {

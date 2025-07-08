@@ -14,9 +14,16 @@ class ConnectivityManager {
 
   Future<String?> getEffectiveDnsStr({bool ignoreCache = false}) async {
     if (ignoreCache) {
-      updateEffectiveNetInterface();
+      _updateEffectiveNetInterface();
     }
     return _getEffectiveDnsStr(await _effectiveNetInterfaceFutureCache);
+  }
+
+  Future<String?> getEffectiveIpStr({bool ignoreCache = false}) async {
+    if (ignoreCache) {
+      _updateEffectiveNetInterface();
+    }
+    return _getEffectiveIpStr(await _effectiveNetInterfaceFutureCache);
   }
 
   String? _getEffectiveDnsStr(NetInterface? effectiveNetInterface) {
@@ -24,22 +31,28 @@ class ConnectivityManager {
     return dns?.ipv4.first ?? dns?.ipv6.first;
   }
 
+  String? _getEffectiveIpStr(NetInterface? effectiveNetInterface) {
+    final ip = effectiveNetInterface?.ip;
+    return ip?.ipv4.first ?? ip?.ipv6.first;
+  }
+
   Future<NetInterface?> getEffectiveNetInterface(
       {bool ignoreCache = false}) async {
     if (ignoreCache) {
-      updateEffectiveNetInterface();
+      _updateEffectiveNetInterface();
     }
     return _effectiveNetInterfaceFutureCache;
   }
 
-  Future<NetInterface?> updateEffectiveNetInterface() async {
+  Future<void> _updateEffectiveNetInterface() async {
     _preEffectiveNetInterfaceFutureCache = _effectiveNetInterfaceFutureCache;
     _effectiveNetInterfaceFutureCache =
         PlatformNetInterface().getEffectiveNetInterface(
       excludeIPv4Set: {"172.19.0.1"},
       excludeIPv6Set: {"fdfe:dcba:9876::1"},
     );
-    return await _effectiveNetInterfaceFutureCache;
+    await _effectiveNetInterfaceFutureCache;
+    return;
   }
 
   Future<bool> getHasEffectiveDnsChanged() async {
@@ -58,8 +71,31 @@ class ConnectivityManager {
     return res;
   }
 
+  Future<bool> getHasEffectiveIpChanged() async {
+    final preEffectiveIpStr =
+        _getEffectiveIpStr(await _preEffectiveNetInterfaceFutureCache);
+
+    final effectiveIpStr =
+        _getEffectiveIpStr(await _effectiveNetInterfaceFutureCache);
+
+    final res = effectiveIpStr != preEffectiveIpStr;
+    if (res) {
+      logger.d("preEffectiveIpStr: $preEffectiveIpStr");
+      logger.d("effectiveIpStr: $effectiveIpStr");
+    }
+
+    return res;
+  }
+
   Future<void> onEffectiveDnsChanged() async {
     if (prefs.getBool('inject.dns.local')! && vPNMan.isCoreActive) {
+      await vPNMan.stopCore();
+      await vPNMan.startCore();
+    }
+  }
+
+  Future<void> onEffectiveIpChanged() async {
+    if (prefs.getBool('inject.sendThrough')! && vPNMan.isCoreActive) {
       await vPNMan.stopCore();
       await vPNMan.startCore();
     }
@@ -79,14 +115,22 @@ class ConnectivityManager {
         .listen((List<ConnectivityResult> result) {
       logger.i("onConnectivityChanged: $result");
 
-      updateEffectiveNetInterface().then((_) async {
-        return await getEffectiveNetInterface();
-      }).then((value) {
+      getEffectiveNetInterface(ignoreCache: true).then((value) async {
         logger.i("effectiveNetInterface: $value");
-      });
-      getHasEffectiveDnsChanged().then((value) {
-        if (value) {
-          onEffectiveDnsChanged();
+
+        bool shouldRestartCore = false;
+        if (await getHasEffectiveDnsChanged() &&
+            prefs.getBool('inject.dns.local')!) {
+          shouldRestartCore = true;
+        }
+        if (await getHasEffectiveIpChanged() &&
+            prefs.getBool('inject.sendThrough')!) {
+          shouldRestartCore = true;
+        }
+
+        if (shouldRestartCore && vPNMan.isCoreActive) {
+          await vPNMan.stopCore();
+          await vPNMan.startCore();
         }
       });
     });

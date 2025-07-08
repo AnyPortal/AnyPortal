@@ -41,15 +41,18 @@ class PrefsManager {
     'app.socks.port': 15491,
     'inject.api': true,
     'inject.api.port': 15490,
-    'inject.dns.local': false,
+    'inject.dns.local': RuntimePlatform.isWindows ||
+        RuntimePlatform.isLinux ||
+        RuntimePlatform.isMacOS,
     'inject.log': true,
     'inject.log.level': LogLevel.warning.index,
     'inject.socks': true,
     'inject.http': true,
-    'inject.sendThrough': false,
+    'inject.sendThrough': RuntimePlatform.isLinux || RuntimePlatform.isMacOS,
     'inject.sendThrough.bindingInterface': "eth0",
     'inject.sendThrough.bindingIp': "0.0.0.0",
-    'inject.sendThrough.bindingStratagy': SendThroughBindingStratagy.ip.index,
+    'inject.sendThrough.bindingStratagy':
+        SendThroughBindingStratagy.internet.index,
     'systemProxy': false,
     'tun': RuntimePlatform.isAndroid || RuntimePlatform.isIOS,
     'tun.perAppProxy': false,
@@ -63,9 +66,7 @@ class PrefsManager {
     'tun.inject.log.level': LogLevel.warning.index,
     'tun.inject.http': true,
     'tun.inject.socks': true,
-    'tun.inject.excludeCorePath': RuntimePlatform.isWindows ||
-        RuntimePlatform.isLinux ||
-        RuntimePlatform.isMacOS,
+    'tun.inject.excludeCorePath': RuntimePlatform.isWindows,
     'tun.useEmbedded': RuntimePlatform.isAndroid || RuntimePlatform.isIOS,
 
     'android.tun.perAppProxy.allowed': true,
