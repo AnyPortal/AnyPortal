@@ -50,11 +50,8 @@ class CoreDataNotifierBase with ChangeNotifier {
     }
   }
 
-  Future<void> onStartCommand() async {}
-
-  Future<void> onTick() async {}
-
-  Timer? timer;
+  Future<void> onStart() async {}
+  Future<void> onStop() async {}
 
   Future<void> start() async {
     if (on) {
@@ -62,16 +59,11 @@ class CoreDataNotifierBase with ChangeNotifier {
     } else {
       on = true;
     }
-    await onStartCommand();
-    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      onTick().then((_) {
-        notifyListeners();
-      });
-    });
+    await onStart();
   }
 
-  void stop() {
-    timer?.cancel();
+  Future<void> stop() async {
+    await onStop();
     on = false;
   }
 }

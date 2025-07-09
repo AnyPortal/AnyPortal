@@ -99,14 +99,28 @@ class CoreDataNotifierV2Ray extends CoreDataNotifierBase {
 
   V2RayAPI? v2RayAPI;
 
+  Timer? timer;
+
   @override
-  Future<void> onStartCommand() async {
-    final serverAddress = prefs.getString('app.server.address')!;
+  Future<void> onStart() async {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      onTick().then((_) {
+        notifyListeners();
+      });
+    });
+    String serverAddress = prefs.getString('app.server.address')!;
     final apiPort = prefs.getInt('inject.api.port')!;
+    if (serverAddress == "0.0.0.0") {
+        serverAddress = "127.0.0.1";
+    }
     v2RayAPI = V2RayAPI(serverAddress, apiPort);
   }
 
   @override
+  Future<void> onStop() async {
+    timer?.cancel();
+  }
+
   Future<void> onTick() async {
     try {
       sysStats = await v2RayAPI!.getSysStats();
