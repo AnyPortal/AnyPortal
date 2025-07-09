@@ -26,14 +26,19 @@ class ConnectivityManager {
     return _getEffectiveIpStr(await _effectiveNetInterfaceFutureCache);
   }
 
+  String? _getFirstAddressStr(Address? address) {
+    if (address == null) return null;
+    if (address.ipv4.isNotEmpty) return address.ipv4.first;
+    if (address.ipv6.isNotEmpty) return address.ipv6.first;
+    return null;
+  }
+
   String? _getEffectiveDnsStr(NetInterface? effectiveNetInterface) {
-    final dns = effectiveNetInterface?.dns;
-    return dns?.ipv4.first ?? dns?.ipv6.first;
+    return _getFirstAddressStr(effectiveNetInterface?.dns);
   }
 
   String? _getEffectiveIpStr(NetInterface? effectiveNetInterface) {
-    final ip = effectiveNetInterface?.ip;
-    return ip?.ipv4.first ?? ip?.ipv6.first;
+    return _getFirstAddressStr(effectiveNetInterface?.ip);
   }
 
   Future<NetInterface?> getEffectiveNetInterface(
