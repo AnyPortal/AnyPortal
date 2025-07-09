@@ -8,6 +8,7 @@ import 'package:anyportal/utils/core/base/plugin.dart';
 
 import '../../../models/log_level.dart';
 import '../../prefs.dart';
+import '../../yaml_map_converter.dart';
 
 class ConfigInjectorHysteria2 extends ConfigInjectorBase {
   @override
@@ -19,7 +20,7 @@ class ConfigInjectorHysteria2 extends ConfigInjectorBase {
         break;
       case "yaml":
       case _:
-        cfg = loadYaml(cfgStr) as Map<String, dynamic>;
+        cfg = (loadYaml(cfgStr) as YamlMap).toMap();
         break;
     }
 

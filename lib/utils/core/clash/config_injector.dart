@@ -8,6 +8,7 @@ import 'package:yaml_writer/yaml_writer.dart';
 import '../../../models/log_level.dart';
 import '../../global.dart';
 import '../../prefs.dart';
+import '../../yaml_map_converter.dart';
 import '../base/config_injector.dart';
 
 class ConfigInjectorClash extends ConfigInjectorBase {
@@ -20,7 +21,7 @@ class ConfigInjectorClash extends ConfigInjectorBase {
         break;
       case "yaml":
       case _:
-        cfg = loadYaml(cfgStr) as Map<String, dynamic>;
+        cfg = (loadYaml(cfgStr) as YamlMap).toMap();
         break;
     }
 
