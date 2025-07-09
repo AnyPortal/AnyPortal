@@ -132,6 +132,7 @@ class _CoreScreenState extends State<CoreScreen> {
         final oldCore = widget.core;
         final workingDir = _workingDirController.text;
         final envs = _envsController.text;
+        final args = _argsController.text;
         await db.transaction(() async {
           if (oldCore != null) {
             coreId = oldCore.read(db.core.id)!;
@@ -157,6 +158,7 @@ class _CoreScreenState extends State<CoreScreen> {
 
           if (_coreIsExec) {
             await db.into(db.coreExec).insertOnConflictUpdate(CoreExecCompanion(
+                  args: Value(args),
                   coreId: Value(coreId!),
                   assetId: Value(_assetId!),
                 ));
