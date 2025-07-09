@@ -54,7 +54,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (widget.profile != null) {
       _nameController.text = widget.profile!.name;
       _profileType = widget.profile!.type;
-      _coreCfgController.text = prettyPrintJson(widget.profile!.coreCfg);
+      final coreCfgFmt = widget.profile!.coreCfgFmt;
+      _coreCfgFmtController.text = coreCfgFmt;
+      if (coreCfgFmt == "json") {
+        _coreCfgController.text = prettyPrintJson(widget.profile!.coreCfg);
+      } else {
+        _coreCfgController.text = widget.profile!.coreCfg;
+      }
       _coreTypeId = widget.profile!.coreTypeId;
       _profileGroupId = widget.profile!.profileGroupId;
       final profileId = widget.profile!.id;
