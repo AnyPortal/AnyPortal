@@ -563,7 +563,7 @@ abstract class VPNManager with ChangeNotifier {
         .configInjector
         .getInjectedConfig(coreCfgRaw, coreCfgFmt);
     final coreCfgFile = File(p.join(
-        global.applicationSupportDirectory.path, 'conf', 'core.gen.json'));
+        global.applicationSupportDirectory.path, 'conf', 'core.gen.$coreCfgFmt'));
     if (!RuntimePlatform.isWeb) {
       if (!await coreCfgFile.exists()) {
         await coreCfgFile.create(recursive: true);
