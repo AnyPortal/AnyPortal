@@ -136,7 +136,7 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
 
     if (injectSocks) {
       (cfg["inbounds"] as List).insert(0, {
-        "listen": "127.0.0.1",
+        "listen": serverAddress,
         "port": socksPort,
         "protocol": "socks",
         "settings": {"udp": true},
