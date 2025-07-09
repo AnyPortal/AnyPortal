@@ -920,6 +920,14 @@ class VPNManagerExec extends VPNManager {
         'log',
         'core.log',
       )).openWrite();
+
+      processCore.stdout.transform(SystemEncoding().decoder).listen((data) {
+        outputFileIOSink.write(data);
+      });
+
+      processCore.stderr.transform(SystemEncoding().decoder).listen((data) {
+        outputFileIOSink.write(data);
+      });
     }
 
     setIsCoreActive(true);
