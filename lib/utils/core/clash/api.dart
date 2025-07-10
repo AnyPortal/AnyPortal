@@ -12,8 +12,9 @@ enum TrafficType {
 
 class ClashAPI {
   late final String apiBase;
-  bool shouldWatchTraffic = false;
+  bool shouldWatch = false;
   void Function(String) onTrafficData = (_) {};
+  void Function(String) onMemoryData = (_) {};
 
   ClashAPI(
     String address,
@@ -23,18 +24,20 @@ class ClashAPI {
   }
 
   void startWatchTraffic() {
-    shouldWatchTraffic = true;
+    shouldWatch = true;
     watchTraffic();
+    watchMemory();
   }
 
   void stopWatchTraffic() {
-    shouldWatchTraffic = false;
+    shouldWatch = false;
   }
 
-  Future<void> watchTraffic() async {
-    final url = Uri.parse('$apiBase/traffic');
-
-    final request = http.Request('GET', url);
+  Future<void> watchHttpGetStream(
+    Uri uri,
+    void Function(String) onData,
+  ) async {
+    final request = http.Request('GET', uri);
     try {
       final response = await request.send();
 
@@ -44,21 +47,35 @@ class ClashAPI {
             .transform(const LineSplitter());
 
         await for (final line in stream) {
-          if (!shouldWatchTraffic) break;
+          if (!shouldWatch) break;
           try {
-            onTrafficData(line);
+            onData(line);
           } catch (e) {
-            logger.w('watchTraffic: failed to decode line: $line\nError: $e');
+            logger.w('watchHttpGetStream: failed to decode line: $line\nError: $e');
           }
         }
       } else {
-        logger.w('watchTraffic failed: ${response.statusCode}');
+        logger.w('watchHttpGetStream failed: ${response.statusCode}');
       }
     } on (ClientException,) {
       /// ignore
     } catch (e) {
-      logger.w('watchTraffic: failed: $e');
+      logger.w('watchHttpGetStream: failed: $e');
     }
+  }
+
+  Future<void> watchTraffic() async {
+    return await watchHttpGetStream(
+      Uri.parse('$apiBase/traffic'),
+      onTrafficData,
+    );
+  }
+
+  Future<void> watchMemory() async {
+    return await watchHttpGetStream(
+      Uri.parse('$apiBase/memory'),
+      onMemoryData,
+    );
   }
 
   void close() async {}

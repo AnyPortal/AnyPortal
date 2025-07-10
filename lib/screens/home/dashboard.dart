@@ -4,9 +4,7 @@ import 'package:drift/drift.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
 import 'package:anyportal/extensions/localization.dart';
-import 'package:anyportal/screens/home/dashboard/direct_speed.dart';
-import 'package:anyportal/screens/home/dashboard/proxy_speed.dart';
-import 'package:anyportal/screens/home/dashboard/speed_chart.dart';
+import 'package:anyportal/utils/core/base/plugin.dart';
 
 import '../../utils/db.dart';
 import '../../utils/prefs.dart';
@@ -14,8 +12,7 @@ import '../../utils/show_snack_bar_now.dart';
 import '../../widgets/ray_toggle.dart';
 import '../../widgets/vpn_toggles.dart';
 
-import 'dashboard/perf_stats.dart';
-import 'dashboard/traffic_stats.dart';
+
 
 class Dashboard extends StatefulWidget {
   final Function setSelectedIndex;
@@ -130,92 +127,7 @@ class _DashboardState extends State<Dashboard> {
                   padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
                   child: VPNToggles(),
                 )),
-          Card(
-              margin: const EdgeInsets.all(8.0),
-              child: ListTile(
-                title: Text(
-                  context.loc.speed_graph,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-                subtitle: const SpeedChart(),
-              )),
-          Row(children: [
-            Expanded(
-                child: Card(
-              margin: const EdgeInsets.all(8.0),
-              child: Stack(children: [
-                Align(
-                    alignment: Directionality.of(context) == TextDirection.ltr
-                        ? Alignment.topRight
-                        : Alignment.topLeft,
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      margin: const EdgeInsets.fromLTRB(0, 16, 24, 0),
-                      decoration: const BoxDecoration(
-                        color: Colors.orange,
-                        shape: BoxShape.circle,
-                      ),
-                    )),
-                ListTile(
-                  title: Row(children: [
-                    Text(
-                      context.loc.direct_speed,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                  ]),
-                  subtitle: const DirectSpeeds(),
-                )
-              ]),
-            )),
-            Expanded(
-                child: Card(
-              margin: const EdgeInsets.all(8.0),
-              child: Stack(children: [
-                Align(
-                    alignment: Directionality.of(context) == TextDirection.ltr
-                        ? Alignment.topRight
-                        : Alignment.topLeft,
-                    child: Container(
-                      width: 8,
-                      height: 8,
-                      margin: const EdgeInsets.fromLTRB(0, 16, 24, 0),
-                      decoration: const BoxDecoration(
-                        color: Colors.blue,
-                        shape: BoxShape.circle,
-                      ),
-                    )),
-                ListTile(
-                  title: Text(
-                    context.loc.proxy_speed,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  subtitle: const ProxySpeeds(),
-                )
-              ]),
-            )),
-          ]),
-          Row(children: <Widget>[
-            Expanded(
-              child: Card(
-                  margin: const EdgeInsets.all(8.0),
-                  child: ListTile(
-                    title: Text(
-                      context.loc.performance,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    subtitle: const PerfStats(),
-                  )),
-            ),
-            Expanded(
-              child: Card(
-                  margin: EdgeInsets.all(8.0),
-                  child: ListTile(
-                    title: Text(context.loc.traffic),
-                    subtitle: TrafficStats(),
-                  )),
-            ),
-          ]),
+          ...CorePluginManager().instance.dashboardWidgets.of(context),
           if (_useFloatingActionButton)
             Container(
               constraints: const BoxConstraints(

@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:fl_chart/fl_chart.dart';
 
-import '../../../extensions/localization.dart';
-import '../../../models/traffic_stat_type.dart';
-import '../../../utils/core/base/plugin.dart';
+import '../../../../extensions/localization.dart';
+import '../traffic_stat_type.dart';
+import '../../base/plugin.dart';
+import '../data_notifier.dart';
 
 class SpeedChart extends StatefulWidget {
   const SpeedChart({super.key});
@@ -31,7 +32,7 @@ class _SpeedChartState extends State<SpeedChart> {
 
   @override
   Widget build(BuildContext context) {
-    final dataNotifier = CorePluginManager().instance.dataNotifier;
+    final dataNotifier = CorePluginManager().instance.dataNotifier as CoreDataNotifierV2Ray;
     return ListenableBuilder(
       listenable: dataNotifier,
       builder: (BuildContext context, Widget? child) {

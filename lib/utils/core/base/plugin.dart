@@ -1,19 +1,23 @@
 import 'dart:async';
 
-import 'package:anyportal/utils/core/base/config_injector.dart';
-import 'package:anyportal/utils/core/base/data_notifier.dart';
-import 'package:anyportal/utils/core/clash/plugin.dart';
-import 'package:anyportal/utils/core/sing_box/plugin.dart';
-import 'package:anyportal/utils/core/v2ray/plugin.dart';
-
 import '../../logger.dart';
+import '../clash/plugin.dart';
 import '../hysteria2/plugin.dart';
+import '../sing_box/plugin.dart';
+import '../v2ray/plugin.dart';
+
+import 'config_injector.dart';
+import 'dashboard.dart';
+import 'data_notifier.dart';
 
 class CorePluginBase {
   static Map<String, CorePluginBase> implementations = {};
   String? coreTypeName;
   bool isToLogStdout = false;
   Map<String, String> environment = {};
+  CoreDataNotifierBase dataNotifier = CoreDataNotifierBase();
+  ConfigInjectorBase configInjector = ConfigInjectorBase();
+  DashboardWidgetsBase dashboardWidgets = DashboardWidgetsBase();
 
   CorePluginBase() {
     register();
@@ -24,9 +28,6 @@ class CorePluginBase {
       implementations[coreTypeName!] = this;
     }
   }
-
-  CoreDataNotifierBase dataNotifier = CoreDataNotifierBase();
-  ConfigInjectorBase configInjector = ConfigInjectorBase();
 }
 
 class CorePluginManager {

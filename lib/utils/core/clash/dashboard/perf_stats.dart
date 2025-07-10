@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../../extensions/localization.dart';
-import '../../../utils/core/base/plugin.dart';
-import '../../../utils/format_byte.dart';
+import '../../../../extensions/localization.dart';
+import '../../../format_byte.dart';
+import '../../base/plugin.dart';
+import '../data_notifier.dart';
 
 class PerfStats extends StatefulWidget {
   const PerfStats({super.key});
@@ -35,7 +36,8 @@ class _PerfStatsState extends State<PerfStats> {
 
   @override
   Widget build(BuildContext context) {
-    final dataNotifier = CorePluginManager().instance.dataNotifier;
+    final dataNotifier =
+        CorePluginManager().instance.dataNotifier as CoreDataNotifierClash;
     return ListenableBuilder(
       listenable: dataNotifier,
       builder: (BuildContext context, Widget? child) {
@@ -44,25 +46,9 @@ class _PerfStatsState extends State<PerfStats> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             keyValueRow(
-                context.loc.uptime,
-                dataNotifier.sysStats != null
-                    ? dataNotifier.sysStats!.uptime.toString()
-                    : "0"),
-            keyValueRow(
-                context.loc.memory,
-                dataNotifier.sysStats != null
-                    ? formatBytes(dataNotifier.sysStats!.alloc.toInt())
-                    : formatBytes(0)),
-            keyValueRow(
-                context.loc.go_coroutines,
-                dataNotifier.sysStats != null
-                    ? dataNotifier.sysStats!.numGC.toString()
-                    : "0"),
-            keyValueRow(
-                context.loc.live_objects,
-                dataNotifier.sysStats != null
-                    ? dataNotifier.sysStats!.liveObjects .toString()
-                    : "0"),
+              context.loc.memory,
+              formatBytes(dataNotifier.memory["inuse"]!).toString(),
+            )
           ],
         );
       },

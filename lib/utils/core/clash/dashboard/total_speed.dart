@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 
-import '../../../models/traffic_stat_type.dart';
-import '../../../utils/core/base/plugin.dart';
-import '../../../utils/format_byte.dart';
+import '../../../format_byte.dart';
+import '../../base/plugin.dart';
+import '../data_notifier.dart';
+import '../traffic_stat_type.dart';
 
-class DirectSpeeds extends StatefulWidget {
-  const DirectSpeeds({super.key});
+class ProxySpeeds extends StatefulWidget {
+  const ProxySpeeds({super.key});
 
   @override
-  State<DirectSpeeds> createState() => _DirectSpeedsState();
+  State<ProxySpeeds> createState() => _ProxySpeedsState();
 }
 
-class _DirectSpeedsState extends State<DirectSpeeds> {
+class _ProxySpeedsState extends State<ProxySpeeds> {
   final limitCount = 60;
 
   @override
@@ -35,7 +36,7 @@ class _DirectSpeedsState extends State<DirectSpeeds> {
 
   @override
   Widget build(BuildContext context) {
-    final dataNotifier = CorePluginManager().instance.dataNotifier;
+    final dataNotifier = CorePluginManager().instance.dataNotifier as CoreDataNotifierClash;
     return ListenableBuilder(
       listenable: dataNotifier,
       builder: (BuildContext context, Widget? child) {
@@ -45,11 +46,11 @@ class _DirectSpeedsState extends State<DirectSpeeds> {
           children: [
             keyValueRow(
               "↑",
-              "${formatBytes(dataNotifier.trafficStatCur[TrafficStatType.directUp]!)}ps",
+              "${formatBytes(dataNotifier.trafficStatCur[TrafficStatType.totalUp]!)}ps",
             ),
             keyValueRow(
               "↓",
-              "${formatBytes(dataNotifier.trafficStatCur[TrafficStatType.directDn]!)}ps",
+              "${formatBytes(dataNotifier.trafficStatCur[TrafficStatType.totalDn]!)}ps",
             ),
           ],
         );

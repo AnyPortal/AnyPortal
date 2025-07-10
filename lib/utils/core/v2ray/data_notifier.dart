@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:fl_chart/fl_chart.dart';
 
 import '../../../generated/grpc/v2ray-core/app/stats/command/command.pbgrpc.dart';
-import '../../../models/traffic_stat_type.dart';
+import 'traffic_stat_type.dart';
 import '../../logger.dart';
 import '../../prefs.dart';
 import '../base/data_notifier.dart';
@@ -12,26 +12,13 @@ import '../base/data_notifier.dart';
 import 'api.dart';
 
 class CoreDataNotifierV2Ray extends CoreDataNotifierBase {
-  Set<String> protocolDirect = {
-    "freedom",
-    "loopback",
-    "blackhole",
-  };
-  Set<String> protocolProxy = {
-    "dns",
-    "http",
-    "mtproto",
-    "shadowsocks",
-    "socks",
-    "vmess",
-    "vless",
-    "trojan",
-  };
-  String protocolKey = "protocol";
-
+  CoreDataNotifierV2Ray() {
+    resetTraffic();
+  }
+  
   @override
   void init({String? cfgStr}) {
-    super.init();
+    resetTraffic();
 
     if (cfgStr == null) return;
 
@@ -68,6 +55,72 @@ class CoreDataNotifierV2Ray extends CoreDataNotifierBase {
     }
   }
 
+  @override
+  Future<void> onStart() async {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      onTick().then((_) {
+        notifyListeners();
+      });
+    });
+    String serverAddress = prefs.getString('app.server.address')!;
+    final apiPort = prefs.getInt('inject.api.port')!;
+    if (serverAddress == "0.0.0.0") {
+      serverAddress = "127.0.0.1";
+    }
+    v2RayAPI = V2RayAPI(serverAddress, apiPort);
+  }
+
+  @override
+  Future<void> onStop() async {
+    timer?.cancel();
+  }
+
+  late Map<String, String> outboundProtocol;
+  late Map<String, TrafficStatType> apiItemTrafficStatType;
+  SysStatsResponse? sysStats;
+
+  final Map<TrafficStatType, List<FlSpot>> trafficQs = {};
+  final Map<TrafficStatType, int> trafficStatAgg = {
+    for (var t in TrafficStatType.values) t: 0
+  };
+  final Map<TrafficStatType, int> trafficStatPre = {
+    for (var t in TrafficStatType.values) t: 0
+  };
+  final Map<TrafficStatType, int> trafficStatCur = {
+    for (var t in TrafficStatType.values) t: 0
+  };
+
+  void resetTraffic() {
+    for (var type in TrafficStatType.values) {
+      trafficStatAgg[type] = 0;
+      trafficStatPre[type] = 0;
+      trafficStatCur[type] = 0;
+      trafficQs[type] = [];
+    }
+    for (index = 0; index < limitCount; ++index) {
+      for (var type in TrafficStatType.values) {
+        trafficQs[type]!.add(FlSpot(index.toDouble(), 0));
+      }
+    }
+  }
+
+  Set<String> protocolDirect = {
+    "freedom",
+    "loopback",
+    "blackhole",
+  };
+  Set<String> protocolProxy = {
+    "dns",
+    "http",
+    "mtproto",
+    "shadowsocks",
+    "socks",
+    "vmess",
+    "vless",
+    "trojan",
+  };
+  String protocolKey = "protocol";
+
   void processStats(List<Stat> stats) {
     ++index;
     for (var t in TrafficStatType.values) {
@@ -100,26 +153,6 @@ class CoreDataNotifierV2Ray extends CoreDataNotifierBase {
   V2RayAPI? v2RayAPI;
 
   Timer? timer;
-
-  @override
-  Future<void> onStart() async {
-    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      onTick().then((_) {
-        notifyListeners();
-      });
-    });
-    String serverAddress = prefs.getString('app.server.address')!;
-    final apiPort = prefs.getInt('inject.api.port')!;
-    if (serverAddress == "0.0.0.0") {
-        serverAddress = "127.0.0.1";
-    }
-    v2RayAPI = V2RayAPI(serverAddress, apiPort);
-  }
-
-  @override
-  Future<void> onStop() async {
-    timer?.cancel();
-  }
 
   Future<void> onTick() async {
     try {

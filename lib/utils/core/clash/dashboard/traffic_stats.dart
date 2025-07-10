@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../../extensions/localization.dart';
-import '../../../models/traffic_stat_type.dart';
-import '../../../utils/core/base/plugin.dart';
-import '../../../utils/format_byte.dart';
+import '../../../../extensions/localization.dart';
+import '../../../format_byte.dart';
+import '../../base/plugin.dart';
+import '../data_notifier.dart';
+import '../traffic_stat_type.dart';
 
 class TrafficStats extends StatefulWidget {
   const TrafficStats({super.key});
@@ -36,7 +37,7 @@ class _TrafficStatsState extends State<TrafficStats> {
 
   @override
   Widget build(BuildContext context) {
-    final dataNotifier = CorePluginManager().instance.dataNotifier;
+    final dataNotifier = CorePluginManager().instance.dataNotifier as CoreDataNotifierClash;
     return ListenableBuilder(
       listenable: dataNotifier,
       builder: (BuildContext context, Widget? child) {
@@ -45,22 +46,14 @@ class _TrafficStatsState extends State<TrafficStats> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             keyValueRow(
-              "${context.loc.direct} ↑",
+              "${context.loc.total} ↑",
               formatBytes(
-                  dataNotifier.trafficStatAgg[TrafficStatType.directUp]!),
+                  dataNotifier.trafficStatAgg[TrafficStatType.totalUp]!),
             ),
             keyValueRow(
-              "${context.loc.direct} ↓",
+              "${context.loc.total} ↓",
               formatBytes(
-                  dataNotifier.trafficStatAgg[TrafficStatType.directDn]!),
-            ),
-            keyValueRow(
-              "${context.loc.proxy} ↑",
-              formatBytes(dataNotifier.trafficStatAgg[TrafficStatType.proxyUp]!),
-            ),
-            keyValueRow(
-              "${context.loc.proxy} ↓",
-              formatBytes(dataNotifier.trafficStatAgg[TrafficStatType.proxyDn]!),
+                  dataNotifier.trafficStatAgg[TrafficStatType.totalDn]!),
             ),
           ],
         );

@@ -2,30 +2,28 @@ import 'dart:convert';
 
 import 'package:fl_chart/fl_chart.dart';
 
-import '../../../models/traffic_stat_type.dart';
-import '../../logger.dart';
 import '../../prefs.dart';
 import '../base/data_notifier.dart';
 
 import 'api.dart';
+import 'traffic_stat_type.dart';
 
 class CoreDataNotifierClash extends CoreDataNotifierBase {
   String protocolKey = "protocol";
 
   @override
   void init({String? cfgStr}) {
-    super.init();
+    resetTraffic();
   }
 
-  @override
   void resetTraffic() {
-    for (var type in [TrafficStatType.proxyDn, TrafficStatType.proxyUp]) {
+    for (var type in TrafficStatType.values) {
       trafficStatAgg[type] = 0;
       trafficStatCur[type] = 0;
       trafficQs[type] = [];
     }
     for (index = 0; index < limitCount; ++index) {
-      for (var type in [TrafficStatType.proxyDn, TrafficStatType.proxyUp]) {
+      for (var type in TrafficStatType.values) {
         trafficQs[type]!.add(FlSpot(index.toDouble(), 0));
       }
     }
@@ -42,42 +40,55 @@ class CoreDataNotifierClash extends CoreDataNotifierBase {
     }
     clashAPI = ClashAPI(serverAddress, apiPort);
     clashAPI!.onTrafficData = handleTrafficData;
+    clashAPI!.onMemoryData = handleMemoryData;
     clashAPI!.startWatchTraffic();
   }
 
-  Future<void> handleTrafficData(String data) async {
-    Map<String, int> traffic = {};
+  final Map<TrafficStatType, List<FlSpot>> trafficQs = {};
 
-    try {
-      traffic = (jsonDecode(data) as Map).cast<String, int>();
-    } catch (e) {
-      logger.w('onTrafficData: failed to decode data: $data\nError: $e');
-      return;
-    }
+  final Map<TrafficStatType, int> trafficStatAgg = {
+    for (var t in TrafficStatType.values) t: 0
+  };
+  final Map<TrafficStatType, int> trafficStatPre = {
+    for (var t in TrafficStatType.values) t: 0
+  };
+  final Map<TrafficStatType, int> trafficStatCur = {
+    for (var t in TrafficStatType.values) t: 0
+  };
+
+  final trafficKeys = {
+    TrafficStatType.totalDn: "down",
+    TrafficStatType.totalUp: "up",
+  };
+
+  Future<void> handleTrafficData(String data) async {
+    final traffic = (jsonDecode(data) as Map).cast<String, int>();
 
     ++index;
 
-    final trafficDn = traffic["down"]!;
-    trafficStatAgg[TrafficStatType.proxyDn] =
-        trafficStatAgg[TrafficStatType.proxyDn]! + trafficDn;
-    trafficStatCur[TrafficStatType.proxyDn] = trafficDn;
-    trafficQs[TrafficStatType.proxyDn]!
-        .add(FlSpot(index.toDouble(), trafficDn.toDouble()));
-    while (trafficQs[TrafficStatType.proxyDn]!.length > limitCount) {
-      trafficQs[TrafficStatType.proxyDn]!.removeAt(0);
-    }
-
-    final trafficUp = traffic["up"]!;
-    trafficStatAgg[TrafficStatType.proxyUp] =
-        trafficStatAgg[TrafficStatType.proxyUp]! + trafficUp;
-    trafficStatCur[TrafficStatType.proxyUp] = trafficUp;
-    trafficQs[TrafficStatType.proxyUp]!
-        .add(FlSpot(index.toDouble(), trafficUp.toDouble()));
-    while (trafficQs[TrafficStatType.proxyUp]!.length > limitCount) {
-      trafficQs[TrafficStatType.proxyUp]!.removeAt(0);
+    for (var type in TrafficStatType.values) {
+      final trafficValue = traffic[trafficKeys[type]]!;
+      trafficStatAgg[type] = trafficStatAgg[type]! + trafficValue;
+      trafficStatCur[type] = trafficValue;
+      trafficQs[type]!.add(FlSpot(index.toDouble(), trafficValue.toDouble()));
+      while (trafficQs[type]!.length > limitCount) {
+        trafficQs[type]!.removeAt(0);
+      }
     }
 
     notifyListeners();
+  }
+
+  final Map<String, int> memory = {
+    "inuse": 0,
+    "oslimit": 0,
+  };
+
+  Future<void> handleMemoryData(String data) async {
+    final m = (jsonDecode(data) as Map).cast<String, int>();
+    memory.addAll(m);
+
+    // notifyListeners();
   }
 
   @override
