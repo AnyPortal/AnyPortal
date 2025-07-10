@@ -45,13 +45,16 @@ class ConfigInjectorSingBox extends ConfigInjectorBase {
           outboundTags.add(outbound["tag"]);
         }
       }
-      cfg["experimental"]["v2ray_api"] = {
-        "listen": "$serverAddress:$apiPort",
-        "stats": {
-          "enabled": true,
-          "outbounds": outboundTags,
-        }
+      cfg["experimental"]["clash_api"] = {
+        "external_controller": "$serverAddress:$apiPort",
       };
+      // cfg["experimental"]["v2ray_api"] = {
+      //   "listen": "$serverAddress:$apiPort",
+      //   "stats": {
+      //     "enabled": true,
+      //     "outbounds": outboundTags,
+      //   }
+      // };
     }
 
     if (!cfg.containsKey("inbounds")) {

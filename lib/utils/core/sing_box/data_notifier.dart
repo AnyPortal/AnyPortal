@@ -1,9 +1,12 @@
-import '../v2ray/data_notifier.dart';
+import '../clash/data_notifier.dart';
+// import '../v2ray/data_notifier.dart';
 
-class CoreDataNotifierSingBox extends CoreDataNotifierV2Ray {
-  @override
-  Set<String> get protocolDirect => {"direct"};
+class CoreDataNotifierSingBox extends CoreDataNotifierClash {}
 
-  @override
-  String get protocolKey => "type";
-}
+// class CoreDataNotifierSingBox extends CoreDataNotifierV2Ray {
+//   @override
+//   Set<String> get protocolDirect => {"direct"};
+
+//   @override
+//   String get protocolKey => "type";
+// }

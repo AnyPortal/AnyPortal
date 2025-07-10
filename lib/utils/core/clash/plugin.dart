@@ -22,4 +22,7 @@ class CorePluginClash extends CorePluginBase {
 
   @override
   ConfigInjectorBase get configInjector => _configInjector;
+
+  @override
+  bool get isToLogStdout => true;
 }
