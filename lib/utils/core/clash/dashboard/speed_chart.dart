@@ -15,8 +15,6 @@ class SpeedChart extends StatefulWidget {
 }
 
 class _SpeedChartState extends State<SpeedChart> {
-  final limitCount = 60;
-
   final Map<TrafficStatType, Color> trafficColor = {
     TrafficStatType.totalUp: Colors.blue,
     TrafficStatType.totalDn: Colors.blue,
@@ -30,7 +28,8 @@ class _SpeedChartState extends State<SpeedChart> {
 
   @override
   Widget build(BuildContext context) {
-    final dataNotifier = CorePluginManager().instance.dataNotifier as CoreDataNotifierClash;
+    final dataNotifier =
+        CorePluginManager().instance.dataNotifier as CoreDataNotifierClash;
     return ListenableBuilder(
       listenable: dataNotifier,
       builder: (BuildContext context, Widget? child) {

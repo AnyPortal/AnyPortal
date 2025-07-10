@@ -5,7 +5,7 @@ import 'dashboard.dart';
 import 'data_notifier.dart';
 
 class CorePluginClash extends CorePluginBase {
-  CorePluginClash() : super(){
+  CorePluginClash() : super() {
     coreTypeName = "clash";
     dataNotifier = CoreDataNotifierClash();
     configInjector = ConfigInjectorClash();

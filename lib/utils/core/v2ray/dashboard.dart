@@ -9,7 +9,7 @@ import 'dashboard/proxy_speed.dart';
 import 'dashboard/speed_chart.dart';
 import 'dashboard/traffic_stats.dart';
 
-class DashboardWidgetsV2Ray extends DashboardWidgetsBase{
+class DashboardWidgetsV2Ray extends DashboardWidgetsBase {
   @override
   List<Widget> of(BuildContext context) {
     return [

@@ -14,8 +14,6 @@ class TrafficStats extends StatefulWidget {
 }
 
 class _TrafficStatsState extends State<TrafficStats> {
-  final limitCount = 60;
-
   @override
   void initState() {
     super.initState();
@@ -37,7 +35,8 @@ class _TrafficStatsState extends State<TrafficStats> {
 
   @override
   Widget build(BuildContext context) {
-    final dataNotifier = CorePluginManager().instance.dataNotifier as CoreDataNotifierClash;
+    final dataNotifier =
+        CorePluginManager().instance.dataNotifier as CoreDataNotifierClash;
     return ListenableBuilder(
       listenable: dataNotifier,
       builder: (BuildContext context, Widget? child) {

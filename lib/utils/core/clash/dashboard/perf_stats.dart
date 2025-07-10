@@ -13,8 +13,6 @@ class PerfStats extends StatefulWidget {
 }
 
 class _PerfStatsState extends State<PerfStats> {
-  final limitCount = 60;
-
   @override
   void initState() {
     super.initState();

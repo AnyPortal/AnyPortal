@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../traffic_stat_type.dart';
 import '../../../format_byte.dart';
 import '../../base/plugin.dart';
 import '../data_notifier.dart';
+import '../traffic_stat_type.dart';
 
 class DirectSpeeds extends StatefulWidget {
   const DirectSpeeds({super.key});
@@ -13,8 +13,6 @@ class DirectSpeeds extends StatefulWidget {
 }
 
 class _DirectSpeedsState extends State<DirectSpeeds> {
-  final limitCount = 60;
-
   @override
   void initState() {
     super.initState();
@@ -36,7 +34,8 @@ class _DirectSpeedsState extends State<DirectSpeeds> {
 
   @override
   Widget build(BuildContext context) {
-    final dataNotifier = CorePluginManager().instance.dataNotifier as CoreDataNotifierV2Ray;
+    final dataNotifier =
+        CorePluginManager().instance.dataNotifier as CoreDataNotifierV2Ray;
     return ListenableBuilder(
       listenable: dataNotifier,
       builder: (BuildContext context, Widget? child) {

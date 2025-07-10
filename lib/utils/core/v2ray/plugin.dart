@@ -5,7 +5,7 @@ import 'dashboard.dart';
 import 'data_notifier.dart';
 
 class CorePluginV2Ray extends CorePluginBase {
-  CorePluginV2Ray() : super(){
+  CorePluginV2Ray() : super() {
     coreTypeName = "v2ray";
     dataNotifier = CoreDataNotifierV2Ray();
     configInjector = ConfigInjectorV2Ray();

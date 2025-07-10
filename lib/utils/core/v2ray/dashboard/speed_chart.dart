@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 import '../../../../extensions/localization.dart';
-import '../traffic_stat_type.dart';
 import '../../base/plugin.dart';
 import '../data_notifier.dart';
+import '../traffic_stat_type.dart';
 
 class SpeedChart extends StatefulWidget {
   const SpeedChart({super.key});
@@ -15,8 +15,6 @@ class SpeedChart extends StatefulWidget {
 }
 
 class _SpeedChartState extends State<SpeedChart> {
-  final limitCount = 60;
-
   final Map<TrafficStatType, Color> trafficColor = {
     TrafficStatType.directUp: Colors.orange,
     TrafficStatType.directDn: Colors.orange,
@@ -32,7 +30,8 @@ class _SpeedChartState extends State<SpeedChart> {
 
   @override
   Widget build(BuildContext context) {
-    final dataNotifier = CorePluginManager().instance.dataNotifier as CoreDataNotifierV2Ray;
+    final dataNotifier =
+        CorePluginManager().instance.dataNotifier as CoreDataNotifierV2Ray;
     return ListenableBuilder(
       listenable: dataNotifier,
       builder: (BuildContext context, Widget? child) {

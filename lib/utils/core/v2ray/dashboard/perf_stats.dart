@@ -13,8 +13,6 @@ class PerfStats extends StatefulWidget {
 }
 
 class _PerfStatsState extends State<PerfStats> {
-  final limitCount = 60;
-
   @override
   void initState() {
     super.initState();
@@ -36,7 +34,8 @@ class _PerfStatsState extends State<PerfStats> {
 
   @override
   Widget build(BuildContext context) {
-    final dataNotifier = CorePluginManager().instance.dataNotifier as CoreDataNotifierV2Ray;
+    final dataNotifier =
+        CorePluginManager().instance.dataNotifier as CoreDataNotifierV2Ray;
     return ListenableBuilder(
       listenable: dataNotifier,
       builder: (BuildContext context, Widget? child) {
@@ -62,7 +61,7 @@ class _PerfStatsState extends State<PerfStats> {
             keyValueRow(
                 context.loc.live_objects,
                 dataNotifier.sysStats != null
-                    ? dataNotifier.sysStats!.liveObjects .toString()
+                    ? dataNotifier.sysStats!.liveObjects.toString()
                     : "0"),
           ],
         );

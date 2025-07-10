@@ -45,7 +45,7 @@ class DashboardWidgetsClash extends DashboardWidgetsBase {
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               subtitle: const ProxySpeeds(),
-            ) 
+            )
           ]),
         )),
         Expanded(

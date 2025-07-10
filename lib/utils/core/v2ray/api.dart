@@ -2,16 +2,16 @@ import 'package:grpc/grpc.dart';
 
 import '../../../generated/grpc/v2ray-core/app/stats/command/command.pbgrpc.dart';
 
-enum TrafficType{
+enum TrafficType {
   uplink,
   downlink,
 }
 
-class V2RayAPI{
+class V2RayAPI {
   late ClientChannel channel;
   late StatsServiceClient statsServiceClient;
 
-  V2RayAPI(String address, int port){
+  V2RayAPI(String address, int port) {
     channel = ClientChannel(
       address,
       port: port,
@@ -24,17 +24,24 @@ class V2RayAPI{
     statsServiceClient = StatsServiceClient(channel);
   }
 
-  Future<int> getUserTraffic(String email, TrafficType trafficType, {bool reset=false}) async {
+  Future<int> getUserTraffic(String email, TrafficType trafficType,
+      {bool reset = false}) async {
     final response = await statsServiceClient.getStats(
-      GetStatsRequest(name:"user>>>$email>>>traffic>>>${trafficType.name}", reset: reset),
+      GetStatsRequest(
+          name: "user>>>$email>>>traffic>>>${trafficType.name}", reset: reset),
       // options: CallOptions(compression: const GzipCodec()),
     );
     return response.stat.value.toInt();
   }
 
-  Future<List<Stat>> queryStats({String? pattern, List<String>? patterns, bool? reset, bool? regexp}) async {
+  Future<List<Stat>> queryStats(
+      {String? pattern,
+      List<String>? patterns,
+      bool? reset,
+      bool? regexp}) async {
     final response = await statsServiceClient.queryStats(
-      QueryStatsRequest(pattern: pattern, patterns: patterns, reset: reset, regexp: regexp),
+      QueryStatsRequest(
+          pattern: pattern, patterns: patterns, reset: reset, regexp: regexp),
     );
     return response.stat;
   }
