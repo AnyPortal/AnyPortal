@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 
 import '../../logger.dart';
 
@@ -33,10 +32,8 @@ class ClashAPI {
     shouldWatch = false;
   }
 
-  Future<void> watchHttpGetStream(
-    Uri uri,
-    void Function(String) onData,
-  ) async {
+  Future<void> watchHttpGetStream(Uri uri, void Function(String) onData,
+      {int retryCount = 0}) async {
     final request = http.Request('GET', uri);
     try {
       final response = await request.send();
@@ -51,16 +48,21 @@ class ClashAPI {
           try {
             onData(line);
           } catch (e) {
-            logger.w('watchHttpGetStream: failed to decode line: $line\nError: $e');
+            logger.w(
+                'watchHttpGetStream: failed to decode line: $line\nError: $e');
           }
         }
       } else {
         logger.w('watchHttpGetStream failed: ${response.statusCode}');
       }
-    } on (ClientException,) {
-      /// ignore
     } catch (e) {
       logger.w('watchHttpGetStream: failed: $e');
+      await Future.delayed(Duration(seconds: 1));
+      retryCount += 1;
+      if (shouldWatch && retryCount < 5) {
+        logger.w('watchHttpGetStream: retryCount: $retryCount');
+        await (watchHttpGetStream(uri, onData, retryCount: retryCount));
+      }
     }
   }
 
