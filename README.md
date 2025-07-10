@@ -103,20 +103,22 @@ See planning [here](https://github.com/users/anyportal/projects/1/views/1).
 | ---------- | ---------------- | -------------- |
 | v2ray/xray | 🟢                | 🟢              |
 | sing-box   | 🟢                | 🟢²             |
+| clash      | 🟢                | 🟢              |
+| mihomo     | 🟢                | 🟢              |
 | ...¹       | ...              |                |
 
-1. In theory one can run any cores, however it won't be a good experience without config injection and dashboard info. PR welcomed for additional core support. See `lib/utils/core/v2ray` for example.
-2. sing-box V2Ray API is not included by default, see [Installation](https://sing-box.sagernet.org/installation/build-from-source/#build-tags). You must compile sing-box with `with_grpc` and `with_v2ray_api` tags enabled to see dashboard info.
+1. In theory one can run any cores, however it won't be a good experience without config injection and dashboard info. PR welcomed for additional core support. See `lib/utils/core` for example.
+2. Using clash api, since v2ray-api is not enabled in official release.
 
 ## Technical details for power users
 
-- ~~why v2ray/xray over sing-box?~~ Why choose one when you can have both?
+- ~~why v2ray/xray over sing-box?~~ Why choose one when you can have any?
   - seriously, why v2ray/xray over sing-box?
     - load balancing
     - chained proxy in transport layer
     - better server-side functions (gRPC interface etc.), so we choose it also as client to reduce maintenance
   - why sing-box over v2ray/xray?
-    - integrated tun makes dns rule flexible and effective, especially on desktop os
+    - integrated tun makes things easier
 - remote profile has only one required field, a REST URL pointing to a v2ray config
 - for v2ray to work properly on Android and iOS, tun2socks is necessary
   - v2ray native tun inbound is only half finished for now
