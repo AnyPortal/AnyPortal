@@ -93,7 +93,7 @@ class _DashboardState extends State<Dashboard> {
         scrollDirection: Axis.vertical,
         padding: const EdgeInsets.all(8.0),
         child: Wrap(children: [
-          Card(
+          if (_useFloatingActionButton) Card(
               margin: const EdgeInsets.all(8.0),
               child: SmoothHighlight(
                   enabled: _highlightSelectProfile,
