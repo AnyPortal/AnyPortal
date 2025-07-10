@@ -104,7 +104,7 @@ class Database extends _$Database {
         );
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -157,6 +157,12 @@ class Database extends _$Database {
           },
           from4To5: (m, schema) async {
             await m.addColumn(schema.profile, schema.profile.coreCfgFmt);
+          },
+          from5To6: (m, schema) async {
+            await (update(coreExec)..where((e) => e.args.equals('[]'))).write(
+              CoreExecCompanion(args: Value('')),
+            );
+            await m.alterTable(TableMigration(schema.coreExec));
           },
         ),
         beforeOpen: (details) async {

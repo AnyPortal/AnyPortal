@@ -562,8 +562,8 @@ abstract class VPNManager with ChangeNotifier {
         .instance
         .configInjector
         .getInjectedConfig(coreCfgRaw, coreCfgFmt);
-    final coreCfgFile = File(p.join(
-        global.applicationSupportDirectory.path, 'conf', 'core.gen.$coreCfgFmt'));
+    final coreCfgFile = File(p.join(global.applicationSupportDirectory.path,
+        'conf', 'core.gen.$coreCfgFmt'));
     if (!RuntimePlatform.isWeb) {
       if (!await coreCfgFile.exists()) {
         await coreCfgFile.create(recursive: true);
@@ -573,7 +573,9 @@ abstract class VPNManager with ChangeNotifier {
 
     // get is exec
     _isExec = core.read(db.core.isExec)!;
-    if (_isExec) {
+    if (!_isExec) {
+      await prefs.setBool("cache.core.useEmbedded", true);
+    } else {
       await prefs.setBool("cache.core.useEmbedded", false);
       corePath = core.read(db.asset.path);
       if (corePath == null) {
@@ -597,16 +599,19 @@ abstract class VPNManager with ChangeNotifier {
       prefs.setString('cache.core.workingDir', _coreWorkingDir!);
 
       // get core args
+      final argsStr = core.read(db.coreExec.args)!;
+      List<String> rawCoreArgList = [];
+      if (argsStr != "") {
+        rawCoreArgList = (jsonDecode(argsStr) as List<dynamic>)
+            .map((e) => e as String)
+            .toList();
+      } else {
+        rawCoreArgList = ["run", "-c", "{config.path}"];
+      }
+
       final replacements = {
         "{config.path}": coreCfgFile.path,
       };
-      List<String> rawCoreArgList =
-          (jsonDecode(core.read(db.coreExec.args)!) as List<dynamic>)
-              .map((e) => e as String)
-              .toList();
-      if (rawCoreArgList.isEmpty) {
-        rawCoreArgList = ["run", "-c", "{config.path}"];
-      }
       _coreArgList = rawCoreArgList;
       for (int i = 0; i < _coreArgList.length; ++i) {
         for (var entry in replacements.entries) {
@@ -614,8 +619,6 @@ abstract class VPNManager with ChangeNotifier {
         }
       }
       await prefs.setString('cache.core.args', jsonEncode(_coreArgList));
-    } else {
-      await prefs.setBool("cache.core.useEmbedded", true);
     }
 
     // get core env
@@ -681,7 +684,8 @@ abstract class VPNManager with ChangeNotifier {
             });
             return;
           } else {
-            _tunSingBoxCorePath = File(_tunSingBoxCorePath!).resolveSymbolicLinksSync();
+            _tunSingBoxCorePath =
+                File(_tunSingBoxCorePath!).resolveSymbolicLinksSync();
             prefs.setString(
                 'cache.tun.singBox.core.path', _tunSingBoxCorePath!);
           }

@@ -1,7 +1,8 @@
+import 'package:flutter/foundation.dart';
+
 import 'package:drift/drift.dart';
 // ignore: depend_on_referenced_packages
 import 'package:drift_dev/api/migrations_web.dart';
-import 'package:flutter/foundation.dart';
 // ignore: depend_on_referenced_packages
 import 'package:sqlite3/wasm.dart';
 
