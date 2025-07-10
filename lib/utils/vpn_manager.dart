@@ -913,7 +913,7 @@ class VPNManagerExec extends VPNManager {
       environment: environment,
     );
 
-    late IOSink outputFileIOSink;
+    IOSink? outputFileIOSink;
     if (CorePluginManager().instance.isToLogStdout) {
       outputFileIOSink = File(p.join(
         global.applicationSupportDirectory.path,
@@ -922,11 +922,11 @@ class VPNManagerExec extends VPNManager {
       )).openWrite();
 
       processCore.stdout.transform(SystemEncoding().decoder).listen((data) {
-        outputFileIOSink.write(data);
+        outputFileIOSink?.write(data);
       });
 
       processCore.stderr.transform(SystemEncoding().decoder).listen((data) {
-        outputFileIOSink.write(data);
+        outputFileIOSink?.write(data);
       });
     }
 
@@ -938,7 +938,7 @@ class VPNManagerExec extends VPNManager {
       pidCore = null;
       setIsCoreActive(false);
       if (CorePluginManager().instance.isToLogStdout) {
-        outputFileIOSink.close();
+        outputFileIOSink?.close();
       }
     });
 
