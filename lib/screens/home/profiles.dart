@@ -225,12 +225,12 @@ class _ProfileListState extends State<ProfileList> {
     switch (action) {
       case ProfileGroupAction.delete:
         await db.transaction(() async {
-          (db.delete(db.profile)
+          await (db.delete(db.profile)
                 ..where((e) => e.profileGroupId.equals(profileGroupId)))
               .go();
           // do not delete the default local group
           if (profileGroupId != 1) {
-            (db.delete(db.profileGroup)
+            await (db.delete(db.profileGroup)
                   ..where((e) => e.id.equals(profileGroupId)))
                 .go();
           }

@@ -16,7 +16,7 @@ import '../with_context.dart';
 Future<bool> updateProfileGroup({
   ProfileGroupData? oldProfileGroup,
   String? name,
-  ProfileGroupType? profileGroupType, 
+  ProfileGroupType? profileGroupType,
   String? url,
   int? autoUpdateInterval,
 }) async {
@@ -29,7 +29,7 @@ Future<bool> updateProfileGroup({
 
   final coreTypeDataList = await (db.select(db.coreType).get());
   Map<String, int> coreType2Id = {};
-  for (var coreTypeData in coreTypeDataList){
+  for (var coreTypeData in coreTypeDataList) {
     coreType2Id[coreTypeData.name] = coreTypeData.id;
   }
 
@@ -37,17 +37,17 @@ Future<bool> updateProfileGroup({
     name ??= oldProfileGroup.name;
     profileGroupType ?? oldProfileGroup.type;
 
-      profileGroupType = oldProfileGroup.type;
-      profileGroupId = oldProfileGroup.id;
-      switch (profileGroupType) {
-        case ProfileGroupType.remote:
-          final profileGroupRemote = await (db.select(db.profileGroupRemote)
-                ..where((p) => p.profileGroupId.equals(profileGroupId!)))
-              .getSingle();
-              url ??= profileGroupRemote.url;
-              autoUpdateInterval ??= profileGroupRemote.autoUpdateInterval;
-        case ProfileGroupType.local:
-      }
+    profileGroupType = oldProfileGroup.type;
+    profileGroupId = oldProfileGroup.id;
+    switch (profileGroupType) {
+      case ProfileGroupType.remote:
+        final profileGroupRemote = await (db.select(db.profileGroupRemote)
+              ..where((p) => p.profileGroupId.equals(profileGroupId!)))
+            .getSingle();
+        url ??= profileGroupRemote.url;
+        autoUpdateInterval ??= profileGroupRemote.autoUpdateInterval;
+      case ProfileGroupType.local:
+    }
   }
 
   if (profileGroupType == ProfileGroupType.remote) {
@@ -94,7 +94,8 @@ Future<bool> updateProfileGroup({
           // update
           if (oldNameSet.contains(profile.name)) {
             await (db.update(db.profile)
-                  ..where((e) => e.name.equals(profile.name)))
+                  ..where((e) => (e.profileGroupId.equals(profileGroupId) &
+                      e.name.equals(profile.name))))
                 .write(ProfileCompanion(
               name: drift.Value(profile.name),
               coreCfg: drift.Value(jsonEncode(profile.coreConfig)),
