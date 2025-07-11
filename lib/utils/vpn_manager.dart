@@ -13,6 +13,7 @@ import '../../extensions/localization.dart';
 import '../models/core.dart';
 import '../screens/home/profiles.dart';
 import '../screens/home/settings/cores.dart';
+import '../screens/profile.dart';
 
 import 'asset_remote/github.dart';
 import 'core/base/plugin.dart';
@@ -57,8 +58,8 @@ abstract class VPNManager with ChangeNotifier {
     )).writeAsString("");
 
     if (!RuntimePlatform.isWeb) await installPendingAssetRemote();
-    await initCore();
-    return true;
+    final ok = await initCore();
+    return ok;
   }
 
   Future<void> _startSystemProxy() async {
@@ -499,7 +500,7 @@ abstract class VPNManager with ChangeNotifier {
   late String coreCfgRaw;
   late String coreCfgFmt;
 
-  Future<void> initCore() async {
+  Future<bool> initCore() async {
     logger.d("starting: initCore");
     // get selectedProfile
     _selectedProfileId = prefs.getInt('app.selectedProfileId');
@@ -511,7 +512,7 @@ abstract class VPNManager with ChangeNotifier {
         );
         showSnackBarNow(context, Text(context.loc.please_select_a_profile));
       });
-      return;
+      return false;
     }
     _selectedProfile = await (db.select(db.profile)
           ..where((p) => p.id.equals(_selectedProfileId!)))
@@ -524,13 +525,29 @@ abstract class VPNManager with ChangeNotifier {
         );
         showSnackBarNow(context, Text(context.loc.please_select_a_profile));
       });
-      return;
+      return false;
     }
 
     // check update
     updateProfileWithGroupRemote(_selectedProfile!);
 
     coreTypeId = _selectedProfile!.coreTypeId;
+
+    /// check core type exists
+    final coreTypeData = await (db.select(db.coreType)
+          ..where((coreType) => coreType.id.equals(coreTypeId)))
+        .getSingleOrNull();
+    if (coreTypeData == null) {
+      withContext((context) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ProfileScreen(profile: _selectedProfile)),
+        );
+        showSnackBarNow(context, Text("Inbalid core type"));
+      });
+    }
+    coreTypeName = coreTypeData!.name;
 
     // check core path
     final core = await (db.select(db.coreTypeSelected).join([
@@ -546,15 +563,17 @@ abstract class VPNManager with ChangeNotifier {
       withContext((context) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const ProfileList()),
+          MaterialPageRoute(builder: (context) => const CoresScreen()),
         );
-        showSnackBarNow(context, Text(context.loc.please_select_a_profile));
+        showSnackBarNow(
+          context,
+          Text(context.loc.please_select_a_core_type_name_core(coreTypeName)),
+        );
       });
-      return;
+      return false;
     }
 
     // gen config.json
-    coreTypeName = core.read(db.coreType.name)!;
     coreCfgRaw = _selectedProfile!.coreCfg;
     coreCfgFmt = _selectedProfile!.coreCfgFmt;
     CorePluginManager().switchTo(coreTypeName);
@@ -587,7 +606,7 @@ abstract class VPNManager with ChangeNotifier {
           showSnackBarNow(context,
               Text(context.loc.please_specify_v2ray_core_executable_path));
         });
-        return;
+        return false;
       } else {
         corePath = File(corePath!).resolveSymbolicLinksSync();
         prefs.setString('cache.core.path', corePath!);
@@ -627,6 +646,7 @@ abstract class VPNManager with ChangeNotifier {
     await prefs.setString('cache.core.envs', jsonEncode(_coreEnvs));
 
     logger.d("finished: initCore");
+    return true;
   }
 
   File getTunSingBoxUserConfigFile() {
@@ -878,7 +898,8 @@ class VPNManagerExec extends VPNManager {
   @override
   _startCore() async {
     logger.d("starting: _startCore");
-    await prepareCore();
+    final ok = await prepareCore();
+    if (!ok) return false;
     logger.d("corePath: $corePath");
     logger.d("coreArgList: $_coreArgList");
     logger.d("coreWorkingDir: $_coreWorkingDir");
@@ -1124,7 +1145,8 @@ class VPNManagerMC extends VPNManager {
 
   @override
   _startAll() async {
-    await prepareCore();
+    final ok = await prepareCore();
+    if (!ok) return false;
 
     if (prefs.getBool("tun")! && !prefs.getBool("tun.useEmbedded")!) {
       await initTunExec();
@@ -1189,7 +1211,8 @@ class VPNManagerMC extends VPNManager {
 
   @override
   _startCore() async {
-    await prepareCore();
+    final ok = await prepareCore();
+    if (!ok) return false;
 
     final res = await platform.invokeMethod('vpn.startCore') as bool;
     // if (res == true) {

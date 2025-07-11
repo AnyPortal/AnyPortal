@@ -261,5 +261,14 @@
   "working_dir": "Working dir",
   "works_fine_on_windows_will_fail_on_other_systems_with_short_lived_packets_like_dns_": "Works fine on Windows, will fail on other systems with short-lived packets (like DNS)",
   "you_may_want_to_check_settings_profile_override_inject_http_inbound": "You may want to check `Settings` -> `Profile override` -> `Inject http inbound`",
-  "you_may_want_to_check_settings_profile_override_inject_socks_inbound": "You may want to check `Settings` -> `Profile override` -> `Inject socks inbound`"
+  "you_may_want_to_check_settings_profile_override_inject_socks_inbound": "You may want to check `Settings` -> `Profile override` -> `Inject socks inbound`",
+  "please_select_a_core_type_name_core": "Please select a {coreTypeName} core",
+  "@please_select_a_core_type_name_core": {
+    "placeholders": {
+      "coreTypeName": {
+        "example": "v2ray",
+        "type": "String"
+      }
+    }
+  }
 }
