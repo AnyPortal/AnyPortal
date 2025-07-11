@@ -99,13 +99,13 @@ See planning [here](https://github.com/users/anyportal/projects/1/views/1).
 
 ## Supported cores
 
-|            | config injection | dashboard info |
-| ---------- | ---------------- | -------------- |
-| v2ray/xray | 🟢                | 🟢              |
-| sing-box   | 🟢                | 🟢²             |
-| clash      | 🟢                | 🟢              |
-| mihomo     | 🟢                | 🟢              |
-| ...¹       | ...              |                |
+|              | config injection | dashboard info |
+| ------------ | ---------------- | -------------- |
+| v2ray/xray   | 🟢                | 🟢              |
+| sing-box     | 🟢                | 🟢²             |
+| clash/mihomo | 🟢                | 🟢              |
+| hysteria2    | 🟢                | ⚫              |
+| ...¹         | ...              |                |
 
 1. In theory one can run any cores, however it won't be a good experience without config injection and dashboard info. PR welcomed for additional core support. See `lib/utils/core` for example.
 2. Using clash api, since v2ray-api is not enabled in official release.
