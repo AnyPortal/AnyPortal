@@ -20,7 +20,7 @@ import '../base/config_injector.dart';
 class ConfigInjectorV2Ray extends ConfigInjectorBase {
   @override
   Future<String> getInjectedConfig(String cfgStr, String coreCfgFmt) async {
-    Map<String, dynamic> cfg = jsonDecode(cfgStr) as Map<String, dynamic>;
+    final cfg = jsonDecode(cfgStr) as Map<String, dynamic>;
 
     if (!cfg.containsKey("outbounds")) {
       cfg["outbounds"] = [];
@@ -175,6 +175,7 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
       if (injectSendThrough) {
         switch (sendThroughBindingStratagy) {
           case SendThroughBindingStratagy.internet:
+            // TODO: binds to interface
             final effectiveNetInterface =
                 await ConnectivityManager().getEffectiveNetInterface();
             final internetIp = effectiveNetInterface?.ip.ipv4.first ??
@@ -185,6 +186,7 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
           case SendThroughBindingStratagy.ip:
             sendThrough = prefs.getString('inject.sendThrough.bindingIp')!;
           case SendThroughBindingStratagy.interface:
+            // TODO: actually binds to interface instead if using ip
             final bindingInterface =
                 prefs.getString('inject.sendThrough.bindingInterface')!;
             final ip = await getIPv4OfInterfaceName(bindingInterface);
@@ -208,7 +210,52 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
       }
     }
 
-    /// still not working
+    /// streamSettings.sockopt.bindToDevice (v2ray) settings not working under windows despite claiming to work
+    /// streamSettings.sockopt.interface (xray) settings not working under windows
+    // if (injectSendThrough) {
+    //   String? sendThrough;
+    //   String? interfaceName;
+    //   if (injectSendThrough) {
+    //     switch (sendThroughBindingStratagy) {
+    //       case SendThroughBindingStratagy.internet:
+    //         final effectiveNetInterface =
+    //             await ConnectivityManager().getEffectiveNetInterface();
+    //         interfaceName = effectiveNetInterface?.name;
+    //       case SendThroughBindingStratagy.ip:
+    //         sendThrough = prefs.getString('inject.sendThrough.bindingIp')!;
+    //       case SendThroughBindingStratagy.interface:
+    //         interfaceName =
+    //             prefs.getString('inject.sendThrough.bindingInterface')!;
+    //     }
+    //   }
+    //   if (!cfg.containsKey("outbounds")) {
+    //     cfg["outbounds"] = <Map<String, dynamic>>[];
+    //   }
+    //   final outbounds = (cfg["outbounds"] as List).cast<Map<String, dynamic>>();
+    //   for (var (i, outbound) in outbounds.indexed) {
+    //     if (sendThrough != null) {
+    //       outbound["sendThrough"] = sendThrough;
+    //     }
+    //     if (interfaceName != null) {
+    //       if (!outbound.containsKey("streamSettings")) {
+    //         Map<String, dynamic> newOutbound = {...outbound};
+    //         outbounds[i] = newOutbound;
+    //         outbound = newOutbound;
+    //         newOutbound["streamSettings"] = {};
+    //       }
+    //       final streamSettings =
+    //           (outbound["streamSettings"] as Map).cast<String, dynamic>();
+    //       if (!streamSettings.containsKey("sockopt")) {
+    //         (streamSettings as Map).cast<String, dynamic>()["sockopt"] = {};
+    //       }
+    //       final sockopt =
+    //           (streamSettings["sockopt"] as Map).cast<String, dynamic>();
+    //       sockopt["interface"] = interfaceName;
+    //     }
+    //   }
+    // }
+
+    /// tun settings (v2ray) not working
     // if (!cfg.containsKey("services")) {
     //   cfg["services"] = {};
     // }
