@@ -2,7 +2,7 @@
 
 <img src="docs/image/windows.gif" width="624"/> <img src="docs/image/android.gif" height="351"/>
 
-- v2ray, xray, sing-box... GUI for Windows, macOS, Linux, Android, (iOS currently blocked).
+- v2ray, xray, sing-box, clash, mihomo... GUI for Windows, macOS, Linux, Android, (iOS currently blocked).
 - Typically used in combination with a core (v2ray-core, xray-core, sing-box, etc)
 - Multilingual support: العربية, Deutsch, English, Español, فارسی, Français, हिन्दी, Bahasa Indonesia, 日本語, 한국어, Português, Русский, ไทย, Türkçe, Tiếng Việt, 中文
 
