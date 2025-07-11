@@ -137,6 +137,7 @@ class PlatformNetInterfaceMacOS implements PlatformNetInterface {
       }
 
       return NetInterface(
+        chosenInterface,
         Address(iPv4AddressSet, iPv6AddressSet),
         Address(dnsIPv4AddressSet, dnsIPv6AddressSet),
       );

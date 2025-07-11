@@ -50,6 +50,8 @@ class PrefsManager {
     'inject.http': true,
     'inject.sendThrough': RuntimePlatform.isLinux || RuntimePlatform.isMacOS,
     'inject.sendThrough.bindingInterface': "eth0",
+
+    /// TODO: bind both ipv4 and ipv6
     'inject.sendThrough.bindingIp': "0.0.0.0",
     'inject.sendThrough.bindingStratagy':
         SendThroughBindingStratagy.internet.index,

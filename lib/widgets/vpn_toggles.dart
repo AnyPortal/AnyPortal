@@ -98,7 +98,9 @@ class VPNTogglesState extends State<VPNToggles> {
   @override
   Widget build(BuildContext context) {
     final double switchScale = widget.isDense ? 0.5 : 1;
-    final slectedProfileName = prefs.getString("cache.app.selectedProfileName") ?? context.loc.please_select_a_profile;
+    final slectedProfileName =
+        prefs.getString("cache.app.selectedProfileName") ??
+            context.loc.please_select_a_profile;
     return Column(
       children: [
         ListTile(

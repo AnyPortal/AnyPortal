@@ -9,14 +9,14 @@ import 'package:drift/drift.dart';
 import 'package:path/path.dart' as p;
 import 'package:tuple/tuple.dart';
 
-import 'package:anyportal/utils/core/base/plugin.dart';
-
 import '../../extensions/localization.dart';
 import '../models/core.dart';
 import '../screens/home/profiles.dart';
 import '../screens/home/settings/cores.dart';
 
 import 'asset_remote/github.dart';
+import 'core/base/plugin.dart';
+import 'core/sing_box/plugin.dart';
 import 'db.dart';
 import 'db/update_profile_with_group_remote.dart';
 import 'global.dart';
@@ -612,7 +612,7 @@ abstract class VPNManager with ChangeNotifier {
       final replacements = {
         "{config.path}": coreCfgFile.path,
       };
-      _coreArgList = rawCoreArgList;
+      _coreArgList = [...rawCoreArgList];
       for (int i = 0; i < _coreArgList.length; ++i) {
         for (var entry in replacements.entries) {
           _coreArgList[i] = _coreArgList[i].replaceAll(entry.key, entry.value);
@@ -715,25 +715,28 @@ abstract class VPNManager with ChangeNotifier {
         await tunSingBoxConfigFile
             .writeAsString(jsonEncode(tunSingBoxRawCfgMap));
 
-        // get core args
-        final replacements = {
-          "{config.path}": tunSingBoxConfigFile.path,
-        };
-
         /// get core env
         _tunSingBoxCoreEnvs =
             (jsonDecode(core.read(db.core.envs)!) as Map<String, dynamic>)
                 .map((k, v) => MapEntry(k, v as String));
         await prefs.setString(
             'cache.tun.singBox.core.envs', jsonEncode(_tunSingBoxCoreEnvs));
-        List<String> rawTunSingBoxArgList =
-            (jsonDecode(core.read(db.coreExec.args)!) as List<dynamic>)
-                .map((e) => e as String)
-                .toList();
-        if (rawTunSingBoxArgList.isEmpty) {
-          rawTunSingBoxArgList = ["run", "-c", "{config.path}"];
+
+        // get core args
+        final argsStr = core.read(db.coreExec.args)!;
+        List<String> rawTunSingBoxArgList = [];
+        if (argsStr != "") {
+          rawTunSingBoxArgList = (jsonDecode(argsStr) as List<dynamic>)
+              .map((e) => e as String)
+              .toList();
+        } else {
+          rawTunSingBoxArgList = CorePluginSingBox().defaultArgs;
         }
-        _tunSingBoxCoreArgList = rawTunSingBoxArgList;
+
+        final replacements = {
+          "{config.path}": tunSingBoxConfigFile.path,
+        };
+        _tunSingBoxCoreArgList = [...rawTunSingBoxArgList];
         for (int i = 0; i < _tunSingBoxCoreArgList.length; ++i) {
           for (var entry in replacements.entries) {
             _tunSingBoxCoreArgList[i] =

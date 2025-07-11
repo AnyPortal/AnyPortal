@@ -15,7 +15,7 @@ Future<String?> getIPAddr() async {
   }
 }
 
-Future<String?> getIPv4OfInterface(String interfaceName) async {
+Future<String?> getIPv4OfInterfaceName(String interfaceName) async {
   List<NetworkInterface> interfaces = await NetworkInterface.list();
 
   for (var interface in interfaces) {
@@ -24,6 +24,19 @@ Future<String?> getIPv4OfInterface(String interfaceName) async {
         if (address.type == InternetAddressType.IPv4) {
           return address.address;
         }
+      }
+    }
+  }
+  return null; // Return null if no matching interface is found
+}
+
+Future<String?> getInterfaceNameOfIP(String ip) async {
+  List<NetworkInterface> interfaces = await NetworkInterface.list();
+
+  for (var interface in interfaces) {
+    for (var address in interface.addresses) {
+      if (address.address == ip) {
+        return interface.name;
       }
     }
   }

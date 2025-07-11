@@ -31,14 +31,15 @@ class PlatformNetInterface {
 }
 
 class NetInterface {
+  String name;
   Address ip;
   Address dns;
 
-  NetInterface(this.ip, this.dns);
+  NetInterface(this.name, this.ip, this.dns);
 
   @override
   String toString() {
-    return 'NetInterface(ip: $ip, dns: $dns)';
+    return 'NetInterface(name: $name, ip: $ip, dns: $dns)';
   }
 }
 

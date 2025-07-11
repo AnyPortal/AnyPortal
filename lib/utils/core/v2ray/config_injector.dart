@@ -30,47 +30,15 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
 
     final injectLog = prefs.getBool('inject.log')!;
     final injectApi = prefs.getBool('inject.api')!;
-    final injectSendThrough = prefs.getBool('inject.sendThrough')!;
     final injectDnsLocal = prefs.getBool('inject.dns.local')!;
     final logLevel = LogLevel.values[prefs.getInt('inject.log.level')!];
     final serverAddress = prefs.getString('app.server.address')!;
     final apiPort = prefs.getInt('inject.api.port')!;
     final injectSocks = prefs.getBool('inject.socks')!;
     final socksPort = prefs.getInt('app.socks.port')!;
-
+    final injectSendThrough = prefs.getBool('inject.sendThrough')!;
     final sendThroughBindingStratagy = SendThroughBindingStratagy
         .values[prefs.getInt('inject.sendThrough.bindingStratagy')!];
-    String sendThrough = "0.0.0.0";
-    if (injectSendThrough) {
-      switch (sendThroughBindingStratagy) {
-        case SendThroughBindingStratagy.internet:
-          final effectiveNetInterface =
-              await ConnectivityManager().getEffectiveNetInterface();
-          final internetIp = effectiveNetInterface?.ip.ipv4.first ??
-              effectiveNetInterface?.ip.ipv6.first;
-          if (internetIp != null) {
-            sendThrough = internetIp;
-          }
-        case SendThroughBindingStratagy.ip:
-          sendThrough = prefs.getString('inject.sendThrough.bindingIp')!;
-        case SendThroughBindingStratagy.interface:
-          final bindingInterface =
-              prefs.getString('inject.sendThrough.bindingInterface')!;
-          final ip = await getIPv4OfInterface(bindingInterface);
-          if (ip == null) {
-            withContext((context) {
-              showSnackBarNow(
-                  context,
-                  Text(context.loc
-                      .ip_not_found_for_binding_interface_binding_interface(
-                          bindingInterface)));
-            });
-            throw Exception(
-                'IP not found for binding interface: $bindingInterface');
-          }
-          sendThrough = ip;
-      }
-    }
 
     if (!RuntimePlatform.isWeb && injectLog) {
       final pathLogErr = File(p.join(
@@ -203,6 +171,38 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
     }
 
     if (injectSendThrough) {
+      String sendThrough = "0.0.0.0";
+      if (injectSendThrough) {
+        switch (sendThroughBindingStratagy) {
+          case SendThroughBindingStratagy.internet:
+            final effectiveNetInterface =
+                await ConnectivityManager().getEffectiveNetInterface();
+            final internetIp = effectiveNetInterface?.ip.ipv4.first ??
+                effectiveNetInterface?.ip.ipv6.first;
+            if (internetIp != null) {
+              sendThrough = internetIp;
+            }
+          case SendThroughBindingStratagy.ip:
+            sendThrough = prefs.getString('inject.sendThrough.bindingIp')!;
+          case SendThroughBindingStratagy.interface:
+            final bindingInterface =
+                prefs.getString('inject.sendThrough.bindingInterface')!;
+            final ip = await getIPv4OfInterfaceName(bindingInterface);
+            if (ip == null) {
+              withContext((context) {
+                showSnackBarNow(
+                    context,
+                    Text(context.loc
+                        .ip_not_found_for_binding_interface_binding_interface(
+                            bindingInterface)));
+              });
+              throw Exception(
+                  'IP not found for binding interface: $bindingInterface');
+            }
+            sendThrough = ip;
+        }
+      }
+
       for (var outbound in cfg["outbounds"]) {
         outbound["sendThrough"] = sendThrough;
       }

@@ -5,7 +5,11 @@ import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 import 'package:yaml_writer/yaml_writer.dart';
 
+import 'package:anyportal/utils/get_local_ip.dart';
+
 import '../../../models/log_level.dart';
+import '../../../models/send_through_binding_stratagy.dart';
+import '../../connectivity_manager.dart';
 import '../../global.dart';
 import '../../prefs.dart';
 import '../../yaml_map_converter.dart';
@@ -32,6 +36,9 @@ class ConfigInjectorClash extends ConfigInjectorBase {
     final apiPort = prefs.getInt('inject.api.port')!;
     final injectSocks = prefs.getBool('inject.socks')!;
     final socksPort = prefs.getInt('app.socks.port')!;
+    final injectSendThrough = prefs.getBool('inject.sendThrough')!;
+    final sendThroughBindingStratagy = SendThroughBindingStratagy
+        .values[prefs.getInt('inject.sendThrough.bindingStratagy')!];
 
     if (injectLog) {
       final pathLog = File(p.join(
@@ -50,6 +57,30 @@ class ConfigInjectorClash extends ConfigInjectorBase {
 
     if (injectSocks) {
       cfg["mixed-port"] = socksPort;
+    }
+
+    if (!cfg.containsKey("proxies")) {
+      cfg["proxies"] = [];
+    }
+    if (injectSendThrough) {
+      String? interfaceName;
+      if (injectSendThrough) {
+        switch (sendThroughBindingStratagy) {
+          case SendThroughBindingStratagy.internet:
+            final effectiveNetInterface =
+                await ConnectivityManager().getEffectiveNetInterface();
+            interfaceName = effectiveNetInterface?.name;
+          case SendThroughBindingStratagy.ip:
+            final ip = prefs.getString('inject.sendThrough.bindingIp')!;
+            interfaceName = await getInterfaceNameOfIP(ip);
+          case SendThroughBindingStratagy.interface:
+            interfaceName =
+                prefs.getString('inject.sendThrough.bindingInterface')!;
+        }
+      }
+      for (var outbound in cfg["proxies"]) {
+        outbound["interface-name"] = interfaceName;
+      }
     }
 
     switch (coreCfgFmt) {

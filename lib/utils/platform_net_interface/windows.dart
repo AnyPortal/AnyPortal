@@ -24,9 +24,6 @@ class PlatformNetInterfaceWindows implements PlatformNetInterface {
     final defaultNetRouteList = await defaultNetRouteListFuture;
     Map<int, Map<String, dynamic>> defaultNetRouteMap =
         getMapOfInterfaceIndex(defaultNetRouteList);
-    // final netIPInterfaceList = await netIPInterfaceListFuture;
-    // Map<int, Map<String, dynamic>> netIPInterfaceMap =
-    //     getMapOfInterfaceIndex(netIPInterfaceList);
 
     /// InterfaceIndex => EffectiveMetric = RouteMetric + InterfaceMetric
     Map<int, int> effectiveMetrics = {};
@@ -88,6 +85,11 @@ class PlatformNetInterfaceWindows implements PlatformNetInterface {
         getListMapOfInterfaceIndex(dnsClientServerAddressList);
     final effectiveDnsClientServerAddressList =
         dnsClientServerAddressListMap[chosenInterfaceIndex]!;
+    // final netIPInterfaceList = await netIPInterfaceListFuture;
+    // Map<int, Map<String, dynamic>> netIPInterfaceMap =
+    //     getMapOfInterfaceIndex(netIPInterfaceList);
+    final chosenInterfaceAlias =
+        defaultNetRouteMap[chosenInterfaceIndex]!["InterfaceAlias"] as String;
     final Set<String> dnsIPv4AddressSet = {};
     final Set<String> dnsIPv6AddressSet = {};
     for (var e in effectiveDnsClientServerAddressList) {
@@ -99,6 +101,7 @@ class PlatformNetInterfaceWindows implements PlatformNetInterface {
       }
     }
     return NetInterface(
+      chosenInterfaceAlias,
       Address(iPv4AddressSet, iPv6AddressSet),
       Address(dnsIPv4AddressSet, dnsIPv6AddressSet),
     );
