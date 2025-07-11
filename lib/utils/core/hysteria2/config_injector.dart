@@ -7,6 +7,9 @@ import 'package:anyportal/utils/core/base/config_injector.dart';
 import 'package:anyportal/utils/core/base/plugin.dart';
 
 import '../../../models/log_level.dart';
+import '../../../models/send_through_binding_stratagy.dart';
+import '../../connectivity_manager.dart';
+import '../../get_local_ip.dart';
 import '../../prefs.dart';
 import '../../yaml_map_converter.dart';
 
@@ -26,12 +29,14 @@ class ConfigInjectorHysteria2 extends ConfigInjectorBase {
 
     final injectLog = prefs.getBool('inject.log')!;
     final injectApi = prefs.getBool('inject.api')!;
-    // final injectSendThrough = prefs.getBool('inject.sendThrough')!;
     final logLevel = LogLevel.values[prefs.getInt('inject.log.level')!];
     final serverAddress = prefs.getString('app.server.address')!;
     final apiPort = prefs.getInt('inject.api.port')!;
     final injectSocks = prefs.getBool('inject.socks')!;
     final socksPort = prefs.getInt('app.socks.port')!;
+    final injectSendThrough = prefs.getBool('inject.sendThrough')!;
+    final sendThroughBindingStratagy = SendThroughBindingStratagy
+        .values[prefs.getInt('inject.sendThrough.bindingStratagy')!];
 
     if (injectLog) {
       String logLevelStr = "";
@@ -59,6 +64,41 @@ class ConfigInjectorHysteria2 extends ConfigInjectorBase {
         "listen": "$serverAddress:$socksPort",
         "disableUDP": false
       };
+    }
+
+    if (!cfg.containsKey("quic")) {
+      cfg["quic"] = {};
+    }
+    final quic = cfg["quic"];
+    if (!quic.containsKey("sockopts")) {
+      quic["sockopts"] = {};
+    }
+    final sockopts = quic["sockopts"];
+    if (!cfg.containsKey("outbounds")) {
+      cfg["outbounds"] = {};
+    }
+    final outbounds = cfg["outbounds"];
+
+    if (injectSendThrough) {
+      String? interfaceName;
+      switch (sendThroughBindingStratagy) {
+        case SendThroughBindingStratagy.internet:
+          final effectiveNetInterface =
+              await ConnectivityManager().getEffectiveNetInterface();
+          interfaceName = effectiveNetInterface?.name;
+        case SendThroughBindingStratagy.ip:
+          final ip = prefs.getString('inject.sendThrough.bindingIp')!;
+          interfaceName = await getInterfaceNameOfIP(ip);
+        case SendThroughBindingStratagy.interface:
+          interfaceName =
+              prefs.getString('inject.sendThrough.bindingInterface')!;
+      }
+      sockopts["bindInterface"] = interfaceName;
+      for (final outbound in outbounds) {
+        if (outbound["type"] == "direct") {
+          outbound["bindDevice"] = interfaceName;
+        }
+      }
     }
 
     switch (coreCfgFmt) {

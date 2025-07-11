@@ -104,7 +104,7 @@ See planning [here](https://github.com/users/anyportal/projects/1/views/1).
 | v2ray/xray   | 🟢                | 🟢              |
 | sing-box     | 🟢                | 🟢²             |
 | clash/mihomo | 🟢                | 🟢              |
-| hysteria2    | 🟢                | ⚫              |
+| hysteria2    | 🔵                | ⚫              |
 | ...¹         | ...              |                |
 
 1. In theory one can run any cores, however it won't be a good experience without config injection and dashboard info. PR welcomed for additional core support. See `lib/utils/core` for example.
@@ -128,7 +128,7 @@ See planning [here](https://github.com/users/anyportal/projects/1/views/1).
   - you can run custom cores (any version of v2ray, xray) with apk compiled with api target 28
   - play store always requires recent api targets, way over 28 now, so you can only use an embedded core with playstore apk
 - why do I need tun via root or system proxy on Android?
-  - tun sing-box is actually faster than hev-socks5-tunnel on web page opening, probably due to udp session reuse
+  - tun sing-box is actually faster than hev-socks5-tunnel on web page opening
   - there are apps actively detecting if you are using VPN
 
 ## License
