@@ -175,6 +175,15 @@
   "per_app_proxy_mode": "Uygulamaya özel proxy modu",
   "performance": "Performans",
   "permission_required": "İzin Gereklidir",
+  "please_select_a_core_type_name_core": "Lütfen bir {coreTypeName} çekirdeğini seçin.",
+  "@please_select_a_core_type_name_core": {
+    "placeholders": {
+      "coreTypeName": {
+        "example": "v2ray",
+        "type": "String"
+      }
+    }
+  },
   "please_select_a_profile": "Lütfen bir profil seçin",
   "please_specify_v2ray_core_executable_path": "Lütfen v2ray çekirdek yürütülebilir dosya yolunu belirtin",
   "port": "Bağlantı noktası",

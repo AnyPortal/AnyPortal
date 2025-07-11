@@ -175,6 +175,15 @@
   "per_app_proxy_mode": "Режим прокси для каждого приложения",
   "performance": "Производительность",
   "permission_required": "Требуется разрешение",
+  "please_select_a_core_type_name_core": "Пожалуйста, выберите {coreTypeName} ядро",
+  "@please_select_a_core_type_name_core": {
+    "placeholders": {
+      "coreTypeName": {
+        "example": "v2ray",
+        "type": "String"
+      }
+    }
+  },
   "please_select_a_profile": "Пожалуйста, выберите профиль",
   "please_specify_v2ray_core_executable_path": "Пожалуйста, укажите путь к исполняемому файлу v2ray-core",
   "port": "Порт",

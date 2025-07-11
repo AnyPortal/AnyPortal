@@ -175,6 +175,15 @@
   "per_app_proxy_mode": "앱별 프록시 모드",
   "performance": "성능",
   "permission_required": "권한이 필요합니다",
+  "please_select_a_core_type_name_core": "{coreTypeName}のコアを選択してください",
+  "@please_select_a_core_type_name_core": {
+    "placeholders": {
+      "coreTypeName": {
+        "example": "v2ray",
+        "type": "String"
+      }
+    }
+  },
   "please_select_a_profile": "프로필을 선택해 주세요",
   "please_specify_v2ray_core_executable_path": "v2ray-core 실행 파일 경로를 지정해 주세요",
   "port": "포트",

@@ -174,6 +174,15 @@
   "per_app_proxy_mode": "Per-app proxy mode",
   "performance": "Performance",
   "permission_required": "Permission Required",
+  "please_select_a_core_type_name_core": "Please select a {coreTypeName} core",
+  "@please_select_a_core_type_name_core": {
+    "placeholders": {
+      "coreTypeName": {
+        "example": "v2ray",
+        "type": "String"
+      }
+    }
+  },
   "please_select_a_profile": "Please select a profile",
   "please_specify_v2ray_core_executable_path": "Please specify v2ray-core executable path",
   "port": "Port",
@@ -261,14 +270,5 @@
   "working_dir": "Working dir",
   "works_fine_on_windows_will_fail_on_other_systems_with_short_lived_packets_like_dns_": "Works fine on Windows, will fail on other systems with short-lived packets (like DNS)",
   "you_may_want_to_check_settings_profile_override_inject_http_inbound": "You may want to check `Settings` -> `Profile override` -> `Inject http inbound`",
-  "you_may_want_to_check_settings_profile_override_inject_socks_inbound": "You may want to check `Settings` -> `Profile override` -> `Inject socks inbound`",
-  "please_select_a_core_type_name_core": "Please select a {coreTypeName} core",
-  "@please_select_a_core_type_name_core": {
-    "placeholders": {
-      "coreTypeName": {
-        "example": "v2ray",
-        "type": "String"
-      }
-    }
-  }
+  "you_may_want_to_check_settings_profile_override_inject_socks_inbound": "You may want to check `Settings` -> `Profile override` -> `Inject socks inbound`"
 }

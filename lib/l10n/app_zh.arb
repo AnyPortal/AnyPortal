@@ -175,6 +175,15 @@
   "per_app_proxy_mode": "应用级代理模式",
   "performance": "性能",
   "permission_required": "需要权限",
+  "please_select_a_core_type_name_core": "请选择一种{coreTypeName}核心",
+  "@please_select_a_core_type_name_core": {
+    "placeholders": {
+      "coreTypeName": {
+        "example": "v2ray",
+        "type": "String"
+      }
+    }
+  },
   "please_select_a_profile": "请选择一个配置",
   "please_specify_v2ray_core_executable_path": "请指定v2ray核心可执行文件路径",
   "port": "端口",

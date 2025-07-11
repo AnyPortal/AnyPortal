@@ -175,6 +175,15 @@
   "per_app_proxy_mode": "Chế độ proxy theo ứng dụng",
   "performance": "Hiệu suất",
   "permission_required": "Yêu cầu quyền",
+  "please_select_a_core_type_name_core": "Vui lòng chọn một {coreTypeName} lõi",
+  "@please_select_a_core_type_name_core": {
+    "placeholders": {
+      "coreTypeName": {
+        "example": "v2ray",
+        "type": "String"
+      }
+    }
+  },
   "please_select_a_profile": "Vui lòng chọn một hồ sơ",
   "please_specify_v2ray_core_executable_path": "Vui lòng chỉ định đường dẫn thực thi lõi v2ray",
   "port": "Cổng",

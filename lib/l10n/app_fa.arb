@@ -175,6 +175,15 @@
   "per_app_proxy_mode": "حالت پروکسی برای هر برنامه",
   "performance": "عملکرد",
   "permission_required": "اجازه مورد نیاز است",
+  "please_select_a_core_type_name_core": "Por favor, seleccione un {coreTypeName}.",
+  "@please_select_a_core_type_name_core": {
+    "placeholders": {
+      "coreTypeName": {
+        "example": "v2ray",
+        "type": "String"
+      }
+    }
+  },
   "please_select_a_profile": "لطفاً یک پروفایل انتخاب کنید",
   "please_specify_v2ray_core_executable_path": "لطفاً مسیر اجرایی v2ray-core را مشخص کنید",
   "port": "پورت",

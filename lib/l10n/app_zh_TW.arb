@@ -175,6 +175,15 @@
   "per_app_proxy_mode": null,
   "performance": null,
   "permission_required": null,
+  "please_select_a_core_type_name_core": null,
+  "@please_select_a_core_type_name_core": {
+    "placeholders": {
+      "coreTypeName": {
+        "example": "v2ray",
+        "type": "String"
+      }
+    }
+  },
   "please_select_a_profile": null,
   "please_specify_v2ray_core_executable_path": null,
   "port": null,

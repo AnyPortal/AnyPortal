@@ -175,6 +175,15 @@
   "per_app_proxy_mode": "アプリごとのプロキシモード",
   "performance": "パフォーマンス",
   "permission_required": "権限が必要です",
+  "please_select_a_core_type_name_core": "{coreTypeName}のコアを選択してください",
+  "@please_select_a_core_type_name_core": {
+    "placeholders": {
+      "coreTypeName": {
+        "example": "v2ray",
+        "type": "String"
+      }
+    }
+  },
   "please_select_a_profile": "プロファイルを選択してください",
   "please_specify_v2ray_core_executable_path": "v2ray-coreの実行可能パスを指定してください",
   "port": "ポート",

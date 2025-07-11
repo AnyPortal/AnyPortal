@@ -175,6 +175,15 @@
   "per_app_proxy_mode": "โหมดพร็อกซีรายแอป",
   "performance": "ประสิทธิภาพ",
   "permission_required": "ต้องได้รับอนุญาต",
+  "please_select_a_core_type_name_core": "กรุณาเลือกคอร์ประเภท {coreTypeName}",
+  "@please_select_a_core_type_name_core": {
+    "placeholders": {
+      "coreTypeName": {
+        "example": "v2ray",
+        "type": "String"
+      }
+    }
+  },
   "please_select_a_profile": "กรุณาเลือกโปรไฟล์",
   "please_specify_v2ray_core_executable_path": "กรุณาระบุเส้นทางไฟล์ v2ray-core ที่สามารถเรียกใช้ได้",
   "port": "พอร์ต",

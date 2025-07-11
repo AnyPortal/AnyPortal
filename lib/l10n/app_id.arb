@@ -175,6 +175,15 @@
   "per_app_proxy_mode": "Mode proxy per aplikasi",
   "performance": "Performa",
   "permission_required": "Izin Diperlukan",
+  "please_select_a_core_type_name_core": "Por favor, seleccione un {coreTypeName}.",
+  "@please_select_a_core_type_name_core": {
+    "placeholders": {
+      "coreTypeName": {
+        "example": "v2ray",
+        "type": "String"
+      }
+    }
+  },
   "please_select_a_profile": "Silakan pilih profil",
   "please_specify_v2ray_core_executable_path": "Silakan tentukan jalur eksekusi v2ray-core",
   "port": "Port",

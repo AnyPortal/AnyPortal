@@ -175,6 +175,15 @@
   "per_app_proxy_mode": "Pro-App-Proxy-Modus",
   "performance": "Leistung",
   "permission_required": "Berechtigung erforderlich",
+  "please_select_a_core_type_name_core": "Bitte wählen Sie einen {coreTypeName}-Kern aus",
+  "@please_select_a_core_type_name_core": {
+    "placeholders": {
+      "coreTypeName": {
+        "example": "v2ray",
+        "type": "String"
+      }
+    }
+  },
   "please_select_a_profile": "Bitte wählen Sie ein Profil aus",
   "please_specify_v2ray_core_executable_path": "Bitte geben Sie den Pfad zur v2ray-Core-Ausführungsdatei an",
   "port": "Port",
