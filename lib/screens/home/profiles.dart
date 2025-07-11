@@ -306,17 +306,18 @@ class _ProfileListState extends State<ProfileList> {
                           prefs.setInt('app.selectedProfileId', value!);
                           prefs.setString(
                               'cache.app.selectedProfileName', profile.name);
+                          prefs.notifyListeners();
                           setState(() {
                             _selectedProfileId = value;
                           });
                           if (await vPNMan.getIsCoreActive()) {
                             if (context.mounted) {
-                              showSnackBarNow(context, Text(context.loc.reconnecting));
+                              showSnackBarNow(
+                                  context, Text(context.loc.reconnecting));
                             }
 
-                            /// tun config may rely on core config, so don't restart core only
-                            await vPNMan.stopAll();
-                            final res = await vPNMan.startAll();
+                            await vPNMan.stopCore();
+                            final res = await vPNMan.startCore();
 
                             String msg = "";
                             if (context.mounted) {
