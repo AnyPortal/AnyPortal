@@ -606,7 +606,7 @@ abstract class VPNManager with ChangeNotifier {
             .map((e) => e as String)
             .toList();
       } else {
-        rawCoreArgList = ["run", "-c", "{config.path}"];
+        rawCoreArgList = CorePluginManager().instance.defaultArgs;
       }
 
       final replacements = {

@@ -13,6 +13,7 @@ import 'data_notifier.dart';
 class CorePluginBase {
   static Map<String, CorePluginBase> implementations = {};
   String? coreTypeName;
+  List<String> defaultArgs = ["run", "-c", "{config.path}"];
   bool isToLogStdout = false;
   Map<String, String> environment = {};
   CoreDataNotifierBase dataNotifier = CoreDataNotifierBase();
