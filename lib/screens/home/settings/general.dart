@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 
 import '../../../extensions/localization.dart';
-import '../../../generated/l10n/app_localizations.dart';
 import '../../../utils/global.dart';
 import '../../../utils/locale_manager.dart';
 import '../../../utils/platform_launch_at_login.dart';
@@ -12,8 +11,9 @@ import '../../../utils/runtime_platform.dart';
 import '../../../utils/show_snack_bar_now.dart';
 import '../../../utils/theme_manager.dart';
 import '../../../utils/vpn_manager.dart';
-import '../../../widgets/popup/radio_list_selection.dart';
 import '../../../widgets/popup/text_input.dart';
+
+import 'languages.dart';
 
 class GeneralScreen extends StatefulWidget {
   const GeneralScreen({
@@ -99,23 +99,15 @@ class _GeneralScreenState extends State<GeneralScreen> {
         subtitle: Text(getLanguageName(_locale.toString())),
         enabled: !_localeFollowSystem,
         onTap: () {
-          final supportedLocales = AppLocalizations.supportedLocales.toList();
-          supportedLocales.remove(Locale('zh'));
-          showDialog(
-              context: context,
-              builder: (context) => RadioListSelectionPopup<Locale>(
-                    title: context.loc.language,
-                    items: supportedLocales,
-                    initialValue: _locale,
-                    onSaved: (value) {
-                      prefs.setString('app.locale', value.toString());
-                      localeManager.update(notify: true);
-                      setState(() {
-                        _locale = value;
-                      });
-                    },
-                    itemToString: (e) => getLanguageName(e.toString()),
-                  ));
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const LanguagesScreen()),
+          ).then((_) {
+            setState(() {
+              _locale = localeManager.locale;
+            });
+          });
+          ;
         },
       ),
       const Divider(),

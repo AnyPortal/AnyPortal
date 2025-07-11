@@ -26,23 +26,31 @@ class LocaleManager with ChangeNotifier {
     logger.d("finished: LocaleManager.init");
   }
 
+  Locale fromString(String localeString) {
+    final localeParts = localeString.split("_");
+    if (localeParts.length == 1) {
+      locale = Locale(localeParts[0]); // e.g., "zh"
+    } else if (localeParts.length == 2) {
+      locale = Locale(localeParts[0], localeParts[1]); // e.g., "zh_CN"
+    } else if (localeParts.length == 3) {
+      locale = Locale.fromSubtags(
+          languageCode: localeParts[0],
+          scriptCode: localeParts[1],
+          countryCode: localeParts[2]); // e.g., "zh_Hans_CN"
+    } else {
+      logger.w("failed to parse locale $localeString");
+      return Locale('en', 'US');
+    }
+    return locale;
+  }
+
   void update({bool notify = false}) {
     if (prefs.getBool('app.locale.followSystem')!) {
       var dispatcher = SchedulerBinding.instance.platformDispatcher;
       locale = dispatcher.locale;
     } else {
       final localeString = prefs.getString('app.locale')!;
-      final localeParts = localeString.split("_");
-      if (localeParts.length == 1) {
-        locale = Locale(localeParts[0]); // e.g., "zh"
-      } else if (localeParts.length == 2) {
-        locale =  Locale(localeParts[0], localeParts[1]); // e.g., "zh_CN"
-      } else if (localeParts.length == 3) {
-        locale = Locale.fromSubtags(languageCode: localeParts[0], scriptCode: localeParts[1], countryCode: localeParts[2]); // e.g., "zh_Hans_CN"
-      } else {
-        logger.w("failed to parse locale $localeString");
-        return;
-      }
+      locale = fromString(localeString);
     }
 
     if (notify) {
