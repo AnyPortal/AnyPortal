@@ -7,6 +7,7 @@ import 'data_notifier.dart';
 class CorePluginClash extends CorePluginBase {
   CorePluginClash() : super() {
     coreTypeName = "clash";
+    defaultArgs = ["-f", "{config.path}"];
     dataNotifier = CoreDataNotifierClash();
     configInjector = ConfigInjectorClash();
     dashboardWidgets = DashboardWidgetsClash();
