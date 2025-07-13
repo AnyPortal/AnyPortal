@@ -214,13 +214,14 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
   // }
 
   static final pendingInstallerExitFlagFile = File(p.join(
-      global.applicationSupportDirectory.path,
-      "pending_installer_exit.flag",
-    ));
+    global.applicationSupportDirectory.path,
+    "pending_installer_exit.flag",
+  ));
 
   @override
   void onWindowClose() async {
-    if (RuntimePlatform.isWindows && await pendingInstallerExitFlagFile.exists()) {
+    if (RuntimePlatform.isWindows &&
+        await pendingInstallerExitFlagFile.exists()) {
       await pendingInstallerExitFlagFile.delete();
       await vPNMan.stopAll();
       exit(0);
