@@ -6,22 +6,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 
+import 'package:path/path.dart' as p;
+
 import '../../extensions/localization.dart';
 import '../../models/deque_list.dart';
 // import '../../utils/logger.dart';
+import '../../utils/global.dart';
 import '../../utils/method_channel.dart';
+import '../../utils/prefs.dart';
 import '../../utils/runtime_platform.dart';
 import '../../widgets/log_highlighter.dart';
 
 class LogViewer extends StatefulWidget {
-  final String filePath;
-  const LogViewer({super.key, required this.filePath});
+  const LogViewer({super.key});
 
   @override
   State<LogViewer> createState() => _LogViewerState();
 }
 
 class _LogViewerState extends State<LogViewer> {
+  late File _logFile;
+
   final ScrollController _scrollController = ScrollController();
 
   // Store real measured line heights
@@ -33,7 +38,6 @@ class _LogViewerState extends State<LogViewer> {
   double _viewportHeight = 0;
 
   final _lines = DequeList<String>();
-  late File _logFile;
   int _lastFileSize = 0;
 
   double progressReadingBackward = 0;
@@ -88,16 +92,14 @@ class _LogViewerState extends State<LogViewer> {
       //   _measuredHeights
       //       .addAllLast(List.filled(lines.length, _defaultLineHeight));
       // });
-      _autoSnap();
+      // _autoSnap();
     }
     await file.close();
 
     return;
   }
 
-  Timer? _timer;
-
-  Future<void> onFileChange() async {
+  Future<void> onFileChange(String path) async {
     if (RuntimePlatform.isWeb) {
       return;
     }
@@ -131,24 +133,41 @@ class _LogViewerState extends State<LogViewer> {
     }
   }
 
-  void handleFileChange(MethodCall _) {
-    onFileChange();
+  void handleFileChange(MethodCall call) {
+    final path = call.arguments as String;
+    onFileChange(path);
   }
 
-  void _startFileMonitor() async {
+  Timer? _timer;
+  StreamSubscription? _streamSubscription;
+
+  void _startFileMonitor() {
     if (RuntimePlatform.isAndroid) {
       mCMan.methodChannel.invokeListMethod(
-          'log.core.startWatching', {"filePath": widget.filePath});
+          'log.core.startWatching', {"filePath": _logFile.absolute.path});
       mCMan.addHandler('onFileChange', handleFileChange);
     } else if (RuntimePlatform.isLinux) {
-      _logFile.watch().listen((e) {
-        onFileChange();
+      _streamSubscription = _logFile.watch().listen((e) {
+        onFileChange(_logFile.absolute.path);
       });
     } else {
       // if os does not support file monitoring, e.g. windows and mac do not monitor appending
-      _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) async {
-        onFileChange();
+      _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+        onFileChange(_logFile.absolute.path);
       });
+    }
+  }
+
+  void _stopFileMonitor() {
+    if (RuntimePlatform.isAndroid) {
+      mCMan.methodChannel.invokeListMethod(
+          'log.core.stopWatching', {"filePath": _logFile.absolute.path});
+      mCMan.removeHandler('onFileChange', handleFileChange);
+    } else if (RuntimePlatform.isLinux) {
+      _streamSubscription?.cancel();
+    } else {
+      // if os does not support file monitoring, e.g. windows and mac do not monitor appending
+      _timer?.cancel();
     }
   }
 
@@ -167,13 +186,13 @@ class _LogViewerState extends State<LogViewer> {
 
   bool shouldSnap = true;
 
-  void _autoSnap() {
+  void _autoSnap({bool force = false}) {
     double target = _getBottomTarget();
 
-    if (shouldSnap) {
+    if (force || shouldSnap) {
       SchedulerBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          if (_scrollController.offset < target) {
+          if (force || _scrollController.offset < target) {
             _scrollController.jumpTo(target);
           }
         }
@@ -181,10 +200,43 @@ class _LogViewerState extends State<LogViewer> {
     }
   }
 
+  void handleLogsAction(LogsAction action) {
+    switch (action) {
+      case LogsAction.viewCoreLog:
+        setLogFile("core");
+        break;
+      case LogsAction.viewAppLog:
+        setLogFile("app");
+        break;
+      case LogsAction.viewTun2SocksLog:
+        final name = prefs.getBool("tun.useEmbedded")!
+            ? "tun.hev_socks5_tunnel"
+            : "tun.sing_box";
+        setLogFile(name);
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(context.loc.logs)),
+      appBar: AppBar(
+        title: Stack(children: [
+          Text(context.loc.logs),
+          Align(
+              alignment: Alignment.centerRight,
+              heightFactor: 0.7,
+              child: PopupMenuButton(
+                itemBuilder: (context) => LogsAction.values
+                    .map((action) => PopupMenuItem(
+                          value: action,
+                          child: Text(action.localized(context)),
+                        ))
+                    .toList(),
+                onSelected: (value) => handleLogsAction(value),
+              ))
+        ]),
+      ),
       body: Stack(children: [
         Container(
           padding: const EdgeInsets.all(8.0),
@@ -194,10 +246,9 @@ class _LogViewerState extends State<LogViewer> {
 
               return NotificationListener<ScrollNotification>(
                 onNotification: (scrollNotification) {
-                  setState(() {
-                    shouldSnap = scrollNotification.metrics.pixels >=
-                        _getBottomTarget() - _defaultLineHeight;
-                  });
+                  shouldSnap = scrollNotification.metrics.pixels >=
+                      _getBottomTarget() - _defaultLineHeight;
+                  setState(() {});
                   return true;
                 },
                 child: SingleChildScrollView(
@@ -205,7 +256,8 @@ class _LogViewerState extends State<LogViewer> {
                   child: SizedBox(
                     height: _lines.isEmpty
                         ? 0
-                        : _lines.length * _defaultLineHeight + _viewportHeight,
+                        : (_lines.length - 1) * _defaultLineHeight +
+                            _viewportHeight,
                     child: Stack(
                       children: _buildPreciseVisibleItems(),
                     ),
@@ -278,11 +330,40 @@ class _LogViewerState extends State<LogViewer> {
     return visible;
   }
 
+  Future _setLogFile(String name) async {
+    if (!RuntimePlatform.isWeb) {
+      _logFile = File(p.join(
+        global.applicationSupportDirectory.path,
+        'log',
+        '$name.log',
+      ));
+      if (!await _logFile.exists()) {
+        await _logFile.create(recursive: true);
+      }
+      setState(() {
+        _logFile = _logFile;
+      });
+    }
+  }
+
+  Future setLogFile(String name) async {
+    await _setLogFile(name).then((_) {
+      _lines.clear();
+      _readBackward();
+    }).then((_) {
+      _autoSnap(force: true);
+      _stopFileMonitor();
+      _startFileMonitor();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    _logFile = File(widget.filePath);
-    _readBackward().then((_) {
+
+    _setLogFile("core").then((_) {
+      _readBackward();
+    }).then((_) {
       _startFileMonitor();
     });
   }
@@ -291,10 +372,7 @@ class _LogViewerState extends State<LogViewer> {
   void dispose() {
     super.dispose();
     _scrollController.dispose();
-    if (_timer != null) {
-      _timer!.cancel();
-    }
-    mCMan.removeHandler('onFileChange', handleFileChange);
+    _stopFileMonitor();
   }
 }
 
@@ -343,5 +421,24 @@ class _MeasuredLineState extends State<_MeasuredLine> {
         key: _key,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
         child: LogHighlighter(logLine: widget.text));
+  }
+}
+
+enum LogsAction {
+  viewCoreLog,
+  viewAppLog,
+  viewTun2SocksLog,
+}
+
+extension LogsActionX on LogsAction {
+  String localized(BuildContext context) {
+    switch (this) {
+      case LogsAction.viewCoreLog:
+        return context.loc.view_core_log;
+      case LogsAction.viewAppLog:
+        return context.loc.view_app_log;
+      case LogsAction.viewTun2SocksLog:
+        return context.loc.view_tun2socks_log;
+    }
   }
 }

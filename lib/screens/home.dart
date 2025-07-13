@@ -53,7 +53,6 @@ class ScreenNav {
 
 class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
   int _selectedIndex = 0;
-  String _pathLog = "";
 
   void setSelectedIndex(int i) {
     setState(() {
@@ -66,23 +65,6 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
     trayManager.addListener(this);
     windowManager.addListener(this);
     super.initState();
-
-    if (!RuntimePlatform.isWeb) {
-      final logFile = File(p.join(
-        global.applicationSupportDirectory.path,
-        'log',
-        'core.log',
-      ));
-      logFile.exists().then((logFileExists) async {
-        if (!logFileExists) {
-          await logFile.create(recursive: true);
-        }
-      });
-
-      setState(() {
-        _pathLog = logFile.absolute.path;
-      });
-    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await permMan.onHomeScreen(context);
@@ -111,7 +93,7 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
         const Icon(Icons.dashboard),
       ),
       ScreenNav(
-        LogViewer(filePath: _pathLog),
+        LogViewer(),
         context.loc.logs,
         const Icon(Icons.message),
       ),

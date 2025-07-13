@@ -270,5 +270,8 @@
   "working_dir": "Working dir",
   "works_fine_on_windows_will_fail_on_other_systems_with_short_lived_packets_like_dns_": "Works fine on Windows, will fail on other systems with short-lived packets (like DNS)",
   "you_may_want_to_check_settings_profile_override_inject_http_inbound": "You may want to check `Settings` -> `Profile override` -> `Inject http inbound`",
-  "you_may_want_to_check_settings_profile_override_inject_socks_inbound": "You may want to check `Settings` -> `Profile override` -> `Inject socks inbound`"
+  "you_may_want_to_check_settings_profile_override_inject_socks_inbound": "You may want to check `Settings` -> `Profile override` -> `Inject socks inbound`",
+  "view_core_log": "View core log",
+  "view_app_log": "View app log",
+  "view_tun2socks_log": "View Tun2socks log"
 }

@@ -37,6 +37,11 @@ class DequeList<T> {
     _buffer[(_head + index) % _buffer.length] = value;
   }
 
+  /// Clear
+  void clear() {
+    _size = 0;
+  }
+
   /// Add to the end.
   void addLast(T value) {
     _ensureCapacity(_size + 1);

@@ -107,7 +107,6 @@ public class MainActivity extends FlutterActivity {
             });
         };
 
-
         @Override
         public void onCoreStatusChange(boolean isCoreActive) {
             runOnUiThread(() -> {
@@ -145,8 +144,7 @@ public class MainActivity extends FlutterActivity {
         }
     };
 
-    ///
-    private FileObserver fileObserver;
+    Map<String, FileObserver> fileObservers = new HashMap<String, FileObserver>();
 
     private void onMethodCall(MethodCall call, MethodChannel.Result result) {
         switch (call.method) {
@@ -216,20 +214,29 @@ public class MainActivity extends FlutterActivity {
 
             case "log.core.startWatching":
                 String filePath = call.argument("filePath");
-                fileObserver = new FileObserver(new File(filePath)) {
+                FileObservers fileObserver = new FileObserver(new File(filePath)) {
                     @Override
                     public void onEvent(int event, String path) {
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
                             public void run() {
                                 if (event == FileObserver.MODIFY) {
-                                    methodChannel.invokeMethod("onFileChange", null);
+                                    methodChannel.invokeMethod("onFileChange", filePath);
                                 }
                             }
                         });
                     }
                 };
                 fileObserver.startWatching();
+                fileObservers[filePath] = fileObserver;
+                break;
+
+            case "log.core.stopWatching":
+                String filePath = call.argument("filePath");
+                if (fileObservers.containsKey(filePath)) {
+                    FileObservers fileObserver = fileObservers[filePath];
+                    fileObserver.stopWatching();
+                }
                 break;
 
             case "os.abis":
