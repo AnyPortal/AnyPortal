@@ -120,9 +120,9 @@ See planning [here](https://github.com/users/anyportal/projects/1/views/1).
   - why sing-box over v2ray/xray?
     - integrated tun makes things easier
 - remote profile has only one required field, a REST URL pointing to a v2ray config
-- for v2ray to work properly on Android and iOS, tun2socks is necessary
+- for v2ray to work properly on Android and iOS, Tun2socks is necessary
   - v2ray native tun inbound is only half finished for now
-  - tun2socks with best performance so far: hev-socks5-tunnel, followed by sing-box
+  - Tun2socks with best performance so far: hev-socks5-tunnel, followed by sing-box
   - you can use anyportal with tun disabled on Android, and use external tools to redirect traffic to a socks port, just like on desktop
 - android api 29+ does not allow running binary directly
   - you can run custom cores (any version of v2ray, xray) with apk compiled with api target 28

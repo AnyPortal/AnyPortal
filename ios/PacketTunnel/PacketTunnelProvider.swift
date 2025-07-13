@@ -73,7 +73,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider {
     
     private func getTproxyConfigFilePath() -> String {
         let appPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        return appPath.appendingPathComponent("conf/tun.hev_socks5_tunnel.gen.yaml").path
+        return appPath.appendingPathComponent("conf/tun2socks.hev_socks5_tunnel.gen.yaml").path
     }
 
     private func getTunFd() -> Int32? {

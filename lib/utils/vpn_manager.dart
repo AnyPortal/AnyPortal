@@ -654,13 +654,13 @@ abstract class VPNManager with ChangeNotifier {
       global.applicationDocumentsDirectory.path,
       'AnyPortal',
       'conf',
-      'tun.sing_box.json',
+      'tun2socks.sing_box.json',
     ));
     final tunSingBoxUserConfigFileExample = File(p.join(
       global.applicationDocumentsDirectory.path,
       'AnyPortal',
       'conf',
-      'tun.sing_box.example.json',
+      'tun2socks.sing_box.example.json',
     ));
     late File tunSingBoxUserConfigFile;
     if (tunSingBoxUserConfigFileCustomized.existsSync()) {
@@ -722,7 +722,7 @@ abstract class VPNManager with ChangeNotifier {
         final tunSingBoxConfigFile = File(p.join(
           global.applicationSupportDirectory.path,
           'conf',
-          'tun.sing_box.gen.json',
+          'tun2socks.sing_box.gen.json',
         ));
         if (!await tunSingBoxConfigFile.exists()) {
           await tunSingBoxConfigFile.create(recursive: true);
@@ -770,7 +770,7 @@ abstract class VPNManager with ChangeNotifier {
         await File(p.join(
           global.applicationSupportDirectory.path,
           'log',
-          'tun.sing_box.log',
+          'tun2socks.sing_box.log',
         )).writeAsString("");
       }
     }

@@ -77,7 +77,7 @@ class _SettingListState extends State<SettingList> {
                   );
                 }),
           ListTile(
-              title: Text("Tun"),
+              title: Text("Tun2socks"),
               subtitle: Text(context.loc.vitual_network_adaptor),
               onTap: () {
                 Navigator.push(

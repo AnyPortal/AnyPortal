@@ -80,8 +80,8 @@
   "enable_ipv6": "enable IPv6",
   "enable_system_proxy": "Enable system proxy",
   "enable_tun": "Enable Tun",
-  "enable_tun2socks_so_a_socks_proxy_works_like_a_vpn": "Enable tun2socks so a socks proxy works like a VPN",
-  "enable_tun2socks_so_a_socks_proxy_works_like_a_vpn_requires_elevation_": "Enable tun2socks so a socks proxy works like a VPN\nRequires elevation",
+  "enable_tun2socks_so_a_socks_proxy_works_like_a_vpn": "Enable Tun2socks so a socks proxy works like a VPN",
+  "enable_tun2socks_so_a_socks_proxy_works_like_a_vpn_requires_elevation_": "Enable Tun2socks so a socks proxy works like a VPN\nRequires elevation",
   "enable_tun_via_platform_api_": "Enable tun (via platform api)",
   "enable_tun_via_root_": "Enable tun (via root)",
   "envs": "Envs",
@@ -273,5 +273,7 @@
   "you_may_want_to_check_settings_profile_override_inject_socks_inbound": "You may want to check `Settings` -> `Profile override` -> `Inject socks inbound`",
   "view_core_log": "View core log",
   "view_app_log": "View app log",
-  "view_tun2socks_log": "View Tun2socks log"
+  "view_tun2socks_log": "View Tun2socks log",
+  "tun2socks_settings": "Tun2socks settings",
+  "enable_tun2socks": "Enable Tun2socks"
 }

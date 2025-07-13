@@ -41,7 +41,7 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
     final pathLog = File(p.join(
       global.applicationSupportDirectory.path,
       'log',
-      'tun.sing_box.log',
+      'tun2socks.sing_box.log',
     )).absolute.path;
     cfg["log"] = {
       "disabled": false,

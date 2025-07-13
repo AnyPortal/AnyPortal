@@ -91,8 +91,8 @@ class _TunScreenState extends State<TunScreen> {
 
   void writeTProxyConf() async {
     final folder = global.applicationSupportDirectory;
-    final file =
-        File(p.join(folder.path, 'conf', 'tun.hev_socks5_tunnel.gen.yaml'));
+    final file = File(
+        p.join(folder.path, 'conf', 'tun2socks.hev_socks5_tunnel.gen.yaml'));
     final usernameLine =
         _socksUserName == "" ? "" : "username: $_socksUserName";
     final passwordLine =
@@ -105,7 +105,7 @@ class _TunScreenState extends State<TunScreen> {
     }
 
     final logFile =
-        File(p.join(folder.path, 'log', 'tun.hev_socks5_tunnel.log'));
+        File(p.join(folder.path, 'log', 'tun2socks.hev_socks5_tunnel.log'));
 
     await file.writeAsString("""tunnel:
   mtu: 8500
@@ -394,7 +394,7 @@ misc:
 
     final fields = [
       ListTile(
-        title: Text(context.loc.enable_tun),
+        title: Text(context.loc.enable_tun2socks),
         subtitle: Text(
             context.loc.enable_tun2socks_so_a_socks_proxy_works_like_a_vpn),
         trailing: Switch(
@@ -490,7 +490,7 @@ misc:
       child: Scaffold(
         appBar: AppBar(
           // Use the selected tab's label for the AppBar title
-          title: Text(context.loc.tun_settings),
+          title: Text(context.loc.tun2socks_settings),
         ),
         body: ListView.builder(
           itemCount: fields.length,
@@ -505,7 +505,7 @@ misc:
 Future<void> tunHevSocks5TunnelConfInit() async {
   final folder = global.applicationSupportDirectory;
   final file =
-      File(p.join(folder.path, 'conf', 'tun.hev_socks5_tunnel.gen.yaml'));
+      File(p.join(folder.path, 'conf', 'tun2socks.hev_socks5_tunnel.gen.yaml'));
   if (!file.existsSync()) {
     await file.create(recursive: true);
     _TunScreenState().writeTProxyConf();

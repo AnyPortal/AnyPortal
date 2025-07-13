@@ -157,7 +157,7 @@ class VPNTogglesState extends State<VPNToggles> {
               )),
         ListTile(
           dense: widget.isDense,
-          title: Text("Tun"),
+          title: Text("Tun2socks"),
           trailing: Transform.scale(
               scale: switchScale,
               origin: const Offset(32, 0),

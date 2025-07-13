@@ -210,8 +210,8 @@ class _LogViewerState extends State<LogViewer> {
         break;
       case LogsAction.viewTun2SocksLog:
         final name = prefs.getBool("tun.useEmbedded")!
-            ? "tun.hev_socks5_tunnel"
-            : "tun.sing_box";
+            ? "tun2socks.hev_socks5_tunnel"
+            : "tun2socks.sing_box";
         setLogFile(name);
         break;
     }
