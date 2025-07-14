@@ -26,6 +26,8 @@ import io.flutter.plugin.common.MethodChannel;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends FlutterActivity {
     private static final String CHANNEL = "com.github.anyportal.anyportal";
@@ -68,16 +70,20 @@ public class MainActivity extends FlutterActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (fileObserver != null) {
-            fileObserver.startWatching();
+        for (FileObserver fileObserver : fileObservers.values()) {
+            if (fileObserver != null) {
+                fileObserver.startWatching();
+            }
         }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (fileObserver != null) {
-            fileObserver.stopWatching();
+        for (FileObserver fileObserver : fileObservers.values()) {
+            if (fileObserver != null) {
+                fileObserver.stopWatching();
+            }
         }
     }
 
@@ -212,9 +218,9 @@ public class MainActivity extends FlutterActivity {
                 result.success(tProxyService.isSystemProxyActive);
                 break;
 
-            case "log.core.startWatching":
+            case "log.core.startWatching": {
                 String filePath = call.argument("filePath");
-                FileObservers fileObserver = new FileObserver(new File(filePath)) {
+                FileObserver fileObserver = new FileObserver(new File(filePath)) {
                     @Override
                     public void onEvent(int event, String path) {
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -228,16 +234,17 @@ public class MainActivity extends FlutterActivity {
                     }
                 };
                 fileObserver.startWatching();
-                fileObservers[filePath] = fileObserver;
+                fileObservers.put(filePath, fileObserver);
                 break;
+            }
 
-            case "log.core.stopWatching":
+            case "log.core.stopWatching": {
                 String filePath = call.argument("filePath");
                 if (fileObservers.containsKey(filePath)) {
-                    FileObservers fileObserver = fileObservers[filePath];
-                    fileObserver.stopWatching();
+                    fileObservers.get(filePath).stopWatching();
                 }
                 break;
+            }
 
             case "os.abis":
                 result.success(Arrays.asList(Build.SUPPORTED_ABIS));
@@ -247,17 +254,18 @@ public class MainActivity extends FlutterActivity {
                 result.success(System.getProperty("os.arch"));
                 break;
 
-            case "app.targetSdkVersion":
+            case "app.targetSdkVersion": {
                 int targetSdk = getApplicationInfo().targetSdkVersion;
                 result.success(targetSdk);
                 break;
+            }
 
-            case "os.installApk":
+            case "os.installApk": {
                 String path = call.argument("path");
                 installApk(path);
                 result.success(null);
                 break;
-
+            }
             default:
                 result.notImplemented();
                 break;
