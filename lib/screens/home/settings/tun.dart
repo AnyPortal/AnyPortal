@@ -106,6 +106,19 @@ class _TunScreenState extends State<TunScreen> {
 
     final logFile =
         File(p.join(folder.path, 'log', 'tun2socks.hev_socks5_tunnel.log'));
+    String logFileLine = "log-file: ${logFile.path}";
+    final logLevel = LogLevel.values[prefs.getInt('tun.inject.log.level')!];
+    String logLevelStr = "warn";
+    switch (logLevel) {
+      case LogLevel.debug:
+      case LogLevel.info:
+      case LogLevel.error:
+        logLevelStr = logLevel.toString();
+      case LogLevel.warning:
+      case LogLevel.none:
+        logLevelStr = "warn";
+        logFileLine = "";
+    }
 
     await file.writeAsString("""tunnel:
   mtu: 8500
@@ -115,13 +128,13 @@ socks5:
   port: $socksPort
   address: $socksAddress
   udp: 'udp'
-    $usernameLine
+  $usernameLine
   $passwordLine
 
 misc:
   task-stack-size: 81920
-  # log-file: ${logFile.path}
-  # log-level: debug
+  $logFileLine
+  log-level: $logLevelStr
 """);
   }
 
@@ -287,48 +300,6 @@ misc:
       Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Text(
-          context.loc.log_config_override,
-          style: TextStyle(color: Theme.of(context).colorScheme.primary),
-        ),
-      ),
-      ListTile(
-        title: Text(context.loc.inject_log),
-        subtitle: Text(context.loc.override_log_config),
-        trailing: Switch(
-          value: _injectLog,
-          onChanged: (bool value) {
-            prefs.setBool('tun.inject.log', value);
-            setState(() {
-              _injectLog = value;
-            });
-          },
-        ),
-      ),
-      ListTile(
-        enabled: _injectLog,
-        title: Text(context.loc.log_level),
-        subtitle: Text(_logLevel.name),
-        onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) => RadioListSelectionPopup<LogLevel>(
-                    title: context.loc.log_level,
-                    items: LogLevel.values,
-                    initialValue: _logLevel,
-                    onSaved: (value) {
-                      prefs.setInt('tun.inject.log.level', value.index);
-                      setState(() {
-                        _logLevel = value;
-                      });
-                    },
-                    itemToString: (e) => e.name,
-                  ));
-        },
-      ),
-      const Divider(),
-      Container(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-        child: Text(
           context.loc.outbound_config_additional_socks_outbound,
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
@@ -470,6 +441,48 @@ misc:
             });
           },
         ),
+      ),
+      const Divider(),
+      Container(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        child: Text(
+          context.loc.log_config_override,
+          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+        ),
+      ),
+      ListTile(
+        title: Text(context.loc.inject_log),
+        subtitle: Text(context.loc.override_log_config),
+        trailing: Switch(
+          value: _injectLog,
+          onChanged: (bool value) {
+            prefs.setBool('tun.inject.log', value);
+            setState(() {
+              _injectLog = value;
+            });
+          },
+        ),
+      ),
+      ListTile(
+        enabled: _injectLog,
+        title: Text(context.loc.log_level),
+        subtitle: Text(_logLevel.name),
+        onTap: () {
+          showDialog(
+              context: context,
+              builder: (context) => RadioListSelectionPopup<LogLevel>(
+                    title: context.loc.log_level,
+                    items: LogLevel.values,
+                    initialValue: _logLevel,
+                    onSaved: (value) {
+                      prefs.setInt('tun.inject.log.level', value.index);
+                      setState(() {
+                        _logLevel = value;
+                      });
+                    },
+                    itemToString: (e) => e.name,
+                  ));
+        },
       ),
       if (RuntimePlatform.isAndroid) ...androidFields,
       if (_tunVia == TunVia.platform) ...tunHevSocks5TunnelFields,

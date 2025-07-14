@@ -1,7 +1,5 @@
 package com.github.anyportal.anyportal;
 
-import com.github.anyportal.anyportal.utils.JsonUtils;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,13 +28,16 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 import com.github.anyportal.anyportal.R;
+import com.github.anyportal.anyportal.utils.JsonUtils;
 
 public class TProxyService extends VpnService {
     public static final String ACTION_NULL = "com.github.anyportal.anyportal.ACTION_NULL";
@@ -526,8 +527,15 @@ public class TProxyService extends VpnService {
             return;
         }
 
-        File tproxy_file = new File(getFilesDir(), "conf/tun2socks.hev_socks5_tunnel.gen.yaml");
-        TProxyStartService(tproxy_file.getAbsolutePath(), tunFd.getFd());
+        File logFile = new File(getFilesDir(), "log/tun2socks.hev_socks5_tunnel.log");
+        try {
+            new FileOutputStream(logFile, false).close();
+        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
+        }
+
+        File confFile = new File(getFilesDir(), "conf/tun2socks.hev_socks5_tunnel.gen.yaml");
+        TProxyStartService(confFile.getAbsolutePath(), tunFd.getFd());
     }
 
     private void stopTunEmbedded() {
