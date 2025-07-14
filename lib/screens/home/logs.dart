@@ -9,8 +9,10 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 
 import '../../extensions/localization.dart';
-import '../../models/deque_list.dart';
 // import '../../utils/logger.dart';
+import '../../models/block_queue.dart';
+import '../../models/counted_circular_buffer.dart';
+import '../../models/deque_list.dart';
 import '../../utils/global.dart';
 import '../../utils/method_channel.dart';
 import '../../utils/prefs.dart';
@@ -30,7 +32,7 @@ class _LogViewerState extends State<LogViewer> {
   final ScrollController _scrollController = ScrollController();
 
   // Store real measured line heights
-  final _measuredHeights = DequeList<double>();
+  final _measuredHeights = BlockDeque();
 
   static const double _defaultLineHeight = 24.0; // fallback if not measured yet
   static const int _bufferLines = 20;
@@ -41,6 +43,11 @@ class _LogViewerState extends State<LogViewer> {
   int _lastFileSize = 0;
 
   double progressReadingBackward = 0;
+
+  final _recentLinesHeight = CountedCircularBuffer<double>(16);
+  double getRstimatedLineHeight() {
+    return _recentLinesHeight.mostFrequent ?? _defaultLineHeight;
+  }
 
   Future<void> _readBackward({int chunkSize = 16384}) async {
     if (RuntimePlatform.isWeb) {
@@ -75,8 +82,8 @@ class _LogViewerState extends State<LogViewer> {
           }
 
           _lines.addAllFirst(newLines);
-          _measuredHeights
-              .addAllFirst(List.filled(newLines.length, _defaultLineHeight));
+          _measuredHeights.addAllFirst(
+              List.filled(newLines.length, getRstimatedLineHeight()));
 
           progressReadingBackward = 1 - startPosition / length;
         });
@@ -124,8 +131,8 @@ class _LogViewerState extends State<LogViewer> {
       if (mounted) {
         setState(() {
           _lines.addAllLast(newLines);
-          _measuredHeights
-              .addAllLast(List.filled(newLines.length, _defaultLineHeight));
+          _measuredHeights.addAllLast(
+              List.filled(newLines.length, getRstimatedLineHeight()));
         });
 
         _autoSnap();
@@ -172,16 +179,9 @@ class _LogViewerState extends State<LogViewer> {
   }
 
   double _getBottomTarget() {
-    /// fill the view with just enough lines
-    double accumulated = 0;
-    var i = _lines.length - 1;
-    while (accumulated < _viewportHeight && i >= 0) {
-      accumulated += _measuredHeights[i];
-      --i;
-    }
-
-    double target = (i + 2) * _defaultLineHeight;
-    return target;
+    return _measuredHeights.prefixSum(_lines.length - 1) -
+        _viewportHeight +
+        _defaultLineHeight;
   }
 
   bool shouldSnap = true;
@@ -256,8 +256,9 @@ class _LogViewerState extends State<LogViewer> {
                   child: SizedBox(
                     height: _lines.isEmpty
                         ? 0
-                        : (_lines.length - 1) * _defaultLineHeight +
-                            _viewportHeight,
+                        : _measuredHeights.prefixSum(_lines.length - 1) +
+                            _viewportHeight -
+                            _defaultLineHeight,
                     child: Stack(
                       children: _buildPreciseVisibleItems(),
                     ),
@@ -277,6 +278,25 @@ class _LogViewerState extends State<LogViewer> {
     );
   }
 
+  int findNearestSmallerIndex(BlockDeque sortedList, num value) {
+    int left = 0;
+    int right = sortedList.length - 1;
+    int result = -1;
+
+    while (left <= right) {
+      int mid = left + ((right - left) >> 1);
+
+      if (sortedList.prefixSum(mid) < value) {
+        result = mid;
+        left = mid + 1;
+      } else {
+        right = mid - 1;
+      }
+    }
+
+    return result;
+  }
+
   List<Widget> _buildPreciseVisibleItems() {
     final List<Widget> visible = [];
     if (_lines.isEmpty) {
@@ -285,8 +305,7 @@ class _LogViewerState extends State<LogViewer> {
     final scrollOffset =
         _scrollController.hasClients ? _scrollController.offset : 0.0;
 
-    int firstIndex = ((scrollOffset) / _defaultLineHeight)
-        .floor()
+    int firstIndex = findNearestSmallerIndex(_measuredHeights, scrollOffset)
         .clamp(0, _lines.length - 1);
     int lastIndex = firstIndex;
     // Walk forward to cover viewport + buffer
@@ -296,11 +315,10 @@ class _LogViewerState extends State<LogViewer> {
       lastIndex++;
     }
 
-    // firstIndex = (firstIndex - _bufferLines).clamp(0, _lines.length - 1);
+    firstIndex = (firstIndex - _bufferLines).clamp(0, _lines.length - 1);
     lastIndex = (lastIndex + _bufferLines).clamp(0, _lines.length - 1);
 
-    // double topOffset = _heightUpTo(firstIndex);
-    double topOffset = firstIndex * _defaultLineHeight;
+    double topOffset = _measuredHeights.prefixSum(firstIndex - 1);
 
     for (int i = firstIndex; i <= lastIndex; i++) {
       visible.add(
@@ -312,6 +330,7 @@ class _LogViewerState extends State<LogViewer> {
             index: i,
             text: _lines[i],
             onHeight: (height) {
+              _recentLinesHeight.add(height);
               if (_measuredHeights[i] != height) {
                 setState(() {
                   _measuredHeights[i] = height;
@@ -349,6 +368,7 @@ class _LogViewerState extends State<LogViewer> {
   Future setLogFile(String name) async {
     await _setLogFile(name).then((_) {
       _lines.clear();
+      _measuredHeights.clear();
       _readBackward();
     }).then((_) {
       _autoSnap(force: true);
