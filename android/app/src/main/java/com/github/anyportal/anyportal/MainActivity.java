@@ -1,6 +1,7 @@
 package com.github.anyportal.anyportal;
 
 import com.github.anyportal.anyportal.utils.AssetUtils;
+import com.github.anyportal.anyportal.utils.VPNHelper;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -33,6 +34,7 @@ public class MainActivity extends FlutterActivity {
     private static final String CHANNEL = "com.github.anyportal.anyportal";
     private static MethodChannel methodChannel;
     private static final String TAG = "MainActivity";
+    private static final int VPN_REQUEST_CODE = 1;
 
     @Override
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
@@ -54,15 +56,6 @@ public class MainActivity extends FlutterActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /* Request VPN permission */
-        Intent intentVPNServicePrepare = VpnService.prepare(MainActivity.this);
-        if (intentVPNServicePrepare != null) {
-            Log.d(TAG, "intentVPNServicePrepare ok");
-            startActivityForResult(intentVPNServicePrepare, 0);
-        } else {
-            Log.d(TAG, "intentVPNServicePrepare == null");
-            onActivityResult(0, RESULT_OK, null);
-        }
         // Copy geoip.dat and geosite.dat to the documents directory if needed
         AssetUtils.copyAssetsIfNeeded(this);
     }
@@ -100,6 +93,12 @@ public class MainActivity extends FlutterActivity {
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
         methodChannel.invokeMethod("onTrimMemory", level);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        VPNHelper.handleActivityResult(requestCode, resultCode, VPN_REQUEST_CODE);
     }
 
     /// bind TProxyService
@@ -155,7 +154,12 @@ public class MainActivity extends FlutterActivity {
     private void onMethodCall(MethodCall call, MethodChannel.Result result) {
         switch (call.method) {
             case "vpn.startAll":
-                tProxyService.tryStartAll();
+                VPNHelper.ensureVPNPermission(this, VPN_REQUEST_CODE, new Runnable() {
+                    @Override
+                    public void run() {
+                        tProxyService.tryStartAll();
+                    }
+                });
                 result.success(true);
                 break;
 
@@ -185,7 +189,12 @@ public class MainActivity extends FlutterActivity {
                 break;
 
             case "vpn.startTun":
-                tProxyService.tryStartTun();
+                VPNHelper.ensureVPNPermission(this, VPN_REQUEST_CODE, new Runnable() {
+                    @Override
+                    public void run() {
+                        tProxyService.tryStartTun();
+                    }
+                });
                 result.success(true);
                 break;
 
