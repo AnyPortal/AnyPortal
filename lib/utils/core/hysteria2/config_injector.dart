@@ -33,6 +33,8 @@ class ConfigInjectorHysteria2 extends ConfigInjectorBase {
     final serverAddress = prefs.getString('app.server.address')!;
     final apiPort = prefs.getInt('inject.api.port')!;
     final injectSocks = prefs.getBool('inject.socks')!;
+    final injectHttp = prefs.getBool('inject.http')!;
+    final httpPort = prefs.getInt('app.http.port')!;
     final socksPort = prefs.getInt('app.socks.port')!;
     final injectSendThrough = prefs.getBool('inject.sendThrough')!;
     final sendThroughBindingStratagy = SendThroughBindingStratagy
@@ -57,6 +59,10 @@ class ConfigInjectorHysteria2 extends ConfigInjectorBase {
 
     if (injectApi) {
       cfg["trafficStats"] = {"listen": "$serverAddress:$apiPort"};
+    }
+
+    if (injectHttp) {
+      cfg["http"] = {"listen": "$serverAddress:$httpPort"};
     }
 
     if (injectSocks) {

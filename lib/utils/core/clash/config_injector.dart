@@ -36,6 +36,8 @@ class ConfigInjectorClash extends ConfigInjectorBase {
     final apiPort = prefs.getInt('inject.api.port')!;
     final injectSocks = prefs.getBool('inject.socks')!;
     final socksPort = prefs.getInt('app.socks.port')!;
+    final injectHttp = prefs.getBool('inject.http')!;
+    final httpPort = prefs.getInt('app.http.port')!;
     final injectSendThrough = prefs.getBool('inject.sendThrough')!;
     final sendThroughBindingStratagy = SendThroughBindingStratagy
         .values[prefs.getInt('inject.sendThrough.bindingStratagy')!];
@@ -55,8 +57,27 @@ class ConfigInjectorClash extends ConfigInjectorBase {
       // cfg["secret"] ??= "";
     }
 
+    if (!cfg.containsKey("listeners")) {
+      cfg["listeners"] = [];
+    }
+
+    if (injectHttp) {
+      (cfg["listeners"] as List).insert(0, {
+        "name": "anyportal_in_http",
+        "type": "http",
+        "port": httpPort,
+        "listen": serverAddress,
+      });
+    }
+
     if (injectSocks) {
-      cfg["mixed-port"] = socksPort;
+      (cfg["listeners"] as List).insert(0, {
+        "name": "anyportal_in_mixed",
+        "type": "mixed",
+        "port": socksPort,
+        "listen": serverAddress,
+        "udp": true,
+      });
     }
 
     if (!cfg.containsKey("proxies")) {

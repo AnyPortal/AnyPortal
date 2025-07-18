@@ -36,6 +36,8 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
     final apiPort = prefs.getInt('inject.api.port')!;
     final injectSocks = prefs.getBool('inject.socks')!;
     final socksPort = prefs.getInt('app.socks.port')!;
+    final injectHttp = prefs.getBool('inject.http')!;
+    final httpPort = prefs.getInt('app.http.port')!;
     final injectSendThrough = prefs.getBool('inject.sendThrough')!;
     final sendThroughBindingStratagy = SendThroughBindingStratagy
         .values[prefs.getInt('inject.sendThrough.bindingStratagy')!];
@@ -102,13 +104,31 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
       cfg["stats"] = {};
     }
 
+    if (injectHttp) {
+      (cfg["inbounds"] as List).insert(0, {
+        "listen": serverAddress,
+        "port": httpPort,
+        "protocol": "http",
+        "sniffing": {
+          "destOverride": ["fakedns+others"],
+          "enabled": true,
+          "metadataOnly": false
+        },
+        "tag": "anyportal_in_http"
+      });
+    }
+
     if (injectSocks) {
       (cfg["inbounds"] as List).insert(0, {
         "listen": serverAddress,
         "port": socksPort,
         "protocol": "socks",
         "settings": {"udp": true},
-        "sniffing": {"enabled": true},
+        "sniffing": {
+          "destOverride": ["fakedns+others"],
+          "enabled": true,
+          "metadataOnly": false
+        },
         "tag": "anyportal_in_socks"
       });
     }

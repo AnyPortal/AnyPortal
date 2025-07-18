@@ -326,23 +326,20 @@ misc:
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
         ),
       ),
-      if (RuntimePlatform.isWindows ||
-          RuntimePlatform.isLinux ||
-          RuntimePlatform.isMacOS)
-        ListTile(
-          title: Text(context.loc.inject_rule_to_exclude_core_path),
-          subtitle: Text(context.loc
-              .works_fine_on_windows_will_fail_on_other_systems_with_short_lived_packets_like_dns_),
-          trailing: Switch(
-            value: _injectExcludeCorePath,
-            onChanged: (value) {
-              prefs.setBool('tun.inject.excludeCorePath', value);
-              setState(() {
-                _injectExcludeCorePath = value;
-              });
-            },
-          ),
+      ListTile(
+        title: Text(context.loc.inject_rule_to_exclude_core_path),
+        subtitle: Text(context.loc
+            .works_fine_on_windows_will_fail_on_other_systems_with_short_lived_packets_like_dns_),
+        trailing: Switch(
+          value: _injectExcludeCorePath,
+          onChanged: (value) {
+            prefs.setBool('tun.inject.excludeCorePath', value);
+            setState(() {
+              _injectExcludeCorePath = value;
+            });
+          },
         ),
+      ),
       const Divider(),
       Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),

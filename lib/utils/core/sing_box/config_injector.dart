@@ -21,6 +21,8 @@ class ConfigInjectorSingBox extends ConfigInjectorBase {
     final apiPort = prefs.getInt('inject.api.port')!;
     final injectSocks = prefs.getBool('inject.socks')!;
     final socksPort = prefs.getInt('app.socks.port')!;
+    final injectHttp = prefs.getBool('inject.http')!;
+    final httpPort = prefs.getInt('app.http.port')!;
     final injectSendThrough = prefs.getBool('inject.sendThrough')!;
     final sendThroughBindingStratagy = SendThroughBindingStratagy
         .values[prefs.getInt('inject.sendThrough.bindingStratagy')!];
@@ -64,10 +66,18 @@ class ConfigInjectorSingBox extends ConfigInjectorBase {
     if (!cfg.containsKey("inbounds")) {
       cfg["inbounds"] = [];
     }
+
+    if (injectHttp) {
+      (cfg["inbounds"] as List).insert(0, {
+        "listen_port": httpPort,
+        "tag": "anyportal_in_http",
+        "type": "http"
+      });
+    }
     if (injectSocks) {
-      cfg["inbounds"].add({
+      (cfg["inbounds"] as List).insert(0, {
         "listen_port": socksPort,
-        "tag": "anyportal_in_socks",
+        "tag": "anyportal_in_mixed",
         "type": "mixed"
       });
     }

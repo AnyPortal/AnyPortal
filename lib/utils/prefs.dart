@@ -47,7 +47,7 @@ class PrefsManager {
     'inject.log': true,
     'inject.log.level': LogLevel.warning.index,
     'inject.socks': true,
-    'inject.http': true,
+    'inject.http': false,
     'inject.sendThrough': RuntimePlatform.isLinux || RuntimePlatform.isMacOS,
     'inject.sendThrough.bindingInterface': "eth0",
 
@@ -66,7 +66,7 @@ class PrefsManager {
     'tun.ipv6': false,
     'tun.inject.log': true,
     'tun.inject.log.level': LogLevel.warning.index,
-    'tun.inject.http': true,
+    'tun.inject.http': false,
     'tun.inject.socks': true,
     'tun.inject.excludeCorePath': RuntimePlatform.isWindows,
     'tun.useEmbedded': RuntimePlatform.isAndroid || RuntimePlatform.isIOS,

@@ -133,7 +133,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           border: OutlineInputBorder(),
         ),
         items: _profileGroupDataList.map((ProfileGroupData t) {
-          final name = t.name == "" ? context.loc.standalone : t.name;
+          final name =
+              t.id == 1 && t.name == "" ? context.loc.standalone : t.name;
           return DropdownMenuItem<int>(value: t.id, child: Text(name));
         }).toList(),
         onChanged: (value) {
