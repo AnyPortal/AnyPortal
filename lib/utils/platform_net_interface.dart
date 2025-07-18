@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'logger.dart';
+import 'platform_net_interface/android.dart';
 import 'platform_net_interface/linux.dart';
 import 'platform_net_interface/macos.dart';
 import 'platform_net_interface/windows.dart';
@@ -14,7 +15,10 @@ class PlatformNetInterface {
       return PlatformNetInterfaceLinux();
     } else if (Platform.isMacOS) {
       return PlatformNetInterfaceMacOS();
-    } else {
+    } else if (RuntimePlatform.isAndroid) {
+      return PlatformNetInterfaceAndroid();
+    }
+    {
       logger.w('PlatformNetInterface: unsupported OS');
       return PlatformNetInterface._();
     }

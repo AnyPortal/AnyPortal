@@ -30,6 +30,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONObject;
+
 public class MainActivity extends FlutterActivity {
     private static final String CHANNEL = "com.github.anyportal.anyportal";
     private static MethodChannel methodChannel;
@@ -275,6 +277,18 @@ public class MainActivity extends FlutterActivity {
                 result.success(null);
                 break;
             }
+
+            case "os.getEffectiveLinkProperties":
+                new Thread(() -> {
+                    JSONObject effectiveLinkProperties = tProxyService.getEffectiveLinkProperties();
+                    String res = effectiveLinkProperties != null ? effectiveLinkProperties.toString() : null;
+
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        result.success(res);
+                    });
+                }).start();
+                break;
+
             default:
                 result.notImplemented();
                 break;

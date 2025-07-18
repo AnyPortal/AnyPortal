@@ -1,5 +1,9 @@
 package com.github.anyportal.anyportal;
 
+import com.github.anyportal.anyportal.utils.JsonUtils;
+import com.github.anyportal.anyportal.utils.NetUtils;
+import com.github.anyportal.anyportal.R;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,6 +21,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.Network;
 import android.net.VpnService;
 import android.os.Binder;
 import android.os.Build;
@@ -36,8 +42,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
-import com.github.anyportal.anyportal.R;
-import com.github.anyportal.anyportal.utils.JsonUtils;
+import org.json.JSONObject;
 
 public class TProxyService extends VpnService {
     public static final String ACTION_NULL = "com.github.anyportal.anyportal.ACTION_NULL";
@@ -78,6 +83,7 @@ public class TProxyService extends VpnService {
     @Override
     public void onCreate() {
         super.onCreate();
+        NetUtils.init(getApplicationContext());
         isRunning = true;
         prefs = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE);
     }
@@ -741,5 +747,15 @@ public class TProxyService extends VpnService {
 
         Log.d(TAG, "finished: getIsSystemProxyEnabled");
         return false;
+    }
+
+    public JSONObject getEffectiveLinkProperties() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        String activeLocalIpv6 = NetUtils.getActiveLocalIpv6(this);
+        String activeLocalIpv4 = NetUtils.getActiveLocalIpv4(this);
+        String activeLocalIp = activeLocalIpv6 != null ? activeLocalIpv4 : activeLocalIpv6;
+        Network matching = NetUtils.findMatchingNetwork(cm, activeLocalIp);
+        JSONObject info = NetUtils.getEffectiveLinkProperties(cm, matching, activeLocalIpv4, activeLocalIpv6);
+        return info;
     }
 }
