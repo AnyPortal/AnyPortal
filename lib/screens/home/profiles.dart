@@ -55,6 +55,7 @@ extension ProfileActionX on ProfileAction {
 }
 
 enum ProfileGroupAction {
+  addProfile,
   edit,
   delete,
 }
@@ -62,6 +63,8 @@ enum ProfileGroupAction {
 extension ProfileGroupActionX on ProfileGroupAction {
   String localized(BuildContext context) {
     switch (this) {
+      case ProfileGroupAction.addProfile:
+        return context.loc.add_profile;
       case ProfileGroupAction.edit:
         return context.loc.edit;
       case ProfileGroupAction.delete:
@@ -96,10 +99,11 @@ class _ProfileListState extends State<ProfileList> {
     }
   }
 
-  void _addProfile() {
+  void _addProfile({int? profileGroupId = null}) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const ProfileScreen()),
+      MaterialPageRoute(
+          builder: (context) => ProfileScreen(profileGroupId: profileGroupId)),
     ).then((res) {
       if (res != null && res['ok'] == true) {
         _loadProfiles();
@@ -223,6 +227,8 @@ class _ProfileListState extends State<ProfileList> {
   void handleProfileGroupAction(
       int profileGroupId, ProfileGroupAction action) async {
     switch (action) {
+      case ProfileGroupAction.addProfile:
+        _addProfile(profileGroupId: profileGroupId);
       case ProfileGroupAction.delete:
         await db.transaction(() async {
           await (db.delete(db.profile)
@@ -339,7 +345,7 @@ class _ProfileListState extends State<ProfileList> {
                           itemBuilder: (context) => ProfileAction.values
                               .map((action) => PopupMenuItem(
                                     value: action,
-                                    child: Text(action.name),
+                                    child: Text(action.localized(context)),
                                   ))
                               .toList(),
                         ));
@@ -360,7 +366,7 @@ class _ProfileListState extends State<ProfileList> {
                         itemBuilder: (context) => ProfileGroupAction.values
                             .map((action) => PopupMenuItem(
                                   value: action,
-                                  child: Text(action.name),
+                                  child: Text(action.localized(context)),
                                 ))
                             .toList(),
                       ),

@@ -20,10 +20,12 @@ import 'core_type.dart';
 
 class CoreScreen extends StatefulWidget {
   final TypedResult? core;
+  final int? coreTypeId;
 
   const CoreScreen({
     super.key,
     this.core,
+    this.coreTypeId,
   });
 
   @override
@@ -72,6 +74,7 @@ class _CoreScreenState extends State<CoreScreen> {
   }
 
   Future<void> _loadCore() async {
+    _coreTypeId = widget.coreTypeId ?? _coreTypeId;
     if (widget.core != null) {
       _coreIsExec = widget.core!.read(db.core.isExec)!;
       _coreTypeId = widget.core!.read(db.core.coreTypeId)!;
@@ -115,11 +118,13 @@ class _CoreScreenState extends State<CoreScreen> {
 
     if (RuntimePlatform.isAndroid) {
       if (context.mounted) {
-        await permMan.requestPermission(
+        await permMan
+            .requestPermission(
           context,
           Permission.storage,
           context.loc.storage_permission_is_required_for_cores_to_load_assets_,
-        ).then((status){
+        )
+            .then((status) {
           if (status != PermissionStatus.granted) {
             permitted = false;
           }
@@ -203,7 +208,7 @@ class _CoreScreenState extends State<CoreScreen> {
   }
 
   List<DropdownMenuItem<int>> getDropdownMenuItems() {
-    final dropdownMenuItems =_assets.map((e) {
+    final dropdownMenuItems = _assets.map((e) {
       int? assetId = -1;
       assetId = e.read(db.asset.id);
       return DropdownMenuItem<int>(
@@ -214,19 +219,17 @@ class _CoreScreenState extends State<CoreScreen> {
 
     // e.g. if asset is deleted, _assetId not in dropdownMenuItems would cause problems
     bool isAssetIdValid = false;
-    for (DropdownMenuItem item in dropdownMenuItems){
-      if (item.value == _assetId){
+    for (DropdownMenuItem item in dropdownMenuItems) {
+      if (item.value == _assetId) {
         isAssetIdValid = true;
         break;
       }
     }
-    if (!isAssetIdValid){
-      dropdownMenuItems.add(
-        DropdownMenuItem<int>(
-          value: _assetId,
-          child: Text(context.loc.warning_invalid_asset),
-        )
-      );
+    if (!isAssetIdValid) {
+      dropdownMenuItems.add(DropdownMenuItem<int>(
+        value: _assetId,
+        child: Text(context.loc.warning_invalid_asset),
+      ));
     }
 
     return dropdownMenuItems;
@@ -294,10 +297,10 @@ class _CoreScreenState extends State<CoreScreen> {
                 MaterialPageRoute(builder: (context) => const AssetScreen()),
               ).then((res) {
                 if (res != null) {
-                  if (res['ok'] == true){
+                  if (res['ok'] == true) {
                     _loadAssets();
                   }
-                  if (res['status'] == EditStatus.inserted){
+                  if (res['status'] == EditStatus.inserted) {
                     setState(() {
                       _assetId = res['id'];
                     });

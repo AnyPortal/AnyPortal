@@ -42,9 +42,34 @@ enum CoreAction {
   delete,
 }
 
+extension CoreActionX on CoreAction {
+  String localized(BuildContext context) {
+    switch (this) {
+      case CoreAction.edit:
+        return context.loc.edit;
+      case CoreAction.delete:
+        return context.loc.delete;
+    }
+  }
+}
+
 enum CoreTypeAction {
+  addCore,
   edit,
   delete,
+}
+
+extension CoreTypeActionX on CoreTypeAction {
+  String localized(BuildContext context) {
+    switch (this) {
+      case CoreTypeAction.addCore:
+        return context.loc.add_core;
+      case CoreTypeAction.edit:
+        return context.loc.edit;
+      case CoreTypeAction.delete:
+        return context.loc.delete;
+    }
+  }
 }
 
 class _CoresScreenState extends State<CoresScreen> {
@@ -72,16 +97,17 @@ class _CoresScreenState extends State<CoresScreen> {
     }
   }
 
-  void _addCore() {
+  void _addCore({int? coreTypeId = null}) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const CoreScreen()),
+      MaterialPageRoute(
+          builder: (context) => CoreScreen(coreTypeId: coreTypeId)),
     ).then((res) {
       if (res != null) {
-        if (res['ok'] == true){
+        if (res['ok'] == true) {
           _loadCores();
         }
-        if (res['status'] == EditStatus.inserted){
+        if (res['status'] == EditStatus.inserted) {
           final coreTypeId = res['coreTypeId'];
           final coreId = res['coreId'];
           setCoreTypeIdCoreId(coreTypeId, coreId);
@@ -189,7 +215,8 @@ class _CoresScreenState extends State<CoresScreen> {
           data: coreTypeId,
           key: "coreTypeId-$coreTypeId",
         )..addAll(cores.map((core) {
-            return TreeNode(data: core, key: "coreId-${core.read(db.core.id)!}");
+            return TreeNode(
+                data: core, key: "coreId-${core.read(db.core.id)!}");
           }).toList()));
       }
     }
@@ -219,6 +246,8 @@ class _CoresScreenState extends State<CoresScreen> {
 
   void handleCoreTypeAction(int coreTypeId, CoreTypeAction action) async {
     switch (action) {
+      case CoreTypeAction.addCore:
+        _addCore(coreTypeId: coreTypeId);
       case CoreTypeAction.delete:
         await db.transaction(() async {
           (db.delete(db.core)..where((e) => e.coreTypeId.equals(coreTypeId)))
@@ -252,7 +281,7 @@ class _CoresScreenState extends State<CoresScreen> {
     if (_coreTypeSeclectedId.containsKey(coreTypeId)) {
       final selectedCoreId = _coreTypeSeclectedId[coreTypeId];
       final selectedCore = _cores[selectedCoreId];
-      if (selectedCore == null){
+      if (selectedCore == null) {
         return context.loc.warning_no_core_selected_;
       } else {
         return getCoreTitle(selectedCore);
@@ -341,15 +370,14 @@ class _CoresScreenState extends State<CoresScreen> {
                           setCoreTypeIdCoreId(coreTypeId, coreId);
                         },
                         title: Text(getCoreTitle(core)),
-                        subtitle: Text(
-                            '${core.read(db.core.updatedAt)}'),
+                        subtitle: Text('${core.read(db.core.updatedAt)}'),
                         dense: true,
                         secondary: PopupMenuButton<CoreAction>(
                           onSelected: (value) => handleCoreAction(core, value),
                           itemBuilder: (context) => CoreAction.values
                               .map((action) => PopupMenuItem(
                                     value: action,
-                                    child: Text(action.name),
+                                    child: Text(action.localized(context)),
                                   ))
                               .toList(),
                         ));
@@ -370,7 +398,7 @@ class _CoresScreenState extends State<CoresScreen> {
                         itemBuilder: (context) => CoreTypeAction.values
                             .map((action) => PopupMenuItem(
                                   value: action,
-                                  child: Text(action.name),
+                                  child: Text(action.localized(context)),
                                 ))
                             .toList(),
                       ),

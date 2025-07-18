@@ -42,9 +42,15 @@ enum AssetAction {
   delete,
 }
 
-enum AssetTypeAction {
-  edit,
-  delete,
+extension AssetActionX on AssetAction {
+  String localized(BuildContext context) {
+    switch (this) {
+      case AssetAction.edit:
+        return context.loc.edit;
+      case AssetAction.delete:
+        return context.loc.delete;
+    }
+  }
 }
 
 class _AssetsScreenState extends State<AssetsScreen> {
@@ -242,7 +248,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
                 itemBuilder: (context) => AssetAction.values
                     .map((action) => PopupMenuItem(
                           value: action,
-                          child: Text(action.name),
+                          child: Text(action.localized(context)),
                         ))
                     .toList(),
               ),

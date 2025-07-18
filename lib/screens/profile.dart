@@ -13,10 +13,12 @@ import '../widgets/form/progress_button.dart';
 
 class ProfileScreen extends StatefulWidget {
   final ProfileData? profile;
+  final int? profileGroupId;
 
   const ProfileScreen({
     super.key,
     this.profile,
+    this.profileGroupId,
   });
 
   @override
@@ -51,6 +53,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _loadProfile() async {
+    _profileGroupId = widget.profileGroupId ?? _profileGroupId;
     if (widget.profile != null) {
       _nameController.text = widget.profile!.name;
       _profileType = widget.profile!.type;
