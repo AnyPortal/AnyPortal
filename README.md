@@ -131,12 +131,12 @@ See planning [here](https://github.com/users/anyportal/projects/1/views/1).
   - Tun2socks via sing-box is actually faster than hev-socks5-tunnel on web page opening, which currently needs root access
   - there are apps actively detecting if you are using VPN
 - what are "assets" and why do I need / how do I use them?
- - AnyPortal facilitates auto updates through remote assets, i.e., GitHub releases. Core executables, even rule set files, can be auto-updated this way. Local files can be used directly of course, as local assets.
-  - here are some common examples for remote assets
-    - `github://xtls/xray-core/Xray-android-arm64-v8a.zip/xray`
-    - `github://v2fly/v2ray-core/v2ray-windows-64.zip/v2ray.exe`
-    - `github://v2fly/domain-list-community/dlc.dat`
-  - on Android this gets a little more complicated. Remote assets have no problem - they are downloaded directly into internal storage. For local files (those you can access, typically on your `/sdcard`, i.e., external storage, where the default `Downloads` folder resides), executables must be copied to internal storage (where you have no access) so that they can run. For this reason, when you choose a local file, AnyPortal copies it to internal storage for you. This may break assets dependency, so you may want to specify core environment variables to tell the core where to find its dependencies, e.g. `{"xray.location.asset":"/sdcard/path/to/your/geosite-folder"}`, `{"V2RAY_LOCATION_ASSET":"/data/data/com.github.anyportal.anyportal/files/asset/github/v2fly/domain-list-community"}`. Do not try to set the working directory to a sdcard path, it won't work.
+  - AnyPortal facilitates auto updates through remote assets, i.e., GitHub releases. Core executables, even rule set files, can be auto-updated this way. Local files can be used directly of course, as local assets.
+  - here are some common examples for remote assets
+    - `github://xtls/xray-core/Xray-android-arm64-v8a.zip/xray`
+    - `github://v2fly/v2ray-core/v2ray-windows-64.zip/v2ray.exe`
+    - `github://v2fly/domain-list-community/dlc.dat`
+  - on Android this gets a little more complicated. Remote assets have no problem - they are downloaded directly into internal storage. For local files (those you can access, typically on your `/sdcard`, i.e., external storage, where the default `Downloads` folder resides), executables must be copied to internal storage (where you have no access) so that they can run. For this reason, when you choose a local file, AnyPortal copies it to internal storage for you. This may break assets dependency, so you may want to specify core environment variables to tell the core where to find its dependencies, e.g. `{"xray.location.asset":"/sdcard/path/to/your/geosite-folder"}`, `{"V2RAY_LOCATION_ASSET":"/data/data/com.github.anyportal.anyportal/files/asset/github/v2fly/domain-list-community"}`. Do not try to set the working directory to a sdcard path, it won't work.
 
 ## License
 
