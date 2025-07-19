@@ -152,12 +152,18 @@ We hope you choose well between your home world and Wonderlands.""")),
       if (!RuntimePlatform.isWeb)
         ListTile(
           title: Text(context.loc.app),
-          subtitle: Text(File(Platform.resolvedExecutable).parent.path),
-          trailing: const Icon(Icons.folder_open),
+          subtitle: Text(RuntimePlatform.isAndroid
+              ? "com.github.anyportal.anyportal"
+              : File(Platform.resolvedExecutable).parent.path),
+          trailing:
+              Icon(RuntimePlatform.isAndroid ? Icons.copy : Icons.folder_open),
           onTap: () {
-            PlatformFileMananger.highlightFileInFolder(
-                Platform.resolvedExecutable);
-            copyTextThenNotify(Platform.resolvedExecutable);
+            if (RuntimePlatform.isAndroid) {
+              copyTextThenNotify("com.github.anyportal.anyportal");
+            } else {
+              PlatformFileMananger.highlightFileInFolder(
+                  Platform.resolvedExecutable);
+            }
           },
         ),
       if (!RuntimePlatform.isWeb)
@@ -165,23 +171,31 @@ We hope you choose well between your home world and Wonderlands.""")),
           title: Text(context.loc.user_data),
           subtitle: Text(
               p.join(global.applicationDocumentsDirectory.path, "AnyPortal")),
-          trailing: const Icon(Icons.folder_open),
+          trailing:
+              Icon(RuntimePlatform.isAndroid ? Icons.copy : Icons.folder_open),
           onTap: () {
-            PlatformFileMananger.openFolder(
-                p.join(global.applicationDocumentsDirectory.path, "AnyPortal"));
-            copyTextThenNotify(
-                p.join(global.applicationDocumentsDirectory.path, "AnyPortal"));
+            final folderPath =
+                p.join(global.applicationDocumentsDirectory.path, "AnyPortal");
+            if (RuntimePlatform.isAndroid) {
+              copyTextThenNotify(folderPath);
+            } else {
+              PlatformFileMananger.openFolder(folderPath);
+            }
           },
         ),
       if (!RuntimePlatform.isWeb)
         ListTile(
           title: Text(context.loc.generated_assets),
           subtitle: Text(global.applicationSupportDirectory.path),
-          trailing: const Icon(Icons.folder_open),
+          trailing:
+              Icon(RuntimePlatform.isAndroid ? Icons.copy : Icons.folder_open),
           onTap: () {
-            PlatformFileMananger.openFolder(
-                global.applicationSupportDirectory.path);
-            copyTextThenNotify(global.applicationSupportDirectory.path);
+            final folderPath = global.applicationSupportDirectory.path;
+            if (RuntimePlatform.isAndroid) {
+              copyTextThenNotify(folderPath);
+            } else {
+              PlatformFileMananger.openFolder(folderPath);
+            }
           },
         ),
     ];

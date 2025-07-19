@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:drift/drift.dart';
 import 'package:file_picker/file_picker.dart';
@@ -9,6 +10,7 @@ import '../extensions/localization.dart';
 import '../models/edit_status.dart';
 import '../utils/asset_remote/github.dart';
 import '../utils/logger.dart';
+import '../utils/platform_file_mananger.dart';
 import '../utils/runtime_platform.dart';
 import '../utils/show_snack_bar_now.dart';
 import '../widgets/form/progress_button.dart';
@@ -41,9 +43,8 @@ class _AssetScreenState extends State<AssetScreen> {
 
     if (asset != null) {
       _assetType = widget.asset!.readWithConverter(db.asset.type)!;
-      if (_assetType == AssetType.local) {
-        assetPath = asset.read(db.asset.path)!;
-      } else {
+      assetPath = asset.read(db.asset.path)!;
+      if (_assetType == AssetType.remote) {
         _urlController.text = asset.read(db.assetRemote.url)!;
         _autoUpdateIntervalController.text =
             asset.read(db.assetRemote.autoUpdateInterval).toString();
@@ -62,6 +63,12 @@ class _AssetScreenState extends State<AssetScreen> {
   void initState() {
     super.initState();
     _loadAsset();
+  }
+
+  void copyTextThenNotify(String text) {
+    Clipboard.setData(ClipboardData(text: text)).then((_) {
+      if (mounted) showSnackBarNow(context, Text(context.loc.copied));
+    });
   }
 
   // Method to handle form submission
@@ -128,7 +135,7 @@ class _AssetScreenState extends State<AssetScreen> {
 
   Future<void> _selectAssetPath() async {
     FilePickerResult? result =
-        await FilePicker.platform.pickFiles(allowMultiple: true);
+        await FilePicker.platform.pickFiles(allowMultiple: false);
     if (result == null) {
       return;
     }
@@ -155,27 +162,41 @@ class _AssetScreenState extends State<AssetScreen> {
               _assetType = value!;
             });
           }),
-      if (_assetType == AssetType.local)
-        Row(
-          children: [
-            Expanded(
-              child: TextFormField(
-                controller: _assetPathController,
-                decoration: InputDecoration(
-                  labelText: context.loc.asset_path,
-                  hintText: RuntimePlatform.isWindows
-                      ? context.loc.e_g_c_path_to_v2ray_exe
-                      : context.loc.e_g_path_to_v2ray,
-                  border: OutlineInputBorder(),
-                ),
+      Row(
+        children: [
+          Expanded(
+            child: TextFormField(
+              controller: _assetPathController,
+              decoration: InputDecoration(
+                labelText: context.loc.asset_path,
+                hintText: RuntimePlatform.isWindows
+                    ? context.loc.e_g_c_path_to_v2ray_exe
+                    : context.loc.e_g_path_to_v2ray,
+                border: OutlineInputBorder(),
+                enabled: _assetType == AssetType.local,
               ),
             ),
+          ),
+          if (_assetType == AssetType.local)
             IconButton(
-              icon: const Icon(Icons.folder_open),
+              icon: Icon(Icons.folder_open),
               onPressed: _selectAssetPath,
             ),
-          ],
-        ),
+          if (_assetType == AssetType.remote)
+            IconButton(
+              icon: Icon(
+                  RuntimePlatform.isAndroid ? Icons.copy : Icons.folder_open),
+              onPressed: () {
+                final filePath = _assetPathController.text;
+                if (RuntimePlatform.isAndroid) {
+                  copyTextThenNotify(filePath);
+                } else {
+                  PlatformFileMananger.highlightFileInFolder(filePath);
+                }
+              },
+            ),
+        ],
+      ),
       if (_assetType == AssetType.remote)
         TextFormField(
           controller: _urlController,

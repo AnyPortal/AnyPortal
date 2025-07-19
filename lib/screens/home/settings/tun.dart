@@ -351,11 +351,15 @@ misc:
       ListTile(
         title: Text(context.loc.edit_config),
         subtitle: Text(tunSingBoxUserConfigFile.path),
-        trailing: const Icon(Icons.folder_open),
+        trailing:
+            Icon(RuntimePlatform.isAndroid ? Icons.copy : Icons.folder_open),
         onTap: () {
-          PlatformFileMananger.highlightFileInFolder(
-              tunSingBoxUserConfigFile.path);
-          copyTextThenNotify(tunSingBoxUserConfigFile.path);
+          final filePath = tunSingBoxUserConfigFile.path;
+          if (RuntimePlatform.isAndroid) {
+            copyTextThenNotify(filePath);
+          } else {
+            PlatformFileMananger.highlightFileInFolder(filePath);
+          }
         },
       ),
     ];
