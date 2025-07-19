@@ -753,7 +753,7 @@ public class TProxyService extends VpnService {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         String activeLocalIpv6 = NetUtils.getActiveLocalIpv6(this);
         String activeLocalIpv4 = NetUtils.getActiveLocalIpv4(this);
-        String activeLocalIp = activeLocalIpv6 != null ? activeLocalIpv4 : activeLocalIpv6;
+        String activeLocalIp = activeLocalIpv4 != null ? activeLocalIpv4 : activeLocalIpv6;
         Network matching = NetUtils.findMatchingNetwork(cm, activeLocalIp);
         JSONObject info = NetUtils.getEffectiveLinkProperties(cm, matching, activeLocalIpv4, activeLocalIpv6);
         return info;

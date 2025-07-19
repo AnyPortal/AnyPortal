@@ -93,6 +93,9 @@ public class NetUtils {
     }
 
     public static Network findMatchingNetwork(ConnectivityManager cm, String localIp) {
+        // Log.d(TAG, String.format("localIp: %s", localIp));
+        if (localIp == null)
+            return null;
         // for (Network network : cm.getAllNetworks()) {
         for (Network network : networks) {
             NetworkCapabilities caps = cm.getNetworkCapabilities(network);
@@ -108,7 +111,9 @@ public class NetUtils {
             if (props == null) {
                 continue;
             }
+            // Log.d(TAG, String.format("interfaceName: %s", props.getInterfaceName()));
             for (LinkAddress addr : props.getLinkAddresses()) {
+                // Log.d(TAG, String.format("addr: %s", addr));
                 if (addr.getAddress().getHostAddress().equals(localIp)) {
                     return network;
                 }
