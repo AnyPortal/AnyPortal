@@ -110,8 +110,8 @@ class _InstalledAppListState extends State<InstalledAppList> {
 
                         final app = _filteredApps[i];
                         final icon = app.icon;
-                        return ListTile(
-                          leading: SizedBox(
+                        return CheckboxListTile(
+                          secondary: SizedBox(
                               width: 56,
                               height: 56,
                               child: (icon != null && icon.isNotEmpty)
@@ -125,18 +125,16 @@ class _InstalledAppListState extends State<InstalledAppList> {
                                     ))),
                           title: Text(app.name),
                           subtitle: Text(app.packageName),
-                          trailing: Checkbox(
-                              value:
-                                  widget.selectedApps.contains(app.packageName),
-                              onChanged: (selected) {
-                                setState(() {
-                                  if (selected!) {
-                                    widget.selectedApps.add(app.packageName);
-                                  } else {
-                                    widget.selectedApps.remove(app.packageName);
-                                  }
-                                });
-                              }),
+                          value: widget.selectedApps.contains(app.packageName),
+                          onChanged: (selected) {
+                            setState(() {
+                              if (selected!) {
+                                widget.selectedApps.add(app.packageName);
+                              } else {
+                                widget.selectedApps.remove(app.packageName);
+                              }
+                            });
+                          },
                         );
                       }))))
     ]);
