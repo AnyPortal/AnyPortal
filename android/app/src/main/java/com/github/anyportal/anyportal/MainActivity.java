@@ -1,6 +1,7 @@
 package com.github.anyportal.anyportal;
 
 import com.github.anyportal.anyportal.utils.AssetUtils;
+import com.github.anyportal.anyportal.utils.InstalledAppsUtils;
 import com.github.anyportal.anyportal.utils.VPNHelper;
 
 import android.content.ComponentName;
@@ -27,6 +28,8 @@ import io.flutter.plugin.common.MethodChannel;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -285,6 +288,21 @@ public class MainActivity extends FlutterActivity {
 
                     new Handler(Looper.getMainLooper()).post(() -> {
                         result.success(res);
+                    });
+                }).start();
+                break;
+
+            case "os.getInstalledApps":
+                new Thread(() -> {
+                    List<String> fields = call.argument("fields");
+                    if (fields == null)
+                        fields = new ArrayList<>();
+                    List<Map<String, Object>> res = InstalledAppsUtils.getInstalledApps(getApplicationContext(),
+                            fields);
+
+                    // Return result to Flutter on main thread
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        result.success(res); // or error
                     });
                 }).start();
                 break;

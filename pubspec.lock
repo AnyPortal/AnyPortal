@@ -525,14 +525,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.6.0"
-  installed_apps:
-    dependency: "direct main"
-    description:
-      name: installed_apps
-      sha256: dd2b7c531f91114cd6df447c56567593c9799ca83f057137ae719324ae0afd06
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.6.0"
   intl:
     dependency: "direct main"
     description:

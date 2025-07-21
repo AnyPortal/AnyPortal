@@ -99,7 +99,7 @@ class _ProfileListState extends State<ProfileList> {
     }
   }
 
-  void _addProfile({int? profileGroupId = null}) {
+  void _addProfile({int? profileGroupId}) {
     Navigator.push(
       context,
       MaterialPageRoute(
