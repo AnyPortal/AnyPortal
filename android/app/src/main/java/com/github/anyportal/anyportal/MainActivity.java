@@ -2,6 +2,7 @@ package com.github.anyportal.anyportal;
 
 import com.github.anyportal.anyportal.utils.AssetUtils;
 import com.github.anyportal.anyportal.utils.InstalledAppsUtils;
+import com.github.anyportal.anyportal.utils.NetUtils;
 import com.github.anyportal.anyportal.utils.VPNHelper;
 
 import android.content.ComponentName;
@@ -283,9 +284,7 @@ public class MainActivity extends FlutterActivity {
 
             case "os.getEffectiveLinkProperties":
                 new Thread(() -> {
-                    JSONObject effectiveLinkProperties = tProxyService.getEffectiveLinkProperties();
-                    String res = effectiveLinkProperties != null ? effectiveLinkProperties.toString() : null;
-
+                    Map<String, Object> res = NetUtils.getEffectiveLinkProperties();
                     new Handler(Looper.getMainLooper()).post(() -> {
                         result.success(res);
                     });

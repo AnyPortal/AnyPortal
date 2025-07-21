@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:anyportal/utils/method_channel.dart';
 
 import '../platform_net_interface.dart';
@@ -10,11 +8,10 @@ class PlatformNetInterfaceAndroid implements PlatformNetInterface {
     Set<String> excludeIPv4Set = const {},
     Set<String> excludeIPv6Set = const {},
   }) async {
-    final linkPropertiesStr = await mCMan.methodChannel
-        .invokeMethod("os.getEffectiveLinkProperties") as String?;
-    if (linkPropertiesStr == null) return null;
-    final lpJson = jsonDecode(linkPropertiesStr) as Map<String, dynamic>;
-    final linkProperties = LinkProperties.fromJson(lpJson);
+    final linkPropertiesMap = await mCMan.methodChannel
+        .invokeMapMethod("os.getEffectiveLinkProperties");
+    if (linkPropertiesMap == null) return null;
+    final linkProperties = LinkProperties.fromMap(linkPropertiesMap);
     final iPv4AddressSet = <String>{};
     final iPv6AddressSet = <String>{};
     final Set<String> dnsIPv4AddressSet = {};
@@ -51,11 +48,11 @@ class LinkProperties {
       required this.dnsServers,
       required this.linkAddresses});
 
-  factory LinkProperties.fromJson(Map<String, dynamic> json) {
+  factory LinkProperties.fromMap(Map map) {
     return LinkProperties(
-      interfaceName: json['interfaceName'],
-      dnsServers: List<String>.from(json['dnsServers']),
-      linkAddresses: List<String>.from(json['linkAddresses']),
+      interfaceName: map['interfaceName'],
+      dnsServers: List<String>.from(map['dnsServers']),
+      linkAddresses: List<String>.from(map['linkAddresses']),
     );
   }
 }

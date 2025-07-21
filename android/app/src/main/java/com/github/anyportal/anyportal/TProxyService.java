@@ -83,7 +83,7 @@ public class TProxyService extends VpnService {
     @Override
     public void onCreate() {
         super.onCreate();
-        NetUtils.init(getApplicationContext());
+        NetUtils.init(this);
         isRunning = true;
         prefs = getSharedPreferences("FlutterSharedPreferences", MODE_PRIVATE);
     }
@@ -747,15 +747,5 @@ public class TProxyService extends VpnService {
 
         Log.d(TAG, "finished: getIsSystemProxyEnabled");
         return false;
-    }
-
-    public JSONObject getEffectiveLinkProperties() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        String activeLocalIpv6 = NetUtils.getActiveLocalIpv6(this);
-        String activeLocalIpv4 = NetUtils.getActiveLocalIpv4(this);
-        String activeLocalIp = activeLocalIpv4 != null ? activeLocalIpv4 : activeLocalIpv6;
-        Network matching = NetUtils.findMatchingNetwork(cm, activeLocalIp);
-        JSONObject info = NetUtils.getEffectiveLinkProperties(cm, matching, activeLocalIpv4, activeLocalIpv6);
-        return info;
     }
 }

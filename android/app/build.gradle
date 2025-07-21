@@ -103,6 +103,10 @@ android {
     lint {
         disable 'ExpiredTargetSdkVersion'
     }
+
+    // tasks.withType(JavaCompile).configureEach {
+    //     options.compilerArgs += ["-Xlint:unchecked"]
+    // }
 }
 
 flutter {

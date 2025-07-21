@@ -12,22 +12,23 @@ import android.util.Log;
 
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.Inet4Address;
-import java.net.Inet6Address;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class NetUtils {
     private static final String TAG = "NetUtils";
     private static Set<Network> networks = new HashSet<>();
+    private static ConnectivityManager cm;
+    private static VpnService _vpnService;
 
-    public static void init(Context context) {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    public static void init(VpnService vpnService) {
+        _vpnService = vpnService;
+        Context context = vpnService.getApplicationContext();
+        cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         networks.add(cm.getActiveNetwork());
 
         NetworkRequest request = new NetworkRequest.Builder()
@@ -61,10 +62,10 @@ public class NetUtils {
         });
     }
 
-    public static String getActiveLocalIpv4(VpnService vpnService) {
+    public static String getActiveLocalIpv4() {
         try {
             DatagramSocket socket = new DatagramSocket();
-            vpnService.protect(socket);
+            _vpnService.protect(socket);
             socket.connect(InetAddress.getByName("8.8.8.8"), 53);
             String localIp = socket.getLocalAddress().getHostAddress();
             socket.close();
@@ -75,10 +76,10 @@ public class NetUtils {
         }
     }
 
-    public static String getActiveLocalIpv6(VpnService vpnService) {
+    public static String getActiveLocalIpv6() {
         try {
             DatagramSocket socket6 = new DatagramSocket();
-            vpnService.protect(socket6);
+            _vpnService.protect(socket6);
             socket6.connect(InetAddress.getByName("2001:4860:4860::8888"), 53);
             String localIp = socket6.getLocalAddress().getHostAddress();
             socket6.close();
@@ -92,7 +93,7 @@ public class NetUtils {
         }
     }
 
-    public static Network findMatchingNetwork(ConnectivityManager cm, String localIp) {
+    public static Network findMatchingNetwork(String localIp) {
         // Log.d(TAG, String.format("localIp: %s", localIp));
         if (localIp == null)
             return null;
@@ -123,8 +124,7 @@ public class NetUtils {
         return null;
     }
 
-    public static JSONObject getEffectiveLinkProperties(
-            ConnectivityManager cm,
+    private static Map<String, Object> _getEffectiveLinkProperties(
             Network network,
             String activeLocalIpv4,
             String activeLocalIpv6) {
@@ -136,23 +136,27 @@ public class NetUtils {
         List<InetAddress> dnsServers = props.getDnsServers();
         List<LinkAddress> linkAddresses = props.getLinkAddresses();
 
-        JSONObject result = new JSONObject();
-        try {
-            result.put("interfaceName", interfaceName);
-            JSONArray dnsList = new JSONArray();
-            for (InetAddress dns : dnsServers) {
-                dnsList.put(dns.getHostAddress());
-            }
-            result.put("dnsServers", dnsList);
-            JSONArray linkAddressList = new JSONArray();
-            for (LinkAddress linkAddress : linkAddresses) {
-                linkAddressList.put(linkAddress.getAddress().getHostAddress());
-            }
-            result.put("linkAddresses", linkAddressList);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+        Map<String, Object> result = new HashMap<>();
+        result.put("interfaceName", interfaceName);
+        List<String> dnsList = new ArrayList<>();
+        for (InetAddress dns : dnsServers) {
+            dnsList.add(dns.getHostAddress());
         }
+        result.put("dnsServers", dnsList);
+        List<String> linkAddressList = new ArrayList<>();
+        for (LinkAddress linkAddress : linkAddresses) {
+            linkAddressList.add(linkAddress.getAddress().getHostAddress());
+        }
+        result.put("linkAddresses", linkAddressList);
         return result;
+    }
+
+    public static Map<String, Object> getEffectiveLinkProperties() {
+        String activeLocalIpv6 = getActiveLocalIpv6();
+        String activeLocalIpv4 = getActiveLocalIpv4();
+        String activeLocalIp = activeLocalIpv4 != null ? activeLocalIpv4 : activeLocalIpv6;
+        Network matching = findMatchingNetwork(activeLocalIp);
+        Map<String, Object> info = _getEffectiveLinkProperties(matching, activeLocalIpv4, activeLocalIpv6);
+        return info;
     }
 }
