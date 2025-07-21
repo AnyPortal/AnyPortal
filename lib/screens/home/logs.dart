@@ -45,11 +45,14 @@ class _LogViewerState extends State<LogViewer> {
   double progressReadingBackward = 0;
 
   final _recentLinesHeight = CountedCircularBuffer<double>(16);
-  double getRstimatedLineHeight() {
+  double getEstimatedLineHeight() {
     return _recentLinesHeight.mostFrequent ?? _defaultLineHeight;
   }
 
+  bool isReadingBackward = true;
+
   Future<void> _readBackward({int chunkSize = 16384}) async {
+    isReadingBackward = true;
     if (RuntimePlatform.isWeb) {
       return;
     }
@@ -83,11 +86,14 @@ class _LogViewerState extends State<LogViewer> {
 
           _lines.addAllFirst(newLines);
           _measuredHeights.addAllFirst(
-              List.filled(newLines.length, getRstimatedLineHeight()));
+              List.filled(newLines.length, getEstimatedLineHeight()));
 
           progressReadingBackward = 1 - startPosition / length;
         });
-        _autoSnap();
+
+        _scrollController.jumpTo(_getBottomTarget());
+
+        // _autoSnap(force: true);
       }
 
       endPosition = startPosition;
@@ -102,6 +108,9 @@ class _LogViewerState extends State<LogViewer> {
       // _autoSnap();
     }
     await file.close();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      isReadingBackward = false;
+    });
 
     return;
   }
@@ -132,7 +141,7 @@ class _LogViewerState extends State<LogViewer> {
         setState(() {
           _lines.addAllLast(newLines);
           _measuredHeights.addAllLast(
-              List.filled(newLines.length, getRstimatedLineHeight()));
+              List.filled(newLines.length, getEstimatedLineHeight()));
         });
 
         _autoSnap();
@@ -239,13 +248,14 @@ class _LogViewerState extends State<LogViewer> {
       ),
       body: Stack(children: [
         Container(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
           child: LayoutBuilder(
             builder: (context, constraints) {
               _viewportHeight = constraints.maxHeight;
 
               return NotificationListener<ScrollNotification>(
                 onNotification: (scrollNotification) {
+                  if (isReadingBackward) return true;
                   shouldSnap = scrollNotification.metrics.pixels >=
                       _getBottomTarget() - _defaultLineHeight;
                   setState(() {});
