@@ -3,16 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:drift/drift.dart';
 import 'package:smooth_highlight/smooth_highlight.dart';
 
-import 'package:anyportal/extensions/localization.dart';
-import 'package:anyportal/utils/core/base/plugin.dart';
-
+import '../../extensions/localization.dart';
+import '../../utils/core/base/plugin.dart';
 import '../../utils/db.dart';
 import '../../utils/prefs.dart';
 import '../../utils/show_snack_bar_now.dart';
+import '../../utils/vpn_manager.dart';
 import '../../widgets/ray_toggle.dart';
 import '../../widgets/vpn_toggles.dart';
-
-
 
 class Dashboard extends StatefulWidget {
   final Function setSelectedIndex;
@@ -92,49 +90,57 @@ class _DashboardState extends State<Dashboard> {
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         padding: const EdgeInsets.all(8.0),
-        child: Wrap(children: [
-          if (_useFloatingActionButton) Card(
-              margin: const EdgeInsets.all(8.0),
-              child: SmoothHighlight(
-                  enabled: _highlightSelectProfile,
-                  color: Colors.grey,
-                  child: ListTile(
-                    title: Text(
-                      context.loc.selected_profile,
+        child: ListenableBuilder(
+          listenable: vPNMan,
+          builder: (BuildContext context, Widget? child) {
+            return Wrap(
+              children: [
+                if (_useFloatingActionButton)
+                  Card(
+                      margin: const EdgeInsets.all(8.0),
+                      child: SmoothHighlight(
+                          enabled: _highlightSelectProfile,
+                          color: Colors.grey,
+                          child: ListTile(
+                            title: Text(
+                              context.loc.selected_profile,
+                            ),
+                            subtitle: Text(_selectedProfileName == null
+                                ? ""
+                                : _selectedProfileName!),
+                            trailing: const Icon(Icons.more_vert),
+                            onTap: () {
+                              _profiles.isNotEmpty
+                                  ? widget.setSelectedIndex(2)
+                                  : () {
+                                      if (mounted) {
+                                        showSnackBarNow(
+                                            context,
+                                            Text(context.loc
+                                                .no_profile_yet_create_one_first));
+                                      }
+                                      widget.setSelectedIndex(2);
+                                    }();
+                            },
+                          ))),
+                if (!widget.isLandscapeLayout && !_useFloatingActionButton)
+                  Card(
+                      margin: const EdgeInsets.all(8.0),
+                      child: const Padding(
+                        padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
+                        child: VPNToggles(),
+                      )),
+                ...CorePluginManager().instance.dashboardWidgets.of(context),
+                if (_useFloatingActionButton)
+                  Container(
+                    constraints: const BoxConstraints(
+                      minHeight: 72,
                     ),
-                    subtitle: Text(_selectedProfileName == null
-                        ? ""
-                        : _selectedProfileName!),
-                    trailing: const Icon(Icons.more_vert),
-                    onTap: () {
-                      _profiles.isNotEmpty
-                          ? widget.setSelectedIndex(2)
-                          : () {
-                              if (mounted) {
-                                showSnackBarNow(
-                                    context,
-                                    Text(context
-                                        .loc.no_profile_yet_create_one_first));
-                              }
-                              widget.setSelectedIndex(2);
-                            }();
-                    },
-                  ))),
-          if (!widget.isLandscapeLayout && !_useFloatingActionButton)
-            Card(
-                margin: const EdgeInsets.all(8.0),
-                child: const Padding(
-                  padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
-                  child: VPNToggles(),
-                )),
-          ...CorePluginManager().instance.dashboardWidgets.of(context),
-          if (_useFloatingActionButton)
-            Container(
-              constraints: const BoxConstraints(
-                minHeight: 72,
-              ),
-            )
-        ]),
+                  )
+              ],
+            );
+          },
+        ),
       ),
       floatingActionButton: prefs.getBool("app.dashboard.floatingActionButton")!
           ? RayToggle(
