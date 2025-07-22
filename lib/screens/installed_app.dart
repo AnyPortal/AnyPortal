@@ -31,6 +31,7 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
   final focusNode = FocusNode();
 
   bool isToShowSystemApps = true;
+  String sortBy = "applicationLabel";
 
   bool isAppListLoading = false;
   List<InstalledApp> _allApps = [];
@@ -47,11 +48,12 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
           "applicationLabel",
           "flagSystem",
           "iconPath",
+          "firstInstallTime",
+          "lastUpdateTime",
         ]
       },
     );
     _allApps = apps?.map((e) => InstalledApp.fromMap(e)).toList() ?? [];
-    _allApps.sort((a, b) => a.applicationLabel!.compareTo(b.applicationLabel!));
     if (mounted) {
       setState(() {
         _allApps = _allApps;
@@ -69,7 +71,7 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
         final queryLowerCase = textEditingController.text.toLowerCase();
         _filteredApps = _allApps
             .where((e) =>
-                e.applicationLabel?.toLowerCase().contains(queryLowerCase) ==
+                e.applicationLabel.toLowerCase().contains(queryLowerCase) ==
                     true ||
                 e.packageName.toLowerCase().contains(queryLowerCase))
             .toList();
@@ -79,7 +81,94 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
         _filteredApps =
             _filteredApps.where((e) => e.flagSystem == false).toList();
       }
+
+      _filteredApps.sort((a, b) {
+        switch (sortBy) {
+          case "firstInstallTime":
+            return -a.firstInstallTime.compareTo(b.firstInstallTime);
+          case "lastUpdateTime":
+            return -a.lastUpdateTime.compareTo(b.lastUpdateTime);
+          case "applicationLabel":
+          case _:
+            return a.applicationLabel.compareTo(b.applicationLabel);
+        }
+      });
     });
+  }
+
+  List<PopupMenuEntry> getPopupMenuItems(BuildContext context) {
+    return [
+      PopupMenuItem(
+        child: Text(
+          context.loc.sort_by,
+          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+        ),
+      ),
+      PopupMenuItem(
+        child: IgnorePointer(
+          child: RadioListTile(
+            title: Text(context.loc.app_name),
+            value: "applicationLabel",
+            groupValue: sortBy,
+            controlAffinity: ListTileControlAffinity.trailing,
+            onChanged: (_) {},
+          ),
+        ),
+        onTap: () {
+          sortBy = "applicationLabel";
+          updateFilteredAppList();
+        },
+      ),
+      PopupMenuItem(
+        child: IgnorePointer(
+          child: RadioListTile(
+            title: Text(context.loc.last_update_time),
+            value: "lastUpdateTime",
+            groupValue: sortBy,
+            controlAffinity: ListTileControlAffinity.trailing,
+            onChanged: (_) {},
+          ),
+        ),
+        onTap: () {
+          sortBy = "lastUpdateTime";
+          updateFilteredAppList();
+        },
+      ),
+      PopupMenuItem(
+        child: IgnorePointer(
+          child: RadioListTile(
+            title: Text(context.loc.first_install_time),
+            value: "firstInstallTime",
+            groupValue: sortBy,
+            controlAffinity: ListTileControlAffinity.trailing,
+            onChanged: (_) {},
+          ),
+        ),
+        onTap: () {
+          sortBy = "firstInstallTime";
+          updateFilteredAppList();
+        },
+      ),
+      PopupMenuItem(
+        child: Text(
+          context.loc.options,
+          style: TextStyle(color: Theme.of(context).colorScheme.primary),
+        ),
+      ),
+      PopupMenuItem(
+        child: IgnorePointer(
+          child: CheckboxListTile(
+            title: Text(context.loc.show_system_apps),
+            value: isToShowSystemApps,
+            onChanged: (_) {},
+          ),
+        ),
+        onTap: () {
+          isToShowSystemApps = !isToShowSystemApps;
+          updateFilteredAppList();
+        },
+      )
+    ];
   }
 
   @override
@@ -137,30 +226,7 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
               },
             ),
             PopupMenuButton(
-              itemBuilder: (context) =>
-                  InstalledAppScreenAction.values.map((action) {
-                switch (action) {
-                  case InstalledAppScreenAction.showSystemApps:
-                    return PopupMenuItem(
-                      child: IgnorePointer(
-                        child: CheckboxListTile(
-                          title: Text(action.localized(context)),
-                          value: isToShowSystemApps,
-                          onChanged: (_) {},
-                        ),
-                      ),
-                      onTap: () {
-                        isToShowSystemApps = !isToShowSystemApps;
-                        updateFilteredAppList();
-                      },
-                    );
-                }
-              }).toList(),
-              onSelected: (selected) {
-                switch (selected) {
-                  case InstalledAppScreenAction.showSystemApps:
-                }
-              },
+              itemBuilder: getPopupMenuItems,
             )
           ],
         ),
@@ -170,7 +236,7 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
             enabled: _filteredApps.isEmpty,
             child: ListView.builder(
               primary: true,
-              itemCount: _filteredApps.isEmpty ? 4 : _filteredApps.length,
+              itemCount: _filteredApps.isEmpty ? 12 : _filteredApps.length,
               cacheExtent: 5000,
               itemBuilder: (context, i) {
                 if (_filteredApps.isEmpty) {
@@ -205,7 +271,7 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
                               child: Bone.square(
                               size: 56,
                             ))),
-                  title: Text(app.applicationLabel ?? ""),
+                  title: Text(app.applicationLabel),
                   subtitle: Text(app.packageName),
                   value: widget.selectedApps.contains(app.packageName),
                   onChanged: (selected) {
@@ -229,17 +295,19 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
 
 class InstalledApp {
   final String packageName;
-  final String? applicationLabel;
-  final bool? flagSystem;
-  final int? lastUpdateTime;
+  final String applicationLabel;
+  final bool flagSystem;
+  final int firstInstallTime;
+  final int lastUpdateTime;
   final String? iconPath;
 
   InstalledApp({
     required this.packageName,
-    this.applicationLabel,
-    this.flagSystem,
-    this.lastUpdateTime,
-    this.iconPath,
+    required this.applicationLabel,
+    required this.flagSystem,
+    required this.firstInstallTime,
+    required this.lastUpdateTime,
+    required this.iconPath,
   });
 
   factory InstalledApp.fromMap(Map<dynamic, dynamic> map) {
@@ -247,21 +315,9 @@ class InstalledApp {
       packageName: map['packageName'],
       applicationLabel: map['applicationLabel'],
       flagSystem: map['flagSystem'],
-      lastUpdateTime: map['installedTimestamp'],
+      firstInstallTime: map['firstInstallTime'],
+      lastUpdateTime: map['lastUpdateTime'],
       iconPath: map['iconPath'],
     );
-  }
-}
-
-enum InstalledAppScreenAction {
-  showSystemApps,
-}
-
-extension InstalledAppScreenActionX on InstalledAppScreenAction {
-  String localized(BuildContext context) {
-    switch (this) {
-      case InstalledAppScreenAction.showSystemApps:
-        return "Show system apps";
-    }
   }
 }

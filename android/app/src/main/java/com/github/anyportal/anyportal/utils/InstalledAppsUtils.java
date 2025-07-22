@@ -48,6 +48,11 @@ public class InstalledAppsUtils {
                 app.put("flagSystem", flagSystem);
             }
 
+            long firstInstallTime = packageInfo.firstInstallTime;
+            if (requestedFields.contains("firstInstallTime")) {
+                app.put("firstInstallTime", firstInstallTime);
+            }
+
             long lastUpdateTime = packageInfo.lastUpdateTime;
             if (requestedFields.contains("lastUpdateTime")) {
                 app.put("lastUpdateTime", lastUpdateTime);
