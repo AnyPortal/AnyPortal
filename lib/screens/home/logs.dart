@@ -261,16 +261,22 @@ class _LogViewerState extends State<LogViewer> {
                   setState(() {});
                   return true;
                 },
-                child: SingleChildScrollView(
+                child: Scrollbar(
                   controller: _scrollController,
-                  child: SizedBox(
-                    height: _lines.isEmpty
-                        ? 0
-                        : _measuredHeights.prefixSum(_lines.length - 1) +
-                            _viewportHeight -
-                            _defaultLineHeight,
-                    child: Stack(
-                      children: _buildPreciseVisibleItems(),
+                  interactive: true,
+                  // thickness: 8,
+                  // radius: Radius.circular(4),
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    child: SizedBox(
+                      height: _lines.isEmpty
+                          ? 0
+                          : _measuredHeights.prefixSum(_lines.length - 1) +
+                              _viewportHeight -
+                              _defaultLineHeight,
+                      child: Stack(
+                        children: _buildPreciseVisibleItems(),
+                      ),
                     ),
                   ),
                 ),
