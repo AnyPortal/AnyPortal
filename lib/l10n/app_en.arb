@@ -17,6 +17,7 @@
   "api_config": "Api config",
   "api_port": "Api port",
   "app": "App",
+  "app_name": "App name",
   "args": "Args",
   "asset_path": "Asset path",
   "asset_type": "Asset type",
@@ -96,6 +97,7 @@
       }
     }
   },
+  "first_install_time": "First install time",
   "follow_system_brightness": "Follow system brightness",
   "follow_system_locale": "Follow system locale",
   "foreground": "Foreground",
@@ -142,6 +144,7 @@
       }
     }
   },
+  "last_update_time": "Last update time",
   "launch_settings": "Launch settings",
   "live_objects": "Live obj.",
   "local_directory": "Local directory",
@@ -158,6 +161,7 @@
   "notification": "Notification",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "Notification permission is required for quick tiles to work properly",
   "open_settings": "Open Settings",
+  "options": "Options",
   "outbound_config_additional_socks_outbound": "Outbound config: additional socks outbound",
   "outbound_config_send_through": "Outbound config: sendThrough",
   "override_log_config": "Override log config",
@@ -218,11 +222,13 @@
   "server_address": "Server address",
   "settings": "Settings",
   "show_dashboard_floating_button": "Show dashboard floating button",
+  "show_system_apps": "Show system apps",
   "sing_box_path_is_null": "sing-box path is null",
   "socks_and_http": "Socks and HTTP",
   "socks_password": "Socks password",
   "socks_port": "Socks port",
   "socks_user_name": "Socks user name",
+  "sort_by": "Sort by",
   "speed_graph": "Speed graph",
   "standalone": "Standalone",
   "storage_permission_is_required_for_cores_to_load_assets_": "Storage permission is required for cores to load assets.",
@@ -275,11 +281,5 @@
   "working_dir": "Working dir",
   "works_fine_on_windows_will_fail_on_other_systems_with_short_lived_packets_like_dns_": "Works fine on Windows, will fail on other systems with short-lived packets (like DNS)",
   "you_may_want_to_check_settings_profile_override_inject_http_inbound": "You may want to check `Settings` -> `Profile override` -> `Inject http inbound`",
-  "you_may_want_to_check_settings_profile_override_inject_socks_inbound": "You may want to check `Settings` -> `Profile override` -> `Inject socks inbound`",
-  "options": "Options",
-  "first_install_time": "First install time",
-  "last_update_time": "Last update time",
-  "app_name": "App name",
-  "show_system_apps": "Show system apps",
-  "sort_by": "Sort by"
+  "you_may_want_to_check_settings_profile_override_inject_socks_inbound": "You may want to check `Settings` -> `Profile override` -> `Inject socks inbound`"
 }

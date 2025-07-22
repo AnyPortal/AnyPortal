@@ -17,6 +17,7 @@
   "api_config": "Конфигурация API",
   "api_port": "Порт API",
   "app": "Приложение",
+  "app_name": "Имя приложения",
   "args": "Аргументы",
   "asset_path": "Путь к ресурсу",
   "asset_type": "Тип ресурса",
@@ -97,6 +98,7 @@
       }
     }
   },
+  "first_install_time": "Время первой установки",
   "follow_system_brightness": "Следовать системной яркости",
   "follow_system_locale": "Следовать системному языку",
   "foreground": "Передний план",
@@ -143,6 +145,7 @@
       }
     }
   },
+  "last_update_time": "Время последнего обновления",
   "launch_settings": "Настройки запуска",
   "live_objects": "Живые объекты",
   "local_directory": "Локальный каталог",
@@ -159,6 +162,7 @@
   "notification": "Уведомление",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "Необходимо разрешение на уведомления для корректной работы быстрых плиток",
   "open_settings": "Открыть настройки",
+  "options": "Опции",
   "outbound_config_additional_socks_outbound": "Конфигурация исходящих соединений: дополнительные исходящие SOCKS",
   "outbound_config_send_through": "Конфигурация исходящих соединений: отправить через",
   "override_log_config": "Переопределить конфигурацию журнала",
@@ -219,11 +223,13 @@
   "server_address": "Адрес сервера",
   "settings": "Настройки",
   "show_dashboard_floating_button": "Показать плавающую кнопку на панели управления",
+  "show_system_apps": "Показать системные приложения",
   "sing_box_path_is_null": "Путь к sing-box не задан",
   "socks_and_http": "Socks и HTTP",
   "socks_password": "Пароль Socks",
   "socks_port": "Порт Socks",
   "socks_user_name": "Имя пользователя Socks",
+  "sort_by": "Сортировать по",
   "speed_graph": "График скорости",
   "standalone": "Автономный",
   "storage_permission_is_required_for_cores_to_load_assets_": "Для загрузки ресурсов ядрами требуется разрешение на доступ к хранилищу.",

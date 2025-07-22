@@ -17,6 +17,7 @@
   "api_config": "การตั้งค่า API",
   "api_port": "พอร์ต API",
   "app": "แอป",
+  "app_name": "ชื่อแอปพลิเคชัน",
   "args": "อาร์กิวเมนต์",
   "asset_path": "เส้นทางสินทรัพย์",
   "asset_type": "ประเภทสินทรัพย์",
@@ -97,6 +98,7 @@
       }
     }
   },
+  "first_install_time": "เวลาติดตั้งครั้งแรก",
   "follow_system_brightness": "ปฏิบัติตามความสว่างของระบบ",
   "follow_system_locale": "ปฏิบัติตามภาษาและภูมิภาคของระบบ",
   "foreground": "เบื้องหน้า",
@@ -143,6 +145,7 @@
       }
     }
   },
+  "last_update_time": "เวลาอัปเดตล่าสุด",
   "launch_settings": "การตั้งค่าการเปิดใช้งาน",
   "live_objects": "วัตถุสด",
   "local_directory": "ไดเรกทอรีท้องถิ่น",
@@ -159,6 +162,7 @@
   "notification": "การแจ้งเตือน",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "ต้องได้รับอนุญาตการแจ้งเตือนเพื่อให้ไทล์ด่วนทำงานได้อย่างถูกต้อง",
   "open_settings": "เปิดการตั้งค่า",
+  "options": "ตัวเลือก",
   "outbound_config_additional_socks_outbound": "การกำหนดค่าออก: SOCKS ออกเพิ่มเติม",
   "outbound_config_send_through": "การกำหนดค่าออก: ส่งผ่าน",
   "override_log_config": "แทนที่การกำหนดค่าบันทึก",
@@ -219,11 +223,13 @@
   "server_address": "ที่อยู่เซิร์ฟเวอร์",
   "settings": "การตั้งค่า",
   "show_dashboard_floating_button": "แสดงปุ่มลอยบนแดชบอร์ด",
+  "show_system_apps": "แสดงแอปของระบบ",
   "sing_box_path_is_null": "เส้นทาง sing-box เป็นค่า null",
   "socks_and_http": "SOCKS และ HTTP",
   "socks_password": "รหัสผ่าน SOCKS",
   "socks_port": "พอร์ต SOCKS",
   "socks_user_name": "ชื่อผู้ใช้ SOCKS",
+  "sort_by": "เรียงตาม",
   "speed_graph": "กราฟความเร็ว",
   "standalone": "แบบสแตนด์อโลน",
   "storage_permission_is_required_for_cores_to_load_assets_": "ต้องได้รับอนุญาตการจัดเก็บเพื่อให้ไฟล์หลักโหลดทรัพย์สินได้",

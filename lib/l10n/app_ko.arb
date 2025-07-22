@@ -17,6 +17,7 @@
   "api_config": "API 설정",
   "api_port": "API 포트",
   "app": "앱",
+  "app_name": "앱 이름",
   "args": "인수",
   "asset_path": "자산 경로",
   "asset_type": "자산 유형",
@@ -97,6 +98,7 @@
       }
     }
   },
+  "first_install_time": "최초 설치 시간",
   "follow_system_brightness": "시스템 밝기 따라가기",
   "follow_system_locale": "시스템 로케일 따라가기",
   "foreground": "전경",
@@ -143,6 +145,7 @@
       }
     }
   },
+  "last_update_time": "최종 업데이트 시간",
   "launch_settings": "실행 설정",
   "live_objects": "실시간 객체",
   "local_directory": "로컬 디렉토리",
@@ -159,6 +162,7 @@
   "notification": "알림",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "빠른 타일이 정상적으로 작동하려면 알림 권한이 필요합니다.",
   "open_settings": "설정 열기",
+  "options": "옵션",
   "outbound_config_additional_socks_outbound": "아웃바운드 설정: 추가 SOCKS 아웃바운드",
   "outbound_config_send_through": "아웃바운드 설정: 전송 경로",
   "override_log_config": "로그 설정 재정의",
@@ -219,11 +223,13 @@
   "server_address": "서버 주소",
   "settings": "설정",
   "show_dashboard_floating_button": "대시보드 浮動 버튼 표시하기",
+  "show_system_apps": "시스템 앱 표시",
   "sing_box_path_is_null": "sing-box 경로가 없습니다",
   "socks_and_http": "SOCKS 및 HTTP",
   "socks_password": "SOCKS 비밀번호",
   "socks_port": "SOCKS 포트",
   "socks_user_name": "SOCKS 사용자 이름",
+  "sort_by": "정렬 기준",
   "speed_graph": "속도 그래프",
   "standalone": "독립 실행형",
   "storage_permission_is_required_for_cores_to_load_assets_": "코어가 애셋을 로드하려면 저장소 권한이 필요합니다.",

@@ -17,6 +17,7 @@
   "api_config": "Configuração da API",
   "api_port": "Porta da API",
   "app": "Aplicativo",
+  "app_name": "Nome do aplicativo",
   "args": "Argumentos",
   "asset_path": "Caminho do ativo",
   "asset_type": "Tipo de ativo",
@@ -97,6 +98,7 @@
       }
     }
   },
+  "first_install_time": "Hora da primeira instalação",
   "follow_system_brightness": "Seguir brilho do sistema",
   "follow_system_locale": "Seguir localidade do sistema",
   "foreground": "Primeiro plano",
@@ -143,6 +145,7 @@
       }
     }
   },
+  "last_update_time": "Hora da última atualização",
   "launch_settings": "Configurações de inicialização",
   "live_objects": "Objetos ativos",
   "local_directory": "Diretório local",
@@ -159,6 +162,7 @@
   "notification": "Notificação",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "A permissão de notificação é necessária para que os atalhos rápidos funcionem corretamente",
   "open_settings": "Abrir configurações",
+  "options": "Opções",
   "outbound_config_additional_socks_outbound": "Configuração de saída: SOCKS adicional",
   "outbound_config_send_through": "Configuração de saída: sendThrough",
   "override_log_config": "Substituir configuração de log",
@@ -219,11 +223,13 @@
   "server_address": "Endereço do servidor",
   "settings": "Configurações",
   "show_dashboard_floating_button": "Mostrar botão flutuante do painel",
+  "show_system_apps": "Mostrar aplicativos do sistema",
   "sing_box_path_is_null": "O caminho do sing-box é nulo",
   "socks_and_http": "SOCKS e HTTP",
   "socks_password": "Senha SOCKS",
   "socks_port": "Porta SOCKS",
   "socks_user_name": "Nome de usuário SOCKS",
+  "sort_by": "Ordenar por",
   "speed_graph": "Gráfico de velocidade",
   "standalone": "Independente",
   "storage_permission_is_required_for_cores_to_load_assets_": "A permissão de armazenamento é necessária para que os núcleos carreguem os assets.",

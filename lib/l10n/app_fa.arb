@@ -17,6 +17,7 @@
   "api_config": "پیکربندی API",
   "api_port": "درگاه API",
   "app": "برنامه",
+  "app_name": "نام برنامه",
   "args": "آرگومان‌ها",
   "asset_path": "مسیر دارایی",
   "asset_type": "نوع دارایی",
@@ -97,6 +98,7 @@
       }
     }
   },
+  "first_install_time": "زمان نصب اولیه",
   "follow_system_brightness": "پیروی از روشنایی سیستم",
   "follow_system_locale": "پیروی از زبان سیستم",
   "foreground": "پیش‌زمینه",
@@ -143,6 +145,7 @@
       }
     }
   },
+  "last_update_time": "زمان آخرین به روز رسانی",
   "launch_settings": "تنظیمات راه‌اندازی",
   "live_objects": "اشیای زنده",
   "local_directory": "دایرکتوری محلی",
@@ -159,6 +162,7 @@
   "notification": "اعلان",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "مجوز اعلان برای عملکرد صحیح کاشی‌های سریع مورد نیاز است",
   "open_settings": "باز کردن تنظیمات",
+  "options": "گزینهها",
   "outbound_config_additional_socks_outbound": "پیکربندی خروجی: خروجی SOCKS اضافی",
   "outbound_config_send_through": "پیکربندی خروجی: ارسال از طریق",
   "override_log_config": "جای‌گذاری پیکربندی لاگ",
@@ -219,11 +223,13 @@
   "server_address": "آدرس سرور",
   "settings": "تنظیمات",
   "show_dashboard_floating_button": "نمایش دکمه شناور در پانل نظرات",
+  "show_system_apps": "نمایش برنامههای سیستم",
   "sing_box_path_is_null": "مسیر sing-box برابر با nulla است",
   "socks_and_http": "SOCKS و HTTP",
   "socks_password": "رمز عبور SOCKS",
   "socks_port": "پورت SOCKS",
   "socks_user_name": "نام کاربری SOCKS",
+  "sort_by": "مرتب سازی بر اساس",
   "speed_graph": "نمودار سرعت",
   "standalone": "مستقل",
   "storage_permission_is_required_for_cores_to_load_assets_": "مجوز ذخیره‌سازی برای بارگیری دارایی‌های هسته مورد نیاز است",

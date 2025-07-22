@@ -17,6 +17,7 @@
   "api_config": "Configuration de l'API",
   "api_port": "Port de l'API",
   "app": "Application",
+  "app_name": "Nom de l'application",
   "args": "Arguments",
   "asset_path": "Chemin de l'actif",
   "asset_type": "Type d'actif",
@@ -97,6 +98,7 @@
       }
     }
   },
+  "first_install_time": "Première installation",
   "follow_system_brightness": "Suivre la luminosité du système",
   "follow_system_locale": "Suivre la langue du système",
   "foreground": "Premier plan",
@@ -143,6 +145,7 @@
       }
     }
   },
+  "last_update_time": "Dernière mise à jour",
   "launch_settings": "Paramètres de lancement",
   "live_objects": "Objets actifs",
   "local_directory": "Répertoire local",
@@ -159,6 +162,7 @@
   "notification": "Notification",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "L'autorisation de notification est requise pour que les tuiles rapides fonctionnent correctement",
   "open_settings": "Ouvrir les paramètres",
+  "options": "Options",
   "outbound_config_additional_socks_outbound": "Configuration de sortie : sortie socks supplémentaire",
   "outbound_config_send_through": "Configuration de sortie : sendThrough",
   "override_log_config": "Remplacer la configuration des journaux",
@@ -219,11 +223,13 @@
   "server_address": "Adresse du serveur",
   "settings": "Paramètres",
   "show_dashboard_floating_button": "Afficher le bouton flottant du tableau de bord",
+  "show_system_apps": "Afficher les applications système",
   "sing_box_path_is_null": "Le chemin d'accès à sing-box est nul",
   "socks_and_http": "Socks et HTTP",
   "socks_password": "Mot de passe Socks",
   "socks_port": "Port Socks",
   "socks_user_name": "Nom d'utilisateur Socks",
+  "sort_by": "Trier par",
   "speed_graph": "Graphique de vitesse",
   "standalone": "Autonome",
   "storage_permission_is_required_for_cores_to_load_assets_": "L'autorisation de stockage est requise pour que les noyaux chargent les ressources.",

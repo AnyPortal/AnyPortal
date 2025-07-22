@@ -17,6 +17,7 @@
   "api_config": "एपीआई कॉन्फ़िगरेशन",
   "api_port": "एपीआई पोर्ट",
   "app": "ऐप",
+  "app_name": "ऐप नाम",
   "args": "आर्ग्स",
   "asset_path": "संपत्ति पथ",
   "asset_type": "संपत्ति प्रकार",
@@ -97,6 +98,7 @@
       }
     }
   },
+  "first_install_time": "पहली बार स्थापित करने का समय",
   "follow_system_brightness": "सिस्टम चमक का पालन करें",
   "follow_system_locale": "सिस्टम भाषा का पालन करें",
   "foreground": "अग्रभूमि",
@@ -143,6 +145,7 @@
       }
     }
   },
+  "last_update_time": "अंतिम अद्यतन समय",
   "launch_settings": "लॉन्च सेटिंग्स",
   "live_objects": "लाइव ऑब्जेक्ट्स",
   "local_directory": "स्थानीय निर्देशिका",
@@ -159,6 +162,7 @@
   "notification": "सूचना",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "क्विक टाइल्स को सही ढंग से काम करने के लिए सूचना अनुमति आवश्यक है",
   "open_settings": "सेटिंग्स खोलें",
+  "options": "विकल्प",
   "outbound_config_additional_socks_outbound": "आउटबाउंड कॉन्फ़िगरेशन: अतिरिक्त सॉक्स आउटबाउंड",
   "outbound_config_send_through": "आउटबाउंड कॉन्फ़िगरेशन: sendThrough",
   "override_log_config": "लॉग कॉन्फ़िगरेशन ओवरराइड करें",
@@ -219,11 +223,13 @@
   "server_address": "सर्वर पता",
   "settings": "सेटिंग्स",
   "show_dashboard_floating_button": "डैशबोर्ड फ्लोटिंग बटन दिखाएं",
+  "show_system_apps": "सिस्टम ऐप्स दिखाएँ",
   "sing_box_path_is_null": "sing-box पथ है null",
   "socks_and_http": "सॉक्स और HTTP",
   "socks_password": "सॉक्स पासवर्ड",
   "socks_port": "सॉक्स पोर्ट",
   "socks_user_name": "सॉक्स उपयोगकर्ता नाम",
+  "sort_by": "के अनुसार छाँटना",
   "speed_graph": "गति ग्राफ़",
   "standalone": "स्टैंडअलोन",
   "storage_permission_is_required_for_cores_to_load_assets_": "कोर को संपत्तियाँ लोड करने के लिए संग्रहण अनुमति आवश्यक है",

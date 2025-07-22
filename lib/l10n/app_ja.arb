@@ -17,6 +17,7 @@
   "api_config": "API 設定",
   "api_port": "API ポート",
   "app": "アプリ",
+  "app_name": "アプリ名",
   "args": "引数",
   "asset_path": "アセットのパス",
   "asset_type": "アセットタイプ",
@@ -97,6 +98,7 @@
       }
     }
   },
+  "first_install_time": "初回インストール時刻",
   "follow_system_brightness": "システムの明るさ設定に従う",
   "follow_system_locale": "システムのロケールに従う",
   "foreground": "前景",
@@ -143,6 +145,7 @@
       }
     }
   },
+  "last_update_time": "最終更新時刻",
   "launch_settings": "起動設定",
   "live_objects": "ライブオブジェクト",
   "local_directory": "ローカルディレクトリ",
@@ -159,6 +162,7 @@
   "notification": "通知",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "クイックタイルが正常に動作するためには通知の許可が必要です",
   "open_settings": "設定を開く",
+  "options": "オプション",
   "outbound_config_additional_socks_outbound": "アウトバウンド設定：追加のSOCKSアウトバウンド",
   "outbound_config_send_through": "アウトバウンド設定：送信先",
   "override_log_config": "ログ設定をオーバーライド",
@@ -219,11 +223,13 @@
   "server_address": "サーバーアドレス",
   "settings": "設定",
   "show_dashboard_floating_button": "ダッシュボードの浮動ボタンを表示",
+  "show_system_apps": "システムアプリを表示",
   "sing_box_path_is_null": "sing-boxのパスがnullです",
   "socks_and_http": "SOCKSとHTTP",
   "socks_password": "SOCKSパスワード",
   "socks_port": "SOCKSポート",
   "socks_user_name": "SOCKSユーザー名",
+  "sort_by": "並べ替え",
   "speed_graph": "速度グラフ",
   "standalone": "スタンドアロン",
   "storage_permission_is_required_for_cores_to_load_assets_": "コアがアセットを読み込むためにはストレージの権限が必要です。",

@@ -17,6 +17,7 @@
   "api_config": "API 配置",
   "api_port": "API 端口",
   "app": "应用",
+  "app_name": "应用名称",
   "args": "参数",
   "asset_path": "资源路径",
   "asset_type": "资源类型",
@@ -97,6 +98,7 @@
       }
     }
   },
+  "first_install_time": "首次安装时间",
   "follow_system_brightness": "跟随系统亮度",
   "follow_system_locale": "跟随系统语言",
   "foreground": "前台",
@@ -143,6 +145,7 @@
       }
     }
   },
+  "last_update_time": "最后更新时间",
   "launch_settings": "启动设置",
   "live_objects": "实时对象",
   "local_directory": "本地目录",
@@ -159,6 +162,7 @@
   "notification": "通知",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "快速开关正常工作需要通知权限",
   "open_settings": "打开设置",
+  "options": "选项",
   "outbound_config_additional_socks_outbound": "出站配置：额外的 socks 出站",
   "outbound_config_send_through": "出站配置：sendThrough",
   "override_log_config": "覆盖日志配置",
@@ -219,11 +223,13 @@
   "server_address": "服务器地址",
   "settings": "设置",
   "show_dashboard_floating_button": "显示仪表板悬浮按钮",
+  "show_system_apps": "显示系统应用",
   "sing_box_path_is_null": "sing-box路径为空",
   "socks_and_http": "Socks 和 HTTP",
   "socks_password": "Socks 密码",
   "socks_port": "Socks 端口",
   "socks_user_name": "Socks 用户名",
+  "sort_by": "排序依据",
   "speed_graph": "速度图表",
   "standalone": "独立模式",
   "storage_permission_is_required_for_cores_to_load_assets_": "核心加载资源需要存储权限。",

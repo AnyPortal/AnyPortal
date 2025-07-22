@@ -17,6 +17,7 @@
   "api_config": "API yapılandırması",
   "api_port": "API portu",
   "app": "Uygulama",
+  "app_name": "Uygulama adı",
   "args": "Argümanlar",
   "asset_path": "Varlık yolu",
   "asset_type": "Varlık türü",
@@ -97,6 +98,7 @@
       }
     }
   },
+  "first_install_time": "İlk kurulum zamanı",
   "follow_system_brightness": "Sistem parlaklığını takip et",
   "follow_system_locale": "Sistem dilini takip et",
   "foreground": "Ön plan",
@@ -143,6 +145,7 @@
       }
     }
   },
+  "last_update_time": "Son güncelleme zamanı",
   "launch_settings": "Başlatma ayarları",
   "live_objects": "Canlı nesneler",
   "local_directory": "Yerel dizin",
@@ -159,6 +162,7 @@
   "notification": "Bildirim",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "Hızlı kutucukların düzgün çalışması için bildirim izni gereklidir",
   "open_settings": "Ayarları Aç",
+  "options": "Seçenekler",
   "outbound_config_additional_socks_outbound": "Giden yapılandırma: ek socks çıkışı",
   "outbound_config_send_through": "Giden yapılandırma: sendThrough",
   "override_log_config": "Günlük yapılandırmasını geçersiz kıl",
@@ -219,11 +223,13 @@
   "server_address": "Sunucu adresi",
   "settings": "Ayarlar",
   "show_dashboard_floating_button": "Gösterge tablosu döner düğmesini aç",
+  "show_system_apps": "Sistem uygulamalarını göster",
   "sing_box_path_is_null": "sing-box yolu null",
   "socks_and_http": "Socks ve HTTP",
   "socks_password": "Socks parolası",
   "socks_port": "Socks bağlantı noktası",
   "socks_user_name": "Socks kullanıcı adı",
+  "sort_by": "Sütunlara göre sırala",
   "speed_graph": "Hız grafiği",
   "standalone": "Bağımsız",
   "storage_permission_is_required_for_cores_to_load_assets_": "Çekirdeklerin varlıkları yükleyebilmesi için depolama izni gereklidir.",

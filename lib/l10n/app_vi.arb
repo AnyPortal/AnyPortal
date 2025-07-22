@@ -17,6 +17,7 @@
   "api_config": "Cấu hình API",
   "api_port": "Cổng API",
   "app": "Ứng dụng",
+  "app_name": "Tên ứng dụng",
   "args": "Tham số",
   "asset_path": "Đường dẫn tài sản",
   "asset_type": "Loại tài sản",
@@ -97,6 +98,7 @@
       }
     }
   },
+  "first_install_time": "Thời gian cài đặt lần đầu",
   "follow_system_brightness": "Theo độ sáng hệ thống",
   "follow_system_locale": "Theo ngôn ngữ hệ thống",
   "foreground": "Tiền cảnh",
@@ -143,6 +145,7 @@
       }
     }
   },
+  "last_update_time": "Thời gian cập nhật lần cuối",
   "launch_settings": "Cài đặt khởi chạy",
   "live_objects": "Đối tượng trực tiếp",
   "local_directory": "Thư mục cục bộ",
@@ -159,6 +162,7 @@
   "notification": "Thông báo",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "Cần có quyền thông báo để các ô nhanh hoạt động đúng cách",
   "open_settings": "Mở cài đặt",
+  "options": "Tùy chọn",
   "outbound_config_additional_socks_outbound": "Cấu hình đầu ra: bổ sung đầu ra socks",
   "outbound_config_send_through": "Cấu hình đầu ra: gửi qua",
   "override_log_config": "Ghi đè cấu hình nhật ký",
@@ -219,11 +223,13 @@
   "server_address": "Địa chỉ máy chủ",
   "settings": "Cài đặt",
   "show_dashboard_floating_button": "Hiển thị nút nổi trên bảng điều khiển",
+  "show_system_apps": "Hiển thị ứng dụng hệ thống",
   "sing_box_path_is_null": "đường dẫn sing-box là không",
   "socks_and_http": "Socks và HTTP",
   "socks_password": "Mật khẩu Socks",
   "socks_port": "Cổng Socks",
   "socks_user_name": "Tên người dùng Socks",
+  "sort_by": "Sắp xếp theo",
   "speed_graph": "Biểu đồ tốc độ",
   "standalone": "Độc lập",
   "storage_permission_is_required_for_cores_to_load_assets_": "Cần có quyền lưu trữ để lõi tải tài nguyên.",

@@ -17,6 +17,7 @@
   "api_config": null,
   "api_port": null,
   "app": null,
+  "app_name": null,
   "args": null,
   "asset_path": null,
   "asset_type": null,
@@ -97,6 +98,7 @@
       }
     }
   },
+  "first_install_time": null,
   "follow_system_brightness": null,
   "follow_system_locale": null,
   "foreground": null,
@@ -143,6 +145,7 @@
       }
     }
   },
+  "last_update_time": null,
   "launch_settings": null,
   "live_objects": null,
   "local_directory": null,
@@ -159,6 +162,7 @@
   "notification": null,
   "notification_permission_is_required_for_quick_tiles_to_work_properly": null,
   "open_settings": null,
+  "options": null,
   "outbound_config_additional_socks_outbound": null,
   "outbound_config_send_through": null,
   "override_log_config": null,
@@ -219,11 +223,13 @@
   "server_address": null,
   "settings": null,
   "show_dashboard_floating_button": null,
+  "show_system_apps": null,
   "sing_box_path_is_null": null,
   "socks_and_http": null,
   "socks_password": null,
   "socks_port": null,
   "socks_user_name": null,
+  "sort_by": null,
   "speed_graph": null,
   "standalone": null,
   "storage_permission_is_required_for_cores_to_load_assets_": null,

@@ -17,6 +17,7 @@
   "api_config": "API-Konfiguration",
   "api_port": "API-Port",
   "app": "App",
+  "app_name": "Anwendungsname",
   "args": "Argumente",
   "asset_path": "Asset-Pfad",
   "asset_type": "Asset-Typ",
@@ -97,6 +98,7 @@
       }
     }
   },
+  "first_install_time": "Erste Installationszeit",
   "follow_system_brightness": "Systemhelligkeit folgen",
   "follow_system_locale": "Systemsprache folgen",
   "foreground": "Vordergrund",
@@ -143,6 +145,7 @@
       }
     }
   },
+  "last_update_time": "Letzte Aktualisierungszeit",
   "launch_settings": "Starteinstellungen",
   "live_objects": "Live-Objekte",
   "local_directory": "Lokales Verzeichnis",
@@ -159,6 +162,7 @@
   "notification": "Benachrichtigung",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "Die Benachrichtigungsberechtigung ist erforderlich, damit Schnellkacheln ordnungsgemäß funktionieren",
   "open_settings": "Einstellungen öffnen",
+  "options": "Optionen",
   "outbound_config_additional_socks_outbound": "Ausgehende Konfiguration: zusätzliche SOCKS-Ausgabe",
   "outbound_config_send_through": "Ausgehende Konfiguration: sendThrough",
   "override_log_config": "Protokollkonfiguration überschreiben",
@@ -219,11 +223,13 @@
   "server_address": "Serveradresse",
   "settings": "Einstellungen",
   "show_dashboard_floating_button": "Zeige schwebende Schaltfläche im Dashboard",
+  "show_system_apps": "System-Apps anzeigen",
   "sing_box_path_is_null": "sing-box-Pfad ist null",
   "socks_and_http": "SOCKS und HTTP",
   "socks_password": "SOCKS-Passwort",
   "socks_port": "SOCKS-Port",
   "socks_user_name": "SOCKS-Benutzername",
+  "sort_by": "Sortieren nach",
   "speed_graph": "Geschwindigkeitsdiagramm",
   "standalone": "Unabhängig",
   "storage_permission_is_required_for_cores_to_load_assets_": "Speicherberechtigung ist erforderlich, damit Kerne Assets laden können.",

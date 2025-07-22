@@ -17,6 +17,7 @@
   "api_config": "إعدادات API",
   "api_port": "منفذ API",
   "app": "التطبيق",
+  "app_name": "اسم التطبيق",
   "args": "المعاملات",
   "asset_path": "مسار الأصل",
   "asset_type": "نوع الأصل",
@@ -97,6 +98,7 @@
       }
     }
   },
+  "first_install_time": "تاريخ التثبيت الأول",
   "follow_system_brightness": "اتباع سطوع النظام",
   "follow_system_locale": "اتباع لغة النظام",
   "foreground": "المقدمة",
@@ -143,6 +145,7 @@
       }
     }
   },
+  "last_update_time": "تاريخ آخر تحديث",
   "launch_settings": "إعدادات التشغيل",
   "live_objects": "الكائنات الحية",
   "local_directory": "الدليل المحلي",
@@ -159,6 +162,7 @@
   "notification": "الإشعارات",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "إذن الإشعارات مطلوب لعمل المربعات السريعة بشكل صحيح",
   "open_settings": "فتح الإعدادات",
+  "options": "الخيارات",
   "outbound_config_additional_socks_outbound": "إعدادات الخروج: خروج إضافي لـ Socks",
   "outbound_config_send_through": "إعدادات الخروج: الإرسال عبر",
   "override_log_config": "تجاوز إعدادات السجل",
@@ -219,11 +223,13 @@
   "server_address": "عنوان الخادم",
   "settings": "الإعدادات",
   "show_dashboard_floating_button": "أظهر زر الطفو في لوحة القيادة",
+  "show_system_apps": "عرض التطبيقات النظامية",
   "sing_box_path_is_null": "مسار sing-box غير موجود",
   "socks_and_http": "Socks و HTTP",
   "socks_password": "كلمة مرور Socks",
   "socks_port": "منفذ Socks",
   "socks_user_name": "اسم مستخدم Socks",
+  "sort_by": "الترتيب حسب",
   "speed_graph": "مخطط السرعة",
   "standalone": "مستقل",
   "storage_permission_is_required_for_cores_to_load_assets_": "إذن التخزين مطلوب لكي تتمكن النواة من تحميل الأصول.",

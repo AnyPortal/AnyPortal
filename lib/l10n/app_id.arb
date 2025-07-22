@@ -17,6 +17,7 @@
   "api_config": "Konfigurasi API",
   "api_port": "Port API",
   "app": "Aplikasi",
+  "app_name": "Nama aplikasi",
   "args": "Argumen",
   "asset_path": "Jalur aset",
   "asset_type": "Jenis aset",
@@ -97,6 +98,7 @@
       }
     }
   },
+  "first_install_time": "Waktu instal pertama",
   "follow_system_brightness": "Ikuti kecerahan sistem",
   "follow_system_locale": "Ikuti lokal sistem",
   "foreground": "Latar depan",
@@ -143,6 +145,7 @@
       }
     }
   },
+  "last_update_time": "Waktu pembaruan terakhir",
   "launch_settings": "Pengaturan peluncuran",
   "live_objects": "Objek langsung",
   "local_directory": "Direktori lokal",
@@ -159,6 +162,7 @@
   "notification": "Notifikasi",
   "notification_permission_is_required_for_quick_tiles_to_work_properly": "Izin notifikasi diperlukan agar ubin cepat berfungsi dengan baik",
   "open_settings": "Buka Pengaturan",
+  "options": "Opsi",
   "outbound_config_additional_socks_outbound": "Konfigurasi keluar: tambahan socks outbound",
   "outbound_config_send_through": "Konfigurasi keluar: sendThrough",
   "override_log_config": "Timpa konfigurasi log",
@@ -219,11 +223,13 @@
   "server_address": "Alamat server",
   "settings": "Pengaturan",
   "show_dashboard_floating_button": "Tampilkan tombol mengapung di dasbor",
+  "show_system_apps": "Tampilkan aplikasi sistem",
   "sing_box_path_is_null": "Jalur sing-box adalah null",
   "socks_and_http": "Socks dan HTTP",
   "socks_password": "Kata sandi Socks",
   "socks_port": "Port Socks",
   "socks_user_name": "Nama pengguna Socks",
+  "sort_by": "Urutkan berdasarkan",
   "speed_graph": "Grafik kecepatan",
   "standalone": "Mandiri",
   "storage_permission_is_required_for_cores_to_load_assets_": "Izin penyimpanan diperlukan agar inti dapat memuat aset.",
