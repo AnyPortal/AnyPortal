@@ -110,7 +110,7 @@ class PlatformNetInterfaceMacOS implements PlatformNetInterface {
         }
 
         if (trimmed.startsWith('nameserver')) {
-          final parts = trimmed.split(':');
+          final parts = trimmed.split(' : ');
           if (parts.length >= 2) {
             final ip = parts[1].trim();
             tempServers.add(ip);
@@ -126,7 +126,9 @@ class PlatformNetInterfaceMacOS implements PlatformNetInterface {
         if (matchingBlock && tempServers.isNotEmpty) {
           // Add collected servers
           for (final ip in tempServers) {
-            if (ip.contains(':')) {
+            if (ip.contains('%')) {
+              /// ipv6 local address to a specific interface, ignore for now
+            } else if (ip.contains(':')) {
               dnsIPv6AddressSet.add(ip);
             } else {
               dnsIPv4AddressSet.add(ip);
