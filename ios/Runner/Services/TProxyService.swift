@@ -88,4 +88,7 @@ class TProxyService {
             completion(isRunning)
         }
     }
+
+    func startAll(){}
+    func stopAll(){}
 }

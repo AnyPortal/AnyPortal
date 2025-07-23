@@ -14,7 +14,7 @@ import Flutter
         GeneratedPluginRegistrant.register(with: self)
         
         // Initialize TProxyService when the app starts
-        tProxyService = TProxyService()
+        self.tProxyService = TProxyService()
         
         setupFlutterMethodChannel()
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
@@ -26,10 +26,10 @@ import Flutter
         
         channel.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
             if call.method == "startAll" {
-                tProxyService?.startAll()
+                self.tProxyService?.startAll()
                 result(nil)
             } else if call.method == "stopAll" {
-                tProxyService?.stopAll()
+                self.tProxyService?.stopAll()
                 result(nil)
             } else if call.method == "isTProxyRunning" {
                 let isRunning = self.isTProxyRunning()
@@ -48,7 +48,7 @@ import Flutter
 
     // Check if the TProxyService is running
     private func isTProxyRunning() -> Bool {
-        tProxyService?.isServiceRunning(completion: updateisTProxyRunning)
+        self.tProxyService?.isServiceRunning(completion: updateisTProxyRunning)
         return _isTProxyRunning
     }
 }
