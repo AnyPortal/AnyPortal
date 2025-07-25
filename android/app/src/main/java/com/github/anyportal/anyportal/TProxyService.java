@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.OutputStream;
 
 import org.json.JSONObject;
@@ -639,6 +640,7 @@ public class TProxyService extends VpnService {
         if (coreProcess != null) {
             coreProcess.destroy();
             coreProcess = null;
+            return;
         }
 
         try {
@@ -654,6 +656,33 @@ public class TProxyService extends VpnService {
         // startService(stopIntent);
         // just stopService is enough
         stopService(new Intent(getApplicationContext(), LibV2RayService.class));
+
+        /// find pid
+        int libV2RayServicePid = -1;
+        File procDir = new File("/proc");
+        for (File f : procDir.listFiles()) {
+            if (!f.isDirectory())
+                continue;
+            String name = f.getName();
+            if (!name.matches("\\d+"))
+                continue; // only numeric dirs are PIDs
+            int pid = Integer.parseInt(name);
+            try {
+                File cmdline = new File("/proc/" + pid + "/cmdline");
+                BufferedReader br = new BufferedReader(new FileReader(cmdline));
+                String cmd = br.readLine();
+                br.close();
+                if (cmd != null && cmd.contains(":libv2ray_process")) {
+                    libV2RayServicePid = pid;
+                    break;
+                }
+            } catch (IOException ignored) {
+            }
+        }
+        if (libV2RayServicePid > 0) {
+            Log.i(TAG, "libv2ray_process found, force killing");
+            android.os.Process.killProcess(libV2RayServicePid);
+        }
 
         isCoreActive = false;
         notifyMainActivityCoreStatusChange();

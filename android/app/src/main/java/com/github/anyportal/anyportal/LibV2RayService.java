@@ -64,7 +64,7 @@ public class LibV2RayService extends Service{
         stopCore();
         super.onDestroy();
         Log.d(TAG, "finished: onDestroy");
-        android.os.Process.killProcess(android.os.Process.myPid());
+        // android.os.Process.killProcess(android.os.Process.myPid());
     }
 
     private void startCore() {
