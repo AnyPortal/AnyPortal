@@ -99,7 +99,9 @@ class PlatformNetInterfaceLinux implements PlatformNetInterface {
           if (colonSplit.length >= 2) {
             final ips = colonSplit[1].trim().split(RegExp(r'\s+'));
             for (final ip in ips) {
-              if (ip.contains(':')) {
+              if (ip.contains('%')) {
+                /// ipv6 local address to a specific interface, ignore for now
+              } else if (ip.contains(':')) {
                 dnsIPv6AddressSet.add(ip);
               } else {
                 dnsIPv4AddressSet.add(ip);

@@ -17,7 +17,9 @@ class PlatformNetInterfaceAndroid implements PlatformNetInterface {
     final Set<String> dnsIPv4AddressSet = {};
     final Set<String> dnsIPv6AddressSet = {};
     for (final s in linkProperties.dnsServers) {
-      if (s.contains(":")) {
+      if (s.contains('%')) {
+        /// ipv6 local address to a specific interface, ignore for now
+      } else if (s.contains(":")) {
         dnsIPv6AddressSet.add(s);
       } else {
         dnsIPv4AddressSet.add(s);
