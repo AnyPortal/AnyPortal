@@ -322,8 +322,7 @@ class _ProfileListState extends State<ProfileList> {
                                   context, Text(context.loc.reconnecting));
                             }
 
-                            await vPNMan.stopCore();
-                            final res = await vPNMan.startCore();
+                            final res = await vPNMan.restartCore();
 
                             String msg = "";
                             if (context.mounted) {

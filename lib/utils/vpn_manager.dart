@@ -102,6 +102,8 @@ abstract class VPNManager with ChangeNotifier {
       }
     } else if (!isCoreActive && dataNotifier.on) {
       dataNotifier.stop();
+    } else {
+      logger.w("isCoreActive: $isCoreActive, dataNotifier.on: ${dataNotifier.on}");
     }
   }
 
@@ -233,6 +235,7 @@ abstract class VPNManager with ChangeNotifier {
       }
     }
     isAllActive = value;
+    isCoreActive = value;
     setisTogglingAll(false);
     if (isToNotify) {
       notifyListeners();
@@ -419,6 +422,15 @@ abstract class VPNManager with ChangeNotifier {
 
     /// stop
     return await _stopCore();
+  }
+
+  Future<bool> restartCore() async {
+    if (await stopCore()) {
+      return await startCore();
+    } else {
+      logger.e("restartCore: stop core failed");
+      return false;
+    }
   }
 
   Future<void> startTun() async {
@@ -1089,18 +1101,33 @@ class VPNManagerMC extends VPNManager {
   void handleAllStatusChange(MethodCall call) {
     final isActive = call.arguments as bool;
     // logger.d("handleAllStatusChange: $isActive");
+    if (isActive) {
+      _startAllCompleter.complete();
+    } else {
+      _stopAllCompleter.complete();
+    }
     setIsAllActive(isActive);
   }
 
   void handleCoreStatusChange(MethodCall call) {
     final isActive = call.arguments as bool;
     // logger.d("handleCoreStatusChange: $isActive");
+    if (isActive) {
+      _startCoreCompleter.complete();
+    } else {
+      _stopCoreCompleter.complete();
+    }
     setIsCoreActive(isActive);
   }
 
   void handleTunStatusChange(MethodCall call) {
     final isActive = call.arguments as bool;
     // logger.d("handleTunStatusChange: $isActive");
+    if (isActive) {
+      _startTunCompleter.complete();
+    } else {
+      _stopTunCompleter.complete();
+    }
     setIsTunActive(isActive);
   }
 
@@ -1143,6 +1170,8 @@ class VPNManagerMC extends VPNManager {
     return await platform.invokeMethod('vpn.isSystemProxyActive') as bool;
   }
 
+  var _startAllCompleter = Completer<void>();
+
   @override
   _startAll() async {
     final ok = await prepareCore();
@@ -1151,29 +1180,33 @@ class VPNManagerMC extends VPNManager {
     if (prefs.getBool("tun")! && !prefs.getBool("tun.useEmbedded")!) {
       await initTunExec();
     }
+    _startAllCompleter = Completer<void>();
     final res = await platform.invokeMethod('vpn.startAll') as bool;
-    // if (res == true) {
-    //   setIsCoreActive(true, isToNotify: false);
-    //   setIsAllActive(true, isToNotify: false);
-    //   await updateIsSystemProxyActive(isToNotify: false);
-    //   await updateIsTunActive(isToNotify: false);
-    //   notifyListeners();
-    // }
-    return res;
+    if (!res) return false;
+    await Future.any([
+      Future.delayed(Duration(seconds: 5)),
+      _startAllCompleter.future,
+    ]);
+    if (!_startAllCompleter.isCompleted) return false;
+    return true;
   }
+
+  var _stopAllCompleter = Completer<void>();
 
   @override
   _stopAll() async {
+    _stopAllCompleter = Completer<void>();
     final res = await platform.invokeMethod('vpn.stopAll') as bool;
-    // if (res == true) {
-    //   setIsCoreActive(false, isToNotify: false);
-    //   setIsAllActive(false, isToNotify: false);
-    //   await updateIsSystemProxyActive(isToNotify: false);
-    //   await updateIsTunActive(isToNotify: false);
-    //   notifyListeners();
-    // }
-    return res;
+    if (!res) return false;
+    await Future.any([
+      Future.delayed(Duration(seconds: 5)),
+      _stopAllCompleter.future,
+    ]);
+    if (!_stopAllCompleter.isCompleted) return false;
+    return true;
   }
+
+  var _startTunCompleter = Completer<void>();
 
   @override
   _startTun() async {
@@ -1193,41 +1226,63 @@ class VPNManagerMC extends VPNManager {
       }
       await initTunExec();
     }
+    _startTunCompleter = Completer<void>();
     final res = await platform.invokeMethod('vpn.startTun') as bool;
-    // if (res == true) {
-    //   setIsTunActive(true);
-    // }
-    return res;
+    if (!res) return false;
+    await Future.any([
+      Future.delayed(Duration(seconds: 5)),
+      _startTunCompleter.future,
+    ]);
+    if (!_startTunCompleter.isCompleted) return false;
+    return true;
   }
+
+  var _stopTunCompleter = Completer<void>();
 
   @override
   _stopTun() async {
+    _stopTunCompleter = Completer<void>();
     final res = await platform.invokeMethod('vpn.stopTun') as bool;
-    // if (res == true) {
-    //   setIsTunActive(false);
-    // }
-    return res;
+    if (!res) return false;
+    await Future.any([
+      Future.delayed(Duration(seconds: 5)),
+      _stopTunCompleter.future,
+    ]);
+    if (!_stopTunCompleter.isCompleted) return false;
+    return true;
   }
+
+  var _startCoreCompleter = Completer<void>();
 
   @override
   _startCore() async {
     final ok = await prepareCore();
     if (!ok) return false;
 
+    _startCoreCompleter = Completer<void>();
     final res = await platform.invokeMethod('vpn.startCore') as bool;
-    // if (res == true) {
-    //   setIsCoreActive(true);
-    // }
-    return res;
+    if (!res) return false;
+    await Future.any([
+      Future.delayed(Duration(seconds: 5)),
+      _startCoreCompleter.future,
+    ]);
+    if (!_startCoreCompleter.isCompleted) return false;
+    return true;
   }
+
+  var _stopCoreCompleter = Completer<void>();
 
   @override
   _stopCore() async {
+    _stopCoreCompleter = Completer<void>();
     final res = await platform.invokeMethod('vpn.stopCore') as bool;
-    // if (res == true) {
-    //   setIsCoreActive(false);
-    // }
-    return res;
+    if (!res) return false;
+    await Future.any([
+      Future.delayed(Duration(seconds: 5)),
+      _stopCoreCompleter.future,
+    ]);
+    if (!_stopCoreCompleter.isCompleted) return false;
+    return true;
   }
 
   @override

@@ -94,15 +94,13 @@ class ConnectivityManager {
 
   Future<void> onEffectiveDnsChanged() async {
     if (prefs.getBool('inject.dns.local')! && vPNMan.isCoreActive) {
-      await vPNMan.stopCore();
-      await vPNMan.startCore();
+      await vPNMan.restartCore();
     }
   }
 
   Future<void> onEffectiveIpChanged() async {
     if (prefs.getBool('inject.sendThrough')! && vPNMan.isCoreActive) {
-      await vPNMan.stopCore();
-      await vPNMan.startCore();
+      await vPNMan.restartCore();
     }
   }
 
@@ -134,8 +132,7 @@ class ConnectivityManager {
         }
 
         if (shouldRestartCore && vPNMan.isCoreActive) {
-          await vPNMan.stopCore();
-          await vPNMan.startCore();
+          await vPNMan.restartCore();
         }
       });
     });
