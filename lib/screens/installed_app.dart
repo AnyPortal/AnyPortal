@@ -34,8 +34,8 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
   String sortBy = "applicationLabel";
 
   bool isAppListLoading = false;
-  List<InstalledApp> _allApps = [];
-  List<InstalledApp> _filteredApps = [];
+  List<InstalledApp>? _allApps;
+  List<InstalledApp>? _filteredApps;
 
   Future<void> updateAppList({bool ensureIcon = false}) async {
     setState(() {
@@ -65,11 +65,12 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
 
   void updateFilteredAppList() {
     setState(() {
+      if (_allApps == null) return;
       if (textEditingController.text == "") {
-        _filteredApps = _allApps;
+        _filteredApps = _allApps!;
       } else {
         final queryLowerCase = textEditingController.text.toLowerCase();
-        _filteredApps = _allApps
+        _filteredApps = _allApps!
             .where((e) =>
                 e.applicationLabel.toLowerCase().contains(queryLowerCase) ==
                     true ||
@@ -79,10 +80,10 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
 
       if (!isToShowSystemApps) {
         _filteredApps =
-            _filteredApps.where((e) => e.flagSystem == false).toList();
+            _filteredApps!.where((e) => e.flagSystem == false).toList();
       }
 
-      _filteredApps.sort((a, b) {
+      _filteredApps!.sort((a, b) {
         switch (sortBy) {
           case "firstInstallTime":
             return -a.firstInstallTime.compareTo(b.firstInstallTime);
@@ -233,13 +234,13 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
         body: Scrollbar(
           interactive: true,
           child: Skeletonizer(
-            enabled: _filteredApps.isEmpty,
+            enabled: _filteredApps == null,
             child: ListView.builder(
               primary: true,
-              itemCount: _filteredApps.isEmpty ? 12 : _filteredApps.length,
+              itemCount: _filteredApps == null ? 12 : _filteredApps!.length,
               cacheExtent: 5000,
               itemBuilder: (context, i) {
-                if (_filteredApps.isEmpty) {
+                if (_filteredApps == null) {
                   return const ListTile(
                     leading: SizedBox(
                       width: 56,
@@ -259,7 +260,7 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
                   );
                 }
 
-                final app = _filteredApps[i];
+                final app = _filteredApps![i];
                 final iconPath = app.iconPath;
                 return CheckboxListTile(
                   secondary: SizedBox(
