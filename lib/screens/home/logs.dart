@@ -158,7 +158,7 @@ class _LogViewerState extends State<LogViewer> {
   StreamSubscription? _streamSubscription;
 
   void _startFileMonitor() {
-    if (RuntimePlatform.isAndroid) {
+    if (RuntimePlatform.isAndroid || RuntimePlatform.isIOS) {
       mCMan.methodChannel.invokeListMethod(
           'log.core.startWatching', {"filePath": _logFile.absolute.path});
       mCMan.addHandler('onFileChange', handleFileChange);

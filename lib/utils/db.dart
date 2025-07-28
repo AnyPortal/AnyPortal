@@ -125,8 +125,8 @@ class Database extends _$Database {
               name: Value(e.toString()),
             ));
           }
-          // android embedded core
-          if (RuntimePlatform.isAndroid) {
+          // embedded core
+          if (RuntimePlatform.isAndroid || RuntimePlatform.isIOS) {
             final coreId =
                 await into(core).insertOnConflictUpdate(CoreCompanion(
               coreTypeId: Value(CoreTypeDefault.xray.index),
