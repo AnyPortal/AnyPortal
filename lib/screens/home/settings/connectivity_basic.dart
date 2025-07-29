@@ -36,7 +36,7 @@ class _ConnectivityBasicScreenState extends State<ConnectivityBasicScreen> {
                 title: context.loc.server_address,
                 initialValue: _serverAddress,
                 onSaved: (String value) {
-                  prefs.setString('app.server.address', _serverAddress);
+                  prefs.setString('app.server.address', value);
                   setState(() {
                     _serverAddress = value;
                   });
