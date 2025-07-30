@@ -103,7 +103,8 @@ abstract class VPNManager with ChangeNotifier {
     } else if (!isCoreActive && dataNotifier.on) {
       dataNotifier.stop();
     } else {
-      logger.w("isCoreActive: $isCoreActive, dataNotifier.on: ${dataNotifier.on}");
+      logger.w(
+          "isCoreActive: $isCoreActive, dataNotifier.on: ${dataNotifier.on}");
     }
   }
 
@@ -653,7 +654,11 @@ abstract class VPNManager with ChangeNotifier {
     }
 
     // get core env
-    _coreEnvs = (jsonDecode(core.read(db.core.envs)!) as Map<String, dynamic>)
+    String? coreEnvsStr = core.read(db.core.envs);
+    if (coreEnvsStr == null || coreEnvsStr == "") {
+      coreEnvsStr = "{}";
+    }
+    _coreEnvs = (jsonDecode(coreEnvsStr!) as Map<String, dynamic>)
         .map((k, v) => MapEntry(k, v as String));
     await prefs.setString('cache.core.envs', jsonEncode(_coreEnvs));
 
@@ -748,9 +753,12 @@ abstract class VPNManager with ChangeNotifier {
             .writeAsString(jsonEncode(tunSingBoxRawCfgMap));
 
         /// get core env
-        _tunSingBoxCoreEnvs =
-            (jsonDecode(core.read(db.core.envs)!) as Map<String, dynamic>)
-                .map((k, v) => MapEntry(k, v as String));
+        String? coreEnvsStr = core.read(db.core.envs);
+        if (coreEnvsStr == null || coreEnvsStr == "") {
+          coreEnvsStr = "{}";
+        }
+        _tunSingBoxCoreEnvs = (jsonDecode(coreEnvsStr!) as Map<String, dynamic>)
+            .map((k, v) => MapEntry(k, v as String));
         await prefs.setString(
             'cache.tun.singBox.core.envs', jsonEncode(_tunSingBoxCoreEnvs));
 
