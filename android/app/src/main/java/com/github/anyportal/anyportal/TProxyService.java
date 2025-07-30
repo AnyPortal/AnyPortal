@@ -640,6 +640,10 @@ public class TProxyService extends VpnService {
         if (coreProcess != null) {
             coreProcess.destroy();
             coreProcess = null;
+            
+            isCoreActive = false;
+            notifyMainActivityCoreStatusChange();
+            Log.d(TAG, "finished: stopCore");
             return;
         }
 
