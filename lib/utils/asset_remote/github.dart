@@ -291,10 +291,11 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
       {TypedResult? asset}) async {
     if (asset == null) return;
     final assetId = asset.read(db.asset.id)!;
-    await db.into(db.assetRemote).insertOnConflictUpdate(AssetRemoteCompanion(
-          assetId: Value(assetId),
-          checkedAt: Value(DateTime.now()),
-        ));
+    await (db.update(db.assetRemote)..where((e) => e.assetId.equals(assetId)))
+        .write(AssetRemoteCompanion(
+      assetId: Value(assetId),
+      checkedAt: Value(DateTime.now()),
+    ));
   }
 
   /// return isUpdated
