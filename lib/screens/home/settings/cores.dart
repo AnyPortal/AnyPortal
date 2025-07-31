@@ -324,23 +324,22 @@ class _CoresScreenState extends State<CoresScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Stack(children: [
-            Text(context.loc.cores),
-            Align(
-                alignment: Alignment.topRight,
-                child: SmoothHighlight(
-                    enabled: _highlightCoresPopupMenuButton,
-                    color: Colors.grey,
-                    child: PopupMenuButton(
-                      itemBuilder: (context) => CoresAction.values
-                          .map((action) => PopupMenuItem(
-                                value: action,
-                                child: Text(action.localized(context)),
-                              ))
-                          .toList(),
-                      onSelected: (value) => handleCoresAction(value),
-                    )))
-          ]),
+          title: Text(context.loc.cores),
+          actions: [
+            SmoothHighlight(
+              enabled: _highlightCoresPopupMenuButton,
+              color: Colors.grey,
+              child: PopupMenuButton(
+                itemBuilder: (context) => CoresAction.values
+                    .map((action) => PopupMenuItem(
+                          value: action,
+                          child: Text(action.localized(context)),
+                        ))
+                    .toList(),
+                onSelected: (value) => handleCoresAction(value),
+              ),
+            ),
+          ],
         ),
         body: Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),

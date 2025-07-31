@@ -268,24 +268,22 @@ class _ProfileListState extends State<ProfileList> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Stack(children: [
-            Text(context.loc.profiles),
-            Align(
-                alignment: Alignment.centerRight,
-                heightFactor: 0.7,
-                child: SmoothHighlight(
-                    enabled: _highlightProfilesPopupMenuButton,
-                    color: Colors.grey,
-                    child: PopupMenuButton(
-                      itemBuilder: (context) => ProfilesAction.values
-                          .map((action) => PopupMenuItem(
-                                value: action,
-                                child: Text(action.localized(context)),
-                              ))
-                          .toList(),
-                      onSelected: (value) => handleProfilesAction(value),
-                    )))
-          ]),
+          title: Text(context.loc.profiles),
+          actions: [
+            SmoothHighlight(
+              enabled: _highlightProfilesPopupMenuButton,
+              color: Colors.grey,
+              child: PopupMenuButton(
+                itemBuilder: (context) => ProfilesAction.values
+                    .map((action) => PopupMenuItem(
+                          value: action,
+                          child: Text(action.localized(context)),
+                        ))
+                    .toList(),
+                onSelected: (value) => handleProfilesAction(value),
+              ),
+            ),
+          ],
         ),
         body: Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),

@@ -218,23 +218,22 @@ class _AssetsScreenState extends State<AssetsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Stack(children: [
-            Text(context.loc.assets),
-            Align(
-                alignment: Alignment.topRight,
-                child: SmoothHighlight(
-                    enabled: _highlightAssetsPopupMenuButton,
-                    color: Colors.grey,
-                    child: PopupMenuButton(
-                      itemBuilder: (context) => AssetsAction.values
-                          .map((action) => PopupMenuItem(
-                                value: action,
-                                child: Text(action.localized(context)),
-                              ))
-                          .toList(),
-                      onSelected: (value) => handleAssetsAction(value),
-                    )))
-          ]),
+          title: Text(context.loc.assets),
+          actions: [
+            SmoothHighlight(
+              enabled: _highlightAssetsPopupMenuButton,
+              color: Colors.grey,
+              child: PopupMenuButton(
+                itemBuilder: (context) => AssetsAction.values
+                    .map((action) => PopupMenuItem(
+                          value: action,
+                          child: Text(action.localized(context)),
+                        ))
+                    .toList(),
+                onSelected: (value) => handleAssetsAction(value),
+              ),
+            ),
+          ],
         ),
         body: ListView.builder(
           itemCount: _assets.length,

@@ -230,21 +230,18 @@ class _LogViewerState extends State<LogViewer> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Stack(children: [
-          Text(context.loc.logs),
-          Align(
-              alignment: Alignment.centerRight,
-              heightFactor: 0.7,
-              child: PopupMenuButton(
-                itemBuilder: (context) => LogsAction.values
-                    .map((action) => PopupMenuItem(
-                          value: action,
-                          child: Text(action.localized(context)),
-                        ))
-                    .toList(),
-                onSelected: (value) => handleLogsAction(value),
-              ))
-        ]),
+        title: Text(context.loc.logs),
+        actions: [
+          PopupMenuButton(
+            itemBuilder: (context) => LogsAction.values
+                .map((action) => PopupMenuItem(
+                      value: action,
+                      child: Text(action.localized(context)),
+                    ))
+                .toList(),
+            onSelected: (value) => handleLogsAction(value),
+          ),
+        ],
       ),
       body: Stack(children: [
         Container(
