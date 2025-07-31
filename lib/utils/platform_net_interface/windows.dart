@@ -17,13 +17,13 @@ class PlatformNetInterfaceWindows implements PlatformNetInterface {
   }) async {
     final defaultNetRouteListFuture = getWindowsdefaultNetRouteList();
     // final netIPInterfaceListFuture = getWindowsNetIPInterfaceList();
+    final netAdapterListFuture = getWindowsNetAdapterList();
     final netIPAddressListFuture = getWindowsNetIPAddressList();
 
     final dnsClientServerAddressListFuture =
         getWindowsDnsClientServerAddressList();
     final defaultNetRouteList = await defaultNetRouteListFuture;
-    Map<int, Map<String, dynamic>> defaultNetRouteMap =
-        getMapOfInterfaceIndex(defaultNetRouteList);
+    final defaultNetRouteMap = getMapOfInterfaceIndex(defaultNetRouteList);
 
     /// InterfaceIndex => EffectiveMetric = RouteMetric + InterfaceMetric
     Map<int, int> effectiveMetrics = {};
@@ -43,17 +43,24 @@ class PlatformNetInterfaceWindows implements PlatformNetInterface {
     final sortedEffectiveMetrics = effectiveMetrics.entries.toList()
       ..sort((a, b) => a.value.compareTo(b.value));
     final netIPAddressList = await netIPAddressListFuture;
-    Map<int, List<Map<String, dynamic>>> netIPAddressListMap =
-        getListMapOfInterfaceIndex(netIPAddressList);
+    final netIPAddressListMap = getListMapOfInterfaceIndex(netIPAddressList);
+    final netAdapterList = await netAdapterListFuture;
+    final netAdapterMap = getMapOfInterfaceIndex(netAdapterList);
     int chosenInterfaceIndex = 0;
     bool chosenInterfaceFound = false;
     final Set<String> iPv4AddressSet = {};
     final Set<String> iPv6AddressSet = {};
     for (final e in sortedEffectiveMetrics) {
       final interfaceIndex = e.key;
+
+      final netAdapter = netAdapterMap[interfaceIndex]!;
+      if (netAdapter["Status"] != "Up") {
+        continue;
+      }
+
       iPv4AddressSet.clear();
       iPv6AddressSet.clear();
-      for (var netIPAddress in netIPAddressListMap[interfaceIndex]!) {
+      for (final netIPAddress in netIPAddressListMap[interfaceIndex]!) {
         if (netIPAddress["AddressFamily"] == AF_INET) {
           iPv4AddressSet.add(netIPAddress["IPv4Address"]);
         } else if (netIPAddress["AddressFamily"] == AF_INET6) {
@@ -81,7 +88,7 @@ class PlatformNetInterfaceWindows implements PlatformNetInterface {
     //     await getWindowsDnsClientServerAddressListOfNetIPInterface(
     //         chosenInterfaceIndex);
     final dnsClientServerAddressList = await dnsClientServerAddressListFuture;
-    Map<int, List<Map<String, dynamic>>> dnsClientServerAddressListMap =
+    final dnsClientServerAddressListMap =
         getListMapOfInterfaceIndex(dnsClientServerAddressList);
     final effectiveDnsClientServerAddressList =
         dnsClientServerAddressListMap[chosenInterfaceIndex]!;
@@ -92,12 +99,20 @@ class PlatformNetInterfaceWindows implements PlatformNetInterface {
         defaultNetRouteMap[chosenInterfaceIndex]!["InterfaceAlias"] as String;
     final Set<String> dnsIPv4AddressSet = {};
     final Set<String> dnsIPv6AddressSet = {};
-    for (var e in effectiveDnsClientServerAddressList) {
+    for (final e in effectiveDnsClientServerAddressList) {
       if (e["AddressFamily"] == AF_INET) {
         dnsIPv4AddressSet
             .addAll((e["ServerAddresses"] as List).cast<String>().toSet());
       } else if (e["AddressFamily"] == AF_INET6) {
-        dnsIPv6AddressSet.addAll((e["ServerAddresses"] as List).cast<String>());
+        final serverAddresses = (e["ServerAddresses"] as List).cast<String>();
+        for (final serverAddress in serverAddresses) {
+          if (serverAddress.contains('%')) {
+            /// ipv6 local address to a specific interface, ignore for now
+            continue;
+          } else {
+            dnsIPv6AddressSet.add(serverAddress);
+          }
+        }
       }
     }
     return NetInterface(
@@ -160,6 +175,12 @@ class PlatformNetInterfaceWindows implements PlatformNetInterface {
   Future<List<Map<String, dynamic>>> getWindowsNetIPAddressList() async {
     return await getWindowsPowerShellResultListMap(
       'Get-NetIPAddress | ConvertTo-Json',
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> getWindowsNetAdapterList() async {
+    return await getWindowsPowerShellResultListMap(
+      'Get-NetAdapter | ConvertTo-Json',
     );
   }
 
