@@ -13,7 +13,6 @@ import '../utils/permission_manager.dart';
 import '../utils/prefs.dart';
 import '../utils/runtime_platform.dart';
 import '../utils/theme_manager.dart';
-import '../utils/tray_menu.dart';
 import '../utils/vpn_manager.dart';
 import '../widgets/vpn_toggles.dart';
 
@@ -211,21 +210,27 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
     windowManager.hide();
   }
 
+  /// only on Windows, macOS
   @override
   void onTrayIconMouseDown() async {
     windowManager.show();
     windowManager.setSkipTaskbar(false);
   }
 
+  /// only on Windows, macOS
   @override
   void onTrayIconRightMouseDown() async {
-    await trayMenu.updateContextMenu();
+    // await trayMenu.updateContextMenu();
     trayManager.popUpContextMenu();
   }
 
   @override
   void onTrayMenuItemClick(MenuItem menuItem) async {
     switch (menuItem.key) {
+      case 'show':
+        windowManager.show();
+      case 'hide':
+        windowManager.hide();
       case 'exit':
         // SystemChannels.platform.invokeMethod('SystemNavigator.pop');
         await vPNMan.stopAll();

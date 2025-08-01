@@ -26,6 +26,19 @@ class TrayMenuManager {
       await trayManager.setIcon('assets/icon/icon.png');
     }
 
+    /// without initial value, Linux tray menu crashes
+    await trayManager.setContextMenu(Menu(
+      items: [
+        MenuItem(
+          key: 'exit',
+          label: 'Exit',
+        ),
+      ],
+    ));
+
+    vPNMan.addListener(updateContextMenu);
+    prefs.addListener(updateContextMenu);
+
     _completer.complete(); // Signal that initialization is complete
     logger.d("finished: TrayMenuManager.init");
   }
@@ -69,18 +82,28 @@ class TrayMenuManager {
         systemProxyItem += ' (!)';
       }
 
-      String tunItem = 'Tun';
+      String tunItem = 'Tun2socks';
       if (tunErr) {
         tunItem += ' (!)';
       }
       menu = Menu(
         items: [
+          if (RuntimePlatform.isLinux) ...[
+            MenuItem(
+              key: 'show',
+              label: 'Show',
+            ),
+            MenuItem(
+              key: 'hide',
+              label: 'Hide',
+            ),
+          ],
+          MenuItem.separator(),
           MenuItem.checkbox(
             key: 'toggle_all',
             label: loc.connect,
             checked: await vPNMan.getIsCoreActive(),
           ),
-          MenuItem.separator(),
           MenuItem.checkbox(
             disabled: systemProxyIsEnabled == null,
             key: 'toggle_system_proxy',
