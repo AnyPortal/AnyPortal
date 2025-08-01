@@ -172,6 +172,20 @@ class _AssetsScreenState extends State<AssetsScreen> {
       } else {
         logger.d('Unzipped folder does not exist: ${fileDir.path}');
       }
+    }
+    if (assetName.toLowerCase().endsWith("tar.gz")) {
+      final fileDirPath = p.withoutExtension(p.withoutExtension(file.path));
+      final fileDir = Directory(fileDirPath);
+      if (await fileDir.exists()) {
+        try {
+          await fileDir.delete(recursive: true);
+          logger.d('Deleted folder: ${fileDir.path}');
+        } catch (e) {
+          logger.d('Failed to delete folder: $e');
+        }
+      } else {
+        logger.d('Unzipped folder does not exist: ${fileDir.path}');
+      }
     } else {
       try {
         await file.delete();

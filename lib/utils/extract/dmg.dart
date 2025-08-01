@@ -2,14 +2,14 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
-import 'logger.dart';
+import '../logger.dart';
 
-Future<bool> undmgThere(String path, String subpath) async {
+Future<bool> extractDmgThere(String path, String subpath) async {
   return await extractFolderFromDmg(path, subpath, p.withoutExtension(path));
 }
 
-
-Future<bool> extractFolderFromDmg(String dmgPath, String folderName, String outputPath) async {
+Future<bool> extractFolderFromDmg(
+    String dmgPath, String folderName, String outputPath) async {
   // Step 1: Attach the DMG
   var result = await Process.run('hdiutil', ['attach', dmgPath]);
   if (result.exitCode != 0) {
@@ -32,7 +32,8 @@ Future<bool> extractFolderFromDmg(String dmgPath, String folderName, String outp
   }
 
   // Step 2: Copy the folder
-  var copyResult = await Process.run('cp', ['-R', '$mountPoint/$folderName', outputPath]);
+  var copyResult =
+      await Process.run('cp', ['-R', '$mountPoint/$folderName', outputPath]);
   if (copyResult.exitCode != 0) {
     logger.d('Failed to extract folder: ${copyResult.stderr}');
     return false;
@@ -46,5 +47,6 @@ Future<bool> extractFolderFromDmg(String dmgPath, String folderName, String outp
 }
 
 void main() async {
-  await extractFolderFromDmg('/path/to/file.dmg', 'FolderName', '/desired/output/path');
+  await extractFolderFromDmg(
+      '/path/to/file.dmg', 'FolderName', '/desired/output/path');
 }

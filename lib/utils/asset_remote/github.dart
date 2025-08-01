@@ -15,12 +15,13 @@ import 'package:path/path.dart' as p;
 
 import '../../models/asset.dart';
 import '../db.dart';
+import '../extract/dmg.dart';
+import '../extract/tar_gz.dart';
+import '../extract/zip.dart';
 import '../global.dart';
 import '../logger.dart';
 import '../prefs.dart';
 import '../show_snack_bar_now.dart';
-import '../undmg.dart';
-import '../unzip.dart';
 import '../vpn_manager.dart';
 import '../with_context.dart';
 
@@ -139,8 +140,9 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
   }
 
   /// where the freshly downloaded, not yet installed file should be
-  File getAssetFile(){
-    return File(p.join(global.applicationSupportDirectory.path, 'asset', 'github', owner, repo, assetName));
+  File getAssetFile() {
+    return File(p.join(global.applicationSupportDirectory.path, 'asset',
+        'github', owner, repo, assetName));
   }
 
   Future<File?> download(
@@ -195,7 +197,12 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
       assetPath = assetPath.substring(0, assetPath.length - 4);
       final subPathList = subPath!.split('/');
       assetPath = File(p.joinAll([assetPath, ...subPathList])).path;
+    } else if (assetPath.toLowerCase().endsWith(".tar.gz") && subPath != null) {
+      assetPath = assetPath.substring(0, assetPath.length - 7);
+      final subPathList = subPath!.split('/');
+      assetPath = File(p.joinAll([assetPath, ...subPathList])).path;
     }
+
     late int assetId;
     await db.transaction(() async {
       if (asset != null) {
@@ -237,9 +244,11 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
 
     bool extractOK = false;
     if (path.toLowerCase().endsWith(".zip")) {
-      extractOK = await unzipThere(path);
+      extractOK = await extractZipThere(path);
+    } else if (path.toLowerCase().endsWith(".tar.gz")) {
+      extractOK = await extractTarGzThere(path);
     } else if (path.toLowerCase().endsWith(".dmg")) {
-      extractOK = await undmgThere(path, subPath!);
+      extractOK = await extractDmgThere(path, subPath!);
     }
     if (extractOK) {
       try {

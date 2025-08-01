@@ -66,7 +66,8 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
   }
 
   @override
-  Future<void> postGetRemoteMeta(String remoteMeta, {TypedResult? asset}) async {
+  Future<void> postGetRemoteMeta(String remoteMeta,
+      {TypedResult? asset}) async {
     prefs.setInt("app.autoUpdate.checkedAt",
         (DateTime.now().millisecondsSinceEpoch / 1000).toInt());
   }
@@ -172,7 +173,7 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
         return true;
       }
     } else {
-      if (isDownloadedMetaUpdated && downloadedFilePath != null){
+      if (isDownloadedMetaUpdated && downloadedFilePath != null) {
         loggerD("already downloaded: $url");
         downloadedFile = File(downloadedFilePath);
       } else {
