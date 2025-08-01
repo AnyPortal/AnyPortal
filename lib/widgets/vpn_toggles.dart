@@ -137,7 +137,7 @@ class VPNTogglesState extends State<VPNToggles> {
                     listenable: Listenable.merge([vPNMan, prefs]),
                     builder: (BuildContext context, Widget? child) {
                       final shouldOn = prefs.getBool('systemProxy')!;
-                      final isOn = vPNMan.isSystemProxyActive;
+                      final isOn = vPNMan.isSystemProxyActive == true;
                       return Switch(
                         value: shouldOn,
                         onChanged: _systemProxyIsEnabled == null ||

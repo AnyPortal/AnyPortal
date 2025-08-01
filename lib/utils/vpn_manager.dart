@@ -36,7 +36,7 @@ abstract class VPNManager with ChangeNotifier {
   bool isAllActive = false;
   bool isCoreActive = false;
   bool isTunActive = false;
-  bool isSystemProxyActive = false;
+  bool? isSystemProxyActive = false;
 
   /// it's possible to toggle core alone, so distinguish beween all and core
   bool isTogglingAll = false;
@@ -222,7 +222,7 @@ abstract class VPNManager with ChangeNotifier {
 
   Future<bool> getIsCoreActive();
   Future<bool> getIsTunActive();
-  Future<bool> getIsSystemProxyActive();
+  Future<bool?> getIsSystemProxyActive();
 
   void setIsAllActive(
     bool value, {
@@ -282,7 +282,7 @@ abstract class VPNManager with ChangeNotifier {
   }
 
   void setIsSystemProxyActive(
-    bool value, {
+    bool? value, {
     bool force = false,
     bool isToNotify = true,
   }) {
@@ -470,7 +470,7 @@ abstract class VPNManager with ChangeNotifier {
     setisTogglingSystemProxy(true);
 
     /// check is already active
-    if (await getIsSystemProxyActive()) {
+    if (await getIsSystemProxyActive() == true) {
       setisTogglingSystemProxy(false);
       return;
     }
@@ -658,7 +658,7 @@ abstract class VPNManager with ChangeNotifier {
     if (coreEnvsStr == null || coreEnvsStr == "") {
       coreEnvsStr = "{}";
     }
-    _coreEnvs = (jsonDecode(coreEnvsStr!) as Map<String, dynamic>)
+    _coreEnvs = (jsonDecode(coreEnvsStr) as Map<String, dynamic>)
         .map((k, v) => MapEntry(k, v as String));
     await prefs.setString('cache.core.envs', jsonEncode(_coreEnvs));
 
@@ -757,7 +757,7 @@ abstract class VPNManager with ChangeNotifier {
         if (coreEnvsStr == null || coreEnvsStr == "") {
           coreEnvsStr = "{}";
         }
-        _tunSingBoxCoreEnvs = (jsonDecode(coreEnvsStr!) as Map<String, dynamic>)
+        _tunSingBoxCoreEnvs = (jsonDecode(coreEnvsStr) as Map<String, dynamic>)
             .map((k, v) => MapEntry(k, v as String));
         await prefs.setString(
             'cache.tun.singBox.core.envs', jsonEncode(_tunSingBoxCoreEnvs));
@@ -861,11 +861,7 @@ class VPNManagerExec extends VPNManager {
 
   @override
   getIsSystemProxyActive() async {
-    final isEnabled = await platformSystemProxyUser.isEnabled();
-    if (isEnabled == true) {
-      return true;
-    }
-    return false;
+    return await platformSystemProxyUser.isEnabled();
   }
 
   Future<bool> ensureServerAddressPort(String portName, int port) async {

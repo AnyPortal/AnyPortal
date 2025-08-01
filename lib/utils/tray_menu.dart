@@ -6,7 +6,6 @@ import '../extensions/localization.dart';
 
 import 'global.dart';
 import 'logger.dart';
-import 'platform_system_proxy_user.dart';
 import 'prefs.dart';
 import 'runtime_platform.dart';
 import 'vpn_manager.dart';
@@ -59,7 +58,7 @@ class TrayMenuManager {
       return;
     }
 
-    final systemProxyIsEnabled = await platformSystemProxyUser.isEnabled();
+    final systemProxyIsEnabled = vPNMan.isSystemProxyActive;
     final systemProxyShouldEnable = prefs.getBool('systemProxy')!;
     final systemProxyErr =
         systemProxyShouldEnable && systemProxyIsEnabled == false;
@@ -97,12 +96,12 @@ class TrayMenuManager {
               key: 'hide',
               label: 'Hide',
             ),
+            MenuItem.separator(),
           ],
-          MenuItem.separator(),
           MenuItem.checkbox(
             key: 'toggle_all',
             label: loc.connect,
-            checked: await vPNMan.getIsCoreActive(),
+            checked: vPNMan.isCoreActive,
           ),
           MenuItem.checkbox(
             disabled: systemProxyIsEnabled == null,
