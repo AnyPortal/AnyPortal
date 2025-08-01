@@ -1,20 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/widgets.dart';
-
 import 'package:path/path.dart' as p;
 
-import '../../../extensions/localization.dart';
 import '../../../models/log_level.dart';
 import '../../../models/send_through_binding_stratagy.dart';
 import '../../connectivity_manager.dart';
-import '../../get_local_ip.dart';
 import '../../global.dart';
 import '../../prefs.dart';
 import '../../runtime_platform.dart';
-import '../../show_snack_bar_now.dart';
-import '../../with_context.dart';
 import '../base/config_injector.dart';
 
 class ConfigInjectorV2Ray extends ConfigInjectorBase {
@@ -191,89 +185,48 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
     }
 
     if (injectSendThrough) {
-      String sendThrough = "0.0.0.0";
+      String? sendThrough;
+      String? interfaceName;
       if (injectSendThrough) {
         switch (sendThroughBindingStratagy) {
           case SendThroughBindingStratagy.internet:
-            // TODO: binds to interface
             final effectiveNetInterface =
                 await ConnectivityManager().getEffectiveNetInterface();
-            final internetIp = effectiveNetInterface?.ip.ipv4.first ??
-                effectiveNetInterface?.ip.ipv6.first;
-            if (internetIp != null) {
-              sendThrough = internetIp;
-            }
+            interfaceName = effectiveNetInterface?.name;
           case SendThroughBindingStratagy.ip:
             sendThrough = prefs.getString('inject.sendThrough.bindingIp')!;
           case SendThroughBindingStratagy.interface:
-            // TODO: actually binds to interface instead if using ip
-            final bindingInterface =
+            interfaceName =
                 prefs.getString('inject.sendThrough.bindingInterface')!;
-            final ip = await getIPv4OfInterfaceName(bindingInterface);
-            if (ip == null) {
-              withContext((context) {
-                showSnackBarNow(
-                    context,
-                    Text(context.loc
-                        .ip_not_found_for_binding_interface_binding_interface(
-                            bindingInterface)));
-              });
-              throw Exception(
-                  'IP not found for binding interface: $bindingInterface');
-            }
-            sendThrough = ip;
         }
       }
-
-      for (var outbound in cfg["outbounds"]) {
-        outbound["sendThrough"] = sendThrough;
+      if (!cfg.containsKey("outbounds")) {
+        cfg["outbounds"] = <Map<String, dynamic>>[];
+      }
+      final outbounds = (cfg["outbounds"] as List).cast<Map<String, dynamic>>();
+      for (var (i, outbound) in outbounds.indexed) {
+        if (sendThrough != null) {
+          outbound["sendThrough"] = sendThrough;
+        }
+        if (interfaceName != null) {
+          if (!outbound.containsKey("streamSettings")) {
+            Map<String, dynamic> newOutbound = {...outbound};
+            outbounds[i] = newOutbound;
+            outbound = newOutbound;
+            newOutbound["streamSettings"] = {};
+          }
+          final streamSettings =
+              (outbound["streamSettings"] as Map).cast<String, dynamic>();
+          if (!streamSettings.containsKey("sockopt")) {
+            (streamSettings as Map).cast<String, dynamic>()["sockopt"] = {};
+          }
+          final sockopt =
+              (streamSettings["sockopt"] as Map).cast<String, dynamic>();
+          sockopt["bindToDevice"] = interfaceName;
+          sockopt["interface"] = interfaceName;
+        }
       }
     }
-
-    /// streamSettings.sockopt.bindToDevice (v2ray) settings not working under windows despite claiming to work
-    /// streamSettings.sockopt.interface (xray) settings not working under windows
-    // if (injectSendThrough) {
-    //   String? sendThrough;
-    //   String? interfaceName;
-    //   if (injectSendThrough) {
-    //     switch (sendThroughBindingStratagy) {
-    //       case SendThroughBindingStratagy.internet:
-    //         final effectiveNetInterface =
-    //             await ConnectivityManager().getEffectiveNetInterface();
-    //         interfaceName = effectiveNetInterface?.name;
-    //       case SendThroughBindingStratagy.ip:
-    //         sendThrough = prefs.getString('inject.sendThrough.bindingIp')!;
-    //       case SendThroughBindingStratagy.interface:
-    //         interfaceName =
-    //             prefs.getString('inject.sendThrough.bindingInterface')!;
-    //     }
-    //   }
-    //   if (!cfg.containsKey("outbounds")) {
-    //     cfg["outbounds"] = <Map<String, dynamic>>[];
-    //   }
-    //   final outbounds = (cfg["outbounds"] as List).cast<Map<String, dynamic>>();
-    //   for (var (i, outbound) in outbounds.indexed) {
-    //     if (sendThrough != null) {
-    //       outbound["sendThrough"] = sendThrough;
-    //     }
-    //     if (interfaceName != null) {
-    //       if (!outbound.containsKey("streamSettings")) {
-    //         Map<String, dynamic> newOutbound = {...outbound};
-    //         outbounds[i] = newOutbound;
-    //         outbound = newOutbound;
-    //         newOutbound["streamSettings"] = {};
-    //       }
-    //       final streamSettings =
-    //           (outbound["streamSettings"] as Map).cast<String, dynamic>();
-    //       if (!streamSettings.containsKey("sockopt")) {
-    //         (streamSettings as Map).cast<String, dynamic>()["sockopt"] = {};
-    //       }
-    //       final sockopt =
-    //           (streamSettings["sockopt"] as Map).cast<String, dynamic>();
-    //       sockopt["interface"] = interfaceName;
-    //     }
-    //   }
-    // }
 
     /// tun settings (v2ray) not working
     // if (!cfg.containsKey("services")) {
