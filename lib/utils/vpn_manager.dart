@@ -837,6 +837,7 @@ class VPNManagerExec extends VPNManager {
 
   @override
   Future<void> updateDetachedTun() async {
+    if (_tunSingBoxCorePath == null) return;
     final tunCommandLine =
         "$_tunSingBoxCorePath ${_tunSingBoxCoreArgList.join(' ')}";
     pidTun = await PlatformProcess.getProcessPid(tunCommandLine);
@@ -1050,6 +1051,9 @@ class VPNManagerExec extends VPNManager {
         pidTun = null;
         setIsTunActive(false);
       });
+    } else {
+      logger.w('prefs.getBool("tun")!: ${prefs.getBool("tun")!}');
+      logger.w('pidTun: $pidTun');
     }
     logger.d("finished: _startTun");
     return true;

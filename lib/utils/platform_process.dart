@@ -60,7 +60,7 @@ class PlatformProcess {
           final parts = line.trim().split(RegExp(r'\s+'));
           if (parts.length > 1) {
             final pid = int.tryParse(parts[1]);
-            logger.d("_getProcessPidUnix: $pid");
+            logger.d("_getProcessPidUnix: $pid: $commandLine");
             return pid;
           }
         }
