@@ -1038,6 +1038,20 @@ class VPNManagerExec extends VPNManager {
       logger.d("tunSingBoxCoreWorkingDir: $_tunSingBoxCoreWorkingDir");
       logger.d("tunSingBoxCoreEnvs: $_tunSingBoxCoreEnvs");
 
+      if (RuntimePlatform.isLinux ||
+          RuntimePlatform.isMacOS ||
+          RuntimePlatform.isAndroid) {
+        final executableTestRes =
+            await Process.run("test", ["-x", _tunSingBoxCorePath!]);
+        if (executableTestRes.exitCode != 0) {
+          logger.i("tun sing-box core path not executable, fixing");
+          await Process.run("chmod", [
+            "+x",
+            _tunSingBoxCorePath!,
+          ]);
+        }
+      }
+
       final processTun = await Process.start(
         _tunSingBoxCorePath!,
         _tunSingBoxCoreArgList,
