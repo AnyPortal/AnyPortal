@@ -148,6 +148,8 @@ void main(List<String> args) async {
     }
   }
 
+  TrayMenuManager().updateContextMenu();
+
   if (prefs.getBool("app.autoUpdate")!) {
     try {
       final assetRemoteProtocolApp = AssetRemoteProtocolApp();
