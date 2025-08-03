@@ -19,6 +19,7 @@ import 'utils/core/base/plugin.dart';
 import 'utils/db.dart';
 import 'utils/global.dart';
 import 'utils/launch_at_startup.dart';
+import 'utils/linux_icon.dart';
 import 'utils/locale_manager.dart';
 import 'utils/logger.dart';
 import 'utils/method_channel.dart';
@@ -117,6 +118,10 @@ void main(List<String> args) async {
     /// theme color
     SystemTheme.fallbackColor = const Color.fromARGB(82, 0, 140, 255);
     await SystemTheme.accentColor.load();
+  }
+
+  if (RuntimePlatform.isLinux) {
+    updateLinuxIcon();
   }
 
   /// app

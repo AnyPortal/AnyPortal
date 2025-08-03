@@ -154,7 +154,7 @@ We hope you choose well between your home world and Wonderlands.""")),
           title: Text(context.loc.app),
           subtitle: Text(RuntimePlatform.isAndroid
               ? "com.github.anyportal.anyportal"
-              : File(Platform.resolvedExecutable).parent.path),
+              : Platform.resolvedExecutable),
           trailing:
               Icon(RuntimePlatform.isAndroid ? Icons.copy : Icons.folder_open),
           onTap: () {
