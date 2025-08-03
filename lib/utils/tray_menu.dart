@@ -35,6 +35,8 @@ class TrayMenuManager {
       ],
     ));
 
+    trayManager.setToolTip("AnyPortal");
+
     vPNMan.addListener(updateContextMenu);
     prefs.addListener(updateContextMenu);
 
