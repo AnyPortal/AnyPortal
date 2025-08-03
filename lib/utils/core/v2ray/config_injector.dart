@@ -153,8 +153,8 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
           if (server is! Map) {
             continue;
           }
-          if (!server.containsKey("domains")) {
-            continue;
+          if (server.containsKey("domains")) {
+            break;
           }
         }
         (cfg["dns"]["servers"] as List).insert(i, {
