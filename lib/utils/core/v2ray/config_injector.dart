@@ -130,6 +130,40 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
     String? dnsInboundTag;
     bool didInjectDnsLocal = false;
     if (injectDnsLocal) {
+      /// find outbound domains and add them to dns "localhost"
+      /// not to confuse with "localhost" like 127.0.0.1
+      /// "localhost" in v2ray/xray dns config means system dns
+      if (!cfg.containsKey("outbounds")) {
+        cfg["outbounds"] = <Map<String, dynamic>>[];
+      }
+      final outbounds = (cfg["outbounds"] as List).cast<Map<String, dynamic>>();
+      final outboundsDomains = extractDomains(outbounds);
+      if (outboundsDomains.isNotEmpty) {
+        if (!cfg.containsKey("dns")) {
+          cfg["dns"] = <String, dynamic>{};
+        }
+        if (!(cfg["dns"] as Map).containsKey("servers")) {
+          cfg["dns"]["servers"] = <dynamic>[];
+        }
+
+        /// add as the first dns server with domains
+        int i = 0;
+        for (i = 0; i < (cfg["dns"]["servers"] as List).length; ++i) {
+          dynamic server = cfg["dns"]["servers"][i];
+          if (server is! Map) {
+            continue;
+          }
+          if (!server.containsKey("domains")) {
+            continue;
+          }
+        }
+        (cfg["dns"]["servers"] as List).insert(i, {
+          "address": "localhost",
+          "domains": outboundsDomains,
+        });
+      }
+
+      /// patch dns records where server is "localhost"
       if (cfg.containsKey("dns") &&
           (cfg["dns"] as Map).containsKey("servers")) {
         for (final (i, server) in (cfg["dns"]["servers"] as List).indexed) {
@@ -161,6 +195,9 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
         }
       }
 
+      /// all dns requests that shall be sent to system dns,
+      /// as determined by v2ray/xray internal dns server "in_dns"
+      /// shall be sent there directly
       if (didInjectDnsLocal) {
         if (!cfg.containsKey("routing")) {
           cfg["routing"] = {"rules": []};
@@ -261,4 +298,50 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
 
     return jsonEncode(cfg);
   }
+}
+
+/// Extracts all server domain names from various outbound protocols
+List<String> extractDomains(dynamic outbounds) {
+  final domains = <String>{};
+
+  if (outbounds is! List) return [];
+
+  for (final ob in outbounds) {
+    if (ob is! Map) continue;
+    final settings = ob['settings'];
+    if (settings == null) continue;
+
+    if (settings is Map) {
+      /// vmess, vless
+      if (settings.containsKey('vnext')) {
+        for (var node in settings['vnext']) {
+          if (node is Map && isDomain(node['address'])) {
+            domains.add(node['address']);
+          }
+        }
+      }
+
+      /// trojan, shadowsocks
+      if (settings.containsKey('servers')) {
+        for (var node in settings['servers']) {
+          if (node is Map && isDomain(node['address'])) {
+            domains.add(node['address']);
+          }
+        }
+      }
+
+      /// socks / http / others
+      if (settings.containsKey('address') && isDomain(settings['address'])) {
+        domains.add(settings['address']);
+      }
+    }
+  }
+
+  return domains.toList();
+}
+
+bool isDomain(dynamic value) {
+  if (value is! String) return false;
+  final ipPattern = RegExp(r'^(\d{1,3}\.){3}\d{1,3}$');
+  return !ipPattern.hasMatch(value);
 }
