@@ -130,13 +130,63 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
     String? dnsInboundTag;
     bool didInjectDnsLocal = false;
     if (injectDnsLocal) {
-      /// find outbound domains and add them to dns "localhost"
-      /// not to confuse with "localhost" like 127.0.0.1
-      /// "localhost" in v2ray/xray dns config means system dns
       if (!cfg.containsKey("outbounds")) {
         cfg["outbounds"] = <Map<String, dynamic>>[];
       }
       final outbounds = (cfg["outbounds"] as List).cast<Map<String, dynamic>>();
+
+      /// find if dns outbound is configured
+      String? dnsOutboundTag;
+      for (final outbound in outbounds) {
+        if (outbound.containsKey("protocol") &&
+            outbound["protocol"] == "dns" &&
+            outbound.containsKey("tag")) {
+          dnsOutboundTag = outbound["tag"];
+          break;
+        }
+      }
+      if (dnsOutboundTag == null) {
+        /// no dns outbound, dns not configured
+        /// hijack dns traffic to localhost
+        outbounds.add({
+          "protocol": "dns",
+          "tag": "anyportal_ot_dns",
+        });
+        if (!cfg.containsKey("routing")) {
+          cfg["routing"] = {"rules": []};
+        }
+        if (!(cfg["routing"] as Map).containsKey("rules")) {
+          cfg["routing"]["rules"] = [];
+        }
+        // final effectiveNetInterface =
+        //     await ConnectivityManager().getEffectiveNetInterface();
+        // final dns = effectiveNetInterface!.dns;
+        (cfg["routing"]["rules"] as List).insert(0, {
+          "type": "field",
+          "outboundTag": "anyportal_ot_dns",
+          "port": "53",
+          // "ip": [
+          //   "172.19.0.1",
+          //   "fdfe:dcba:9876::1",
+          //   ...dns.ipv4,
+          //   ...dns.ipv6,
+          // ],
+        });
+
+        /// add fakedns and localhost
+        if (!cfg.containsKey("dns")) {
+          cfg["dns"] = <String, dynamic>{};
+        }
+        if (!(cfg["dns"] as Map).containsKey("servers")) {
+          cfg["dns"]["servers"] = <dynamic>[];
+        }
+        (cfg["dns"]["servers"] as List).add("fakedns");
+        (cfg["dns"]["servers"] as List).add("localhost");
+      }
+
+      /// find outbound domains and add them to dns "localhost"
+      /// not to confuse with "localhost" like 127.0.0.1
+      /// "localhost" in v2ray/xray dns config means system dns
       final outboundsDomains = extractDomains(outbounds);
       if (outboundsDomains.isNotEmpty) {
         if (!cfg.containsKey("dns")) {
