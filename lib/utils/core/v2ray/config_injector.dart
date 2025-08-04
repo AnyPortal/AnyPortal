@@ -22,11 +22,31 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
   Future<String> getInjectedConfig(String cfgStr, String coreCfgFmt) async {
     final cfg = jsonDecode(cfgStr) as Map<String, dynamic>;
 
+    if (!cfg.containsKey("inbounds")) {
+      cfg["inbounds"] = [];
+    }
+    final inbounds = (cfg["inbounds"] as List).cast<Map<String, dynamic>>();
+
     if (!cfg.containsKey("outbounds")) {
       cfg["outbounds"] = [];
     }
-    (cfg["outbounds"] as List)
-        .add({"protocol": "freedom", "tag": "anyportal_ot_freedom"});
+    final outbounds = (cfg["outbounds"] as List).cast<Map<String, dynamic>>();
+
+    if (!cfg.containsKey("routing")) {
+      cfg["routing"] = {"rules": []};
+    }
+    if (!(cfg["routing"] as Map).containsKey("rules")) {
+      cfg["routing"]["rules"] = [];
+    }
+    final routingRules = cfg["routing"]["rules"] as List;
+
+    if (!cfg.containsKey("dns")) {
+      cfg["dns"] = <String, dynamic>{};
+    }
+    if (!(cfg["dns"] as Map).containsKey("servers")) {
+      cfg["dns"]["servers"] = <dynamic>[];
+    }
+    final dnsServers = cfg["dns"]["servers"] as List;
 
     final injectLog = prefs.getBool('inject.log')!;
     final injectApi = prefs.getBool('inject.api')!;
@@ -41,6 +61,8 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
     final injectSendThrough = prefs.getBool('inject.sendThrough')!;
     final sendThroughBindingStratagy = SendThroughBindingStratagy
         .values[prefs.getInt('inject.sendThrough.bindingStratagy')!];
+
+    outbounds.add({"protocol": "freedom", "tag": "anyportal_ot_freedom"});
 
     if (!RuntimePlatform.isWeb && injectLog) {
       final pathLogErr = File(p.join(
@@ -61,29 +83,15 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
         "services": ["HandlerService", "StatsService"]
       };
 
-      if (!cfg.containsKey("inbounds")) {
-        cfg["inbounds"] = [];
-      }
+      inbounds.add({
+        "listen": serverAddress,
+        "port": apiPort,
+        "protocol": "dokodemo-door",
+        "settings": {"address": serverAddress},
+        "tag": "in_api"
+      });
 
-      cfg["inbounds"] += [
-        {
-          "listen": serverAddress,
-          "port": apiPort,
-          "protocol": "dokodemo-door",
-          "settings": {"address": serverAddress},
-          "tag": "in_api"
-        }
-      ];
-
-      if (!cfg.containsKey("routing")) {
-        cfg["routing"] = {"rules": []};
-      }
-
-      if (!(cfg["routing"] as Map).containsKey("rules")) {
-        cfg["routing"]["rules"] = [];
-      }
-
-      (cfg["routing"]["rules"] as List).insert(0, {
+      routingRules.insert(0, {
         "type": "field",
         "inboundTag": ["in_api"],
         "outboundTag": "ot_api"
@@ -105,7 +113,7 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
     }
 
     if (injectHttp) {
-      (cfg["inbounds"] as List).insert(0, {
+      inbounds.insert(0, {
         "listen": serverAddress,
         "port": httpPort,
         "protocol": "http",
@@ -119,7 +127,7 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
     }
 
     if (injectSocks) {
-      (cfg["inbounds"] as List).insert(0, {
+      inbounds.insert(0, {
         "listen": serverAddress,
         "port": socksPort,
         "protocol": "socks",
@@ -136,11 +144,6 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
     String? dnsInboundTag;
     bool didInjectDnsLocal = false;
     if (injectDnsLocal) {
-      if (!cfg.containsKey("outbounds")) {
-        cfg["outbounds"] = <Map<String, dynamic>>[];
-      }
-      final outbounds = (cfg["outbounds"] as List).cast<Map<String, dynamic>>();
-
       /// find if dns outbound is configured
       String? dnsOutboundTag;
       for (final outbound in outbounds) {
@@ -153,23 +156,16 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
       }
       if (dnsOutboundTag == null) {
         /// no dns outbound, dns not configured
-        /// hijack dns traffic to localhost
         outbounds.add({
           "protocol": "dns",
           "tag": "anyportal_ot_dns",
         });
-        if (!cfg.containsKey("routing")) {
-          cfg["routing"] = {"rules": []};
-        }
-        if (!(cfg["routing"] as Map).containsKey("rules")) {
-          cfg["routing"]["rules"] = [];
-        }
 
         /// hijack default dns requests
         final effectiveNetInterface =
             await ConnectivityManager().getEffectiveNetInterface();
         final dns = effectiveNetInterface!.dns;
-        (cfg["routing"]["rules"] as List).insert(0, {
+        routingRules.insert(0, {
           "type": "field",
           "outboundTag": "anyportal_ot_dns",
           "port": "53",
@@ -184,13 +180,7 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
         });
 
         /// add fakedns
-        if (!cfg.containsKey("dns")) {
-          cfg["dns"] = <String, dynamic>{};
-        }
-        if (!(cfg["dns"] as Map).containsKey("servers")) {
-          cfg["dns"]["servers"] = <dynamic>[];
-        }
-        (cfg["dns"]["servers"] as List).add("fakedns");
+        dnsServers.add("fakedns");
       }
 
       /// find outbound domains and add them to dns "localhost"
@@ -198,17 +188,10 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
       /// "localhost" in v2ray/xray dns config means system dns
       final outboundsDomains = extractDomains(outbounds);
       if (outboundsDomains.isNotEmpty) {
-        if (!cfg.containsKey("dns")) {
-          cfg["dns"] = <String, dynamic>{};
-        }
-        if (!(cfg["dns"] as Map).containsKey("servers")) {
-          cfg["dns"]["servers"] = <dynamic>[];
-        }
-
         /// add as the first dns server with domains
         int i = 0;
-        for (i = 0; i < (cfg["dns"]["servers"] as List).length; ++i) {
-          dynamic server = cfg["dns"]["servers"][i];
+        for (i = 0; i < dnsServers.length; ++i) {
+          dynamic server = dnsServers[i];
           if (server is! Map) {
             continue;
           }
@@ -216,56 +199,47 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
             break;
           }
         }
-        (cfg["dns"]["servers"] as List).insert(i, {
+        dnsServers.insert(i, {
           "address": "localhost",
           "domains": outboundsDomains,
         });
       }
 
       /// patch dns records where server is "localhost"
-      if (cfg.containsKey("dns") &&
-          (cfg["dns"] as Map).containsKey("servers")) {
-        for (final (i, server) in (cfg["dns"]["servers"] as List).indexed) {
-          if (server is String) {
-            if (server == "localhost") {
-              final dnsStr = await ConnectivityManager().getEffectiveDnsStr();
-              if (dnsStr == null) {
-                break;
-              }
-              cfg["dns"]["servers"][i] = dnsStr;
-              didInjectDnsLocal = true;
+      for (final (i, server) in dnsServers.indexed) {
+        if (server is String) {
+          if (server == "localhost") {
+            final dnsStr = await ConnectivityManager().getEffectiveDnsStr();
+            if (dnsStr == null) {
+              break;
             }
-          } else if (server is Map) {
-            if (server["address"] == "localhost") {
-              final dnsStr = await ConnectivityManager().getEffectiveDnsStr();
-              if (dnsStr == null) {
-                break;
-              }
-              server["address"] = dnsStr;
-              didInjectDnsLocal = true;
+            dnsServers[i] = dnsStr;
+            didInjectDnsLocal = true;
+          }
+        } else if (server is Map) {
+          if (server["address"] == "localhost") {
+            final dnsStr = await ConnectivityManager().getEffectiveDnsStr();
+            if (dnsStr == null) {
+              break;
             }
+            server["address"] = dnsStr;
+            didInjectDnsLocal = true;
           }
         }
-        if (!(cfg["dns"] as Map).containsKey("tag")) {
-          cfg["dns"]["tag"] = "anyportal_in_dns";
-        }
-        dnsInboundTag = cfg["dns"]["tag"];
       }
+      if (!(cfg["dns"] as Map).containsKey("tag")) {
+        cfg["dns"]["tag"] = "anyportal_in_dns";
+      }
+      dnsInboundTag = cfg["dns"]["tag"];
 
       /// all dns requests that shall be sent to system dns,
       /// as determined by v2ray/xray internal dns server "in_dns"
       /// shall be sent there directly
       if (didInjectDnsLocal) {
-        if (!cfg.containsKey("routing")) {
-          cfg["routing"] = {"rules": []};
-        }
-        if (!(cfg["routing"] as Map).containsKey("rules")) {
-          cfg["routing"]["rules"] = [];
-        }
         final effectiveNetInterface =
             await ConnectivityManager().getEffectiveNetInterface();
         final dns = effectiveNetInterface!.dns;
-        (cfg["routing"]["rules"] as List).insert(0, {
+        routingRules.insert(0, {
           "type": "field",
           "inboundTag": [dnsInboundTag],
           "ip": [
@@ -296,11 +270,7 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
                   prefs.getString('inject.sendThrough.bindingInterface')!;
           }
         }
-        if (!cfg.containsKey("outbounds")) {
-          cfg["outbounds"] = <Map<String, dynamic>>[];
-        }
-        final outbounds =
-            (cfg["outbounds"] as List).cast<Map<String, dynamic>>();
+
         for (var (i, outbound) in outbounds.indexed) {
           if (sendThrough != null) {
             outbound["sendThrough"] = sendThrough;
@@ -358,7 +328,7 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
           }
         }
 
-        for (var outbound in cfg["outbounds"]) {
+        for (var outbound in outbounds) {
           outbound["sendThrough"] = sendThrough;
         }
       }
@@ -400,13 +370,10 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
 }
 
 /// Extracts all server domain names from various outbound protocols
-List<String> extractDomains(dynamic outbounds) {
+List<String> extractDomains(List<Map<String, dynamic>> outbounds) {
   final domains = <String>{};
 
-  if (outbounds is! List) return [];
-
   for (final ob in outbounds) {
-    if (ob is! Map) continue;
     final settings = ob['settings'];
     if (settings == null) continue;
 
@@ -441,6 +408,9 @@ List<String> extractDomains(dynamic outbounds) {
 
 bool isDomain(dynamic value) {
   if (value is! String) return false;
-  final ipPattern = RegExp(r'^(\d{1,3}\.){3}\d{1,3}$');
-  return !ipPattern.hasMatch(value);
+
+  final ipv4Pattern = RegExp(r'^(\d{1,3}\.){3}\d{1,3}$');
+  final ipv6Pattern = RegExp(r'^(?:[A-Fa-f0-9]{1,4}:){7}[A-Fa-f0-9]{1,4}$');
+
+  return !ipv4Pattern.hasMatch(value) && !ipv6Pattern.hasMatch(value);
 }
