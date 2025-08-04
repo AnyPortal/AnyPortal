@@ -253,7 +253,7 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
     }
 
     if (injectSendThrough) {
-      if (RuntimePlatform.isLinux) {
+      if (RuntimePlatform.isLinux || RuntimePlatform.isAndroid) {
         /// only linux supports binding to interface
         String? sendThrough;
         String? interfaceName;
