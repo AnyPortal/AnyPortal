@@ -408,9 +408,7 @@ List<String> extractDomains(List<Map<String, dynamic>> outbounds) {
 
 bool isDomain(dynamic value) {
   if (value is! String) return false;
-
-  final ipv4Pattern = RegExp(r'^(\d{1,3}\.){3}\d{1,3}$');
-  final ipv6Pattern = RegExp(r'^(?:[A-Fa-f0-9]{1,4}:){7}[A-Fa-f0-9]{1,4}$');
-
-  return !ipv4Pattern.hasMatch(value) && !ipv6Pattern.hasMatch(value);
+  if (value.contains(':')) return false;
+  if (RegExp(r'^(\d{1,3}\.){3}\d{1,3}$').hasMatch(value)) return false;
+  return true;
 }
