@@ -50,14 +50,16 @@ abstract class VPNManager with ChangeNotifier {
   Future<bool> _stopCore();
 
   Future<bool> prepareCore() async {
-    // clear core log
-    await File(p.join(
-      global.applicationSupportDirectory.path,
-      'log',
-      'core.log',
-    )).writeAsString("");
+    if (!RuntimePlatform.isWeb) {
+      // clear core log
+      await File(p.join(
+        global.applicationSupportDirectory.path,
+        'log',
+        'core.log',
+      )).writeAsString("");
+      await installPendingAssetRemote();
+    }
 
-    if (!RuntimePlatform.isWeb) await installPendingAssetRemote();
     final ok = await initCore();
     return ok;
   }
@@ -666,7 +668,10 @@ abstract class VPNManager with ChangeNotifier {
     return true;
   }
 
-  File getTunSingBoxUserConfigFile() {
+  Future<File> getTunSingBoxUserConfigFile() async {
+    if (RuntimePlatform.isWeb) {
+      return File("");
+    }
     final tunSingBoxUserConfigFileCustomized = File(p.join(
       global.applicationDocumentsDirectory.path,
       'AnyPortal',
@@ -680,7 +685,7 @@ abstract class VPNManager with ChangeNotifier {
       'tun2socks.sing_box.example.json',
     ));
     late File tunSingBoxUserConfigFile;
-    if (tunSingBoxUserConfigFileCustomized.existsSync()) {
+    if (await tunSingBoxUserConfigFileCustomized.exists()) {
       tunSingBoxUserConfigFile = tunSingBoxUserConfigFileCustomized;
     } else {
       tunSingBoxUserConfigFile = tunSingBoxUserConfigFileExample;
@@ -735,7 +740,7 @@ abstract class VPNManager with ChangeNotifier {
         }
 
         /// gen config.json
-        final tunSingBoxUserConfigFile = getTunSingBoxUserConfigFile();
+        final tunSingBoxUserConfigFile = await getTunSingBoxUserConfigFile();
         final tunSingBoxConfigFile = File(p.join(
           global.applicationSupportDirectory.path,
           'conf',
@@ -922,7 +927,7 @@ class VPNManagerExec extends VPNManager {
     logger.d("coreWorkingDir: $_coreWorkingDir");
     logger.d("coreEnvs: $_coreEnvs");
 
-    if (!File(corePath!).existsSync()) {
+    if (!await File(corePath!).exists()) {
       withContext((context) {
         showSnackBarNow(context, Text(context.loc.core_path_does_not_exist));
       });

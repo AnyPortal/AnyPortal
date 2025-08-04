@@ -38,7 +38,7 @@ class DatabaseManager {
     if (!RuntimePlatform.isWeb) {
       final dbFolder = global.applicationDocumentsDirectory;
       final file = File(p.join(dbFolder.path, "AnyPortal", "db.sqlite"));
-      if (!file.existsSync()) {
+      if (!await file.exists()) {
         file.createSync(recursive: true);
       }
     }

@@ -7,3 +7,7 @@ Future<Directory> getApplicationDocumentsDirectory() async {
 Future<Directory> getApplicationSupportDirectory() async {
   return Directory("");
 }
+
+Future<Directory> getApplicationCacheDirectory() async {
+  return Directory("");
+}

@@ -158,7 +158,9 @@ class _LogViewerState extends State<LogViewer> {
   StreamSubscription? _streamSubscription;
 
   void _startFileMonitor() {
-    if (RuntimePlatform.isAndroid || RuntimePlatform.isIOS) {
+    if (RuntimePlatform.isWeb) {
+      return;
+    } else if (RuntimePlatform.isAndroid || RuntimePlatform.isIOS) {
       mCMan.methodChannel.invokeListMethod(
           'log.core.startWatching', {"filePath": _logFile.absolute.path});
       mCMan.addHandler('onFileChange', handleFileChange);
@@ -283,7 +285,7 @@ class _LogViewerState extends State<LogViewer> {
         ),
         SizedBox(
           height: 4,
-          child: progressReadingBackward != 1
+          child: progressReadingBackward != 0 && progressReadingBackward != 1
               ? LinearProgressIndicator(value: progressReadingBackward)
               : null,
         ),
@@ -372,10 +374,12 @@ class _LogViewerState extends State<LogViewer> {
       if (!await _logFile.exists()) {
         await _logFile.create(recursive: true);
       }
-      setState(() {
-        _logFile = _logFile;
-      });
+    } else {
+      _logFile = File("");
     }
+    setState(() {
+      _logFile = _logFile;
+    });
   }
 
   Future setLogFile(String name) async {

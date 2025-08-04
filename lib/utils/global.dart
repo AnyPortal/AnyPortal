@@ -3,7 +3,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import 'package:path_provider/path_provider.dart' if (dart.library.html) 'path_provider/web.dart';
+import 'package:path_provider/path_provider.dart'
+    if (dart.library.html) 'path_provider/web.dart';
+
+import 'package:anyportal/utils/runtime_platform.dart';
 
 import 'logger.dart';
 import 'platform_elevation.dart';
@@ -12,17 +15,23 @@ class GlobalManager {
   late Directory applicationDocumentsDirectory;
   late Directory applicationSupportDirectory;
   late Directory applicationCacheDirectory;
-  late bool isElevated;
+  bool isElevated = false;
   GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   Future<void> init() async {
     logger.d("starting: GlobalManager.init");
-    await Future.wait([
-      updateAapplicationDocumentsDirectory(),
-      updateApplicationSupportDirectory(),
-      updateApplicationCacheDirectory(),
-      updateIsElevated(),
-    ]);
+    if (!RuntimePlatform.isWeb) {
+      await Future.wait([
+        updateAapplicationDocumentsDirectory(),
+        updateApplicationSupportDirectory(),
+        updateApplicationCacheDirectory(),
+        updateIsElevated(),
+      ]);
+    } else {
+      applicationDocumentsDirectory = Directory("");
+      applicationSupportDirectory = Directory("");
+      applicationCacheDirectory = Directory("");
+    }
     _completer.complete(); // Signal that initialization is complete
     logger.d("finished: GlobalManager.init");
   }

@@ -51,7 +51,7 @@ class _TunScreenState extends State<TunScreen> {
   bool _ipv6 = prefs.getBool('tun.ipv6')!;
 
   /// sing-box
-  final File tunSingBoxUserConfigFile = vPNMan.getTunSingBoxUserConfigFile();
+  File tunSingBoxUserConfigFile = File("");
   bool _injectLog = prefs.getBool('tun.inject.log')!;
   LogLevel _logLevel = LogLevel.values[prefs.getInt('tun.inject.log.level')!];
   bool _injectSocks = prefs.getBool('tun.inject.socks')!;
@@ -60,6 +60,11 @@ class _TunScreenState extends State<TunScreen> {
   @override
   void initState() {
     super.initState();
+    vPNMan.getTunSingBoxUserConfigFile().then((value) {
+      setState(() {
+        tunSingBoxUserConfigFile = value;
+      });
+    });
   }
 
   void _editProxyApplist(String prefKey, String title) {
@@ -90,6 +95,7 @@ class _TunScreenState extends State<TunScreen> {
   }
 
   void writeTProxyConf() async {
+    if (RuntimePlatform.isWeb) return;
     final folder = global.applicationSupportDirectory;
     final file = File(
         p.join(folder.path, 'conf', 'tun2socks.hev_socks5_tunnel.gen.yaml'));
@@ -520,7 +526,7 @@ Future<void> tunHevSocks5TunnelConfInit() async {
   final folder = global.applicationSupportDirectory;
   final file =
       File(p.join(folder.path, 'conf', 'tun2socks.hev_socks5_tunnel.gen.yaml'));
-  if (!file.existsSync()) {
+  if (!await file.exists()) {
     await file.create(recursive: true);
     _TunScreenState().writeTProxyConf();
   }

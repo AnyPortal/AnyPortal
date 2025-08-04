@@ -26,10 +26,10 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
     repo = "anyportal";
     assetName = "anyportal-${Platform.operatingSystem}.zip";
     if (RuntimePlatform.isWindows &&
-        File(p.join(
+        await File(p.join(
           File(Platform.resolvedExecutable).parent.path,
           "unins000.exe", // created by inno setup
-        )).existsSync()) {
+        )).exists()) {
       assetName = "anyportal-windows-setup.exe";
     }
     if (RuntimePlatform.isAndroid) {
