@@ -50,6 +50,7 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
 
     final injectLog = prefs.getBool('inject.log')!;
     final injectApi = prefs.getBool('inject.api')!;
+    final injectFakeDns = prefs.getBool('inject.dns.fakedns')!;
     final injectDnsLocal = prefs.getBool('inject.dns.local')!;
     final logLevel = LogLevel.values[prefs.getInt('inject.log.level')!];
     final serverAddress = prefs.getString('app.server.address')!;
@@ -141,70 +142,91 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
       });
     }
 
-    String? dnsInboundTag;
-    bool didInjectDnsLocal = false;
-    if (injectDnsLocal) {
-      /// find if dns outbound is configured
-      String? dnsOutboundTag;
-      for (final outbound in outbounds) {
-        if (outbound.containsKey("protocol") &&
-            outbound["protocol"] == "dns" &&
-            outbound.containsKey("tag")) {
-          dnsOutboundTag = outbound["tag"];
+    /// find if dns outbound is configured
+    String? dnsOutboundTag;
+    for (final outbound in outbounds) {
+      if (outbound.containsKey("protocol") &&
+          outbound["protocol"] == "dns" &&
+          outbound.containsKey("tag")) {
+        dnsOutboundTag = outbound["tag"];
+        break;
+      }
+    }
+    if (dnsOutboundTag == null) {
+      dnsOutboundTag = "anyportal_ot_dns";
+
+      /// no dns outbound, add one, no side effect
+      outbounds.add({
+        "protocol": "dns",
+        "tag": dnsOutboundTag,
+      });
+    }
+
+    /// hijack default dns requests
+    /// - if original config alreay have hijack rule,
+    ///   - it doesn't matter if we add another on top
+    /// - if original config does not have hijack rule,
+    ///   - if it quries tun dns, they should be hijacked or it's invalid
+    ///   - if it quries local dns, they should be hijacked or it's dns leak
+    /// need to reboot core when local dns changes!
+    final effectiveNetInterface =
+        await ConnectivityManager().getEffectiveNetInterface();
+    final dns = effectiveNetInterface!.dns;
+    routingRules.insert(0, {
+      "type": "field",
+      "outboundTag": dnsOutboundTag,
+      "port": "53",
+      "network": "udp",
+      "ip": [
+        // if (RuntimePlatform.isWindows || RuntimePlatform.isLinux)
+        "172.19.0.2",
+        // if (RuntimePlatform.isWindows || RuntimePlatform.isLinux)
+        "fdfe:dcba:9876::2",
+        // if (RuntimePlatform.isMacOS || RuntimePlatform.isAndroid)
+        ...dns.ipv4,
+        // if (RuntimePlatform.isMacOS || RuntimePlatform.isAndroid)
+        ...dns.ipv6,
+      ],
+    });
+
+    /// add fakedns
+    /// - if original config alreay have fakedns
+    ///   - it doesn't matter if we add another at bottom
+    /// - if original config does not have fakedns but has a proper config
+    ///   - this will block dns fallback!
+    /// - if original config does not have a proper dns config
+    ///   - this is a proper one and thus necessary
+    if (injectFakeDns) {
+      dnsServers.add("fakedns");
+    }
+
+    /// all outbound domains should be resolved by system dns
+    /// find outbound domains and add them to dns "localhost"
+    /// not to confuse with "localhost" like 127.0.0.1
+    /// "localhost" in v2ray/xray dns config means system dns
+    /// no side effect
+    final outboundsDomains = extractDomains(outbounds);
+    if (outboundsDomains.isNotEmpty) {
+      /// add as the first dns server with domains
+      int i = 0;
+      for (i = 0; i < dnsServers.length; ++i) {
+        dynamic server = dnsServers[i];
+        if (server is! Map) {
+          continue;
+        }
+        if (server.containsKey("domains")) {
           break;
         }
       }
-      if (dnsOutboundTag == null) {
-        /// no dns outbound, dns not configured
-        outbounds.add({
-          "protocol": "dns",
-          "tag": "anyportal_ot_dns",
-        });
+      dnsServers.insert(i, {
+        "address": "localhost",
+        "domains": outboundsDomains,
+      });
+    }
 
-        /// hijack default dns requests
-        final effectiveNetInterface =
-            await ConnectivityManager().getEffectiveNetInterface();
-        final dns = effectiveNetInterface!.dns;
-        routingRules.insert(0, {
-          "type": "field",
-          "outboundTag": "anyportal_ot_dns",
-          "port": "53",
-          "ip": [
-            if (RuntimePlatform.isWindows || RuntimePlatform.isLinux)
-              "172.19.0.2",
-            if (RuntimePlatform.isWindows || RuntimePlatform.isLinux)
-              "fdfe:dcba:9876::2",
-            if (RuntimePlatform.isMacOS) ...dns.ipv4,
-            if (RuntimePlatform.isMacOS) ...dns.ipv6,
-          ],
-        });
-
-        /// add fakedns
-        dnsServers.add("fakedns");
-      }
-
-      /// find outbound domains and add them to dns "localhost"
-      /// not to confuse with "localhost" like 127.0.0.1
-      /// "localhost" in v2ray/xray dns config means system dns
-      final outboundsDomains = extractDomains(outbounds);
-      if (outboundsDomains.isNotEmpty) {
-        /// add as the first dns server with domains
-        int i = 0;
-        for (i = 0; i < dnsServers.length; ++i) {
-          dynamic server = dnsServers[i];
-          if (server is! Map) {
-            continue;
-          }
-          if (server.containsKey("domains")) {
-            break;
-          }
-        }
-        dnsServers.insert(i, {
-          "address": "localhost",
-          "domains": outboundsDomains,
-        });
-      }
-
+    /// currently only one dns record is used!
+    /// maybe duplicate those records to use alternatives
+    if (injectDnsLocal) {
       /// patch dns records where server is "localhost"
       for (final (i, server) in dnsServers.indexed) {
         if (server is String) {
@@ -214,7 +236,6 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
               break;
             }
             dnsServers[i] = dnsStr;
-            didInjectDnsLocal = true;
           }
         } else if (server is Map) {
           if (server["address"] == "localhost") {
@@ -223,33 +244,31 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
               break;
             }
             server["address"] = dnsStr;
-            didInjectDnsLocal = true;
           }
         }
       }
-      if (!(cfg["dns"] as Map).containsKey("tag")) {
-        cfg["dns"]["tag"] = "anyportal_in_dns";
-      }
-      dnsInboundTag = cfg["dns"]["tag"];
+    }
 
-      /// all dns requests that shall be sent to system dns,
-      /// as determined by v2ray/xray internal dns server "in_dns"
-      /// shall be sent there directly
-      if (didInjectDnsLocal) {
-        final effectiveNetInterface =
-            await ConnectivityManager().getEffectiveNetInterface();
-        final dns = effectiveNetInterface!.dns;
-        routingRules.insert(0, {
-          "type": "field",
-          "inboundTag": [dnsInboundTag],
-          "ip": [
-            ...dns.ipv4,
-            ...dns.ipv6,
-          ],
-          "port": 53,
-          "outboundTag": "anyportal_ot_freedom"
-        });
-      }
+    /// all dns requests that shall be sent to system dns "localhost",
+    /// as determined by v2ray/xray internal dns server $dnsInboundTag
+    /// shall be sent there directly
+    /// need to reboot core when local dns changes!
+    if (!(cfg["dns"] as Map).containsKey("tag")) {
+      cfg["dns"]["tag"] = "anyportal_in_dns";
+    }
+    String dnsInboundTag = cfg["dns"]["tag"];
+    if (dns.ipv4.isNotEmpty || dns.ipv6.isNotEmpty) {
+      routingRules.insert(0, {
+        "type": "field",
+        "outboundTag": "anyportal_ot_freedom",
+        "inboundTag": [dnsInboundTag],
+        "network": "udp",
+        "port": "53",
+        "ip": [
+          ...dns.ipv4,
+          ...dns.ipv6,
+        ],
+      });
     }
 
     if (injectSendThrough) {

@@ -41,6 +41,7 @@ class PrefsManager {
     'app.socks.port': 15491,
     'inject.api': true,
     'inject.api.port': 15490,
+    'inject.dns.fakedns': true,
     'inject.dns.local': RuntimePlatform.isWindows ||
         RuntimePlatform.isLinux ||
         RuntimePlatform.isMacOS,
@@ -60,8 +61,8 @@ class PrefsManager {
     'tun.perAppProxy': false,
     'tun.socks.username': "",
     'tun.socks.password': "",
-    'tun.dns.ipv4': "1.1.1.1",
-    'tun.dns.ipv6': "2606:4700:4700::1111",
+    'tun.dns.ipv4': "172.19.0.2",
+    'tun.dns.ipv6': "fdfe:dcba:9876::2",
     'tun.ipv4': true,
     'tun.ipv6': false,
     'tun.inject.log': true,
