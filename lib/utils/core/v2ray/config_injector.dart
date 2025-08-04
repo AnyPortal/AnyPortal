@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/widgets.dart';
+
 import 'package:path/path.dart' as p;
 
 import '../../../extensions/localization.dart';
@@ -163,22 +164,26 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
         if (!(cfg["routing"] as Map).containsKey("rules")) {
           cfg["routing"]["rules"] = [];
         }
-        // final effectiveNetInterface =
-        //     await ConnectivityManager().getEffectiveNetInterface();
-        // final dns = effectiveNetInterface!.dns;
+
+        /// hijack default dns requests
+        final effectiveNetInterface =
+            await ConnectivityManager().getEffectiveNetInterface();
+        final dns = effectiveNetInterface!.dns;
         (cfg["routing"]["rules"] as List).insert(0, {
           "type": "field",
           "outboundTag": "anyportal_ot_dns",
           "port": "53",
-          // "ip": [
-          //   "172.19.0.1",
-          //   "fdfe:dcba:9876::1",
-          //   ...dns.ipv4,
-          //   ...dns.ipv6,
-          // ],
+          "ip": [
+            if (RuntimePlatform.isWindows || RuntimePlatform.isLinux)
+              "172.19.0.2",
+            if (RuntimePlatform.isWindows || RuntimePlatform.isLinux)
+              "fdfe:dcba:9876::2",
+            if (RuntimePlatform.isMacOS) ...dns.ipv4,
+            if (RuntimePlatform.isMacOS) ...dns.ipv6,
+          ],
         });
 
-        /// add fakedns and localhost
+        /// add fakedns
         if (!cfg.containsKey("dns")) {
           cfg["dns"] = <String, dynamic>{};
         }
@@ -186,7 +191,6 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
           cfg["dns"]["servers"] = <dynamic>[];
         }
         (cfg["dns"]["servers"] as List).add("fakedns");
-        (cfg["dns"]["servers"] as List).add("localhost");
       }
 
       /// find outbound domains and add them to dns "localhost"
@@ -242,12 +246,10 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
             }
           }
         }
-        if ((cfg["dns"] as Map).containsKey("tag")) {
-          dnsInboundTag = cfg["dns"]["tag"];
-        } else {
-          dnsInboundTag = "anyportal_in_dns";
+        if (!(cfg["dns"] as Map).containsKey("tag")) {
           cfg["dns"]["tag"] = "anyportal_in_dns";
         }
+        dnsInboundTag = cfg["dns"]["tag"];
       }
 
       /// all dns requests that shall be sent to system dns,
