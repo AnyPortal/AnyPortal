@@ -82,20 +82,20 @@ class DequeList<T> {
   T removeLast() {
     if (_size == 0) throw StateError('Deque is empty');
     final index = (_head + _size - 1) % _buffer.length;
-    final value = _buffer[index]!;
+    final value = _buffer[index];
     _buffer[index] = null;
     _size--;
-    return value;
+    return value!;
   }
 
   /// Remove from the start.
   T removeFirst() {
     if (_size == 0) throw StateError('Deque is empty');
-    final value = _buffer[_head]!;
+    final value = _buffer[_head];
     _buffer[_head] = null;
     _head = (_head + 1) % _buffer.length;
     _size--;
-    return value;
+    return value!;
   }
 
   /// Ensure the internal buffer is big enough.

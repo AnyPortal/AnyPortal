@@ -89,24 +89,27 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
         "port": apiPort,
         "protocol": "dokodemo-door",
         "settings": {"address": serverAddress},
-        "tag": "in_api"
+        "tag": "in_api",
       });
 
       routingRules.insert(0, {
         "type": "field",
         "inboundTag": ["in_api"],
-        "outboundTag": "ot_api"
+        "outboundTag": "ot_api",
       });
 
       cfg["policy"] = {
         "levels": {
-          "0": {"statsUserUplink": true, "statsUserDownlink": true}
+          "0": {
+            "statsUserUplink": true,
+            "statsUserDownlink": true,
+          }
         },
         "system": {
           "statsInboundUplink": true,
           "statsInboundDownlink": true,
           "statsOutboundUplink": true,
-          "statsOutboundDownlink": true
+          "statsOutboundDownlink": true,
         }
       };
 
@@ -123,7 +126,7 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
           "enabled": true,
           "metadataOnly": false
         },
-        "tag": "anyportal_in_http"
+        "tag": "anyportal_in_http",
       });
     }
 
@@ -136,9 +139,9 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
         "sniffing": {
           "destOverride": ["fakedns+others"],
           "enabled": true,
-          "metadataOnly": false
+          "metadataOnly": false,
         },
-        "tag": "anyportal_in_socks"
+        "tag": "anyportal_in_socks",
       });
     }
 
@@ -163,11 +166,11 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
     }
 
     /// hijack default dns requests
-    /// - if original config alreay have hijack rule,
+    /// - if original config alreay has hijack rule,
     ///   - it doesn't matter if we add another on top
     /// - if original config does not have hijack rule,
-    ///   - if it quries tun dns, they should be hijacked or it's invalid
-    ///   - if it quries local dns, they should be hijacked or it's dns leak
+    ///   - if it queries tun dns, they should be hijacked or it's invalid
+    ///   - if it queries local dns, they should be hijacked or it's dns leak
     /// need to reboot core when local dns changes!
     final effectiveNetInterface =
         await ConnectivityManager().getEffectiveNetInterface();
@@ -313,11 +316,12 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
           }
         }
       } else {
+        /// for other systems fall back to ip binding
+        /// this is a bug of v2ray/xray
         String sendThrough = "0.0.0.0";
         if (injectSendThrough) {
           switch (sendThroughBindingStratagy) {
             case SendThroughBindingStratagy.internet:
-              // TODO: binds to interface
               final effectiveNetInterface =
                   await ConnectivityManager().getEffectiveNetInterface();
               final internetIp = effectiveNetInterface?.ip.ipv4.first ??
@@ -328,7 +332,6 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
             case SendThroughBindingStratagy.ip:
               sendThrough = prefs.getString('inject.sendThrough.bindingIp')!;
             case SendThroughBindingStratagy.interface:
-              // TODO: actually binds to interface instead if using ip
               final bindingInterface =
                   prefs.getString('inject.sendThrough.bindingInterface')!;
               final ip = await getIPv4OfInterfaceName(bindingInterface);

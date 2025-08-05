@@ -107,7 +107,6 @@ class _GeneralScreenState extends State<GeneralScreen> {
               _locale = localeManager.locale;
             });
           });
-          ;
         },
       ),
       const Divider(),

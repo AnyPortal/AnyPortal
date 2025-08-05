@@ -97,7 +97,7 @@ class _CoresScreenState extends State<CoresScreen> {
     }
   }
 
-  void _addCore({int? coreTypeId = null}) {
+  void _addCore({int? coreTypeId}) {
     Navigator.push(
       context,
       MaterialPageRoute(
