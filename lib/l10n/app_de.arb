@@ -1,5 +1,6 @@
 {
   "@@locale": "de",
+  "a_url_that_returns_204": "Eine URL, die 204 zurückgibt",
   "about": "Über",
   "add_asset": "Asset hinzufügen",
   "add_core": "Core hinzufügen",
@@ -180,6 +181,7 @@
   "per_app_proxy_mode": "Pro-App-Proxy-Modus",
   "performance": "Leistung",
   "permission_required": "Berechtigung erforderlich",
+  "ping_http_address": "Ping (HTTP)-Adresse",
   "please_select_a_core_type_name_core": "Bitte wählen Sie einen {coreTypeName}-Kern aus",
   "@please_select_a_core_type_name_core": {
     "placeholders": {

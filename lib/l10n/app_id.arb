@@ -1,5 +1,6 @@
 {
   "@@locale": "id",
+  "a_url_that_returns_204": "Sebuah URL yang mengembalikan kode 204",
   "about": "Tentang",
   "add_asset": "Tambah aset",
   "add_core": "Tambah inti",
@@ -180,6 +181,7 @@
   "per_app_proxy_mode": "Mode proxy per aplikasi",
   "performance": "Performa",
   "permission_required": "Izin Diperlukan",
+  "ping_http_address": "Alamat HTTP untuk Ping",
   "please_select_a_core_type_name_core": "Por favor, seleccione un {coreTypeName}.",
   "@please_select_a_core_type_name_core": {
     "placeholders": {

@@ -1,5 +1,6 @@
 {
   "@@locale": "fr",
+  "a_url_that_returns_204": "Une URL qui retourne 204",
   "about": "À propos",
   "add_asset": "Ajouter un actif",
   "add_core": "Ajouter un noyau",
@@ -180,6 +181,7 @@
   "per_app_proxy_mode": "Mode proxy par application",
   "performance": "Performance",
   "permission_required": "Autorisation requise",
+  "ping_http_address": "Adresse HTTP de ping",
   "please_select_a_core_type_name_core": "Por favor, seleccione un {coreTypeName}.",
   "@please_select_a_core_type_name_core": {
     "placeholders": {

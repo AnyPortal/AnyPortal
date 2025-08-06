@@ -1,5 +1,6 @@
 {
   "@@locale": "pt",
+  "a_url_that_returns_204": "Uma URL que retorna 204",
   "about": "Sobre",
   "add_asset": "Adicionar ativo",
   "add_core": "Adicionar núcleo",
@@ -180,6 +181,7 @@
   "per_app_proxy_mode": "Modo de proxy por aplicativo",
   "performance": "Desempenho",
   "permission_required": "Permissão necessária",
+  "ping_http_address": "Endereço de ping (HTTP)",
   "please_select_a_core_type_name_core": "{coreTypeName}のコアを選択してください",
   "@please_select_a_core_type_name_core": {
     "placeholders": {

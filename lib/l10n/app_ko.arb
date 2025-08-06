@@ -1,5 +1,6 @@
 {
   "@@locale": "ko",
+  "a_url_that_returns_204": "204를 반환하는 URL",
   "about": "정보",
   "add_asset": "자산 추가",
   "add_core": "코어 추가",
@@ -180,6 +181,7 @@
   "per_app_proxy_mode": "앱별 프록시 모드",
   "performance": "성능",
   "permission_required": "권한이 필요합니다",
+  "ping_http_address": "Ping (HTTP) 주소",
   "please_select_a_core_type_name_core": "{coreTypeName}のコアを選択してください",
   "@please_select_a_core_type_name_core": {
     "placeholders": {

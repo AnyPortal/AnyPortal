@@ -1,5 +1,6 @@
 {
   "@@locale": "th",
+  "a_url_that_returns_204": "URL ที่ส่งคืนรหัส 204",
   "about": "เกี่ยวกับ",
   "add_asset": "เพิ่มสินทรัพย์",
   "add_core": "เพิ่มคอร์",
@@ -180,6 +181,7 @@
   "per_app_proxy_mode": "โหมดพร็อกซีรายแอป",
   "performance": "ประสิทธิภาพ",
   "permission_required": "ต้องได้รับอนุญาต",
+  "ping_http_address": "ที่อยู่ HTTP สำหรับการปิง",
   "please_select_a_core_type_name_core": "กรุณาเลือกคอร์ประเภท {coreTypeName}",
   "@please_select_a_core_type_name_core": {
     "placeholders": {

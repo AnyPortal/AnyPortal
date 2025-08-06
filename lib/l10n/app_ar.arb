@@ -1,5 +1,6 @@
 {
   "@@locale": "ar",
+  "a_url_that_returns_204": "URL التي ترجع رمز 204",
   "about": "حول",
   "add_asset": "إضافة أصل",
   "add_core": "إضافة نواة",
@@ -180,6 +181,7 @@
   "per_app_proxy_mode": "وضع البروكسي لكل تطبيق",
   "performance": "الأداء",
   "permission_required": "مطلوب إذن",
+  "ping_http_address": "عنوان (HTTP) البنج",
   "please_select_a_core_type_name_core": "يرجى اختيار نوع النواة {coreTypeName}",
   "@please_select_a_core_type_name_core": {
     "placeholders": {

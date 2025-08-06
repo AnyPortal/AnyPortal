@@ -1,5 +1,6 @@
 {
   "@@locale": "vi",
+  "a_url_that_returns_204": "Một URL trả về 204",
   "about": "Giới thiệu",
   "add_asset": "Thêm tài sản",
   "add_core": "Thêm lõi",
@@ -180,6 +181,7 @@
   "per_app_proxy_mode": "Chế độ proxy theo ứng dụng",
   "performance": "Hiệu suất",
   "permission_required": "Yêu cầu quyền",
+  "ping_http_address": "Địa chỉ Ping (HTTP)",
   "please_select_a_core_type_name_core": "Vui lòng chọn một {coreTypeName} lõi",
   "@please_select_a_core_type_name_core": {
     "placeholders": {

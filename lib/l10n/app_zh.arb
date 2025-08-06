@@ -1,5 +1,6 @@
 {
   "@@locale": "zh",
+  "a_url_that_returns_204": "一个返回204的URL",
   "about": "关于",
   "add_asset": "添加资源",
   "add_core": "添加核心",
@@ -180,6 +181,7 @@
   "per_app_proxy_mode": "应用级代理模式",
   "performance": "性能",
   "permission_required": "需要权限",
+  "ping_http_address": "Ping地址（HTTP）",
   "please_select_a_core_type_name_core": "请选择一种{coreTypeName}核心",
   "@please_select_a_core_type_name_core": {
     "placeholders": {

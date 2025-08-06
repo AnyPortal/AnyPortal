@@ -1,5 +1,6 @@
 {
   "@@locale": "ru",
+  "a_url_that_returns_204": "URL, который возвращает 204",
   "about": "О программе",
   "add_asset": "Добавить ресурс",
   "add_core": "Добавить ядро",
@@ -180,6 +181,7 @@
   "per_app_proxy_mode": "Режим прокси для каждого приложения",
   "performance": "Производительность",
   "permission_required": "Требуется разрешение",
+  "ping_http_address": "Адрес пинга (HTTP)",
   "please_select_a_core_type_name_core": "Пожалуйста, выберите {coreTypeName} ядро",
   "@please_select_a_core_type_name_core": {
     "placeholders": {

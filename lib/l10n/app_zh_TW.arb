@@ -1,5 +1,6 @@
 {
   "@@locale": "zh_TW",
+  "a_url_that_returns_204": null,
   "about": null,
   "add_asset": null,
   "add_core": null,
@@ -180,6 +181,7 @@
   "per_app_proxy_mode": null,
   "performance": null,
   "permission_required": null,
+  "ping_http_address": null,
   "please_select_a_core_type_name_core": null,
   "@please_select_a_core_type_name_core": {
     "placeholders": {

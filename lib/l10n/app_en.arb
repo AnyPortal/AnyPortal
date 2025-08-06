@@ -1,5 +1,6 @@
 {
   "@@locale": "en",
+  "a_url_that_returns_204": "A url that returns 204",
   "about": "About",
   "add_asset": "Add asset",
   "add_core": "Add core",
@@ -179,6 +180,7 @@
   "per_app_proxy_mode": "Per-app proxy mode",
   "performance": "Performance",
   "permission_required": "Permission Required",
+  "ping_http_address": "Ping (HTTP) address",
   "please_select_a_core_type_name_core": "Please select a {coreTypeName} core",
   "@please_select_a_core_type_name_core": {
     "placeholders": {
@@ -281,7 +283,5 @@
   "working_dir": "Working dir",
   "works_fine_on_windows_will_fail_on_other_systems_with_short_lived_packets_like_dns_": "Works fine on Windows, will fail on other systems with short-lived packets (like DNS)",
   "you_may_want_to_check_settings_profile_override_inject_http_inbound": "You may want to check `Settings` -> `Profile override` -> `Inject http inbound`",
-  "you_may_want_to_check_settings_profile_override_inject_socks_inbound": "You may want to check `Settings` -> `Profile override` -> `Inject socks inbound`",
-  "ping_http_address": "Ping (HTTP) address",
-  "a_url_that_returns_204": "A url that returns 204"
+  "you_may_want_to_check_settings_profile_override_inject_socks_inbound": "You may want to check `Settings` -> `Profile override` -> `Inject socks inbound`"
 }

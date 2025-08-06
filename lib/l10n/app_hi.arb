@@ -1,5 +1,6 @@
 {
   "@@locale": "hi",
+  "a_url_that_returns_204": "एक यूआरएल जो 204 वापस लौटाता है",
   "about": "के बारे में",
   "add_asset": "संपत्ति जोड़ें",
   "add_core": "कोर जोड़ें",
@@ -180,6 +181,7 @@
   "per_app_proxy_mode": "प्रति-ऐप प्रॉक्सी मोड",
   "performance": "प्रदर्शन",
   "permission_required": "अनुमति आवश्यक",
+  "ping_http_address": "पिंग (HTTP) पता",
   "please_select_a_core_type_name_core": "Por favor, seleccione un {coreTypeName}.",
   "@please_select_a_core_type_name_core": {
     "placeholders": {

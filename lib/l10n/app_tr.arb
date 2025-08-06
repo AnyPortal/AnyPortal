@@ -1,5 +1,6 @@
 {
   "@@locale": "tr",
+  "a_url_that_returns_204": "Bir URL yang 204 döndürür",
   "about": "Hakkında",
   "add_asset": "Varlık ekle",
   "add_core": "Çekirdek ekle",
@@ -180,6 +181,7 @@
   "per_app_proxy_mode": "Uygulamaya özel proxy modu",
   "performance": "Performans",
   "permission_required": "İzin Gereklidir",
+  "ping_http_address": "Ping (HTTP) adresi",
   "please_select_a_core_type_name_core": "Lütfen bir {coreTypeName} çekirdeğini seçin.",
   "@please_select_a_core_type_name_core": {
     "placeholders": {

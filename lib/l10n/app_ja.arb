@@ -1,5 +1,6 @@
 {
   "@@locale": "ja",
+  "a_url_that_returns_204": "204を返すURL",
   "about": "概要",
   "add_asset": "アセットを追加",
   "add_core": "コアを追加",
@@ -180,6 +181,7 @@
   "per_app_proxy_mode": "アプリごとのプロキシモード",
   "performance": "パフォーマンス",
   "permission_required": "権限が必要です",
+  "ping_http_address": "ピング (HTTP) アドレス",
   "please_select_a_core_type_name_core": "{coreTypeName}のコアを選択してください",
   "@please_select_a_core_type_name_core": {
     "placeholders": {
