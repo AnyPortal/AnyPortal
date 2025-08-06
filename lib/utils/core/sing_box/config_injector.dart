@@ -119,4 +119,41 @@ class ConfigInjectorSingBox extends ConfigInjectorBase {
 
     return jsonEncode(cfg);
   }
+
+  @override
+  Future<String> getInjectedConfigPing(
+      String cfgStr, String coreCfgFmt, int socksPort) async {
+    final cfg = jsonDecode(cfgStr) as Map<String, dynamic>;
+
+    if (!cfg.containsKey("inbounds")) {
+      cfg["inbounds"] = [];
+    }
+    final inbounds = (cfg["inbounds"] as List).cast<Map<String, dynamic>>();
+
+    for (final inbound in inbounds) {
+      if (inbound.containsKey("listen_port")) {
+        inbound["listen"] = "127.0.0.1";
+        inbound.remove("listen_port");
+      }
+
+      if (inbound.containsKey("type") &&
+          inbound["type"] == "tun" &&
+          inbound.containsKey("tag")) {
+        inbound.clear();
+        inbound.addAll({
+          "listen": "127.0.0.1",
+          "type": "mixed",
+          "tag": inbound["tag"],
+        });
+      }
+    }
+
+    inbounds.insert(0, {
+      "listen": "127.0.0.1",
+      "listen_port": socksPort,
+      "type": "mixed",
+    });
+
+    return jsonEncode(cfg);
+  }
 }

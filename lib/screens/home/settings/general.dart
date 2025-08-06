@@ -41,6 +41,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
   bool _isFloatingActionButton =
       prefs.getBool('app.dashboard.floatingActionButton')!;
   String? _githubToken = prefs.getString('app.github.token');
+  String _httpingUrl = prefs.getString('app.ping.http.url')!;
 
   @override
   void initState() {
@@ -386,6 +387,25 @@ class _GeneralScreenState extends State<GeneralScreen> {
                   prefs.setString('app.github.token', value);
                   setState(() {
                     _githubToken = value;
+                  });
+                }),
+          );
+        },
+      ),
+      ListTile(
+        title: Text(context.loc.ping_http_address),
+        subtitle: Text(_httpingUrl),
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (context) => TextInputPopup(
+                title: context.loc.ping_http_address,
+                text: context.loc.a_url_that_returns_204,
+                initialValue: _httpingUrl,
+                onSaved: (String value) {
+                  prefs.setString('app.ping.http.url', value);
+                  setState(() {
+                    _httpingUrl = value;
                   });
                 }),
           );

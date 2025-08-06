@@ -112,4 +112,51 @@ class ConfigInjectorClash extends ConfigInjectorBase {
         return YamlWriter().write(cfg);
     }
   }
+
+  @override
+  Future<String> getInjectedConfigPing(
+      String cfgStr, String coreCfgFmt, int socksPort) async {
+    Map<String, dynamic> cfg = {};
+    switch (coreCfgFmt) {
+      case "json":
+        cfg = jsonDecode(cfgStr) as Map<String, dynamic>;
+        break;
+      case "yaml":
+      case _:
+        cfg = (loadYaml(cfgStr) as YamlMap).toMap();
+        break;
+    }
+
+    if (!cfg.containsKey("listeners")) {
+      cfg["listeners"] = [];
+    }
+    final listeners = (cfg["listeners"] as List).cast<Map<String, dynamic>>();
+
+    final newListeners = [];
+    for (final listener in listeners) {
+      if (!listener.containsKey("port")) {
+        newListeners.add(listener);
+      }
+    }
+    cfg["listeners"] = newListeners;
+
+    newListeners.insert(0, {
+      "address": "127.0.0.1",
+      "port": socksPort,
+      "type": "http",
+      // "type": "socks", /// TODO: why socks doesn't work???
+    });
+
+    if (cfg.containsKey("external-controller")) {
+      cfg.remove("external-controller");
+    }
+
+    switch (coreCfgFmt) {
+      case "json":
+        return jsonEncode(cfg);
+      case "yaml":
+      case _:
+        return YamlWriter().write(cfg);
+    }
+  }
 }

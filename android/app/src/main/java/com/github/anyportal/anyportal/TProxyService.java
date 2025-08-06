@@ -249,18 +249,18 @@ public class TProxyService extends VpnService {
         }
     }
 
-    public void tryStopCore() {
+    public void tryStopCore(String configPath) {
         try {
-            stopCore();
+            stopCore(configPath);
         } catch (Exception e) {
             e.printStackTrace();
             return;
         }
     }
 
-    public void tryStartCore() {
+    public void tryStartCore(String configPath) {
         try {
-            startCore();
+            startCore(configPath);
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -310,7 +310,7 @@ public class TProxyService extends VpnService {
             startNotificationForeground();
         }
 
-        startCore();
+        startCore(null);
 
         if (prefs.getBoolean("flutter.tun", true)) {
             startTun();
@@ -328,7 +328,7 @@ public class TProxyService extends VpnService {
 
     private void stopAll() {
         Log.d(TAG, "starting: stopAll");
-        stopCore();
+        stopCore(null);
 
         if (prefs.getBoolean("flutter.tun", true)) {
             stopTun();
@@ -583,13 +583,14 @@ public class TProxyService extends VpnService {
         Log.d(TAG, "finished: stopTun");
     }
 
-    private void startCore() {
+    private void startCore(String configPath) {
         Log.d(TAG, "starting: startCore");
         shouldCoreActive = true;
 
         boolean useEmbedded = prefs.getBoolean("flutter.cache.core.useEmbedded", true);
         if (useEmbedded) {
             Intent intent = new Intent(getApplicationContext(), LibV2RayService.class);
+            intent.putExtra("configPath", configPath);
             startService(intent);
             bindLibV2RayService();
         } else {
@@ -633,14 +634,14 @@ public class TProxyService extends VpnService {
         Log.d(TAG, "finished: startCore");
     }
 
-    private void stopCore() {
+    private void stopCore(String configPath) {
         Log.d(TAG, "starting: stopCore");
         shouldCoreActive = false;
 
         if (coreProcess != null) {
             coreProcess.destroy();
             coreProcess = null;
-            
+
             isCoreActive = false;
             notifyMainActivityCoreStatusChange();
             Log.d(TAG, "finished: stopCore");
@@ -654,12 +655,13 @@ public class TProxyService extends VpnService {
             Log.w(TAG, "LibV2RayService was not bound: " + e.getMessage());
         }
         // /// just stopService does not work unless run LibV2RayService.stopCore first
-        // Intent stopIntent = new Intent(getApplicationContext(),
-        // LibV2RayService.class);
-        // stopIntent.setAction(LibV2RayService.ACTION_STOP_LIBV2RAYSERVICE);
-        // startService(stopIntent);
+        Intent stopIntent = new Intent(getApplicationContext(),
+                LibV2RayService.class);
+        stopIntent.setAction(LibV2RayService.ACTION_STOP_CORE);
+        stopIntent.putExtra("configPath", configPath);
+        startService(stopIntent);
         // just stopService is enough
-        stopService(new Intent(getApplicationContext(), LibV2RayService.class));
+        // stopService(new Intent(getApplicationContext(), LibV2RayService.class));
 
         /// find pid
         int libV2RayServicePid = -1;

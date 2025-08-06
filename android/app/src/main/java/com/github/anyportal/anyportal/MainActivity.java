@@ -174,15 +174,34 @@ public class MainActivity extends FlutterActivity {
                 result.success(true);
                 break;
 
-            case "vpn.startCore":
-                tProxyService.tryStartCore();
+            case "vpn.startCore": {
+                String configPath = call.argument("configPath");
+                if (configPath == null) {
+                    tProxyService.tryStartCore(configPath);
+                } else {
+                    Intent intent = new Intent(getApplicationContext(),
+                            LibV2RayService.class);
+                    intent.putExtra("configPath", configPath);
+                    startService(intent);
+                }
                 result.success(true);
                 break;
+            }
 
-            case "vpn.stopCore":
-                tProxyService.tryStopCore();
+            case "vpn.stopCore": {
+                String configPath = call.argument("configPath");
+                if (configPath == null) {
+                    tProxyService.tryStopCore(configPath);
+                } else {
+                    Intent stopIntent = new Intent(getApplicationContext(),
+                            LibV2RayService.class);
+                    stopIntent.setAction(LibV2RayService.ACTION_STOP_CORE);
+                    stopIntent.putExtra("configPath", configPath);
+                    startService(stopIntent);
+                }
                 result.success(true);
                 break;
+            }
 
             case "vpn.startNotificationForeground":
                 tProxyService.tryStartNotificationForeground();

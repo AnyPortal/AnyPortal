@@ -9,14 +9,16 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import libv2raymobile.Libv2raymobile;
 
-
-public class LibV2RayService extends Service{
+public class LibV2RayService extends Service {
     private static final String TAG = "LibV2RayService";
-    // public static final String ACTION_STOP_LIBV2RAYSERVICE = "com.github.anyportal.anyportal.ACTION_STOP_LIBV2RAYSERVICE";
-    private libv2raymobile.CoreManager coreManager;
+    public static final String ACTION_STOP_CORE = "com.github.anyportal.anyportal.ACTION_STOP_CORE";
+
+    private Map<String, libv2raymobile.CoreManager> coreManagers = new HashMap<String, libv2raymobile.CoreManager>();
 
     private final IBinder binder = new LocalBinder();
 
@@ -34,12 +36,19 @@ public class LibV2RayService extends Service{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // if (intent != null && ACTION_STOP_LIBV2RAYSERVICE.equals(intent.getAction())) {
-        //     stopCore();
-        //     return START_NOT_STICKY;
-        // }
+        String configPath = null;
+        if (intent != null) {
+            final String intentConfigPath = intent.getStringExtra("configPath");
+            if (intentConfigPath != null) {
+                configPath = intentConfigPath;
+            }
+            if (ACTION_STOP_CORE.equals(intent.getAction())) {
+                stopCore(configPath);
+                return START_STICKY;
+            }
+        }
 
-        startCore();
+        startCore(configPath);
         return START_STICKY;
     }
 
@@ -52,7 +61,7 @@ public class LibV2RayService extends Service{
 
         // Libv2raymobile.setEnv("GODEBUG", "cgocheck=2");
         // Libv2raymobile.setEnv("GOTRACEBACK", "crash");
-        
+
         Libv2raymobile.setEnv("v2ray.location.asset", libAssetPath);
         Libv2raymobile.setEnv("xray.location.asset", libAssetPath);
         Log.d(TAG, "finished: onCreate");
@@ -61,22 +70,30 @@ public class LibV2RayService extends Service{
     @Override
     public void onDestroy() {
         Log.d(TAG, "starting: onDestroy");
-        stopCore();
+        for (String configPath : coreManagers.keySet()) {
+            stopCore(configPath);
+        }
         super.onDestroy();
         Log.d(TAG, "finished: onDestroy");
         // android.os.Process.killProcess(android.os.Process.myPid());
     }
 
-    private void startCore() {
-        File configFile = new File(getFilesDir().getParent(), "files/conf/core.gen.json");
-        coreManager = new libv2raymobile.CoreManager();
+    private void startCore(String configPath) {
+        File configFile;
+        if (configPath != null) {
+            configFile = new File(configPath);
+        } else {
+            configFile = new File(getFilesDir().getParent(), "files/conf/core.gen.json");
+        }
+        libv2raymobile.CoreManager coreManager = new libv2raymobile.CoreManager();
+        coreManagers.put(configPath, coreManager);
         coreManager.runConfig(configFile.getAbsolutePath());
     }
 
-    private void stopCore() {
-        if (coreManager != null) {
-            coreManager.stop();
-            coreManager = null;
+    private void stopCore(String configPath) {
+        if (coreManagers.containsKey(configPath)) {
+            coreManagers.get(configPath).stop();
+            coreManagers.remove(configPath);
         }
     }
 }

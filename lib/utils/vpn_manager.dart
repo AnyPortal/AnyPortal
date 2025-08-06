@@ -1287,7 +1287,8 @@ class VPNManagerMC extends VPNManager {
     if (!ok) return false;
 
     _startCoreCompleter = Completer<void>();
-    final res = await platform.invokeMethod('vpn.startCore') as bool;
+    final res = await platform
+        .invokeMethod('vpn.startCore', {'configPath': null}) as bool;
     if (!res) return false;
     await Future.any([
       Future.delayed(Duration(seconds: 5)),
@@ -1302,7 +1303,8 @@ class VPNManagerMC extends VPNManager {
   @override
   _stopCore() async {
     _stopCoreCompleter = Completer<void>();
-    final res = await platform.invokeMethod('vpn.stopCore') as bool;
+    final res = await platform
+        .invokeMethod('vpn.stopCore', {'configPath': null}) as bool;
     if (!res) return false;
     await Future.any([
       Future.delayed(Duration(seconds: 5)),

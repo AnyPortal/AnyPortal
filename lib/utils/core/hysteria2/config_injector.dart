@@ -66,7 +66,7 @@ class ConfigInjectorHysteria2 extends ConfigInjectorBase {
     }
 
     if (injectSocks) {
-      cfg["socks"] = {
+      cfg["socks5"] = {
         "listen": "$serverAddress:$socksPort",
         "disableUDP": false
       };
@@ -106,6 +106,41 @@ class ConfigInjectorHysteria2 extends ConfigInjectorBase {
         }
       }
     }
+
+    switch (coreCfgFmt) {
+      case "json":
+        return jsonEncode(cfg);
+      case "yaml":
+      case _:
+        return YamlWriter().write(cfg);
+    }
+  }
+
+  @override
+  Future<String> getInjectedConfigPing(
+      String cfgStr, String coreCfgFmt, int socksPort) async {
+    Map<String, dynamic> cfg = {};
+    switch (coreCfgFmt) {
+      case "json":
+        cfg = jsonDecode(cfgStr) as Map<String, dynamic>;
+        break;
+      case "yaml":
+      case _:
+        cfg = (loadYaml(cfgStr) as YamlMap).toMap();
+        break;
+    }
+
+    if (cfg.containsKey("http")) {
+      cfg.remove("http");
+    }
+
+    if (cfg.containsKey("trafficStats")) {
+      cfg.remove("trafficStats");
+    }
+
+    cfg["socks5"] = {
+      "listen": "127.0.0.1:$socksPort",
+    };
 
     switch (coreCfgFmt) {
       case "json":

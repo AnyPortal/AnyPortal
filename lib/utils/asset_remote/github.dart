@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:drift/drift.dart';
-import 'package:flutter_socks_proxy/socks_proxy.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
 import 'package:path/path.dart' as p;
@@ -61,9 +60,9 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
   Future<String?> getRemoteMeta({bool useSocks = true}) async {
     final metaUrl = "https://api.github.com/repos/$owner/$repo/releases/latest";
     if (useSocks) {
-      final httpClient = createProxyHttpClient();
+      final httpClient = HttpClient();
       httpClient.findProxy = (url) =>
-          'SOCKS5 ${prefs.getString('app.server.address')!}:${prefs.getInt('app.socks.port')!}';
+          'PROXY ${prefs.getString('app.server.address')!}:${prefs.getInt('app.socks.port')!}';
       final client = IOClient(httpClient);
       final token = prefs.getString('app.github.token');
       final headers = token == null
@@ -161,9 +160,9 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     }
 
     if (useSocks) {
-      final client = createProxyHttpClient()
+      final client = HttpClient()
         ..findProxy = (url) =>
-            'SOCKS5 ${prefs.getString('app.server.address')!}:${prefs.getInt('app.socks.port')!}';
+            'PROXY ${prefs.getString('app.server.address')!}:${prefs.getInt('app.socks.port')!}';
       final request = await client.getUrl(Uri.parse(downloadUrl));
       final response = await request.close();
 

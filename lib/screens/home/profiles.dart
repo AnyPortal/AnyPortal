@@ -1,14 +1,24 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:animated_tree_view/animated_tree_view.dart';
 import 'package:drift/drift.dart';
+import 'package:path/path.dart' as p;
 import 'package:smooth_highlight/smooth_highlight.dart';
+
+import 'package:anyportal/utils/ping.dart';
 
 import '../../extensions/localization.dart';
 import '../../models/profile_group.dart';
 import '../../screens/profile_group.dart';
+import '../../utils/core/base/plugin.dart';
 import '../../utils/db.dart';
+import '../../utils/global.dart';
+import '../../utils/method_channel.dart';
 import '../../utils/prefs.dart';
+import '../../utils/runtime_platform.dart';
 import '../../utils/show_snack_bar_now.dart';
 import '../../utils/vpn_manager.dart';
 import '../profile.dart';
@@ -25,6 +35,7 @@ class ProfileList extends StatefulWidget {
 enum ProfilesAction {
   addProfile,
   addProfileGroup,
+  httping,
 }
 
 extension ProfilesActionX on ProfilesAction {
@@ -34,6 +45,8 @@ extension ProfilesActionX on ProfilesAction {
         return context.loc.add_profile;
       case ProfilesAction.addProfileGroup:
         return context.loc.add_profile_group;
+      case ProfilesAction.httping:
+        return "Ping (HTTP)";
     }
   }
 }
@@ -41,6 +54,7 @@ extension ProfilesActionX on ProfilesAction {
 enum ProfileAction {
   edit,
   delete,
+  httping,
 }
 
 extension ProfileActionX on ProfileAction {
@@ -50,6 +64,8 @@ extension ProfileActionX on ProfileAction {
         return context.loc.edit;
       case ProfileAction.delete:
         return context.loc.delete;
+      case ProfileAction.httping:
+        return "Ping (HTTP)";
     }
   }
 }
@@ -58,6 +74,7 @@ enum ProfileGroupAction {
   addProfile,
   edit,
   delete,
+  httping,
 }
 
 extension ProfileGroupActionX on ProfileGroupAction {
@@ -69,6 +86,8 @@ extension ProfileGroupActionX on ProfileGroupAction {
         return context.loc.edit;
       case ProfileGroupAction.delete:
         return context.loc.delete;
+      case ProfileGroupAction.httping:
+        return "Ping (HTTP)";
     }
   }
 }
@@ -96,6 +115,8 @@ class _ProfileListState extends State<ProfileList> {
         _addProfile();
       case ProfilesAction.addProfileGroup:
         _addProfileGroup();
+      case ProfilesAction.httping:
+        _httpingAll();
     }
   }
 
@@ -178,6 +199,7 @@ class _ProfileListState extends State<ProfileList> {
 
     _groupedProfiles = {};
     for (var profile in profiles) {
+      pingLatencyValueNotifierMap[profile.id] = ValueNotifier(null);
       if (!_groupedProfiles.containsKey(profile.profileGroupId)) {
         _groupedProfiles[profile.profileGroupId] = [];
       }
@@ -221,6 +243,8 @@ class _ProfileListState extends State<ProfileList> {
         _loadProfiles();
       case ProfileAction.edit:
         _editProfile(profile);
+      case ProfileAction.httping:
+        _httpingProfile(profile);
     }
   }
 
@@ -244,6 +268,8 @@ class _ProfileListState extends State<ProfileList> {
         _loadProfiles();
       case ProfileGroupAction.edit:
         _editProfileGroup(profileGroupId);
+      case ProfileGroupAction.httping:
+        _httpingProfileGroup(profileGroupId);
     }
   }
 
@@ -261,7 +287,156 @@ class _ProfileListState extends State<ProfileList> {
     if (profileGroup.type == ProfileGroupType.local) {
       return context.loc.local_profile_group;
     }
-    return "${profileGroup.updatedAt}";
+    return profileGroup.updatedAt.toString().split('.').first;
+  }
+
+  Map<int, ValueNotifier<int?>> pingLatencyValueNotifierMap = {};
+
+  Future<void> _httpingProfile(ProfileData profile) async {
+    final serverSocket = await getFreeServerSocket();
+
+    final coreCfgRaw = profile.coreCfg;
+    final coreCfgFmt = profile.coreCfgFmt;
+    final coreCfgFile = File(p.join(global.applicationCacheDirectory.path,
+        'ping', '${profile.id}.$coreCfgFmt'));
+
+    /// find core
+    String? coreTypeName;
+    String? corePath;
+    List<String>? coreArgList;
+    String? coreWorkingDir;
+    Map<String, String> coreEnvs = {};
+
+    final coreTypeId = profile.coreTypeId;
+    final coreTypeData = await (db.select(db.coreType)
+          ..where((coreType) => coreType.id.equals(coreTypeId)))
+        .getSingleOrNull();
+    if (coreTypeData == null) {
+      return;
+    }
+    coreTypeName = coreTypeData.name;
+    final core = await (db.select(db.coreTypeSelected).join([
+      leftOuterJoin(db.core, db.coreTypeSelected.coreId.equalsExp(db.core.id)),
+      leftOuterJoin(db.coreExec, db.core.id.equalsExp(db.coreExec.coreId)),
+      leftOuterJoin(db.coreLib, db.core.id.equalsExp(db.coreLib.coreId)),
+      leftOuterJoin(db.coreType, db.core.coreTypeId.equalsExp(db.coreType.id)),
+      leftOuterJoin(db.asset, db.coreExec.assetId.equalsExp(db.asset.id)),
+    ])
+          ..where(db.coreTypeSelected.coreTypeId.equals(coreTypeId)))
+        .getSingleOrNull();
+    if (core == null) {
+      return;
+    }
+    final isExec = core.read(db.core.isExec)!;
+    final defaultCoreEnvs =
+        CorePluginManager.instances[coreTypeName]?.environment;
+
+    coreEnvs = defaultCoreEnvs ?? {};
+
+    if (isExec) {
+      corePath = core.read(db.asset.path);
+      if (corePath == null) {
+        return;
+      }
+      corePath = File(corePath).resolveSymbolicLinksSync();
+      coreWorkingDir = core.read(db.core.workingDir);
+      if (coreWorkingDir == null || coreWorkingDir.isEmpty) {
+        coreWorkingDir = File(corePath).parent.path;
+      }
+      final argsStr = core.read(db.coreExec.args)!;
+      List<String>? rawCoreArgList;
+      if (argsStr != "") {
+        rawCoreArgList = (jsonDecode(argsStr) as List<dynamic>)
+            .map((e) => e as String)
+            .toList();
+      } else {
+        rawCoreArgList = CorePluginManager.instances[coreTypeName]?.defaultArgs;
+      }
+      if (rawCoreArgList == null) {
+        coreArgList = [];
+      } else {
+        coreArgList = [...rawCoreArgList];
+      }
+      final replacements = {
+        "{config.path}": coreCfgFile.path,
+      };
+      for (int i = 0; i < coreArgList.length; ++i) {
+        for (var entry in replacements.entries) {
+          coreArgList[i] = coreArgList[i].replaceAll(entry.key, entry.value);
+        }
+      }
+    }
+
+    String? coreEnvsStr = core.read(db.core.envs);
+    if (coreEnvsStr == null || coreEnvsStr == "") {
+      coreEnvsStr = "{}";
+    }
+    coreEnvs.addAll((jsonDecode(coreEnvsStr) as Map<String, dynamic>)
+        .map((k, v) => MapEntry(k, v as String)));
+
+    /// gen injected config for ping
+    CorePluginManager().ensureLoaded(coreTypeName);
+    String coreCfg = await CorePluginManager
+        .instances[coreTypeName]!.configInjector
+        .getInjectedConfigPing(coreCfgRaw, coreCfgFmt, serverSocket.port);
+
+    if (!RuntimePlatform.isWeb) {
+      if (!await coreCfgFile.exists()) {
+        await coreCfgFile.create(recursive: true);
+      }
+      await coreCfgFile.writeAsString(coreCfg);
+    }
+
+    /// ping
+    serverSocket.close();
+    if (isExec) {
+      /// coreExec
+      final processCore = await Process.start(
+        corePath!,
+        coreArgList!,
+        workingDirectory: coreWorkingDir,
+        environment: coreEnvs,
+      );
+
+      processCore.stdout.transform(SystemEncoding().decoder).listen((_) {});
+      processCore.stderr.transform(SystemEncoding().decoder).listen((_) {});
+
+      final delay = await httpingOverSocks("127.0.0.1", serverSocket.port,
+          prefs.getString('app.ping.http.url')!);
+      final delayMs = delay?.inMilliseconds ?? -1;
+      pingLatencyValueNotifierMap[profile.id]!.value = delayMs;
+      // final delay2 =
+      //     await tcpingOverSocks("127.0.0.1", serverSocket.port, "8.8.8.8", 53);
+      // logger.d(delay2?.inMilliseconds);
+      processCore.kill();
+    } else {
+      /// coreEmbedded
+      await mCMan.methodChannel.invokeMethod(
+          'vpn.startCore', {'configPath': coreCfgFile.path}) as bool;
+      final delay = await httpingOverSocks("127.0.0.1", serverSocket.port,
+          prefs.getString('app.ping.http.url')!);
+      final delayMs = delay?.inMilliseconds ?? -1;
+      pingLatencyValueNotifierMap[profile.id]!.value = delayMs;
+      await mCMan.methodChannel.invokeMethod(
+          'vpn.stopCore', {'configPath': coreCfgFile.path}) as bool;
+    }
+
+    /// delete config
+    coreCfgFile.delete();
+  }
+
+  Future<void> _httpingProfileGroup(int profileGroupId) async {
+    final profiles = _groupedProfiles[profileGroupId];
+    if (profiles == null) return;
+    for (final profile in profiles) {
+      _httpingProfile(profile);
+    }
+  }
+
+  Future<void> _httpingAll() async {
+    for (final profileGroudId in _groupedProfiles.keys) {
+      _httpingProfileGroup(profileGroudId);
+    }
   }
 
   @override
@@ -334,7 +509,29 @@ class _ProfileListState extends State<ProfileList> {
                           }
                         },
                         title: Text(profile.name.toString()),
-                        subtitle: Text('${profile.updatedAt}'),
+                        subtitle: Row(children: [
+                          Text(profile.updatedAt.toString().split('.').first),
+                          Text(" "),
+                          ValueListenableBuilder<int?>(
+                            valueListenable:
+                                pingLatencyValueNotifierMap[profile.id]!,
+                            builder: (context, value, _) {
+                              if (value == null) {
+                                return Text("");
+                              } else if (value == -1) {
+                                return Text.rich(
+                                  TextSpan(text: "timeout"),
+                                  style: TextStyle(color: Colors.red),
+                                );
+                              } else {
+                                return Text.rich(
+                                  TextSpan(text: "${value}ms"),
+                                  style: TextStyle(color: Colors.green),
+                                );
+                              }
+                            },
+                          ),
+                        ]),
                         dense: true,
                         secondary: PopupMenuButton<ProfileAction>(
                           onSelected: (value) =>

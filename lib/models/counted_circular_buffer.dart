@@ -19,10 +19,10 @@ class CountedCircularBuffer<T> {
       _buffer[(_start + _length) % capacity] = value;
       _length++;
     } else {
-      final old = _buffer[_start]!;
+      final old = _buffer[_start];
       _buffer[_start] = value;
       _start = (_start + 1) % capacity;
-      _decrementCount(old);
+      _decrementCount(old as T);
     }
     _incrementCount(value);
   }

@@ -12,7 +12,5 @@ class CorePluginClash extends CorePluginBase {
     configInjector = ConfigInjectorClash();
     dashboardWidgets = DashboardWidgetsClash();
     isToLogStdout = true;
-
-    CorePluginBase.implementations["mihimo"] = this;
   }
 }

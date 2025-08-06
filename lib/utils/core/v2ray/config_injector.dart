@@ -178,7 +178,7 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
     routingRules.insert(0, {
       "type": "field",
       "outboundTag": dnsOutboundTag,
-      "port": "53",
+      "port": 53,
       "network": "udp",
       "ip": [
         // if (RuntimePlatform.isWindows || RuntimePlatform.isLinux)
@@ -266,7 +266,7 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
         "outboundTag": "anyportal_ot_freedom",
         "inboundTag": [dnsInboundTag],
         "network": "udp",
-        "port": "53",
+        "port": 53,
         "ip": [
           ...dns.ipv4,
           ...dns.ipv6,
@@ -386,6 +386,31 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
     //     "metadataOnly": false,
     //   },
     // };
+
+    return jsonEncode(cfg);
+  }
+
+  @override
+  Future<String> getInjectedConfigPing(
+      String cfgStr, String coreCfgFmt, int socksPort) async {
+    final cfg = jsonDecode(cfgStr) as Map<String, dynamic>;
+
+    if (!cfg.containsKey("inbounds")) {
+      cfg["inbounds"] = [];
+    }
+    final inbounds = (cfg["inbounds"] as List).cast<Map<String, dynamic>>();
+
+    for (final inbound in inbounds) {
+      if (inbound.containsKey("port")) {
+        inbound["port"] = 0;
+      }
+    }
+
+    inbounds.insert(0, {
+      "listen": "127.0.0.1",
+      "port": socksPort,
+      "protocol": "socks",
+    });
 
     return jsonEncode(cfg);
   }

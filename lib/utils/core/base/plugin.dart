@@ -11,7 +11,6 @@ import 'dashboard.dart';
 import 'data_notifier.dart';
 
 class CorePluginBase {
-  static Map<String, CorePluginBase> implementations = {};
   String? coreTypeName;
   List<String> defaultArgs = ["run", "-c", "{config.path}"];
   bool isToLogStdout = false;
@@ -19,16 +18,6 @@ class CorePluginBase {
   CoreDataNotifierBase dataNotifier = CoreDataNotifierBase();
   ConfigInjectorBase configInjector = ConfigInjectorBase();
   DashboardWidgetsBase dashboardWidgets = DashboardWidgetsBase();
-
-  CorePluginBase() {
-    register();
-  }
-
-  void register() {
-    if (coreTypeName != null) {
-      implementations[coreTypeName!] = this;
-    }
-  }
 }
 
 class CorePluginManager {
@@ -48,36 +37,37 @@ class CorePluginManager {
   Future<void> init() async {
     logger.d("starting: CorePluginManager.init");
     instance = CorePluginBase();
-    CorePluginV2Ray();
-    CorePluginSingBox();
     _completer.complete(); // Signal that initialization is complete
     logger.d("finished: CorePluginManager.init");
   }
 
-  void switchTo(String coreTypeName) {
-    if (instances.containsKey(coreTypeName)) {
-      instance = instances[coreTypeName]!;
-    } else {
-      switch (coreTypeName) {
-        case "v2ray":
-        case "xray":
-          instance = CorePluginV2Ray();
-          instances[coreTypeName] = instance;
-          break;
-        case "sing-box":
-          instance = CorePluginSingBox();
-          instances[coreTypeName] = instance;
-          break;
-        case "hysteria2":
-          instance = CorePluginHysteria2();
-          instances[coreTypeName] = instance;
-          break;
-        case "clash":
-        case "mihomo":
-          instance = CorePluginClash();
-          instances[coreTypeName] = instance;
-          break;
-      }
+  void load(String coreTypeName) {
+    switch (coreTypeName) {
+      case "v2ray":
+      case "xray":
+        instances[coreTypeName] = CorePluginV2Ray();
+        break;
+      case "sing-box":
+        instances[coreTypeName] = CorePluginSingBox();
+        break;
+      case "hysteria2":
+        instances[coreTypeName] = CorePluginHysteria2();
+        break;
+      case "clash":
+      case "mihomo":
+        instances[coreTypeName] = CorePluginClash();
+        break;
     }
+  }
+
+  void ensureLoaded(String coreTypeName) {
+    if (!instances.containsKey(coreTypeName)) {
+      load(coreTypeName);
+    }
+  }
+
+  void switchTo(String coreTypeName) {
+    ensureLoaded(coreTypeName);
+    instance = instances[coreTypeName]!;
   }
 }
