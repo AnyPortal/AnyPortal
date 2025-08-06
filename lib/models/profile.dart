@@ -6,26 +6,30 @@ import 'profile_group.dart';
 class Profile extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
-  IntColumn get coreTypeId => integer().references(CoreType, #id, onDelete: KeyAction.cascade)();
+  IntColumn get coreTypeId =>
+      integer().references(CoreType, #id, onDelete: KeyAction.cascade)();
   TextColumn get coreCfg => text().withDefault(const Constant("{}"))();
   TextColumn get coreCfgFmt => text().withDefault(const Constant("json"))();
   DateTimeColumn get updatedAt => dateTime()();
   IntColumn get type => integer().map(const ProfileTypeConverter())();
   IntColumn get profileGroupId =>
-    integer().references(ProfileGroup, #id).withDefault(const Constant(1))();
+      integer().references(ProfileGroup, #id).withDefault(const Constant(1))();
+  IntColumn get httping => integer().nullable()();
 }
 
 // Separate table for local profiles (no additional fields)
 class ProfileLocal extends Table {
-  IntColumn get profileId => integer().references(Profile, #id, onDelete: KeyAction.cascade)();
-  
+  IntColumn get profileId =>
+      integer().references(Profile, #id, onDelete: KeyAction.cascade)();
+
   @override
   Set<Column<Object>>? get primaryKey => {profileId};
 }
 
 // Separate table for remote profiles
 class ProfileRemote extends Table {
-  IntColumn get profileId => integer().references(Profile, #id, onDelete: KeyAction.cascade)();
+  IntColumn get profileId =>
+      integer().references(Profile, #id, onDelete: KeyAction.cascade)();
   TextColumn get url => text()();
   IntColumn get autoUpdateInterval => integer()();
 

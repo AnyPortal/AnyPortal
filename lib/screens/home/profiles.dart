@@ -199,7 +199,7 @@ class _ProfileListState extends State<ProfileList> {
 
     _groupedProfiles = {};
     for (var profile in profiles) {
-      pingLatencyValueNotifierMap[profile.id] = ValueNotifier(null);
+      pingLatencyValueNotifierMap[profile.id] = ValueNotifier(profile.httping);
       if (!_groupedProfiles.containsKey(profile.profileGroupId)) {
         _groupedProfiles[profile.profileGroupId] = [];
       }
@@ -404,10 +404,11 @@ class _ProfileListState extends State<ProfileList> {
       final delay = await httpingOverSocks("127.0.0.1", serverSocket.port,
           prefs.getString('app.ping.http.url')!);
       final delayMs = delay?.inMilliseconds ?? -1;
+      await (db.update(db.profile)..where((e) => e.id.equals(profile.id)))
+          .write(ProfileCompanion(
+        httping: Value(delayMs),
+      ));
       pingLatencyValueNotifierMap[profile.id]!.value = delayMs;
-      // final delay2 =
-      //     await tcpingOverSocks("127.0.0.1", serverSocket.port, "8.8.8.8", 53);
-      // logger.d(delay2?.inMilliseconds);
       processCore.kill();
     } else {
       /// coreEmbedded
@@ -417,6 +418,10 @@ class _ProfileListState extends State<ProfileList> {
           prefs.getString('app.ping.http.url')!);
       final delayMs = delay?.inMilliseconds ?? -1;
       pingLatencyValueNotifierMap[profile.id]!.value = delayMs;
+      await (db.update(db.profile)..where((e) => e.id.equals(profile.id)))
+          .write(ProfileCompanion(
+        httping: Value(delayMs),
+      ));
       await mCMan.methodChannel.invokeMethod(
           'vpn.stopCore', {'configPath': coreCfgFile.path}) as bool;
     }
