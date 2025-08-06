@@ -531,7 +531,7 @@ class _ProfileListState extends State<ProfileList> {
                               } else {
                                 return Text.rich(
                                   TextSpan(text: "${value}ms"),
-                                  style: TextStyle(color: Colors.green),
+                                  style: TextStyle(color: Colors.blue),
                                 );
                               }
                             },
