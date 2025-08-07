@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class CoreDataNotifierBase with ChangeNotifier {
   int index = 0;
