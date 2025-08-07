@@ -182,6 +182,7 @@
   "performance": "ประสิทธิภาพ",
   "permission_required": "ต้องได้รับอนุญาต",
   "ping_http_address": "ที่อยู่ HTTP สำหรับการปิง",
+  "ping_maximum_concurrency": "จำนวนการปิงสูงสุดพร้อมกัน",
   "please_select_a_core_type_name_core": "กรุณาเลือกคอร์ประเภท {coreTypeName}",
   "@please_select_a_core_type_name_core": {
     "placeholders": {
@@ -223,6 +224,7 @@
   "send_through_binding_stratagy": "กลยุทธ์การส่งผ่านการผูก",
   "send_through_ip_binding_stratagy": "กลยุทธ์การผูก IP การส่งผ่าน",
   "server_address": "ที่อยู่เซิร์ฟเวอร์",
+  "set_to_0_to_disable": "ตั้งค่าเป็น 0 เพื่อเลิกใช้งาน",
   "settings": "การตั้งค่า",
   "show_dashboard_floating_button": "แสดงปุ่มลอยบนแดชบอร์ด",
   "show_system_apps": "แสดงแอปของระบบ",

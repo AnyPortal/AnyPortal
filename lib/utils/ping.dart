@@ -34,7 +34,7 @@ Future<Socket?> ensureSocksConnectionOnce({
 Future<Socket?> ensureSocksConnection({
   required String host,
   required int port,
-  Duration timeout = const Duration(seconds: 5),
+  Duration timeout = const Duration(seconds: 10),
 }) async {
   final deadline = DateTime.now().add(timeout);
   Socket? socket;

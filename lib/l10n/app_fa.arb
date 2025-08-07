@@ -182,6 +182,7 @@
   "performance": "عملکرد",
   "permission_required": "اجازه مورد نیاز است",
   "ping_http_address": "آدرس پینگ (HTTP)",
+  "ping_maximum_concurrency": "حداکثر همزمانسازی پینگ",
   "please_select_a_core_type_name_core": "Por favor, seleccione un {coreTypeName}.",
   "@please_select_a_core_type_name_core": {
     "placeholders": {
@@ -223,6 +224,7 @@
   "send_through_binding_stratagy": "استراتژی اتصال ارسال از طریق",
   "send_through_ip_binding_stratagy": "استراتژی اتصال ارسال از طریق IP",
   "server_address": "آدرس سرور",
+  "set_to_0_to_disable": "با تنظیم بر روی ۰ این ویژگی غیرفعال میشود",
   "settings": "تنظیمات",
   "show_dashboard_floating_button": "نمایش دکمه شناور در پانل نظرات",
   "show_system_apps": "نمایش برنامههای سیستم",

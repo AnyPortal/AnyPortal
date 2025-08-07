@@ -182,6 +182,7 @@
   "performance": "Hiệu suất",
   "permission_required": "Yêu cầu quyền",
   "ping_http_address": "Địa chỉ Ping (HTTP)",
+  "ping_maximum_concurrency": "Số lượng đồng thời tối đa của Ping",
   "please_select_a_core_type_name_core": "Vui lòng chọn một {coreTypeName} lõi",
   "@please_select_a_core_type_name_core": {
     "placeholders": {
@@ -223,6 +224,7 @@
   "send_through_binding_stratagy": "Chiến lược ràng buộc gửi qua",
   "send_through_ip_binding_stratagy": "Chiến lược ràng buộc IP gửi qua",
   "server_address": "Địa chỉ máy chủ",
+  "set_to_0_to_disable": "Đặt thành 0 để vô hiệu hóa",
   "settings": "Cài đặt",
   "show_dashboard_floating_button": "Hiển thị nút nổi trên bảng điều khiển",
   "show_system_apps": "Hiển thị ứng dụng hệ thống",

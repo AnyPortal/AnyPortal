@@ -182,6 +182,7 @@
   "performance": "Производительность",
   "permission_required": "Требуется разрешение",
   "ping_http_address": "Адрес пинга (HTTP)",
+  "ping_maximum_concurrency": "Максимальное количество одновременных пингов",
   "please_select_a_core_type_name_core": "Пожалуйста, выберите {coreTypeName} ядро",
   "@please_select_a_core_type_name_core": {
     "placeholders": {
@@ -223,6 +224,7 @@
   "send_through_binding_stratagy": "Стратегия привязки SendThrough",
   "send_through_ip_binding_stratagy": "Стратегия привязки SendThrough IP",
   "server_address": "Адрес сервера",
+  "set_to_0_to_disable": "Установите значение 0, чтобы отключить",
   "settings": "Настройки",
   "show_dashboard_floating_button": "Показать плавающую кнопку на панели управления",
   "show_system_apps": "Показать системные приложения",

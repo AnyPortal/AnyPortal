@@ -182,6 +182,7 @@
   "performance": "パフォーマンス",
   "permission_required": "権限が必要です",
   "ping_http_address": "ピング (HTTP) アドレス",
+  "ping_maximum_concurrency": "ピングの最大同時接続数",
   "please_select_a_core_type_name_core": "{coreTypeName}のコアを選択してください",
   "@please_select_a_core_type_name_core": {
     "placeholders": {
@@ -223,6 +224,7 @@
   "send_through_binding_stratagy": "送信先バインディング戦略",
   "send_through_ip_binding_stratagy": "送信先IPバインディング戦略",
   "server_address": "サーバーアドレス",
+  "set_to_0_to_disable": "0に設定して無効化する",
   "settings": "設定",
   "show_dashboard_floating_button": "ダッシュボードの浮動ボタンを表示",
   "show_system_apps": "システムアプリを表示",

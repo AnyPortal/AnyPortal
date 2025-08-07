@@ -182,6 +182,7 @@
   "performance": "性能",
   "permission_required": "需要权限",
   "ping_http_address": "Ping地址（HTTP）",
+  "ping_maximum_concurrency": "Ping的最大并发数",
   "please_select_a_core_type_name_core": "请选择一种{coreTypeName}核心",
   "@please_select_a_core_type_name_core": {
     "placeholders": {
@@ -223,6 +224,7 @@
   "send_through_binding_stratagy": "发送绑定策略",
   "send_through_ip_binding_stratagy": "通过 IP 发送绑定策略",
   "server_address": "服务器地址",
+  "set_to_0_to_disable": "设置为0以禁用",
   "settings": "设置",
   "show_dashboard_floating_button": "显示仪表板悬浮按钮",
   "show_system_apps": "显示系统应用",

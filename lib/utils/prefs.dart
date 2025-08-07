@@ -30,6 +30,7 @@ class PrefsManager {
     // 'app.github.token': "",
     'app.http.port': 15492,
     'app.ping.http.url': "http://www.gstatic.com/generate_204",
+    'app.ping.maxConcurrency': 8,
     'app.notification.foreground': RuntimePlatform.isAndroid,
     'app.window.size.width': 1280.0,
     'app.window.size.height': 720.0,

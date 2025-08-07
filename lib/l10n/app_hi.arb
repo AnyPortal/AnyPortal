@@ -182,6 +182,7 @@
   "performance": "प्रदर्शन",
   "permission_required": "अनुमति आवश्यक",
   "ping_http_address": "पिंग (HTTP) पता",
+  "ping_maximum_concurrency": "पिंग अधिकतम समांतर अनुरोध",
   "please_select_a_core_type_name_core": "Por favor, seleccione un {coreTypeName}.",
   "@please_select_a_core_type_name_core": {
     "placeholders": {
@@ -223,6 +224,7 @@
   "send_through_binding_stratagy": "sendThrough बाइंडिंग रणनीति",
   "send_through_ip_binding_stratagy": "sendThrough IP बाइंडिंग रणनीति",
   "server_address": "सर्वर पता",
+  "set_to_0_to_disable": "0 पर सेट करने के लिए निष्क्रिय करें",
   "settings": "सेटिंग्स",
   "show_dashboard_floating_button": "डैशबोर्ड फ्लोटिंग बटन दिखाएं",
   "show_system_apps": "सिस्टम ऐप्स दिखाएँ",

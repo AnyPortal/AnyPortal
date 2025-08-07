@@ -182,6 +182,7 @@
   "performance": "Leistung",
   "permission_required": "Berechtigung erforderlich",
   "ping_http_address": "Ping (HTTP)-Adresse",
+  "ping_maximum_concurrency": "Maximale gleichzeitige Pings",
   "please_select_a_core_type_name_core": "Bitte wählen Sie einen {coreTypeName}-Kern aus",
   "@please_select_a_core_type_name_core": {
     "placeholders": {
@@ -223,6 +224,7 @@
   "send_through_binding_stratagy": "SendThrough-Bindungsstrategie",
   "send_through_ip_binding_stratagy": "SendThrough-IP-Bindungsstrategie",
   "server_address": "Serveradresse",
+  "set_to_0_to_disable": "Auf 0 setzen, um zu deaktivieren",
   "settings": "Einstellungen",
   "show_dashboard_floating_button": "Zeige schwebende Schaltfläche im Dashboard",
   "show_system_apps": "System-Apps anzeigen",

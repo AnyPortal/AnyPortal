@@ -182,6 +182,7 @@
   "performance": "الأداء",
   "permission_required": "مطلوب إذن",
   "ping_http_address": "عنوان (HTTP) البنج",
+  "ping_maximum_concurrency": "الحد الأقصى للتعاملات المتزامنة في Ping",
   "please_select_a_core_type_name_core": "يرجى اختيار نوع النواة {coreTypeName}",
   "@please_select_a_core_type_name_core": {
     "placeholders": {
@@ -223,6 +224,7 @@
   "send_through_binding_stratagy": "استراتيجية ربط الإرسال عبر",
   "send_through_ip_binding_stratagy": "استراتيجية ربط الإرسال عبر IP",
   "server_address": "عنوان الخادم",
+  "set_to_0_to_disable": "اضبط إلى 0 لتعطيله",
   "settings": "الإعدادات",
   "show_dashboard_floating_button": "أظهر زر الطفو في لوحة القيادة",
   "show_system_apps": "عرض التطبيقات النظامية",

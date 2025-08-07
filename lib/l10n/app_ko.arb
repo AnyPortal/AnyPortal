@@ -182,6 +182,7 @@
   "performance": "성능",
   "permission_required": "권한이 필요합니다",
   "ping_http_address": "Ping (HTTP) 주소",
+  "ping_maximum_concurrency": "핑 최대 동시 연결 수",
   "please_select_a_core_type_name_core": "{coreTypeName}のコアを選択してください",
   "@please_select_a_core_type_name_core": {
     "placeholders": {
@@ -223,6 +224,7 @@
   "send_through_binding_stratagy": "전송 경로 바인딩 전략",
   "send_through_ip_binding_stratagy": "전송 경로 IP 바인딩 전략",
   "server_address": "서버 주소",
+  "set_to_0_to_disable": "0으로 설정하여 비활성화합니다",
   "settings": "설정",
   "show_dashboard_floating_button": "대시보드 浮動 버튼 표시하기",
   "show_system_apps": "시스템 앱 표시",

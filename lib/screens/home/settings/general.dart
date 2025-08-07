@@ -42,6 +42,7 @@ class _GeneralScreenState extends State<GeneralScreen> {
       prefs.getBool('app.dashboard.floatingActionButton')!;
   String? _githubToken = prefs.getString('app.github.token');
   String _httpingUrl = prefs.getString('app.ping.http.url')!;
+  int _pingMaxConcurrency = prefs.getInt('app.ping.maxConcurrency')!;
 
   @override
   void initState() {
@@ -406,6 +407,26 @@ class _GeneralScreenState extends State<GeneralScreen> {
                   prefs.setString('app.ping.http.url', value);
                   setState(() {
                     _httpingUrl = value;
+                  });
+                }),
+          );
+        },
+      ),
+      ListTile(
+        title: Text(context.loc.ping_maximum_concurrency),
+        subtitle: Text(_pingMaxConcurrency.toString()),
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (context) => TextInputPopup(
+                title: context.loc.ping_maximum_concurrency,
+                text: context.loc.set_to_0_to_disable,
+                initialValue: _httpingUrl,
+                onSaved: (String value) {
+                  final maxConcurrency = int.parse(value);
+                  prefs.setInt('app.ping.maxConcurrency', maxConcurrency);
+                  setState(() {
+                    _pingMaxConcurrency = maxConcurrency;
                   });
                 }),
           );

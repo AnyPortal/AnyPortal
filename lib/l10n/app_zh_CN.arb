@@ -182,6 +182,7 @@
   "performance": null,
   "permission_required": null,
   "ping_http_address": null,
+  "ping_maximum_concurrency": null,
   "please_select_a_core_type_name_core": null,
   "@please_select_a_core_type_name_core": {
     "placeholders": {
@@ -223,6 +224,7 @@
   "send_through_binding_stratagy": null,
   "send_through_ip_binding_stratagy": null,
   "server_address": null,
+  "set_to_0_to_disable": null,
   "settings": null,
   "show_dashboard_floating_button": null,
   "show_system_apps": null,

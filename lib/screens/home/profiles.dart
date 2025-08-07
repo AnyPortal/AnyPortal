@@ -16,6 +16,7 @@ import '../../screens/profile_group.dart';
 import '../../utils/core/base/plugin.dart';
 import '../../utils/db.dart';
 import '../../utils/global.dart';
+import '../../utils/logger.dart';
 import '../../utils/method_channel.dart';
 import '../../utils/prefs.dart';
 import '../../utils/runtime_platform.dart';
@@ -116,7 +117,7 @@ class _ProfileListState extends State<ProfileList> {
       case ProfilesAction.addProfileGroup:
         _addProfileGroup();
       case ProfilesAction.httping:
-        _httpingAll();
+        _tryHttpingAll();
     }
   }
 
@@ -176,19 +177,21 @@ class _ProfileListState extends State<ProfileList> {
     }
   }
 
+  List<ProfileData> _allProfiles = [];
   Map<int, List<ProfileData>> _groupedProfiles = {};
   Map<int, ProfileGroupData> _profileGroups = {};
 
   final TreeNode _root = TreeNode.root();
 
   Future<void> _loadProfiles() async {
-    final profiles = await (db.select(db.profile)
+    _allProfiles = await (db.select(db.profile)
           ..orderBy([
             (u) => OrderingTerm(
                   expression: u.name,
                 )
           ]))
         .get();
+
     final profileGroups = await (db.select(db.profileGroup)
           ..orderBy([
             (u) => OrderingTerm(
@@ -198,7 +201,7 @@ class _ProfileListState extends State<ProfileList> {
         .get();
 
     _groupedProfiles = {};
-    for (var profile in profiles) {
+    for (var profile in _allProfiles) {
       pingLatencyValueNotifierMap[profile.id] = ValueNotifier(profile.httping);
       if (!_groupedProfiles.containsKey(profile.profileGroupId)) {
         _groupedProfiles[profile.profileGroupId] = [];
@@ -224,7 +227,7 @@ class _ProfileListState extends State<ProfileList> {
       }
     }
 
-    if (profiles.isEmpty) {
+    if (_allProfiles.isEmpty) {
       setHighlightProfilesPopupMenuButton();
     }
   }
@@ -269,7 +272,7 @@ class _ProfileListState extends State<ProfileList> {
       case ProfileGroupAction.edit:
         _editProfileGroup(profileGroupId);
       case ProfileGroupAction.httping:
-        _httpingProfileGroup(profileGroupId);
+        _tryHttpingProfileGroup(profileGroupId);
     }
   }
 
@@ -430,18 +433,51 @@ class _ProfileListState extends State<ProfileList> {
     coreCfgFile.delete();
   }
 
-  Future<void> _httpingProfileGroup(int profileGroupId) async {
-    final profiles = _groupedProfiles[profileGroupId];
-    if (profiles == null) return;
-    for (final profile in profiles) {
-      _httpingProfile(profile);
+  Future<void> _tryHttpingProfile(ProfileData profile) async {
+    try {
+      return await _httpingProfile(profile);
+    } catch (e) {
+      logger.d("_httpingProfile: $e");
     }
   }
 
-  Future<void> _httpingAll() async {
-    for (final profileGroudId in _groupedProfiles.keys) {
-      _httpingProfileGroup(profileGroudId);
+  Future<void> runWithConcurrency<T>(
+    Future<void> Function(T) f,
+    List<T> dataList,
+    int maxConcurrency,
+  ) async {
+    final active = <Future<void>>{};
+
+    for (final data in dataList) {
+      if (maxConcurrency > 0 && active.length >= maxConcurrency) {
+        await Future.any(active);
+      }
+      final future = f(data);
+      future.whenComplete(() {
+        active.remove(future);
+      });
+      active.add(future);
     }
+
+    await Future.wait(active);
+  }
+
+  Future<void> _tryHttpingProfileGroup(int profileGroupId) async {
+    final profiles = _groupedProfiles[profileGroupId];
+    if (profiles == null) return;
+    runWithConcurrency(
+      _tryHttpingProfile,
+      profiles,
+      prefs.getInt('app.ping.maxConcurrency')!,
+    );
+  }
+
+  Future<void> _tryHttpingAll() async {
+    runWithConcurrency(
+      _tryHttpingProfile,
+      _allProfiles,
+      prefs.getInt('app.ping.maxConcurrency')!,
+    );
   }
 
   @override

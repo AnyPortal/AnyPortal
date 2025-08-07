@@ -182,6 +182,7 @@
   "performance": "Performans",
   "permission_required": "İzin Gereklidir",
   "ping_http_address": "Ping (HTTP) adresi",
+  "ping_maximum_concurrency": "Ping maksimum paralellik",
   "please_select_a_core_type_name_core": "Lütfen bir {coreTypeName} çekirdeğini seçin.",
   "@please_select_a_core_type_name_core": {
     "placeholders": {
@@ -223,6 +224,7 @@
   "send_through_binding_stratagy": "SendThrough bağlama stratejisi",
   "send_through_ip_binding_stratagy": "SendThrough IP bağlama stratejisi",
   "server_address": "Sunucu adresi",
+  "set_to_0_to_disable": "0'a ayarlayarak devre dışı bırak",
   "settings": "Ayarlar",
   "show_dashboard_floating_button": "Gösterge tablosu döner düğmesini aç",
   "show_system_apps": "Sistem uygulamalarını göster",

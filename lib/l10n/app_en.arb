@@ -181,6 +181,7 @@
   "performance": "Performance",
   "permission_required": "Permission Required",
   "ping_http_address": "Ping (HTTP) address",
+  "ping_maximum_concurrency": "Ping maximum concurrency",
   "please_select_a_core_type_name_core": "Please select a {coreTypeName} core",
   "@please_select_a_core_type_name_core": {
     "placeholders": {
@@ -222,6 +223,7 @@
   "send_through_binding_stratagy": "SendThrough binding stratagy",
   "send_through_ip_binding_stratagy": "SendThrough ip binding stratagy",
   "server_address": "Server address",
+  "set_to_0_to_disable": "Set to 0 to disable",
   "settings": "Settings",
   "show_dashboard_floating_button": "Show dashboard floating button",
   "show_system_apps": "Show system apps",
