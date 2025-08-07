@@ -18,21 +18,22 @@ import '../vpn_manager.dart';
 
 import 'github.dart';
 
-/// only windows, android
 class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
   Future<bool> init() async {
     bool ok = true;
     owner = "anyportal";
     repo = "anyportal";
     assetName = "anyportal-${Platform.operatingSystem}.zip";
-    if (RuntimePlatform.isWindows &&
-        await File(p.join(
-          File(Platform.resolvedExecutable).parent.path,
-          "unins000.exe", // created by inno setup
-        )).exists()) {
-      assetName = "anyportal-windows-setup.exe";
-    }
-    if (RuntimePlatform.isAndroid) {
+    if (RuntimePlatform.isWindows) {
+      if (await File(p.join(
+        File(Platform.resolvedExecutable).parent.path,
+        "unins000.exe", // created by inno setup
+      )).exists()) {
+        assetName = "anyportal-windows-setup.exe";
+      }
+    } else if (RuntimePlatform.isMacOS) {
+      assetName = "anyportal-macos.dmg";
+    } else if (RuntimePlatform.isAndroid) {
       ok = await updateAssetNameAndroid();
     }
     url = "github://$owner/$repo/$assetName";
