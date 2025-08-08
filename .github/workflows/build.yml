@@ -9,195 +9,194 @@ on:
   #     - main
   workflow_dispatch
 
-
 jobs:
   # Build for Linux
   linux:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout source code
-      uses: actions/checkout@v4
-      with:
-        submodules: 'recursive'
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
 
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        channel: stable
-        flutter-version: 3.32.4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.32.8
 
-    - name: Install dependencies
-      run: flutter pub get
+      - name: Install dependencies
+        run: flutter pub get
 
-    - name: Install Protoc
-      uses: arduino/setup-protoc@v3
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: bash scripts/prepare.sh linux
-      run: bash scripts/prepare.sh linux
+      - name: bash scripts/prepare.sh linux
+        run: bash scripts/prepare.sh linux
 
-    - name: Build Linux
-      run: flutter build linux
+      - name: Build Linux
+        run: flutter build linux
 
-    - name: Upload Linux artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: anyportal-linux
-        path: build/linux/x64/release/bundle
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: anyportal-linux
+          path: build/linux/x64/release/bundle
 
   # Build for Windows
   windows:
     runs-on: windows-latest
     steps:
-    - name: Checkout source code
-      uses: actions/checkout@v4
-      with:
-        submodules: 'recursive'
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
 
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        channel: stable
-        flutter-version: 3.32.4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.32.8
 
-    - name: Install dependencie
-      run: flutter pub get
+      - name: Install dependencie
+        run: flutter pub get
 
-    - name: Install Protoc
-      uses: arduino/setup-protoc@v3
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: bash scripts/prepare.sh windows
-      run: bash scripts/prepare.sh windows
+      - name: bash scripts/prepare.sh windows
+        run: bash scripts/prepare.sh windows
 
-    - name: Build Windows
-      run: flutter build windows
+      - name: Build Windows
+        run: flutter build windows
 
-    - name: Download and Install Inno Setup
-      run: |
-        Invoke-WebRequest -Uri "https://jrsoftware.org/download.php/is.exe" -OutFile "is.exe"
-        Start-Process -FilePath "is.exe" -ArgumentList "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-" -Wait
-        echo "C:\\Program Files (x86)\\Inno Setup 6" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Download and Install Inno Setup
+        run: |
+          Invoke-WebRequest -Uri "https://jrsoftware.org/download.php/is.exe" -OutFile "is.exe"
+          Start-Process -FilePath "is.exe" -ArgumentList "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-" -Wait
+          echo "C:\\Program Files (x86)\\Inno Setup 6" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-    - name: Compile Installer
-      run: |
-        ISCC.exe scripts/windows/setup.iss
+      - name: Compile Installer
+        run: |
+          ISCC.exe scripts/windows/setup.iss
 
-    - name: Upload Windows artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: anyportal-windows
-        path: build/windows/x64/runner/Release
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: anyportal-windows
+          path: build/windows/x64/runner/Release
 
-    - name: Upload Windows setup artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: anyportal-windows-setup
-        path: scripts/windows/Output/mysetup.exe
+      - name: Upload Windows setup artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: anyportal-windows-setup
+          path: scripts/windows/Output/mysetup.exe
 
   # Build for macOS
   macos:
     runs-on: macos-latest
     steps:
-    - name: Checkout source code
-      uses: actions/checkout@v4
-      with:
-        submodules: 'recursive'
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
 
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        channel: stable
-        flutter-version: 3.32.4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.32.8
 
-    - name: Install dependencies
-      run: flutter pub get
+      - name: Install dependencies
+        run: flutter pub get
 
-    - name: Install Protoc
-      uses: arduino/setup-protoc@v3
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: bash scripts/prepare.sh macos
-      run: bash scripts/prepare.sh macos
+      - name: bash scripts/prepare.sh macos
+        run: bash scripts/prepare.sh macos
 
-    - name: Build macOS
-      run: flutter build macos
+      - name: Build macOS
+        run: flutter build macos
 
-    - name: Create DMG with Applications shortcut
-      run: |
-        mkdir -p dmg-temp
-        cp -R build/macos/Build/Products/Release/AnyPortal.app dmg-temp/
-        ln -s /Applications dmg-temp/Applications
-        hdiutil create -volname "AnyPortal" \
-          -srcfolder dmg-temp \
-          -ov -format UDZO \
-          build/macos/Build/Products/Release/anyportal-macos.dmg
-        rm -rf dmg-temp
+      - name: Create DMG with Applications shortcut
+        run: |
+          mkdir -p dmg-temp
+          cp -R build/macos/Build/Products/Release/AnyPortal.app dmg-temp/
+          ln -s /Applications dmg-temp/Applications
+          hdiutil create -volname "AnyPortal" \
+            -srcfolder dmg-temp \
+            -ov -format UDZO \
+            build/macos/Build/Products/Release/anyportal-macos.dmg
+          rm -rf dmg-temp
 
-    - name: Upload macOS artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: anyportal-macos
-        path: build/macos/Build/Products/Release/anyportal-macos.dmg
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: anyportal-macos
+          path: build/macos/Build/Products/Release/anyportal-macos.dmg
 
   # Build for Android
   android:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout source code
-      uses: actions/checkout@v4
-      with:
-        submodules: 'recursive'
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
 
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        channel: stable
-        flutter-version: 3.32.4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.32.8
 
-    - name: Install dependencies
-      run: flutter pub get
+      - name: Install dependencies
+        run: flutter pub get
 
-    - name: Set up Go
-      uses: actions/setup-go@v5
-      with:
-        cache-dependency-path: |
-          third_party/libv2raymobile/go.sum
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          cache-dependency-path: |
+            third_party/libv2raymobile/go.sum
 
-    - name: Install Protoc
-      uses: arduino/setup-protoc@v3
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: bash scripts/prepare.sh android
-      run: bash scripts/prepare.sh android
+      - name: bash scripts/prepare.sh android
+        run: bash scripts/prepare.sh android
 
-    - name: Set up Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: zulu
-        java-version: 17
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: 17
 
-    - name: Decode android/app/keystore.jks
-      run: echo "${{ secrets.KEYSTORE_JKS_PROD }}" | base64 --decode > android/app/keystore.jks
+      - name: Decode android/app/keystore.jks
+        run: echo "${{ secrets.KEYSTORE_JKS_PROD }}" | base64 --decode > android/app/keystore.jks
 
-    - name: Decode android/key.properties
-      run: echo "${{ secrets.KEY_PROPERTIES_PROD }}" | base64 --decode > android/key.properties
+      - name: Decode android/key.properties
+        run: echo "${{ secrets.KEY_PROPERTIES_PROD }}" | base64 --decode > android/key.properties
 
-    - name: Build Android APK apilatest
-      run: flutter build apk --release --split-per-abi --flavor apilatest
+      - name: Build Android APK apilatest
+        run: flutter build apk --release --split-per-abi --flavor apilatest
 
-    - name: Build Android APK api28
-      run: flutter build apk --release --split-per-abi --flavor api28
+      - name: Build Android APK api28
+        run: flutter build apk --release --split-per-abi --flavor api28
 
-    - name: Upload Android APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: anyportal-android
-        path: build/app/outputs/flutter-apk
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: anyportal-android
+          path: build/app/outputs/flutter-apk
 
   # # Build for iOS (requires macOS)
   # ios:
@@ -212,7 +211,7 @@ jobs:
   #     uses: subosito/flutter-action@v2
   #     with:
   #       channel: stable
-  #       flutter-version: 3.32.4
+  #       flutter-version: 3.32.8
 
   #   - name: Install dependencies
   #     run: flutter pub get
@@ -247,79 +246,79 @@ jobs:
     runs-on: ubuntu-latest
     needs: [linux, windows, macos, android]
     steps:
-    - name: Checkout source code
-      uses: actions/checkout@v4
+      - name: Checkout source code
+        uses: actions/checkout@v4
 
-    - name: Extract version from pubspec.yaml
-      id: get_version
-      run: |
-        version=$(grep '^version:' pubspec.yaml | awk '{print $2}')
-        echo "version=${version}" >> $GITHUB_ENV
+      - name: Extract version from pubspec.yaml
+        id: get_version
+        run: |
+          version=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+          echo "version=${version}" >> $GITHUB_ENV
 
-    - name: Download Linux artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: anyportal-linux
-        path: anyportal-linux
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: anyportal-linux
+          path: anyportal-linux
 
-    - name: Download Windows artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: anyportal-windows
-        path: anyportal-windows
-    
-    - name: Download Windows setup artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: anyportal-windows-setup
-        path: anyportal-windows-setup
+      - name: Download Windows artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: anyportal-windows
+          path: anyportal-windows
 
-    - name: Download macOS artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: anyportal-macos
-        path: anyportal-macos
+      - name: Download Windows setup artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: anyportal-windows-setup
+          path: anyportal-windows-setup
 
-    - name: Download Android APK artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: anyportal-android
-        path: anyportal-android
-    
-    - run: ls -R
+      - name: Download macOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: anyportal-macos
+          path: anyportal-macos
 
-    - name: zip linux
-      run: zip -r anyportal-linux.zip anyportal-linux
+      - name: Download Android APK artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: anyportal-android
+          path: anyportal-android
 
-    - name: zip windows
-      run: zip -r anyportal-windows.zip anyportal-windows
+      - run: ls -R
 
-    - name: Rename for release
-      run: |
-        mv anyportal-windows-setup/mysetup.exe anyportal-windows-setup/anyportal-windows-setup.exe
-        mv anyportal-android/app-armeabi-v7a-api28-release.apk anyportal-android/anyportal-android-api28-armeabi-v7a.apk
-        mv anyportal-android/app-arm64-v8a-api28-release.apk anyportal-android/anyportal-android-api28-arm64-v8a.apk
-        mv anyportal-android/app-x86_64-api28-release.apk anyportal-android/anyportal-android-api28-x86_64.apk
-        mv anyportal-android/app-armeabi-v7a-apilatest-release.apk anyportal-android/anyportal-android-apilatest-armeabi-v7a.apk
-        mv anyportal-android/app-arm64-v8a-apilatest-release.apk anyportal-android/anyportal-android-apilatest-arm64-v8a.apk
-        mv anyportal-android/app-x86_64-apilatest-release.apk anyportal-android/anyportal-android-apilatest-x86_64.apk
+      - name: zip linux
+        run: zip -r anyportal-linux.zip anyportal-linux
 
-    - name: Create GitHub Release and Upload All Assets
-      uses: softprops/action-gh-release@v2
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        tag_name: "v${{ env.version }}"
-        name: "v${{ env.version }}"
-        body: ""
-        draft: true
-        files: |
-          anyportal-linux.zip
-          anyportal-windows.zip
-          anyportal-windows-setup/anyportal-windows-setup.exe
-          anyportal-macos/anyportal-macos.dmg
-          anyportal-android/anyportal-android-api28-armeabi-v7a.apk
-          anyportal-android/anyportal-android-api28-arm64-v8a.apk
-          anyportal-android/anyportal-android-api28-x86_64.apk
-          anyportal-android/anyportal-android-apilatest-armeabi-v7a.apk
-          anyportal-android/anyportal-android-apilatest-arm64-v8a.apk
-          anyportal-android/anyportal-android-apilatest-x86_64.apk
+      - name: zip windows
+        run: zip -r anyportal-windows.zip anyportal-windows
+
+      - name: Rename for release
+        run: |
+          mv anyportal-windows-setup/mysetup.exe anyportal-windows-setup/anyportal-windows-setup.exe
+          mv anyportal-android/app-armeabi-v7a-api28-release.apk anyportal-android/anyportal-android-api28-armeabi-v7a.apk
+          mv anyportal-android/app-arm64-v8a-api28-release.apk anyportal-android/anyportal-android-api28-arm64-v8a.apk
+          mv anyportal-android/app-x86_64-api28-release.apk anyportal-android/anyportal-android-api28-x86_64.apk
+          mv anyportal-android/app-armeabi-v7a-apilatest-release.apk anyportal-android/anyportal-android-apilatest-armeabi-v7a.apk
+          mv anyportal-android/app-arm64-v8a-apilatest-release.apk anyportal-android/anyportal-android-apilatest-arm64-v8a.apk
+          mv anyportal-android/app-x86_64-apilatest-release.apk anyportal-android/anyportal-android-apilatest-x86_64.apk
+
+      - name: Create GitHub Release and Upload All Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: "v${{ env.version }}"
+          name: "v${{ env.version }}"
+          body: ""
+          draft: true
+          files: |
+            anyportal-linux.zip
+            anyportal-windows.zip
+            anyportal-windows-setup/anyportal-windows-setup.exe
+            anyportal-macos/anyportal-macos.dmg
+            anyportal-android/anyportal-android-api28-armeabi-v7a.apk
+            anyportal-android/anyportal-android-api28-arm64-v8a.apk
+            anyportal-android/anyportal-android-api28-x86_64.apk
+            anyportal-android/anyportal-android-apilatest-armeabi-v7a.apk
+            anyportal-android/anyportal-android-apilatest-arm64-v8a.apk
+            anyportal-android/anyportal-android-apilatest-x86_64.apk

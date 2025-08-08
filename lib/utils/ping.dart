@@ -40,7 +40,10 @@ Future<Socket?> ensureSocksConnection({
   Socket? socket;
   while (DateTime.now().isBefore(deadline)) {
     socket = await ensureSocksConnectionOnce(
-        host: host, port: port, timeout: timeout);
+      host: host,
+      port: port,
+      timeout: timeout,
+    );
     if (socket != null) {
       return socket;
     }
@@ -55,8 +58,10 @@ Future<Duration?> httpingOverSocks(
   String url, {
   Duration timeout = const Duration(seconds: 5),
 }) async {
-  final socket =
-      await ensureSocksConnection(host: socksServer, port: socksPort);
+  final socket = await ensureSocksConnection(
+    host: socksServer,
+    port: socksPort,
+  );
   if (socket == null) {
     return null;
   } else {
@@ -78,18 +83,14 @@ Future<Duration?> httping(
 ) async {
   try {
     final stopwatch = Stopwatch()..start();
-    final request = await client
-        .getUrl(
-          Uri.parse(url),
-        )
-        .timeout(timeout);
+    final request = await client.getUrl(Uri.parse(url)).timeout(timeout);
     final response = await request.close();
     stopwatch.stop();
     if (response.statusCode == 204) {
       return stopwatch.elapsed;
     }
   } catch (_) {
-    logger.d(_);
+    // logger.d();
   }
 
   return null;
@@ -102,8 +103,10 @@ Future<Duration?> tcpingOverSocks(
   int targetPort, {
   Duration timeout = const Duration(seconds: 5),
 }) async {
-  final socket =
-      await ensureSocksConnection(host: socksServer, port: socksPort);
+  final socket = await ensureSocksConnection(
+    host: socksServer,
+    port: socksPort,
+  );
   if (socket == null) {
     logger.w("tcpingOverSocks: socket == null");
     return null;
@@ -124,12 +127,13 @@ Future<Duration?> tcping(
 
   void handleData(List<int> data) {
     buffer.add(data);
-    while (
-        readRequests.isNotEmpty && buffer.length >= readRequests.first.length) {
+    while (readRequests.isNotEmpty &&
+        buffer.length >= readRequests.first.length) {
       final request = readRequests.removeAt(0);
       final dataBytes = buffer.takeBytes();
-      request.completer
-          .complete(Uint8List.fromList(dataBytes.sublist(0, request.length)));
+      request.completer.complete(
+        Uint8List.fromList(dataBytes.sublist(0, request.length)),
+      );
       final leftover = dataBytes.sublist(request.length);
       if (leftover.isNotEmpty) buffer.add(leftover);
     }
@@ -194,7 +198,7 @@ Future<Duration?> tcping(
       0x01, // CONNECT
       0x00, // reserved
       ...hostBytes,
-      ...portBytes
+      ...portBytes,
     ]);
     await socket.flush();
     logger.d("finished: snd connect");
