@@ -1,5 +1,16 @@
 # AnyPortal
 
+> [!IMPORTANT]
+> **Seeking Apple Development Collaborator**
+> 
+> We're looking for a partner with a paid Apple Developer Program account who can take part in building (and publishing) the iOS version of our project.
+> 
+> If the Network Extension entitlement is not yet enabled, it will need to be requested through Apple.
+> 
+> Please reach out via the email listed in our Git commit history.
+> 
+> 2025-08-10
+
 <img src="docs/image/windows.gif" width="624"/> <img src="docs/image/android.gif" height="351"/>
 
 - v2ray, xray, sing-box, clash, mihomo... GUI for Windows, macOS, Linux, Android, (iOS currently blocked).
@@ -22,9 +33,9 @@
         <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-api28-armeabi-v7a.apk"><img src="https://img.shields.io/badge/APK-api28_armeabi_v7a-044d29.svg?logo=android&logoColor=ffffff"></a><br>
         <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-api28-arm64-v8a.apk"><img src="https://img.shields.io/badge/APK-api28_arm64_v8a-044d29.svg?logo=android&logoColor=ffffff"></a><br>
         <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-api28-x86_64.apk"><img src="https://img.shields.io/badge/APK-api28_x86_64-044d29.svg?logo=android&logoColor=ffffff"></a><br>
-        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-apilatest-armeabi-v7a.apk"><img src="https://img.shields.io/badge/APK-apilatest_armeabi_v7a-168039.svg?logo=android&logoColor=ffffff"></a><br>
+        <!-- <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-apilatest-armeabi-v7a.apk"><img src="https://img.shields.io/badge/APK-apilatest_armeabi_v7a-168039.svg?logo=android&logoColor=ffffff"></a><br>
         <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-apilatest-arm64-v8a.apk"><img src="https://img.shields.io/badge/APK-apilatest_arm64_v8a-168039.svg?logo=android&logoColor=ffffff"></a><br>
-        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-apilatest-x86_64.apk"><img src="https://img.shields.io/badge/APK-apilatest_x86_64-168039.svg?logo=android&logoColor=ffffff"></a><br>
+        <a href="https://github.com/anyportal/anyportal/releases/latest/download/anyportal-android-apilatest-x86_64.apk"><img src="https://img.shields.io/badge/APK-apilatest_x86_64-168039.svg?logo=android&logoColor=ffffff"></a><br> -->
       </td>
     </tr>
     <tr>
@@ -55,16 +66,6 @@
   </tbody>
 </table>
 </div>
-
-> [!WARNING]
-> This project is currently in its early alpha stage and may exhibit instability during execution. User preferences may not be retained in the final release, and the API is subject to change without prior notice. Please use this software at your own risk. 
-> 
-> 2024-09-27
-
-> [!IMPORTANT]
-> iOS support for this project is paused indefinitely due to the financial and policy-related constraints associated with iOS development, including mandatory paid membership for access to essential tools such as Network Extensions. We are actively exploring alternative, financially sustainable models to continue supporting iOS in the future.
->
-> 2025-02-27
 
 ## Dev roadmap
 
