@@ -16,9 +16,7 @@ import '../../../widgets/popup/text_input.dart';
 import 'languages.dart';
 
 class GeneralScreen extends StatefulWidget {
-  const GeneralScreen({
-    super.key,
-  });
+  const GeneralScreen({super.key});
 
   @override
   State<GeneralScreen> createState() => _GeneralScreenState();
@@ -38,8 +36,9 @@ class _GeneralScreenState extends State<GeneralScreen> {
   bool _notificationForeground = prefs.getBool('app.notification.foreground')!;
   late Locale _locale = localeManager.locale;
   bool _localeFollowSystem = prefs.getBool('app.locale.followSystem')!;
-  bool _isFloatingActionButton =
-      prefs.getBool('app.dashboard.floatingActionButton')!;
+  bool _isFloatingActionButton = prefs.getBool(
+    'app.dashboard.floatingActionButton',
+  )!;
   String? _githubToken = prefs.getString('app.github.token');
   String _httpingUrl = prefs.getString('app.ping.http.url')!;
   int _pingMaxConcurrency = prefs.getInt('app.ping.maxConcurrency')!;
@@ -80,8 +79,9 @@ class _GeneralScreenState extends State<GeneralScreen> {
       ),
       ListTile(
         title: Text(context.loc.follow_system_locale),
-        subtitle:
-            Text(context.loc.auto_change_language_based_on_system_settings),
+        subtitle: Text(
+          context.loc.auto_change_language_based_on_system_settings,
+        ),
         trailing: Switch(
           value: _localeFollowSystem,
           onChanged: (value) async {
@@ -122,7 +122,8 @@ class _GeneralScreenState extends State<GeneralScreen> {
       ListTile(
         title: Text(context.loc.auto_update),
         subtitle: Text(
-            context.loc.auto_download_installer_and_update_on_next_app_launch),
+          context.loc.auto_download_installer_and_update_on_next_app_launch,
+        ),
         trailing: Switch(
           value: _autoUpdate,
           onChanged: (value) async {
@@ -145,7 +146,8 @@ class _GeneralScreenState extends State<GeneralScreen> {
               bool ok = false;
               if (value) {
                 ok = await platformLaunchAtLogin.enable(
-                    isElevated: _runElevated);
+                  isElevated: _runElevated,
+                );
               } else {
                 ok = await platformLaunchAtLogin.disable();
               }
@@ -160,9 +162,10 @@ class _GeneralScreenState extends State<GeneralScreen> {
                     Text(
                       context.loc
                           .warning_you_need_to_be_elevated_user_to_modify_this_setting(
-                              RuntimePlatform.isWindows
-                                  ? context.loc.administrator
-                                  : "root"),
+                            RuntimePlatform.isWindows
+                                ? context.loc.administrator
+                                : "root",
+                          ),
                     ),
                   );
                 }
@@ -173,8 +176,11 @@ class _GeneralScreenState extends State<GeneralScreen> {
       if (RuntimePlatform.isWindows)
         ListTile(
           enabled: global.isElevated,
-          title: Text(context.loc.run_as_elevated_user(
-              RuntimePlatform.isWindows ? context.loc.administrator : "root")),
+          title: Text(
+            context.loc.run_as_elevated_user(
+              RuntimePlatform.isWindows ? context.loc.administrator : "root",
+            ),
+          ),
           subtitle: Text(context.loc.typically_required_by_tun),
           trailing: Switch(
             value: _runElevated,
@@ -186,9 +192,10 @@ class _GeneralScreenState extends State<GeneralScreen> {
                     Text(
                       context.loc
                           .warning_you_need_to_be_elevated_user_to_modify_this_setting(
-                              RuntimePlatform.isWindows
-                                  ? context.loc.administrator
-                                  : "root"),
+                            RuntimePlatform.isWindows
+                                ? context.loc.administrator
+                                : "root",
+                          ),
                     ),
                   );
                 }
@@ -205,10 +212,12 @@ class _GeneralScreenState extends State<GeneralScreen> {
                       Text(
                         context.loc
                             .warning_you_need_to_be_elevated_user_to_modify_this_setting(
-                                RuntimePlatform.isWindows
-                                    ? context.loc
+                              RuntimePlatform.isWindows
+                                  ? context
+                                        .loc
                                         .warning_failed_due_to_unable_to_update_launch_at_login
-                                    : "root"),
+                                  : "root",
+                            ),
                       ),
                     );
                   }
@@ -227,8 +236,9 @@ class _GeneralScreenState extends State<GeneralScreen> {
           RuntimePlatform.isMacOS)
         ListTile(
           title: Text(context.loc.close_to_tray),
-          subtitle:
-              Text(context.loc.dock_to_tray_instead_when_app_window_is_closed),
+          subtitle: Text(
+            context.loc.dock_to_tray_instead_when_app_window_is_closed,
+          ),
           trailing: Switch(
             value: _closeToTray,
             onChanged: (value) async {
@@ -255,8 +265,9 @@ class _GeneralScreenState extends State<GeneralScreen> {
       if (RuntimePlatform.isAndroid)
         ListTile(
           title: Text(context.loc.auto_connect_at_device_boot),
-          subtitle:
-              Text(context.loc.auto_connect_selected_profile_at_device_boot),
+          subtitle: Text(
+            context.loc.auto_connect_selected_profile_at_device_boot,
+          ),
           trailing: Switch(
             value: _connectAtStartup,
             onChanged: (value) async {
@@ -277,8 +288,9 @@ class _GeneralScreenState extends State<GeneralScreen> {
       ),
       ListTile(
         title: Text(context.loc.follow_system_brightness),
-        subtitle:
-            Text(context.loc.auto_change_brightness_based_on_system_settings),
+        subtitle: Text(
+          context.loc.auto_change_brightness_based_on_system_settings,
+        ),
         trailing: Switch(
           value: _brightnessFollowSystem,
           onChanged: (value) async {
@@ -323,8 +335,11 @@ class _GeneralScreenState extends State<GeneralScreen> {
       ),
       ListTile(
         title: Text(context.loc.show_dashboard_floating_button),
-        subtitle: Text(context
-            .loc.disable_to_show_all_toggles_inside_a_dashboard_pane_instead),
+        subtitle: Text(
+          context
+              .loc
+              .disable_to_show_all_toggles_inside_a_dashboard_pane_instead,
+        ),
         trailing: Switch(
           value: _isFloatingActionButton,
           onChanged: (value) async {
@@ -347,8 +362,11 @@ class _GeneralScreenState extends State<GeneralScreen> {
       if (RuntimePlatform.isAndroid)
         ListTile(
           title: Text(context.loc.foreground),
-          subtitle: Text(context.loc
-              .runs_the_service_in_foreground_less_likely_be_killed_by_system_a_notification_must_show),
+          subtitle: Text(
+            context
+                .loc
+                .runs_the_service_in_foreground_less_likely_be_killed_by_system_a_notification_must_show,
+          ),
           trailing: Switch(
             value: _notificationForeground,
             onChanged: (shouldEnable) async {
@@ -381,15 +399,16 @@ class _GeneralScreenState extends State<GeneralScreen> {
           showDialog(
             context: context,
             builder: (context) => TextInputPopup(
-                title: context.loc.github_token,
-                text: context.loc.github_token_increase_rate_limits,
-                initialValue: _githubToken == null ? "" : _githubToken!,
-                onSaved: (String value) {
-                  prefs.setString('app.github.token', value);
-                  setState(() {
-                    _githubToken = value;
-                  });
-                }),
+              title: context.loc.github_token,
+              text: context.loc.github_token_increase_rate_limits,
+              initialValue: _githubToken == null ? "" : _githubToken!,
+              onSaved: (String value) {
+                prefs.setString('app.github.token', value);
+                setState(() {
+                  _githubToken = value;
+                });
+              },
+            ),
           );
         },
       ),
@@ -400,15 +419,16 @@ class _GeneralScreenState extends State<GeneralScreen> {
           showDialog(
             context: context,
             builder: (context) => TextInputPopup(
-                title: context.loc.ping_http_address,
-                text: context.loc.a_url_that_returns_204,
-                initialValue: _httpingUrl,
-                onSaved: (String value) {
-                  prefs.setString('app.ping.http.url', value);
-                  setState(() {
-                    _httpingUrl = value;
-                  });
-                }),
+              title: context.loc.ping_http_address,
+              text: context.loc.a_url_that_returns_204,
+              initialValue: _httpingUrl,
+              onSaved: (String value) {
+                prefs.setString('app.ping.http.url', value);
+                setState(() {
+                  _httpingUrl = value;
+                });
+              },
+            ),
           );
         },
       ),
@@ -419,16 +439,17 @@ class _GeneralScreenState extends State<GeneralScreen> {
           showDialog(
             context: context,
             builder: (context) => TextInputPopup(
-                title: context.loc.ping_maximum_concurrency,
-                text: context.loc.set_to_0_to_disable,
-                initialValue: _httpingUrl,
-                onSaved: (String value) {
-                  final maxConcurrency = int.parse(value);
-                  prefs.setInt('app.ping.maxConcurrency', maxConcurrency);
-                  setState(() {
-                    _pingMaxConcurrency = maxConcurrency;
-                  });
-                }),
+              title: context.loc.ping_maximum_concurrency,
+              text: context.loc.set_to_0_to_disable,
+              initialValue: _pingMaxConcurrency.toString(),
+              onSaved: (String value) {
+                final maxConcurrency = int.parse(value);
+                prefs.setInt('app.ping.maxConcurrency', maxConcurrency);
+                setState(() {
+                  _pingMaxConcurrency = maxConcurrency;
+                });
+              },
+            ),
           );
         },
       ),
