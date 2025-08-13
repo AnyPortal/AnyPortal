@@ -160,7 +160,7 @@ All rights reserved until further notice (hopefully soon).
 
 - [flutter/flutter](https://github.com/flutter/flutter), BSD-3-Clause
   - a full list of flutter dependency can be found in `./pubspec.yaml`
-- [jrsoftware/issrc](https://github.com/jrsoftware/issrc)
+- [jrsoftware/issrc](https://github.com/jrsoftware/issrc), Inno Setup License
 
 ## Support development
 
