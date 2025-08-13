@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:socks5_proxy/socks_client.dart';
+
 import 'logger.dart';
 
 Future<ServerSocket> getFreeServerSocket() async {
@@ -69,9 +71,9 @@ Future<Duration?> httpingOverSocks(
   }
 
   final client = HttpClient();
-  client.findProxy = (uri) {
-    return 'PROXY 127.0.0.1:$socksPort;';
-  };
+  SocksTCPClient.assignToHttpClient(client, [
+    ProxySettings(InternetAddress.loopbackIPv4, socksPort),
+  ]);
 
   return httping(client, url, timeout);
 }

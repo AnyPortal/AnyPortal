@@ -1034,6 +1034,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.1.2"
+  socks5_proxy:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: fix-request-domain-serialization
+      resolved-ref: "04550bc08f42cc1a35f1e870f651b93a4f9aceab"
+      url: "https://github.com/sylvieon/socks_dart.git"
+    source: git
+    version: "2.1.0"
   source_gen:
     dependency: transitive
     description:

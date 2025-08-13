@@ -66,11 +66,9 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
     outbounds.add({"protocol": "freedom", "tag": "anyportal_ot_freedom"});
 
     if (!RuntimePlatform.isWeb && injectLog) {
-      final pathLogErr = File(p.join(
-        global.applicationSupportDirectory.path,
-        'log',
-        'core.log',
-      )).absolute.path;
+      final pathLogErr = File(
+        p.join(global.applicationSupportDirectory.path, 'log', 'core.log'),
+      ).absolute.path;
       cfg["log"] = {
         "loglevel": logLevel.name,
         "error": pathLogErr,
@@ -81,7 +79,7 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
     if (injectApi) {
       cfg["api"] = {
         "tag": "ot_api",
-        "services": ["HandlerService", "StatsService"]
+        "services": ["HandlerService", "StatsService"],
       };
 
       inbounds.add({
@@ -103,14 +101,14 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
           "0": {
             "statsUserUplink": true,
             "statsUserDownlink": true,
-          }
+          },
         },
         "system": {
           "statsInboundUplink": true,
           "statsInboundDownlink": true,
           "statsOutboundUplink": true,
           "statsOutboundDownlink": true,
-        }
+        },
       };
 
       cfg["stats"] = {};
@@ -124,7 +122,7 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
         "sniffing": {
           "destOverride": ["fakedns+others"],
           "enabled": true,
-          "metadataOnly": false
+          "metadataOnly": false,
         },
         "tag": "anyportal_in_http",
       });
@@ -172,8 +170,8 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
     ///   - if it queries tun dns, they should be hijacked or it's invalid
     ///   - if it queries local dns, they should be hijacked or it's dns leak
     /// need to reboot core when local dns changes!
-    final effectiveNetInterface =
-        await ConnectivityManager().getEffectiveNetInterface();
+    final effectiveNetInterface = await ConnectivityManager()
+        .getEffectiveNetInterface();
     final dns = effectiveNetInterface!.dns;
     routingRules.insert(0, {
       "type": "field",
@@ -282,14 +280,15 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
         if (injectSendThrough) {
           switch (sendThroughBindingStratagy) {
             case SendThroughBindingStratagy.internet:
-              final effectiveNetInterface =
-                  await ConnectivityManager().getEffectiveNetInterface();
+              final effectiveNetInterface = await ConnectivityManager()
+                  .getEffectiveNetInterface();
               interfaceName = effectiveNetInterface?.name;
             case SendThroughBindingStratagy.ip:
               sendThrough = prefs.getString('inject.sendThrough.bindingIp')!;
             case SendThroughBindingStratagy.interface:
-              interfaceName =
-                  prefs.getString('inject.sendThrough.bindingInterface')!;
+              interfaceName = prefs.getString(
+                'inject.sendThrough.bindingInterface',
+              )!;
           }
         }
 
@@ -304,13 +303,13 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
               outbound = newOutbound;
               newOutbound["streamSettings"] = {};
             }
-            final streamSettings =
-                (outbound["streamSettings"] as Map).cast<String, dynamic>();
+            final streamSettings = (outbound["streamSettings"] as Map)
+                .cast<String, dynamic>();
             if (!streamSettings.containsKey("sockopt")) {
               (streamSettings as Map).cast<String, dynamic>()["sockopt"] = {};
             }
-            final sockopt =
-                (streamSettings["sockopt"] as Map).cast<String, dynamic>();
+            final sockopt = (streamSettings["sockopt"] as Map)
+                .cast<String, dynamic>();
             sockopt["bindToDevice"] = interfaceName;
             sockopt["interface"] = interfaceName;
           }
@@ -322,9 +321,10 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
         if (injectSendThrough) {
           switch (sendThroughBindingStratagy) {
             case SendThroughBindingStratagy.internet:
-              final effectiveNetInterface =
-                  await ConnectivityManager().getEffectiveNetInterface();
-              final internetIp = effectiveNetInterface?.ip.ipv4.first ??
+              final effectiveNetInterface = await ConnectivityManager()
+                  .getEffectiveNetInterface();
+              final internetIp =
+                  effectiveNetInterface?.ip.ipv4.first ??
                   effectiveNetInterface?.ip.ipv6.first;
               if (internetIp != null) {
                 sendThrough = internetIp;
@@ -332,19 +332,25 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
             case SendThroughBindingStratagy.ip:
               sendThrough = prefs.getString('inject.sendThrough.bindingIp')!;
             case SendThroughBindingStratagy.interface:
-              final bindingInterface =
-                  prefs.getString('inject.sendThrough.bindingInterface')!;
+              final bindingInterface = prefs.getString(
+                'inject.sendThrough.bindingInterface',
+              )!;
               final ip = await getIPv4OfInterfaceName(bindingInterface);
               if (ip == null) {
                 withContext((context) {
                   showSnackBarNow(
-                      context,
-                      Text(context.loc
+                    context,
+                    Text(
+                      context.loc
                           .ip_not_found_for_binding_interface_binding_interface(
-                              bindingInterface)));
+                            bindingInterface,
+                          ),
+                    ),
+                  );
                 });
                 throw Exception(
-                    'IP not found for binding interface: $bindingInterface');
+                  'IP not found for binding interface: $bindingInterface',
+                );
               }
               sendThrough = ip;
           }
@@ -392,7 +398,10 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
 
   @override
   Future<String> getInjectedConfigPing(
-      String cfgStr, String coreCfgFmt, int socksPort) async {
+    String cfgStr,
+    String coreCfgFmt,
+    int socksPort,
+  ) async {
     final cfg = jsonDecode(cfgStr) as Map<String, dynamic>;
 
     if (!cfg.containsKey("inbounds")) {

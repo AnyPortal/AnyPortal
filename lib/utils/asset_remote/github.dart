@@ -10,6 +10,7 @@ import 'package:drift/drift.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
 import 'package:path/path.dart' as p;
+import 'package:socks5_proxy/socks_client.dart';
 
 import '../../models/asset.dart';
 import '../db.dart';
@@ -60,8 +61,12 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     final metaUrl = "https://api.github.com/repos/$owner/$repo/releases/latest";
     if (useSocks) {
       final httpClient = HttpClient();
-      httpClient.findProxy = (url) =>
-          'PROXY ${prefs.getString('app.server.address')!}:${prefs.getInt('app.socks.port')!}';
+      SocksTCPClient.assignToHttpClient(httpClient, [
+        ProxySettings(
+          InternetAddress.tryParse(prefs.getString('app.server.address')!)!,
+          prefs.getInt('app.socks.port')!,
+        ),
+      ]);
       final client = IOClient(httpClient);
       final token = prefs.getString('app.github.token');
       final headers = token == null
@@ -78,7 +83,8 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
         return response.body;
       } else {
         logger.w(
-            "${response.statusCode} when accessing $metaUrl. If using shared ip address/exceeding api limit consider add a github token");
+          "${response.statusCode} when accessing $metaUrl. If using shared ip address/exceeding api limit consider add a github token",
+        );
         return null;
       }
     } else {
@@ -87,22 +93,18 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
         return response.body;
       } else {
         logger.w(
-            "${response.statusCode} when accessing $metaUrl. If using shared ip address/exceeding api limit consider add a github token");
+          "${response.statusCode} when accessing $metaUrl. If using shared ip address/exceeding api limit consider add a github token",
+        );
         return null;
       }
     }
   }
 
-  String? getDownloadedMeta({
-    TypedResult? asset,
-  }) {
+  String? getDownloadedMeta({TypedResult? asset}) {
     return asset?.read(db.assetRemote.meta);
   }
 
-  bool getIsDownloadedMetaUpdated(
-    String? remoteMeta,
-    String? downloadedMeta,
-  ) {
+  bool getIsDownloadedMetaUpdated(String? remoteMeta, String? downloadedMeta) {
     if (remoteMeta == null) {
       logger.w("getIsDownloadedMetaUpdated: failed to get remoteMeta");
       return true;
@@ -139,14 +141,19 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
 
   /// where the freshly downloaded, not yet installed file should be
   File getAssetFile() {
-    return File(p.join(global.applicationSupportDirectory.path, 'asset',
-        'github', owner, repo, assetName));
+    return File(
+      p.join(
+        global.applicationSupportDirectory.path,
+        'asset',
+        'github',
+        owner,
+        repo,
+        assetName,
+      ),
+    );
   }
 
-  Future<File?> download(
-    String downloadUrl, {
-    bool useSocks = true,
-  }) async {
+  Future<File?> download(String downloadUrl, {bool useSocks = true}) async {
     /// prepare file
     final file = getAssetFile();
     if (await file.exists()) {
@@ -159,9 +166,13 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     }
 
     if (useSocks) {
-      final client = HttpClient()
-        ..findProxy = (url) =>
-            'PROXY ${prefs.getString('app.server.address')!}:${prefs.getInt('app.socks.port')!}';
+      final client = HttpClient();
+      SocksTCPClient.assignToHttpClient(client, [
+        ProxySettings(
+          InternetAddress.tryParse(prefs.getString('app.server.address')!)!,
+          prefs.getInt('app.socks.port')!,
+        ),
+      ]);
       final request = await client.getUrl(Uri.parse(downloadUrl));
       final response = await request.close();
 
@@ -206,38 +217,48 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
       if (asset != null) {
         /// update old asset record
         assetId = asset.read(db.assetRemote.assetId)!;
-        await db.into(db.asset).insertOnConflictUpdate(AssetCompanion(
-              id: Value(asset.read(db.assetRemote.assetId)!),
-              type: const Value(AssetType.remote),
-              path: Value(assetPath),
-              updatedAt: Value(DateTime.now()),
-            ));
+        await db
+            .into(db.asset)
+            .insertOnConflictUpdate(
+              AssetCompanion(
+                id: Value(asset.read(db.assetRemote.assetId)!),
+                type: const Value(AssetType.remote),
+                path: Value(assetPath),
+                updatedAt: Value(DateTime.now()),
+              ),
+            );
       } else {
         /// insert new asset record
-        assetId = await db.into(db.asset).insertOnConflictUpdate(AssetCompanion(
-              type: const Value(AssetType.remote),
-              path: Value(assetPath),
-              updatedAt: Value(DateTime.now()),
-            ));
+        assetId = await db
+            .into(db.asset)
+            .insertOnConflictUpdate(
+              AssetCompanion(
+                type: const Value(AssetType.remote),
+                path: Value(assetPath),
+                updatedAt: Value(DateTime.now()),
+              ),
+            );
       }
 
       /// update or insert assetRemote record
-      await db.into(db.assetRemote).insertOnConflictUpdate(AssetRemoteCompanion(
-            assetId: Value(assetId),
-            url: Value(url),
-            meta: Value(remoteMeta),
-            autoUpdateInterval: Value(autoUpdateInterval),
-            downloadedFilePath: Value(downloadedFile.path),
-          ));
+      await db
+          .into(db.assetRemote)
+          .insertOnConflictUpdate(
+            AssetRemoteCompanion(
+              assetId: Value(assetId),
+              url: Value(url),
+              meta: Value(remoteMeta),
+              autoUpdateInterval: Value(autoUpdateInterval),
+              downloadedFilePath: Value(downloadedFile.path),
+            ),
+          );
     });
 
     return assetId;
   }
 
   /// return installOK
-  Future<bool> install(
-    File downloadedFile,
-  ) async {
+  Future<bool> install(File downloadedFile) async {
     String path = downloadedFile.path;
 
     bool extractOK = false;
@@ -264,11 +285,14 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
   /// remove downloaded file and path record
   Future<bool> postInstall(int assetId) async {
     /// remove pending install status
-    await (db.update(db.assetRemote)..where((e) => e.assetId.equals(assetId)))
-        .write(AssetRemoteCompanion(
-      assetId: Value(assetId),
-      downloadedFilePath: Value(null),
-    ));
+    await (db.update(
+      db.assetRemote,
+    )..where((e) => e.assetId.equals(assetId))).write(
+      AssetRemoteCompanion(
+        assetId: Value(assetId),
+        downloadedFilePath: Value(null),
+      ),
+    );
 
     return true;
   }
@@ -294,23 +318,25 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
   }
 
   /// save last checked timestamp
-  Future<void> postGetRemoteMeta(String remoteMeta,
-      {TypedResult? asset}) async {
+  Future<void> postGetRemoteMeta(
+    String remoteMeta, {
+    TypedResult? asset,
+  }) async {
     if (asset == null) return;
     final assetId = asset.read(db.asset.id)!;
-    await (db.update(db.assetRemote)..where((e) => e.assetId.equals(assetId)))
-        .write(AssetRemoteCompanion(
-      assetId: Value(assetId),
-      checkedAt: Value(DateTime.now()),
-    ));
+    await (db.update(
+      db.assetRemote,
+    )..where((e) => e.assetId.equals(assetId))).write(
+      AssetRemoteCompanion(
+        assetId: Value(assetId),
+        checkedAt: Value(DateTime.now()),
+      ),
+    );
   }
 
   /// return isUpdated
   @override
-  Future<bool> update({
-    TypedResult? asset,
-    int autoUpdateInterval = 0,
-  }) async {
+  Future<bool> update({TypedResult? asset, int autoUpdateInterval = 0}) async {
     /// check if need to update
     loggerD("to update: $url");
     final downloadedMeta = getDownloadedMeta(asset: asset);
@@ -320,8 +346,10 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
       return true;
     }
     await postGetRemoteMeta(remoteMeta, asset: asset);
-    final isDownloadedMetaUpdated =
-        getIsDownloadedMetaUpdated(remoteMeta, downloadedMeta);
+    final isDownloadedMetaUpdated = getIsDownloadedMetaUpdated(
+      remoteMeta,
+      downloadedMeta,
+    );
 
     int? assetId = asset?.read(db.asset.id);
     String? downloadedFilePath = getDownloadedFilePath(asset: asset);

@@ -43,11 +43,9 @@ class ConfigInjectorClash extends ConfigInjectorBase {
         .values[prefs.getInt('inject.sendThrough.bindingStratagy')!];
 
     if (injectLog) {
-      final pathLog = File(p.join(
-        global.applicationSupportDirectory.path,
-        'log',
-        'core.log',
-      )).absolute.path;
+      final pathLog = File(
+        p.join(global.applicationSupportDirectory.path, 'log', 'core.log'),
+      ).absolute.path;
       cfg["log-level"] = logLevel.name;
       cfg["log-file"] = pathLog;
     }
@@ -88,15 +86,16 @@ class ConfigInjectorClash extends ConfigInjectorBase {
       if (injectSendThrough) {
         switch (sendThroughBindingStratagy) {
           case SendThroughBindingStratagy.internet:
-            final effectiveNetInterface =
-                await ConnectivityManager().getEffectiveNetInterface();
+            final effectiveNetInterface = await ConnectivityManager()
+                .getEffectiveNetInterface();
             interfaceName = effectiveNetInterface?.name;
           case SendThroughBindingStratagy.ip:
             final ip = prefs.getString('inject.sendThrough.bindingIp')!;
             interfaceName = await getInterfaceNameOfIP(ip);
           case SendThroughBindingStratagy.interface:
-            interfaceName =
-                prefs.getString('inject.sendThrough.bindingInterface')!;
+            interfaceName = prefs.getString(
+              'inject.sendThrough.bindingInterface',
+            )!;
         }
       }
       for (var outbound in cfg["proxies"]) {
@@ -115,7 +114,10 @@ class ConfigInjectorClash extends ConfigInjectorBase {
 
   @override
   Future<String> getInjectedConfigPing(
-      String cfgStr, String coreCfgFmt, int socksPort) async {
+    String cfgStr,
+    String coreCfgFmt,
+    int socksPort,
+  ) async {
     Map<String, dynamic> cfg = {};
     switch (coreCfgFmt) {
       case "json":
@@ -143,8 +145,7 @@ class ConfigInjectorClash extends ConfigInjectorBase {
     newListeners.insert(0, {
       "address": "127.0.0.1",
       "port": socksPort,
-      "type": "http",
-      // "type": "socks", /// TODO: why socks doesn't work???
+      "type": "socks",
     });
 
     if (cfg.containsKey("external-controller")) {

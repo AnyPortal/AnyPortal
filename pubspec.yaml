@@ -74,6 +74,10 @@ dependencies:
   yaml_writer: ^2.1.0
   yaml: ^3.1.3
   connectivity_plus: ^6.1.4
+  socks5_proxy:
+    git:
+      url: https://github.com/sylvieon/socks_dart.git
+      ref: fix-request-domain-serialization
 
 dev_dependencies:
   flutter_test:

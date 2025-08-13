@@ -31,3 +31,6 @@ analyzer:
   exclude:
     - lib/generated/**
     - lib/**/*.g.dart
+
+formatter:
+  trailing_commas: preserve
