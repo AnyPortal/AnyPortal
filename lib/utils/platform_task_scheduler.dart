@@ -40,7 +40,8 @@ Future<void> checkAllRemotes() async {
 }
 
 @pragma(
-    'vm:entry-point') // Mandatory if the App is obfuscated or using Flutter 3.1+
+  'vm:entry-point',
+) // Mandatory if the App is obfuscated or using Flutter 3.1+
 void workmanagerCallbackDispatcher() {
   Workmanager().executeTask((taskName, inputData) async {
     await workManagerTaskInit();
@@ -54,14 +55,15 @@ Future<bool> checkAllAssetRemotes() async {
     innerJoin(db.assetRemote, db.asset.id.equalsExp(db.assetRemote.assetId)),
   ])).get();
   for (var assetRemote in assetRemotes) {
-    final autoUpdateInterval =
-        assetRemote.read(db.assetRemote.autoUpdateInterval)!;
+    final autoUpdateInterval = assetRemote.read(
+      db.assetRemote.autoUpdateInterval,
+    )!;
     if (autoUpdateInterval > 0) {
       final checkedAt = assetRemote.read(db.assetRemote.checkedAt);
       if (checkedAt == null ||
           checkedAt
               .add(Duration(seconds: autoUpdateInterval))
-              .isAfter(DateTime.now())) {
+              .isBefore(DateTime.now())) {
         AssetRemoteProtocolGithub.fromUrl(
           assetRemote.read(db.assetRemote.url)!,
         ).update(
@@ -76,17 +78,20 @@ Future<bool> checkAllAssetRemotes() async {
 
 Future<bool> checkAllProfileGroupRemotes() async {
   final profileGroupRemotes = await (db.select(db.profileGroup).join([
-    innerJoin(db.profileGroupRemote,
-        db.profileGroup.id.equalsExp(db.profileGroupRemote.profileGroupId)),
+    innerJoin(
+      db.profileGroupRemote,
+      db.profileGroup.id.equalsExp(db.profileGroupRemote.profileGroupId),
+    ),
   ])).get();
   for (var profileGroupRemote in profileGroupRemotes) {
-    final autoUpdateInterval =
-        profileGroupRemote.read(db.profileGroupRemote.autoUpdateInterval)!;
+    final autoUpdateInterval = profileGroupRemote.read(
+      db.profileGroupRemote.autoUpdateInterval,
+    )!;
     if (autoUpdateInterval > 0 &&
         profileGroupRemote
             .read(db.profileGroup.updatedAt)!
             .add(Duration(seconds: autoUpdateInterval))
-            .isAfter(DateTime.now())) {
+            .isBefore(DateTime.now())) {
       await updateProfileGroup(
         oldProfileGroup: profileGroupRemote.readTable(db.profileGroup),
       );
@@ -98,16 +103,19 @@ Future<bool> checkAllProfileGroupRemotes() async {
 Future<bool> checkAllProfileRemotes() async {
   final profileRemotes = await (db.select(db.profile).join([
     innerJoin(
-        db.profileRemote, db.profile.id.equalsExp(db.profileRemote.profileId)),
+      db.profileRemote,
+      db.profile.id.equalsExp(db.profileRemote.profileId),
+    ),
   ])).get();
   for (var profileRemote in profileRemotes) {
-    final autoUpdateInterval =
-        profileRemote.read(db.profileRemote.autoUpdateInterval)!;
+    final autoUpdateInterval = profileRemote.read(
+      db.profileRemote.autoUpdateInterval,
+    )!;
     if (autoUpdateInterval > 0 &&
         profileRemote
             .read(db.profile.updatedAt)!
             .add(Duration(seconds: autoUpdateInterval))
-            .isAfter(DateTime.now())) {
+            .isBefore(DateTime.now())) {
       await updateProfile(
         oldProfile: profileRemote.readTable(db.profile),
       );
@@ -128,8 +136,10 @@ Future<bool> checkAppRemote() async {
       if (!ok) return false;
       ok = await assetRemoteProtocolApp.update();
       if (!ok) return false;
-      prefs.setInt("app.autoUpdate.checkedAt",
-          (DateTime.now().millisecondsSinceEpoch / 1000).toInt());
+      prefs.setInt(
+        "app.autoUpdate.checkedAt",
+        (DateTime.now().millisecondsSinceEpoch / 1000).toInt(),
+      );
     }
   }
   return true;
@@ -143,12 +153,14 @@ class PlatformTaskScheduler {
     if (RuntimePlatform.isAndroid || RuntimePlatform.isIOS) {
       Workmanager().initialize(workmanagerCallbackDispatcher);
       Workmanager().registerPeriodicTask(
-          "anyportal-periodic-task", "anyportalPeriodicTask",
-          // When no frequency is provided the default 15 minutes is set.
-          // Minimum frequency is 15 min. Android will automatically change your frequency to 15 min if you have configured a lower frequency.
-          constraints: Constraints(
-            networkType: NetworkType.connected,
-          ));
+        "anyportal-periodic-task",
+        "anyportalPeriodicTask",
+        // When no frequency is provided the default 15 minutes is set.
+        // Minimum frequency is 15 min. Android will automatically change your frequency to 15 min if you have configured a lower frequency.
+        constraints: Constraints(
+          networkType: NetworkType.connected,
+        ),
+      );
     } else if (RuntimePlatform.isWindows ||
         RuntimePlatform.isLinux ||
         RuntimePlatform.isMacOS) {
