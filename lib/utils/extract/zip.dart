@@ -13,9 +13,10 @@ Future<bool> extractZipThere(String path) async {
 }
 
 Future<bool> extractZip(String path, String destDir) async {
-  if (await File(destDir).exists()) {
+  final d = Directory(destDir);
+  if (await d.exists()) {
     try {
-      File(destDir).delete(recursive: true);
+      await d.delete(recursive: true);
     } catch (e) {
       logger.e("failed to delete $destDir");
       return false;

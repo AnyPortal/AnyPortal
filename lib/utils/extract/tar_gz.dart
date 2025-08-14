@@ -3,11 +3,23 @@ import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:path/path.dart' as p;
 
+import '../logger.dart';
+
 Future<bool> extractTarGzThere(String path) async {
   return await extractTarGz(path, p.withoutExtension(p.withoutExtension(path)));
 }
 
 Future<bool> extractTarGz(String path, String destDir) async {
+  final d = Directory(destDir);
+  if (await d.exists()) {
+    try {
+      await d.delete(recursive: true);
+    } catch (e) {
+      logger.e("failed to delete $destDir");
+      return false;
+    }
+  }
+
   final input = File(path);
   final bytes = await input.readAsBytes();
 

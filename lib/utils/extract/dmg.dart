@@ -9,7 +9,10 @@ Future<bool> extractDmgThere(String path, String subpath) async {
 }
 
 Future<bool> extractFolderFromDmg(
-    String dmgPath, String folderName, String outputPath) async {
+  String dmgPath,
+  String folderName,
+  String outputPath,
+) async {
   // Step 1: Attach the DMG
   var result = await Process.run('hdiutil', ['attach', dmgPath]);
   if (result.exitCode != 0) {
@@ -32,8 +35,21 @@ Future<bool> extractFolderFromDmg(
   }
 
   // Step 2: Copy the folder
-  var copyResult =
-      await Process.run('cp', ['-R', '$mountPoint/$folderName', outputPath]);
+  final destDir = '$outputPath/$folderName';
+  final d = Directory(destDir);
+  if (await d.exists()) {
+    try {
+      await d.delete(recursive: true);
+    } catch (e) {
+      logger.e("failed to delete $destDir");
+      return false;
+    }
+  }
+  var copyResult = await Process.run('cp', [
+    '-R',
+    '$mountPoint/$folderName',
+    outputPath,
+  ]);
   if (copyResult.exitCode != 0) {
     logger.d('Failed to extract folder: ${copyResult.stderr}');
     return false;
@@ -44,9 +60,4 @@ Future<bool> extractFolderFromDmg(
   // Step 3: Detach the DMG
   await Process.run('hdiutil', ['detach', mountPoint]);
   return true;
-}
-
-void main() async {
-  await extractFolderFromDmg(
-      '/path/to/file.dmg', 'FolderName', '/desired/output/path');
 }
