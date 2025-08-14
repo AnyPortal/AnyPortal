@@ -14,7 +14,6 @@ import 'package:socks5_proxy/socks_client.dart';
 
 import '../../models/asset.dart';
 import '../db.dart';
-import '../extract/dmg.dart';
 import '../extract/tar_gz.dart';
 import '../extract/zip.dart';
 import '../global.dart';
@@ -248,8 +247,6 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
       extractOK = await extractZipThere(path);
     } else if (path.toLowerCase().endsWith(".tar.gz")) {
       extractOK = await extractTarGzThere(path);
-    } else if (path.toLowerCase().endsWith(".dmg")) {
-      extractOK = await extractDmgThere(path, subPath!);
     }
     if (extractOK) {
       try {
