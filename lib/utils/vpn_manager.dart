@@ -25,6 +25,7 @@ import 'logger.dart';
 import 'method_channel.dart';
 import 'platform_process.dart';
 import 'platform_system_proxy_user.dart';
+import 'platform_task_scheduler.dart';
 import 'prefs.dart';
 import 'runtime_platform.dart';
 import 'show_snack_bar_now.dart';
@@ -52,11 +53,13 @@ abstract class VPNManager with ChangeNotifier {
   Future<bool> prepareCore() async {
     if (!RuntimePlatform.isWeb) {
       // clear core log
-      await File(p.join(
-        global.applicationSupportDirectory.path,
-        'log',
-        'core.log',
-      )).writeAsString("");
+      await File(
+        p.join(
+          global.applicationSupportDirectory.path,
+          'log',
+          'core.log',
+        ),
+      ).writeAsString("");
       await installPendingAssetRemote();
     }
 
@@ -106,7 +109,8 @@ abstract class VPNManager with ChangeNotifier {
       dataNotifier.stop();
     } else {
       logger.w(
-          "isCoreActive: $isCoreActive, dataNotifier.on: ${dataNotifier.on}");
+        "isCoreActive: $isCoreActive, dataNotifier.on: ${dataNotifier.on}",
+      );
     }
   }
 
@@ -123,18 +127,20 @@ abstract class VPNManager with ChangeNotifier {
     /// with timeout
     const timeoutSec = 5;
     if (isTogglingAll) {
-      delayedTogglingChecker =
-          Future.delayed(const Duration(seconds: timeoutSec), () {
-        if (isTogglingAll) {
-          updateIsCoreActive(force: true, isToNotify: false);
-          updateIsAllActive(force: true);
-          final errMsg = "all toggled for $timeoutSec sec, force stopped";
-          logger.w(errMsg);
-          withContext((context) {
-            showSnackBarNow(context, Text(errMsg));
-          });
-        }
-      });
+      delayedTogglingChecker = Future.delayed(
+        const Duration(seconds: timeoutSec),
+        () {
+          if (isTogglingAll) {
+            updateIsCoreActive(force: true, isToNotify: false);
+            updateIsAllActive(force: true);
+            final errMsg = "all toggled for $timeoutSec sec, force stopped";
+            logger.w(errMsg);
+            withContext((context) {
+              showSnackBarNow(context, Text(errMsg));
+            });
+          }
+        },
+      );
     }
   }
 
@@ -149,17 +155,19 @@ abstract class VPNManager with ChangeNotifier {
     /// with timeout
     const timeoutSec = 5;
     if (isTogglingCore) {
-      delayedTogglingChecker =
-          Future.delayed(const Duration(seconds: timeoutSec), () {
-        if (isTogglingCore) {
-          updateIsCoreActive(force: true);
-          final errMsg = "core toggled for $timeoutSec sec, force stopped";
-          logger.w(errMsg);
-          withContext((context) {
-            showSnackBarNow(context, Text(errMsg));
-          });
-        }
-      });
+      delayedTogglingChecker = Future.delayed(
+        const Duration(seconds: timeoutSec),
+        () {
+          if (isTogglingCore) {
+            updateIsCoreActive(force: true);
+            final errMsg = "core toggled for $timeoutSec sec, force stopped";
+            logger.w(errMsg);
+            withContext((context) {
+              showSnackBarNow(context, Text(errMsg));
+            });
+          }
+        },
+      );
     }
   }
 
@@ -174,18 +182,20 @@ abstract class VPNManager with ChangeNotifier {
     /// with timeout
     const timeoutSec = 5;
     if (isTogglingSystemProxy) {
-      delayedTogglingChecker =
-          Future.delayed(const Duration(seconds: timeoutSec), () {
-        if (isTogglingSystemProxy) {
-          updateIsSystemProxyActive(force: true);
-          final errMsg =
-              "system proxy toggled for $timeoutSec sec, force stopped";
-          logger.w(errMsg);
-          withContext((context) {
-            showSnackBarNow(context, Text(errMsg));
-          });
-        }
-      });
+      delayedTogglingChecker = Future.delayed(
+        const Duration(seconds: timeoutSec),
+        () {
+          if (isTogglingSystemProxy) {
+            updateIsSystemProxyActive(force: true);
+            final errMsg =
+                "system proxy toggled for $timeoutSec sec, force stopped";
+            logger.w(errMsg);
+            withContext((context) {
+              showSnackBarNow(context, Text(errMsg));
+            });
+          }
+        },
+      );
     }
   }
 
@@ -200,17 +210,19 @@ abstract class VPNManager with ChangeNotifier {
     /// with timeout
     const timeoutSec = 5;
     if (isTogglingTun) {
-      delayedTogglingChecker =
-          Future.delayed(const Duration(seconds: timeoutSec), () {
-        if (isTogglingTun) {
-          updateIsTunActive(force: true);
-          final errMsg = "tun toggled for $timeoutSec sec, force stopped";
-          logger.w(errMsg);
-          withContext((context) {
-            showSnackBarNow(context, Text(errMsg));
-          });
-        }
-      });
+      delayedTogglingChecker = Future.delayed(
+        const Duration(seconds: timeoutSec),
+        () {
+          if (isTogglingTun) {
+            updateIsTunActive(force: true);
+            final errMsg = "tun toggled for $timeoutSec sec, force stopped";
+            logger.w(errMsg);
+            withContext((context) {
+              showSnackBarNow(context, Text(errMsg));
+            });
+          }
+        },
+      );
     }
   }
 
@@ -290,8 +302,9 @@ abstract class VPNManager with ChangeNotifier {
   }) {
     if (!force && value == isSystemProxyActive) {
       if (value == isSystemProxyActive) {
-        logger
-            .d("setIsSystemProxyActive: no need, already $isSystemProxyActive");
+        logger.d(
+          "setIsSystemProxyActive: no need, already $isSystemProxyActive",
+        );
         return;
       }
     }
@@ -529,9 +542,9 @@ abstract class VPNManager with ChangeNotifier {
       });
       return false;
     }
-    _selectedProfile = await (db.select(db.profile)
-          ..where((p) => p.id.equals(_selectedProfileId!)))
-        .getSingleOrNull();
+    _selectedProfile = await (db.select(
+      db.profile,
+    )..where((p) => p.id.equals(_selectedProfileId!))).getSingleOrNull();
     if (_selectedProfile == null) {
       withContext((context) {
         Navigator.push(
@@ -545,19 +558,21 @@ abstract class VPNManager with ChangeNotifier {
 
     // check update
     updateProfileWithGroupRemote(_selectedProfile!);
+    checkAllAssetRemotes(shouldCheckRemote: false);
 
     coreTypeId = _selectedProfile!.coreTypeId;
 
     /// check core type exists
-    final coreTypeData = await (db.select(db.coreType)
-          ..where((coreType) => coreType.id.equals(coreTypeId)))
-        .getSingleOrNull();
+    final coreTypeData = await (db.select(
+      db.coreType,
+    )..where((coreType) => coreType.id.equals(coreTypeId))).getSingleOrNull();
     if (coreTypeData == null) {
       withContext((context) {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => ProfileScreen(profile: _selectedProfile)),
+            builder: (context) => ProfileScreen(profile: _selectedProfile),
+          ),
         );
         showSnackBarNow(context, Text("Inbalid core type"));
       });
@@ -565,15 +580,30 @@ abstract class VPNManager with ChangeNotifier {
     coreTypeName = coreTypeData!.name;
 
     // check core path
-    final core = await (db.select(db.coreTypeSelected).join([
-      leftOuterJoin(db.core, db.coreTypeSelected.coreId.equalsExp(db.core.id)),
-      leftOuterJoin(db.coreExec, db.core.id.equalsExp(db.coreExec.coreId)),
-      leftOuterJoin(db.coreLib, db.core.id.equalsExp(db.coreLib.coreId)),
-      leftOuterJoin(db.coreType, db.core.coreTypeId.equalsExp(db.coreType.id)),
-      leftOuterJoin(db.asset, db.coreExec.assetId.equalsExp(db.asset.id)),
-    ])
-          ..where(db.coreTypeSelected.coreTypeId.equals(coreTypeId)))
-        .getSingleOrNull();
+    final core =
+        await (db.select(db.coreTypeSelected).join([
+              leftOuterJoin(
+                db.core,
+                db.coreTypeSelected.coreId.equalsExp(db.core.id),
+              ),
+              leftOuterJoin(
+                db.coreExec,
+                db.core.id.equalsExp(db.coreExec.coreId),
+              ),
+              leftOuterJoin(
+                db.coreLib,
+                db.core.id.equalsExp(db.coreLib.coreId),
+              ),
+              leftOuterJoin(
+                db.coreType,
+                db.core.coreTypeId.equalsExp(db.coreType.id),
+              ),
+              leftOuterJoin(
+                db.asset,
+                db.coreExec.assetId.equalsExp(db.asset.id),
+              ),
+            ])..where(db.coreTypeSelected.coreTypeId.equals(coreTypeId)))
+            .getSingleOrNull();
     if (core == null) {
       withContext((context) {
         Navigator.push(
@@ -592,12 +622,15 @@ abstract class VPNManager with ChangeNotifier {
     coreCfgRaw = _selectedProfile!.coreCfg;
     coreCfgFmt = _selectedProfile!.coreCfgFmt;
     CorePluginManager().switchTo(coreTypeName);
-    String coreCfg = await CorePluginManager()
-        .instance
-        .configInjector
+    String coreCfg = await CorePluginManager().instance.configInjector
         .getInjectedConfig(coreCfgRaw, coreCfgFmt);
-    final coreCfgFile = File(p.join(global.applicationSupportDirectory.path,
-        'conf', 'core.gen.$coreCfgFmt'));
+    final coreCfgFile = File(
+      p.join(
+        global.applicationSupportDirectory.path,
+        'conf',
+        'core.gen.$coreCfgFmt',
+      ),
+    );
     if (!RuntimePlatform.isWeb) {
       if (!await coreCfgFile.exists()) {
         await coreCfgFile.create(recursive: true);
@@ -618,8 +651,10 @@ abstract class VPNManager with ChangeNotifier {
             context,
             MaterialPageRoute(builder: (context) => const CoresScreen()),
           );
-          showSnackBarNow(context,
-              Text(context.loc.please_specify_v2ray_core_executable_path));
+          showSnackBarNow(
+            context,
+            Text(context.loc.please_specify_v2ray_core_executable_path),
+          );
         });
         return false;
       } else {
@@ -660,8 +695,9 @@ abstract class VPNManager with ChangeNotifier {
     if (coreEnvsStr == null || coreEnvsStr == "") {
       coreEnvsStr = "{}";
     }
-    _coreEnvs = (jsonDecode(coreEnvsStr) as Map<String, dynamic>)
-        .map((k, v) => MapEntry(k, v as String));
+    _coreEnvs = (jsonDecode(coreEnvsStr) as Map<String, dynamic>).map(
+      (k, v) => MapEntry(k, v as String),
+    );
     await prefs.setString('cache.core.envs', jsonEncode(_coreEnvs));
 
     logger.d("finished: initCore");
@@ -672,18 +708,22 @@ abstract class VPNManager with ChangeNotifier {
     if (RuntimePlatform.isWeb) {
       return File("");
     }
-    final tunSingBoxUserConfigFileCustomized = File(p.join(
-      global.applicationDocumentsDirectory.path,
-      'AnyPortal',
-      'conf',
-      'tun2socks.sing_box.json',
-    ));
-    final tunSingBoxUserConfigFileExample = File(p.join(
-      global.applicationDocumentsDirectory.path,
-      'AnyPortal',
-      'conf',
-      'tun2socks.sing_box.example.json',
-    ));
+    final tunSingBoxUserConfigFileCustomized = File(
+      p.join(
+        global.applicationDocumentsDirectory.path,
+        'AnyPortal',
+        'conf',
+        'tun2socks.sing_box.json',
+      ),
+    );
+    final tunSingBoxUserConfigFileExample = File(
+      p.join(
+        global.applicationDocumentsDirectory.path,
+        'AnyPortal',
+        'conf',
+        'tun2socks.sing_box.example.json',
+      ),
+    );
     late File tunSingBoxUserConfigFile;
     if (await tunSingBoxUserConfigFileCustomized.exists()) {
       tunSingBoxUserConfigFile = tunSingBoxUserConfigFileCustomized;
@@ -701,21 +741,25 @@ abstract class VPNManager with ChangeNotifier {
       final coreTypeId = CoreTypeDefault.singBox.index;
       final core = await (db.select(db.coreTypeSelected).join([
         leftOuterJoin(
-            db.core, db.coreTypeSelected.coreId.equalsExp(db.core.id)),
+          db.core,
+          db.coreTypeSelected.coreId.equalsExp(db.core.id),
+        ),
         leftOuterJoin(db.coreExec, db.core.id.equalsExp(db.coreExec.coreId)),
         leftOuterJoin(db.coreLib, db.core.id.equalsExp(db.coreLib.coreId)),
         leftOuterJoin(
-            db.coreType, db.core.coreTypeId.equalsExp(db.coreType.id)),
+          db.coreType,
+          db.core.coreTypeId.equalsExp(db.coreType.id),
+        ),
         leftOuterJoin(db.asset, db.coreExec.assetId.equalsExp(db.asset.id)),
-      ])
-            ..where(db.core.coreTypeId.equals(coreTypeId)))
-          .getSingleOrNull();
+      ])..where(db.core.coreTypeId.equals(coreTypeId))).getSingleOrNull();
 
       if (prefs.getBool("tun")!) {
         if (core == null) {
           withContext((context) {
-            showSnackBarNow(context,
-                Text(context.loc.tun_needs_additionally_a_sing_box_core));
+            showSnackBarNow(
+              context,
+              Text(context.loc.tun_needs_additionally_a_sing_box_core),
+            );
           });
           return;
         } else {
@@ -726,36 +770,45 @@ abstract class VPNManager with ChangeNotifier {
             });
             return;
           } else {
-            _tunSingBoxCorePath =
-                File(_tunSingBoxCorePath!).resolveSymbolicLinksSync();
+            _tunSingBoxCorePath = File(
+              _tunSingBoxCorePath!,
+            ).resolveSymbolicLinksSync();
             prefs.setString(
-                'cache.tun.singBox.core.path', _tunSingBoxCorePath!);
+              'cache.tun.singBox.core.path',
+              _tunSingBoxCorePath!,
+            );
           }
           _tunSingBoxCoreWorkingDir = core.read(db.core.workingDir)!;
           if (_tunSingBoxCoreWorkingDir!.isEmpty) {
             _tunSingBoxCoreWorkingDir = File(_tunSingBoxCorePath!).parent.path;
           }
           prefs.setString(
-              'cache.tun.singBox.core.workingDir', _tunSingBoxCoreWorkingDir!);
+            'cache.tun.singBox.core.workingDir',
+            _tunSingBoxCoreWorkingDir!,
+          );
         }
 
         /// gen config.json
         final tunSingBoxUserConfigFile = await getTunSingBoxUserConfigFile();
-        final tunSingBoxConfigFile = File(p.join(
-          global.applicationSupportDirectory.path,
-          'conf',
-          'tun2socks.sing_box.gen.json',
-        ));
+        final tunSingBoxConfigFile = File(
+          p.join(
+            global.applicationSupportDirectory.path,
+            'conf',
+            'tun2socks.sing_box.gen.json',
+          ),
+        );
         if (!await tunSingBoxConfigFile.exists()) {
           await tunSingBoxConfigFile.create(recursive: true);
         }
         Map<String, dynamic> tunSingBoxRawCfgMap =
             jsonDecode(await tunSingBoxUserConfigFile.readAsString())
                 as Map<String, dynamic>;
-        tunSingBoxRawCfgMap =
-            await getInjectedConfigTunSingBox(tunSingBoxRawCfgMap);
-        await tunSingBoxConfigFile
-            .writeAsString(jsonEncode(tunSingBoxRawCfgMap));
+        tunSingBoxRawCfgMap = await getInjectedConfigTunSingBox(
+          tunSingBoxRawCfgMap,
+        );
+        await tunSingBoxConfigFile.writeAsString(
+          jsonEncode(tunSingBoxRawCfgMap),
+        );
 
         /// get core env
         String? coreEnvsStr = core.read(db.core.envs);
@@ -765,7 +818,9 @@ abstract class VPNManager with ChangeNotifier {
         _tunSingBoxCoreEnvs = (jsonDecode(coreEnvsStr) as Map<String, dynamic>)
             .map((k, v) => MapEntry(k, v as String));
         await prefs.setString(
-            'cache.tun.singBox.core.envs', jsonEncode(_tunSingBoxCoreEnvs));
+          'cache.tun.singBox.core.envs',
+          jsonEncode(_tunSingBoxCoreEnvs),
+        );
 
         // get core args
         final argsStr = core.read(db.coreExec.args)!;
@@ -784,19 +839,25 @@ abstract class VPNManager with ChangeNotifier {
         _tunSingBoxCoreArgList = [...rawTunSingBoxArgList];
         for (int i = 0; i < _tunSingBoxCoreArgList.length; ++i) {
           for (var entry in replacements.entries) {
-            _tunSingBoxCoreArgList[i] =
-                _tunSingBoxCoreArgList[i].replaceAll(entry.key, entry.value);
+            _tunSingBoxCoreArgList[i] = _tunSingBoxCoreArgList[i].replaceAll(
+              entry.key,
+              entry.value,
+            );
           }
         }
         prefs.setString(
-            'cache.tun.singBox.core.args', jsonEncode(_tunSingBoxCoreArgList));
+          'cache.tun.singBox.core.args',
+          jsonEncode(_tunSingBoxCoreArgList),
+        );
 
         // clear core log
-        await File(p.join(
-          global.applicationSupportDirectory.path,
-          'log',
-          'tun2socks.sing_box.log',
-        )).writeAsString("");
+        await File(
+          p.join(
+            global.applicationSupportDirectory.path,
+            'log',
+            'tun2socks.sing_box.log',
+          ),
+        ).writeAsString("");
       }
     }
   }
@@ -805,18 +866,20 @@ abstract class VPNManager with ChangeNotifier {
     logger.d("starting: installPendingAssetRemote");
     final assets = await (db.select(db.asset).join([
       leftOuterJoin(
-          db.assetRemote, db.asset.id.equalsExp(db.assetRemote.assetId)),
-    ])
-          ..where(db.assetRemote.downloadedFilePath.isNotNull()))
-        .get();
+        db.assetRemote,
+        db.asset.id.equalsExp(db.assetRemote.assetId),
+      ),
+    ])..where(db.assetRemote.downloadedFilePath.isNotNull())).get();
     for (var asset in assets) {
       final assetUrl = asset.read(db.assetRemote.url)!;
       final assetId = asset.read(db.assetRemote.assetId)!;
-      final assetRemoteProtocolGithub =
-          AssetRemoteProtocolGithub.fromUrl(assetUrl);
+      final assetRemoteProtocolGithub = AssetRemoteProtocolGithub.fromUrl(
+        assetUrl,
+      );
       logger.d("installing: $assetUrl");
-      final installOk = await assetRemoteProtocolGithub
-          .install(File(asset.read(db.assetRemote.downloadedFilePath)!));
+      final installOk = await assetRemoteProtocolGithub.install(
+        File(asset.read(db.assetRemote.downloadedFilePath)!),
+      );
       if (installOk) {
         await assetRemoteProtocolGithub.postInstall(assetId);
         logger.d("installed: $assetUrl");
@@ -875,7 +938,9 @@ class VPNManagerExec extends VPNManager {
     if (await isServerAddressPortInUse(serverAddress, port)) {
       withContext((context) {
         showSnackBarNow(
-            context, Text("$portName: $serverAddress:$port in use"));
+          context,
+          Text("$portName: $serverAddress:$port in use"),
+        );
       });
       return false;
     }
@@ -950,7 +1015,7 @@ class VPNManagerExec extends VPNManager {
     if (!await ensureServerAddressPorts()) return false;
 
     final Map<String, String> environment = {
-      ...CorePluginManager().instance.environment
+      ...CorePluginManager().instance.environment,
     };
     if (_coreEnvs != null) {
       environment.addAll(_coreEnvs!);
@@ -965,11 +1030,13 @@ class VPNManagerExec extends VPNManager {
 
     IOSink? outputFileIOSink;
     if (CorePluginManager().instance.isToLogStdout) {
-      outputFileIOSink = File(p.join(
-        global.applicationSupportDirectory.path,
-        'log',
-        'core.log',
-      )).openWrite();
+      outputFileIOSink = File(
+        p.join(
+          global.applicationSupportDirectory.path,
+          'log',
+          'core.log',
+        ),
+      ).openWrite();
 
       processCore.stdout.transform(SystemEncoding().decoder).listen((data) {
         outputFileIOSink?.write(data);
@@ -1026,12 +1093,13 @@ class VPNManagerExec extends VPNManager {
       if (!global.isElevated) {
         withContext((context) {
           showSnackBarNow(
-              context,
-              Text(context.loc
-                  .warning_you_need_to_be_elevated_user_to_enable_tun(
-                      RuntimePlatform.isWindows
-                          ? context.loc.administrator
-                          : "root")));
+            context,
+            Text(
+              context.loc.warning_you_need_to_be_elevated_user_to_enable_tun(
+                RuntimePlatform.isWindows ? context.loc.administrator : "root",
+              ),
+            ),
+          );
         });
         setisTogglingTun(false);
         return false;
@@ -1046,8 +1114,10 @@ class VPNManagerExec extends VPNManager {
       if (RuntimePlatform.isLinux ||
           RuntimePlatform.isMacOS ||
           RuntimePlatform.isAndroid) {
-        final executableTestRes =
-            await Process.run("test", ["-x", _tunSingBoxCorePath!]);
+        final executableTestRes = await Process.run("test", [
+          "-x",
+          _tunSingBoxCorePath!,
+        ]);
         if (executableTestRes.exitCode != 0) {
           logger.i("tun sing-box core path not executable, fixing");
           await Process.run("chmod", [
@@ -1169,7 +1239,9 @@ class VPNManagerMC extends VPNManager {
     mCMan.addHandler("onCoreStatusChange", handleCoreStatusChange);
     mCMan.addHandler("onTunStatusChange", handleTunStatusChange);
     mCMan.addHandler(
-        "onSystemProxyStatusChange", handleSystemProxyStatusChange);
+      "onSystemProxyStatusChange",
+      handleSystemProxyStatusChange,
+    );
   }
 
   @override
@@ -1179,7 +1251,9 @@ class VPNManagerMC extends VPNManager {
     mCMan.removeHandler("onCoreStatusChange", handleCoreStatusChange);
     mCMan.removeHandler("onTunStatusChange", handleTunStatusChange);
     mCMan.removeHandler(
-        "onSystemProxyStatusChange", handleSystemProxyStatusChange);
+      "onSystemProxyStatusChange",
+      handleSystemProxyStatusChange,
+    );
   }
 
   @override
@@ -1241,12 +1315,13 @@ class VPNManagerMC extends VPNManager {
       if (!global.isElevated) {
         withContext((context) {
           showSnackBarNow(
-              context,
-              Text(context.loc
-                  .warning_you_need_to_be_elevated_user_to_enable_tun(
-                      RuntimePlatform.isWindows
-                          ? context.loc.administrator
-                          : "root")));
+            context,
+            Text(
+              context.loc.warning_you_need_to_be_elevated_user_to_enable_tun(
+                RuntimePlatform.isWindows ? context.loc.administrator : "root",
+              ),
+            ),
+          );
         });
         setisTogglingTun(false);
         return false;
@@ -1287,8 +1362,9 @@ class VPNManagerMC extends VPNManager {
     if (!ok) return false;
 
     _startCoreCompleter = Completer<void>();
-    final res = await platform
-        .invokeMethod('vpn.startCore', {'configPath': null}) as bool;
+    final res =
+        await platform.invokeMethod('vpn.startCore', {'configPath': null})
+            as bool;
     if (!res) return false;
     await Future.any([
       Future.delayed(Duration(seconds: 5)),
@@ -1303,8 +1379,9 @@ class VPNManagerMC extends VPNManager {
   @override
   _stopCore() async {
     _stopCoreCompleter = Completer<void>();
-    final res = await platform
-        .invokeMethod('vpn.stopCore', {'configPath': null}) as bool;
+    final res =
+        await platform.invokeMethod('vpn.stopCore', {'configPath': null})
+            as bool;
     if (!res) return false;
     await Future.any([
       Future.delayed(Duration(seconds: 5)),

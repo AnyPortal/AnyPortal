@@ -120,7 +120,8 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
       final remoteCreatedAt =
           (jsonDecode(remoteMeta) as Map<String, dynamic>)["created_at"];
 
-      return downloadedCreatedAt == remoteCreatedAt;
+      return downloadedCreatedAt != null &&
+          downloadedCreatedAt == remoteCreatedAt;
     } catch (e) {
       logger.w("getIsDownloadedMetaUpdated: failed to read created_at");
       return false;
@@ -194,13 +195,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     }
   }
 
-  /// if everythings fine, record to db
-  Future<int> postDownload(
-    File downloadedFile,
-    TypedResult? asset,
-    String remoteMeta,
-    int autoUpdateInterval,
-  ) async {
+  String getAssetPath(File downloadedFile) {
     String assetPath = downloadedFile.path;
     if (assetPath.toLowerCase().endsWith(".zip") && subPath != null) {
       assetPath = assetPath.substring(0, assetPath.length - 4);
@@ -211,50 +206,37 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
       final subPathList = subPath!.split('/');
       assetPath = File(p.joinAll([assetPath, ...subPathList])).path;
     }
+    return assetPath;
+  }
 
-    late int assetId;
+  /// if everythings fine, record to db
+  /// return assetPath
+  Future<void> postDownload(
+    int assetId,
+    File downloadedFile,
+    String assetPath,
+    String remoteMeta,
+    int? autoUpdateInterval,
+  ) async {
     await db.transaction(() async {
-      if (asset != null) {
-        /// update old asset record
-        assetId = asset.read(db.assetRemote.assetId)!;
-        await db
-            .into(db.asset)
-            .insertOnConflictUpdate(
-              AssetCompanion(
-                id: Value(asset.read(db.assetRemote.assetId)!),
-                type: const Value(AssetType.remote),
-                path: Value(assetPath),
-                updatedAt: Value(DateTime.now()),
-              ),
-            );
-      } else {
-        /// insert new asset record
-        assetId = await db
-            .into(db.asset)
-            .insertOnConflictUpdate(
-              AssetCompanion(
-                type: const Value(AssetType.remote),
-                path: Value(assetPath),
-                updatedAt: Value(DateTime.now()),
-              ),
-            );
-      }
-
-      /// update or insert assetRemote record
-      await db
-          .into(db.assetRemote)
-          .insertOnConflictUpdate(
-            AssetRemoteCompanion(
-              assetId: Value(assetId),
-              url: Value(url),
-              meta: Value(remoteMeta),
-              autoUpdateInterval: Value(autoUpdateInterval),
-              downloadedFilePath: Value(downloadedFile.path),
-            ),
-          );
+      /// update old asset record
+      await (db.update(db.asset)..where((e) => e.id.equals(assetId))).write(
+        AssetCompanion(
+          path: Value(assetPath),
+          updatedAt: Value(DateTime.now()),
+        ),
+      );
+      await (db.update(
+        db.assetRemote,
+      )..where((e) => e.assetId.equals(assetId))).write(
+        AssetRemoteCompanion(
+          meta: Value(remoteMeta),
+          downloadedFilePath: Value(downloadedFile.path),
+        ),
+      );
     });
 
-    return assetId;
+    return;
   }
 
   /// return installOK
@@ -297,11 +279,10 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     return true;
   }
 
-  bool canInstallNow({TypedResult? asset}) {
-    if (asset == null) {
+  bool canInstallNow({String? assetPath}) {
+    if (assetPath == null) {
       return true;
     }
-    final assetPath = asset.read(db.asset.path);
     return !(assetPath == vPNMan.corePath && vPNMan.isCoreActive);
   }
 
@@ -314,16 +295,14 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
 
   /// where the downloaded file is, could be null if have installed and then deleted
   String? getDownloadedFilePath({TypedResult? asset}) {
-    return asset?.read(db.asset.path);
+    return asset?.read(db.assetRemote.downloadedFilePath);
   }
 
   /// save last checked timestamp
   Future<void> postGetRemoteMeta(
-    String remoteMeta, {
-    TypedResult? asset,
-  }) async {
-    if (asset == null) return;
-    final assetId = asset.read(db.asset.id)!;
+    int assetId,
+    String remoteMeta,
+  ) async {
     await (db.update(
       db.assetRemote,
     )..where((e) => e.assetId.equals(assetId))).write(
@@ -334,32 +313,76 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
     );
   }
 
+  Future<int> ensureAssetRecord({
+    TypedResult? asset,
+    int? autoUpdateInterval,
+  }) async {
+    int assetId;
+    if (asset != null) {
+      assetId = asset.read(db.asset.id)!;
+    } else {
+      /// insert new asset record
+      assetId = await db
+          .into(db.asset)
+          .insertOnConflictUpdate(
+            AssetCompanion(
+              type: const Value(AssetType.remote),
+              path: Value(""),
+              updatedAt: Value(DateTime.now()),
+            ),
+          );
+      await db
+          .into(db.assetRemote)
+          .insertOnConflictUpdate(
+            AssetRemoteCompanion(
+              assetId: Value(assetId),
+              url: Value(url),
+              autoUpdateInterval: Value(autoUpdateInterval ?? 0),
+            ),
+          );
+    }
+    return assetId;
+  }
+
   /// return isUpdated
   @override
-  Future<bool> update({TypedResult? asset, int autoUpdateInterval = 0}) async {
-    /// check if need to update
-    loggerD("to update: $url");
+  Future<bool> update({
+    TypedResult? asset,
+    int? autoUpdateInterval,
+    bool shouldCheckRemote = true,
+  }) async {
+    final assetId = await ensureAssetRecord(
+      asset: asset,
+      autoUpdateInterval: autoUpdateInterval,
+    );
+
     final downloadedMeta = getDownloadedMeta(asset: asset);
-    final remoteMeta = await getRemoteMeta(useSocks: vPNMan.isCoreActive);
-    if (remoteMeta == null) {
-      loggerD("failed to get meta: $url");
-      return true;
+    String? remoteMeta = downloadedMeta;
+    if (shouldCheckRemote) {
+      /// check if need to update
+      loggerD("to update: $url");
+      remoteMeta = await getRemoteMeta(useSocks: vPNMan.isCoreActive);
+      if (remoteMeta == null) {
+        loggerD("failed to get meta: $url");
+        return true;
+      }
+      await postGetRemoteMeta(assetId, remoteMeta);
     }
-    await postGetRemoteMeta(remoteMeta, asset: asset);
+
     final isDownloadedMetaUpdated = getIsDownloadedMetaUpdated(
       remoteMeta,
       downloadedMeta,
     );
-
-    int? assetId = asset?.read(db.asset.id);
     String? downloadedFilePath = getDownloadedFilePath(asset: asset);
     File? downloadedFile;
+    String assetPath;
     if (isDownloadedMetaUpdated) {
       /// if meta updated, must have downloaded (could have installed, thus deleted)
       /// check if installed by checking downloadedFilePath
       if (downloadedFilePath != null) {
-        loggerD("already downloaded: $url");
+        loggerD("already downloaded: $url: $downloadedFilePath");
         downloadedFile = File(downloadedFilePath);
+        assetPath = getAssetPath(downloadedFile);
       } else {
         loggerD("already up to date: $url");
         return true;
@@ -368,7 +391,7 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
       /// if meta not updated, need download remote
       /// get download url
       loggerD("need download: $url");
-      final downloadUrl = getDownloadUrl(remoteMeta);
+      final downloadUrl = getDownloadUrl(remoteMeta!);
       if (downloadUrl == null) {
         loggerD("downloadUrl == null: $url");
         return true;
@@ -386,21 +409,24 @@ class AssetRemoteProtocolGithub implements AssetRemoteProtocol {
       }
       loggerD("downloaded: $downloadUrl");
 
+      assetPath = getAssetPath(downloadedFile);
+
       /// record remoteMeta after download
-      assetId = await postDownload(
+      await postDownload(
+        assetId,
         downloadedFile,
-        asset,
+        assetPath,
         remoteMeta,
-        autoUpdateInterval,
+        null,
       );
     }
 
-    if (canInstallNow(asset: asset)) {
+    if (canInstallNow(assetPath: assetPath)) {
       /// install only if not using
       loggerD("installing: $url");
       final installOk = await install(downloadedFile);
       if (installOk) {
-        await postInstall(assetId!);
+        await postInstall(assetId);
         loggerD("installed: $url");
       } else {
         loggerD("install failed: $url");

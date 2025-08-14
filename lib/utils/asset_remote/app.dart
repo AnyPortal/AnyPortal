@@ -25,10 +25,12 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
     repo = "anyportal";
     assetName = "anyportal-${Platform.operatingSystem}.zip";
     if (RuntimePlatform.isWindows) {
-      if (await File(p.join(
-        File(Platform.resolvedExecutable).parent.path,
-        "unins000.exe", // created by inno setup
-      )).exists()) {
+      if (await File(
+        p.join(
+          File(Platform.resolvedExecutable).parent.path,
+          "unins000.exe", // created by inno setup
+        ),
+      ).exists()) {
         assetName = "anyportal-windows-setup.exe";
       }
     } else if (RuntimePlatform.isMacOS) {
@@ -46,8 +48,9 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
     final abis = await platform.invokeMethod<List<Object?>>('os.abis');
     if (abis == null || abis.isEmpty) return false;
     String abi = abis[0] as String;
-    final targetSdkVersion =
-        await platform.invokeMethod<int>('app.targetSdkVersion');
+    final targetSdkVersion = await platform.invokeMethod<int>(
+      'app.targetSdkVersion',
+    );
     if (targetSdkVersion == null) return false;
     String targetSdkVersionString = targetSdkVersion == 28 ? "28" : "latest";
     assetName = "anyportal-android-api$targetSdkVersionString-$abi.apk";
@@ -67,28 +70,27 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
   }
 
   @override
-  Future<void> postGetRemoteMeta(String remoteMeta,
-      {TypedResult? asset}) async {
-    prefs.setInt("app.autoUpdate.checkedAt",
-        (DateTime.now().millisecondsSinceEpoch / 1000).toInt());
+  Future<void> postGetRemoteMeta(
+    int assetId,
+    String remoteMeta,
+  ) async {
+    prefs.setInt(
+      "app.autoUpdate.checkedAt",
+      (DateTime.now().millisecondsSinceEpoch / 1000).toInt(),
+    );
   }
 
   /// if everythings fine, record to prefs
+  /// return assetPath
   @override
-  Future<int> postDownload(
+  Future<void> postDownload(
+    int assetId,
     File downloadedFile,
-    TypedResult? asset,
+    String assetPath,
     String remoteMeta,
-    int autoUpdateInterval,
+    int? autoUpdateInterval,
   ) async {
-    String assetPath = downloadedFile.path;
-    if (assetPath.toLowerCase().endsWith(".zip") && subPath != null) {
-      assetPath = assetPath.substring(0, assetPath.length - 4);
-      final subPathList = subPath!.split('/');
-      assetPath = File(p.joinAll([assetPath, ...subPathList])).path;
-    }
-
-    prefs.setString("app.github.downloadedFilePath", assetPath);
+    prefs.setString("app.github.downloadedFilePath", downloadedFile.path);
 
     final remoteMetaObj = jsonDecode(remoteMeta) as Map<String, dynamic>;
     final createdAt = remoteMetaObj["created_at"];
@@ -97,7 +99,7 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
       "app.github.meta",
       '{"created_at": "$createdAt", "tag_name": "$tagName"}',
     );
-    return 0;
+    return;
   }
 
   @override
@@ -112,8 +114,9 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
     } else if (RuntimePlatform.isAndroid) {
       try {
         final platform = mCMan.methodChannel;
-        await platform
-            .invokeMethod('os.installApk', {'path': downloadedFile.path});
+        await platform.invokeMethod('os.installApk', {
+          'path': downloadedFile.path,
+        });
         return true;
       } on PlatformException catch (e) {
         logger.e("Failed to install APK: '${e.message}'.");
@@ -129,20 +132,24 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
   @override
   Future<bool> update({
     TypedResult? asset,
-    int autoUpdateInterval = 0,
+    int? autoUpdateInterval = 0,
+    bool shouldCheckRemote = true,
     bool shouldInstall = false,
   }) async {
     /// check if need to update
     loggerD("to update: $url");
     final downloadedMeta = getDownloadedMeta();
-    final remoteMeta = await getRemoteMeta(useSocks: vPNMan.isCoreActive);
-    if (remoteMeta == null) {
-      loggerD("failed to get meta: $url");
-      return true;
+    String? remoteMeta = downloadedMeta;
+    if (shouldCheckRemote) {
+      remoteMeta = await getRemoteMeta(useSocks: vPNMan.isCoreActive);
+      if (remoteMeta == null) {
+        loggerD("failed to get meta: $url");
+        return true;
+      }
+      await postGetRemoteMeta(0, remoteMeta);
     }
-    await postGetRemoteMeta(remoteMeta);
 
-    final remoteMetaObj = jsonDecode(remoteMeta) as Map<String, dynamic>;
+    final remoteMetaObj = jsonDecode(remoteMeta!) as Map<String, dynamic>;
     final remoteTagName = remoteMetaObj["tag_name"] as String;
     final remoteBuildNumber = int.parse(remoteTagName.split("+").last);
     final packageInfo = await PackageInfo.fromPlatform();
@@ -200,10 +207,11 @@ class AssetRemoteProtocolApp extends AssetRemoteProtocolGithub {
 
         /// record remoteMeta after download
         await postDownload(
+          0,
           downloadedFile,
-          asset,
+          "",
           remoteMeta,
-          autoUpdateInterval,
+          null,
         );
       }
     }

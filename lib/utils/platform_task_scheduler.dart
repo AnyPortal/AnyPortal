@@ -50,7 +50,7 @@ void workmanagerCallbackDispatcher() {
   });
 }
 
-Future<bool> checkAllAssetRemotes() async {
+Future<bool> checkAllAssetRemotes({bool shouldCheckRemote = true}) async {
   final assetRemotes = await (db.select(db.asset).join([
     innerJoin(db.assetRemote, db.asset.id.equalsExp(db.assetRemote.assetId)),
   ])).get();
@@ -68,7 +68,7 @@ Future<bool> checkAllAssetRemotes() async {
           assetRemote.read(db.assetRemote.url)!,
         ).update(
           asset: assetRemote,
-          autoUpdateInterval: autoUpdateInterval,
+          shouldCheckRemote: shouldCheckRemote,
         );
       }
     }
