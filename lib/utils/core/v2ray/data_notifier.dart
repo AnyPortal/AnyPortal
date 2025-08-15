@@ -32,7 +32,7 @@ class CoreDataNotifierV2Ray extends CoreDataNotifierBase {
       return;
     }
     outboundProtocol = {
-      for (var map in outboundList) map['tag']: map[protocolKey]
+      for (var map in outboundList) map['tag']: map[protocolKey],
     };
     apiItemTrafficStatType = {};
     for (var e in outboundProtocol.entries) {
@@ -81,13 +81,13 @@ class CoreDataNotifierV2Ray extends CoreDataNotifierBase {
 
   final Map<TrafficStatType, List<FlSpot>> trafficQs = {};
   final Map<TrafficStatType, int> trafficStatAgg = {
-    for (var t in TrafficStatType.values) t: 0
+    for (var t in TrafficStatType.values) t: 0,
   };
   final Map<TrafficStatType, int> trafficStatPre = {
-    for (var t in TrafficStatType.values) t: 0
+    for (var t in TrafficStatType.values) t: 0,
   };
   final Map<TrafficStatType, int> trafficStatCur = {
-    for (var t in TrafficStatType.values) t: 0
+    for (var t in TrafficStatType.values) t: 0,
   };
 
   void resetTraffic() {
@@ -97,11 +97,13 @@ class CoreDataNotifierV2Ray extends CoreDataNotifierBase {
       trafficStatCur[type] = 0;
       trafficQs[type] = [];
     }
-    for (index = 0; index < limitCount; ++index) {
-      for (var type in TrafficStatType.values) {
-        trafficQs[type]!.add(FlSpot(index.toDouble(), 0));
+    for (var type in TrafficStatType.values) {
+      for (index = 0; index < limitCount - 1; ++index) {
+        trafficQs[type]!.add(FlSpot.nullSpot);
       }
+      trafficQs[type]!.add(FlSpot((++index).toDouble(), 0));
     }
+    notifyListeners();
   }
 
   Set<String> protocolDirect = {
@@ -122,6 +124,10 @@ class CoreDataNotifierV2Ray extends CoreDataNotifierBase {
   String protocolKey = "protocol";
 
   void processStats(List<Stat> stats) {
+    bool isFirst = false;
+    if (index == trafficQs.values.first.length) {
+      isFirst = true;
+    }
     ++index;
     for (var t in TrafficStatType.values) {
       trafficStatPre[t] = trafficStatAgg[t]!;
@@ -136,14 +142,15 @@ class CoreDataNotifierV2Ray extends CoreDataNotifierBase {
     }
     for (var t in TrafficStatType.values) {
       final diff = trafficStatAgg[t]! - trafficStatPre[t]!;
-      if (diff < 0) {
+      if (isFirst || diff < 0) {
         /// negative traffic indicates potential core restart
         trafficStatCur[t] = 0;
       } else {
         trafficStatCur[t] = diff;
       }
-      trafficQs[t]!
-          .add(FlSpot(index.toDouble(), trafficStatCur[t]!.toDouble()));
+      trafficQs[t]!.add(
+        FlSpot(index.toDouble(), trafficStatCur[t]!.toDouble()),
+      );
       while (trafficQs[t]!.length > limitCount) {
         trafficQs[t]!.removeAt(0);
       }

@@ -47,22 +47,30 @@ class _TrafficStatsState extends State<TrafficStats> {
             keyValueRow(
               "${context.loc.direct} ↑",
               formatBytes(
-                  dataNotifier.trafficStatAgg[TrafficStatType.directUp]!),
+                dataNotifier.trafficStatAgg[TrafficStatType.directUp]!,
+                base: 1000,
+              ),
             ),
             keyValueRow(
               "${context.loc.direct} ↓",
               formatBytes(
-                  dataNotifier.trafficStatAgg[TrafficStatType.directDn]!),
+                dataNotifier.trafficStatAgg[TrafficStatType.directDn]!,
+                base: 1000,
+              ),
             ),
             keyValueRow(
               "${context.loc.proxy} ↑",
               formatBytes(
-                  dataNotifier.trafficStatAgg[TrafficStatType.proxyUp]!),
+                dataNotifier.trafficStatAgg[TrafficStatType.proxyUp]!,
+                base: 1000,
+              ),
             ),
             keyValueRow(
               "${context.loc.proxy} ↓",
               formatBytes(
-                  dataNotifier.trafficStatAgg[TrafficStatType.proxyDn]!),
+                dataNotifier.trafficStatAgg[TrafficStatType.proxyDn]!,
+                base: 1000,
+              ),
             ),
           ],
         );

@@ -22,11 +22,13 @@ class CoreDataNotifierClash extends CoreDataNotifierBase {
       trafficStatCur[type] = 0;
       trafficQs[type] = [];
     }
-    for (index = 0; index < limitCount; ++index) {
-      for (var type in TrafficStatType.values) {
-        trafficQs[type]!.add(FlSpot(index.toDouble(), 0));
+    for (var type in TrafficStatType.values) {
+      for (index = 0; index < limitCount - 1; ++index) {
+        trafficQs[type]!.add(FlSpot.nullSpot);
       }
+      trafficQs[type]!.add(FlSpot((++index).toDouble(), 0));
     }
+    notifyListeners();
   }
 
   ClashAPI? clashAPI;
@@ -47,13 +49,13 @@ class CoreDataNotifierClash extends CoreDataNotifierBase {
   final Map<TrafficStatType, List<FlSpot>> trafficQs = {};
 
   final Map<TrafficStatType, int> trafficStatAgg = {
-    for (var t in TrafficStatType.values) t: 0
+    for (var t in TrafficStatType.values) t: 0,
   };
   final Map<TrafficStatType, int> trafficStatPre = {
-    for (var t in TrafficStatType.values) t: 0
+    for (var t in TrafficStatType.values) t: 0,
   };
   final Map<TrafficStatType, int> trafficStatCur = {
-    for (var t in TrafficStatType.values) t: 0
+    for (var t in TrafficStatType.values) t: 0,
   };
 
   final trafficKeys = {

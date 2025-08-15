@@ -45,11 +45,11 @@ class _ProxySpeedsState extends State<ProxySpeeds> {
           children: [
             keyValueRow(
               "↑",
-              "${formatBytes(dataNotifier.trafficStatCur[TrafficStatType.proxyUp]!)}ps",
+              "${formatBytes(dataNotifier.trafficStatCur[TrafficStatType.proxyUp]!, base: 1000)}ps",
             ),
             keyValueRow(
               "↓",
-              "${formatBytes(dataNotifier.trafficStatCur[TrafficStatType.proxyDn]!)}ps",
+              "${formatBytes(dataNotifier.trafficStatCur[TrafficStatType.proxyDn]!, base: 1000)}ps",
             ),
           ],
         );

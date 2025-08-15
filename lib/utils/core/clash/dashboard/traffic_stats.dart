@@ -47,12 +47,16 @@ class _TrafficStatsState extends State<TrafficStats> {
             keyValueRow(
               "${context.loc.total} ↑",
               formatBytes(
-                  dataNotifier.trafficStatAgg[TrafficStatType.totalUp]!),
+                dataNotifier.trafficStatAgg[TrafficStatType.totalUp]!,
+                base: 1000,
+              ),
             ),
             keyValueRow(
               "${context.loc.total} ↓",
               formatBytes(
-                  dataNotifier.trafficStatAgg[TrafficStatType.totalDn]!),
+                dataNotifier.trafficStatAgg[TrafficStatType.totalDn]!,
+                base: 1000,
+              ),
             ),
           ],
         );

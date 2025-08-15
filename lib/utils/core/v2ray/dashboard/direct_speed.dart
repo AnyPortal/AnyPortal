@@ -45,11 +45,11 @@ class _DirectSpeedsState extends State<DirectSpeeds> {
           children: [
             keyValueRow(
               "↑",
-              "${formatBytes(dataNotifier.trafficStatCur[TrafficStatType.directUp]!)}ps",
+              "${formatBytes(dataNotifier.trafficStatCur[TrafficStatType.directUp]!, base: 1000)}ps",
             ),
             keyValueRow(
               "↓",
-              "${formatBytes(dataNotifier.trafficStatCur[TrafficStatType.directDn]!)}ps",
+              "${formatBytes(dataNotifier.trafficStatCur[TrafficStatType.directDn]!, base: 1000)}ps",
             ),
           ],
         );
