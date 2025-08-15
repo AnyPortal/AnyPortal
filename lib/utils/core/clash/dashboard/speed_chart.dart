@@ -57,7 +57,7 @@ class _SpeedChartState extends State<SpeedChart> {
                                 LineChartBarData(
                                   spots: q,
                                   dashArray: t.name.contains("Up")
-                                      ? [5, 10]
+                                      ? [8, 2]
                                       : null,
                                   dotData: const FlDotData(show: false),
                                   isCurved: false,
