@@ -64,6 +64,14 @@ class _SpeedChartState extends State<SpeedChart> {
                                   dotData: const FlDotData(show: false),
                                   isCurved: false,
                                   color: trafficColor[t],
+                                  belowBarData: t.name.contains("Up")
+                                      ? null
+                                      : BarAreaData(
+                                          show: true,
+                                          color: trafficColor[t]!.withValues(
+                                            alpha: 0.3,
+                                          ),
+                                        ),
                                 ),
                               );
                             })
