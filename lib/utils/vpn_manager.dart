@@ -289,8 +289,8 @@ abstract class VPNManager with ChangeNotifier {
       }
     }
     isTunActive = value;
+    setisTogglingTun(false);
     if (isToNotify) {
-      setisTogglingTun(false);
       notifyListeners();
     }
   }
@@ -309,8 +309,8 @@ abstract class VPNManager with ChangeNotifier {
       }
     }
     isSystemProxyActive = value;
+    setisTogglingSystemProxy(false);
     if (isToNotify) {
-      setisTogglingSystemProxy(false);
       notifyListeners();
     }
   }
@@ -1199,9 +1199,13 @@ class VPNManagerMC extends VPNManager {
     final isActive = call.arguments as bool;
     // logger.d("handleAllStatusChange: $isActive");
     if (isActive) {
-      _startAllCompleter.complete();
+      if (!_startAllCompleter.isCompleted) {
+        _startAllCompleter.complete();
+      }
     } else {
-      _stopAllCompleter.complete();
+      if (!_stopAllCompleter.isCompleted) {
+        _stopAllCompleter.complete();
+      }
     }
     setIsAllActive(isActive);
   }
@@ -1210,9 +1214,13 @@ class VPNManagerMC extends VPNManager {
     final isActive = call.arguments as bool;
     // logger.d("handleCoreStatusChange: $isActive");
     if (isActive) {
-      _startCoreCompleter.complete();
+      if (!_startCoreCompleter.isCompleted) {
+        _startCoreCompleter.complete();
+      }
     } else {
-      _stopCoreCompleter.complete();
+      if (!_stopCoreCompleter.isCompleted) {
+        _stopCoreCompleter.complete();
+      }
     }
     setIsCoreActive(isActive);
   }
@@ -1221,9 +1229,13 @@ class VPNManagerMC extends VPNManager {
     final isActive = call.arguments as bool;
     // logger.d("handleTunStatusChange: $isActive");
     if (isActive) {
-      _startTunCompleter.complete();
+      if (!_startTunCompleter.isCompleted) {
+        _startTunCompleter.complete();
+      }
     } else {
-      _stopTunCompleter.complete();
+      if (!_stopTunCompleter.isCompleted) {
+        _stopTunCompleter.complete();
+      }
     }
     setIsTunActive(isActive);
   }
