@@ -172,7 +172,7 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
     /// need to reboot core when local dns changes!
     final effectiveNetInterface = await ConnectivityManager()
         .getEffectiveNetInterface();
-    final dns = effectiveNetInterface!.dns;
+    final dns = effectiveNetInterface?.dns;
     routingRules.insert(0, {
       "type": "field",
       "outboundTag": dnsOutboundTag,
@@ -184,9 +184,9 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
         // if (RuntimePlatform.isWindows || RuntimePlatform.isLinux)
         "fdfe:dcba:9876::2",
         // if (RuntimePlatform.isMacOS || RuntimePlatform.isAndroid)
-        ...dns.ipv4,
+        if (dns != null) ...dns.ipv4,
         // if (RuntimePlatform.isMacOS || RuntimePlatform.isAndroid)
-        ...dns.ipv6,
+        if (dns != null) ...dns.ipv6,
       ],
     });
 
@@ -258,7 +258,7 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
       cfg["dns"]["tag"] = "anyportal_in_dns";
     }
     String dnsInboundTag = cfg["dns"]["tag"];
-    if (dns.ipv4.isNotEmpty || dns.ipv6.isNotEmpty) {
+    if (dns != null && (dns.ipv4.isNotEmpty || dns.ipv6.isNotEmpty)) {
       routingRules.insert(0, {
         "type": "field",
         "outboundTag": "anyportal_ot_freedom",
