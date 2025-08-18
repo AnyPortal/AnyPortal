@@ -465,7 +465,7 @@ public class TProxyService extends VpnService {
         if (prefs.getBoolean("flutter.tun.ipv4", true)) {
             String addr = "172.19.0.1";
             int prefix = 30;
-            String dns = prefs.getString("flutter.tun.dns.ipv4", "1.1.1.1");
+            String dns = prefs.getString("flutter.tun.dns.ipv4", "172.19.0.2");
             builder.addAddress(addr, prefix);
             builder.addRoute("0.0.0.0", 0);
             if (!dns.isEmpty()) {
@@ -476,7 +476,7 @@ public class TProxyService extends VpnService {
         if (prefs.getBoolean("flutter.tun.ipv6", true)) {
             String addr = "fdfe:dcba:9876::1";
             int prefix = 126;
-            String dns = prefs.getString("flutter.tun.dns.ipv6", "2606:4700:4700::1111");
+            String dns = prefs.getString("flutter.tun.dns.ipv6", "fdfe:dcba:9876::2");
             builder.addAddress(addr, prefix);
             builder.addRoute("::", 0);
             if (!dns.isEmpty()) {
