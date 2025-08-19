@@ -147,9 +147,9 @@ All rights reserved until further notice (hopefully soon).
 
 ### 3rd party libs used in the project
 
+- [heiher/hev-socks5-tunnel](https://github.com/heiher/hev-socks5-tunnel), MIT
 - [v2fly/v2ray-core](https://github.com/v2fly/v2ray-core), MIT
 - [xtls/xray-core](https://github.com/xtls/xray-core), MPL-2.0
-- [heiher/hev-socks5-tunnel](https://github.com/heiher/hev-socks5-tunnel), MIT
 
 ### Inspired by, or related to, but not used in the project
 
@@ -158,6 +158,7 @@ All rights reserved until further notice (hopefully soon).
 
 ### Toolchains
 
+- [DomGries/InnoDependencyInstaller](https://github.com/DomGries/InnoDependencyInstaller), The Code Project Open License (CPOL) 1.02
 - [flutter/flutter](https://github.com/flutter/flutter), BSD-3-Clause
   - a full list of flutter dependency can be found in `./pubspec.yaml`
 - [jrsoftware/issrc](https://github.com/jrsoftware/issrc), Inno Setup License

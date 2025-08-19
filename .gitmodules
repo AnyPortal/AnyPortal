@@ -10,3 +10,6 @@
 [submodule "third_party/issrc"]
 	path = third_party/issrc
 	url = git@github.com:jrsoftware/issrc.git
+[submodule "third_party/InnoDependencyInstaller"]
+	path = third_party/InnoDependencyInstaller
+	url = git@github.com:DomGries/InnoDependencyInstaller.git
