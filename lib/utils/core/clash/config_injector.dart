@@ -55,27 +55,17 @@ class ConfigInjectorClash extends ConfigInjectorBase {
       // cfg["secret"] ??= "";
     }
 
-    if (!cfg.containsKey("listeners")) {
-      cfg["listeners"] = [];
-    }
-
     if (injectHttp) {
-      (cfg["listeners"] as List).insert(0, {
-        "name": "anyportal_in_http",
-        "type": "http",
-        "port": httpPort,
-        "listen": serverAddress,
-      });
+      cfg["port"] = httpPort;
     }
 
     if (injectSocks) {
-      (cfg["listeners"] as List).insert(0, {
-        "name": "anyportal_in_mixed",
-        "type": "mixed",
-        "port": socksPort,
-        "listen": serverAddress,
-        "udp": true,
-      });
+      cfg["mixed-port"] = socksPort;
+    }
+
+    if (injectHttp || injectSocks) {
+      cfg["allow-lan"] = true;
+      cfg["bind-address"] = serverAddress;
     }
 
     if (!cfg.containsKey("proxies")) {
@@ -129,24 +119,27 @@ class ConfigInjectorClash extends ConfigInjectorBase {
         break;
     }
 
-    if (!cfg.containsKey("listeners")) {
-      cfg["listeners"] = [];
+    cfg["listeners"] = [];
+    cfg["mixed-port"] = socksPort;
+    if (cfg.containsKey("port")) {
+      cfg.remove("port");
     }
-    final listeners = (cfg["listeners"] as List).cast<Map<String, dynamic>>();
-
-    final newListeners = [];
-    for (final listener in listeners) {
-      if (!listener.containsKey("port")) {
-        newListeners.add(listener);
+    if (cfg.containsKey("socks-port")) {
+      cfg.remove("socks-port");
+    }
+    if (cfg.containsKey("redir-port")) {
+      cfg.remove("redir-port");
+    }
+    if (cfg.containsKey("tproxy-port")) {
+      cfg.remove("tproxy-port");
+    }
+    cfg["listeners"] = [];
+    if (cfg.containsKey("dns")) {
+      final dns = cfg["dns"] as Map;
+      if (dns.containsKey("listen")) {
+        dns.remove("listen");
       }
     }
-    cfg["listeners"] = newListeners;
-
-    newListeners.insert(0, {
-      "address": "127.0.0.1",
-      "port": socksPort,
-      "type": "socks",
-    });
 
     if (cfg.containsKey("external-controller")) {
       cfg.remove("external-controller");
