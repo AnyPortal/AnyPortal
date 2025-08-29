@@ -3,6 +3,7 @@ import 'dart:async';
 import '../../logger.dart';
 import '../clash/plugin.dart';
 import '../hysteria2/plugin.dart';
+import '../naive/plugin.dart';
 import '../sing_box/plugin.dart';
 import '../v2ray/plugin.dart';
 
@@ -13,7 +14,7 @@ import 'data_notifier.dart';
 class CorePluginBase {
   String? coreTypeName;
   List<String> defaultArgs = ["run", "-c", "{config.path}"];
-  bool isToLogStdout = false;
+  bool isToLogStdout = true;
   Map<String, String> environment = {};
   CoreDataNotifierBase dataNotifier = CoreDataNotifierBase();
   ConfigInjectorBase configInjector = ConfigInjectorBase();
@@ -57,6 +58,8 @@ class CorePluginManager {
       case "mihomo":
         instances[coreTypeName] = CorePluginClash();
         break;
+      case "naive":
+        instances[coreTypeName] = CorePluginNaive();
     }
   }
 

@@ -10,5 +10,6 @@ class CorePluginV2Ray extends CorePluginBase {
     dataNotifier = CoreDataNotifierV2Ray();
     configInjector = ConfigInjectorV2Ray();
     dashboardWidgets = DashboardWidgetsV2Ray();
+    isToLogStdout = false;
   }
 }

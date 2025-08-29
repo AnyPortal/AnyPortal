@@ -11,6 +11,5 @@ class CorePluginSingBox extends CorePluginBase {
     dataNotifier = CoreDataNotifierSingBox();
     configInjector = ConfigInjectorSingBox();
     dashboardWidgets = DashboardWidgetsClash();
-    isToLogStdout = true;
   }
 }

@@ -3,15 +3,14 @@ import 'dart:convert';
 import 'package:yaml/yaml.dart';
 import 'package:yaml_writer/yaml_writer.dart';
 
-import 'package:anyportal/utils/core/base/config_injector.dart';
-import 'package:anyportal/utils/core/base/plugin.dart';
-
 import '../../../models/log_level.dart';
 import '../../../models/send_through_binding_stratagy.dart';
 import '../../connectivity_manager.dart';
 import '../../get_local_ip.dart';
 import '../../prefs.dart';
 import '../../yaml_map_converter.dart';
+import '../base/config_injector.dart';
+import '../base/plugin.dart';
 
 class ConfigInjectorHysteria2 extends ConfigInjectorBase {
   @override
@@ -53,8 +52,10 @@ class ConfigInjectorHysteria2 extends ConfigInjectorBase {
         case _:
           logLevelStr = "info";
       }
-      CorePluginManager.instances["hysteria2"]!
-          .environment["HYSTERIA_LOG_LEVEL"] = logLevelStr;
+      CorePluginManager
+              .instances["hysteria2"]!
+              .environment["HYSTERIA_LOG_LEVEL"] =
+          logLevelStr;
     }
 
     if (injectApi) {
@@ -68,7 +69,7 @@ class ConfigInjectorHysteria2 extends ConfigInjectorBase {
     if (injectSocks) {
       cfg["socks5"] = {
         "listen": "$serverAddress:$socksPort",
-        "disableUDP": false
+        "disableUDP": false,
       };
     }
 
@@ -89,15 +90,16 @@ class ConfigInjectorHysteria2 extends ConfigInjectorBase {
       String? interfaceName;
       switch (sendThroughBindingStratagy) {
         case SendThroughBindingStratagy.internet:
-          final effectiveNetInterface =
-              await ConnectivityManager().getEffectiveNetInterface();
+          final effectiveNetInterface = await ConnectivityManager()
+              .getEffectiveNetInterface();
           interfaceName = effectiveNetInterface?.name;
         case SendThroughBindingStratagy.ip:
           final ip = prefs.getString('inject.sendThrough.bindingIp')!;
           interfaceName = await getInterfaceNameOfIP(ip);
         case SendThroughBindingStratagy.interface:
-          interfaceName =
-              prefs.getString('inject.sendThrough.bindingInterface')!;
+          interfaceName = prefs.getString(
+            'inject.sendThrough.bindingInterface',
+          )!;
       }
       sockopts["bindInterface"] = interfaceName;
       for (final outbound in outbounds) {
@@ -118,7 +120,10 @@ class ConfigInjectorHysteria2 extends ConfigInjectorBase {
 
   @override
   Future<String> getInjectedConfigPing(
-      String cfgStr, String coreCfgFmt, int socksPort) async {
+    String cfgStr,
+    String coreCfgFmt,
+    int socksPort,
+  ) async {
     Map<String, dynamic> cfg = {};
     switch (coreCfgFmt) {
       case "json":

@@ -7,6 +7,5 @@ class CorePluginHysteria2 extends CorePluginBase {
     coreTypeName = "hysteria2";
     defaultArgs = ["-f", "{config.path}"];
     configInjector = ConfigInjectorHysteria2();
-    isToLogStdout = true;
   }
 }

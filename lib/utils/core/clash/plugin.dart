@@ -11,6 +11,5 @@ class CorePluginClash extends CorePluginBase {
     dataNotifier = CoreDataNotifierClash();
     configInjector = ConfigInjectorClash();
     dashboardWidgets = DashboardWidgetsClash();
-    isToLogStdout = true;
   }
 }

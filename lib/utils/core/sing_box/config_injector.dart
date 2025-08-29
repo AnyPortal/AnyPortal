@@ -28,16 +28,18 @@ class ConfigInjectorSingBox extends ConfigInjectorBase {
         .values[prefs.getInt('inject.sendThrough.bindingStratagy')!];
 
     if (injectLog) {
-      final pathLog = File(p.join(
-        global.applicationSupportDirectory.path,
-        'log',
-        'core.log',
-      )).absolute.path;
+      final pathLog = File(
+        p.join(
+          global.applicationSupportDirectory.path,
+          'log',
+          'core.log',
+        ),
+      ).absolute.path;
       cfg["log"] = {
         "disabled": false,
         "level": logLevel.name,
         "timestamp": true,
-        "output": pathLog
+        "output": pathLog,
       };
     }
 
@@ -71,14 +73,14 @@ class ConfigInjectorSingBox extends ConfigInjectorBase {
       (cfg["inbounds"] as List).insert(0, {
         "listen_port": httpPort,
         "tag": "anyportal_in_http",
-        "type": "http"
+        "type": "http",
       });
     }
     if (injectSocks) {
       (cfg["inbounds"] as List).insert(0, {
         "listen_port": socksPort,
         "tag": "anyportal_in_mixed",
-        "type": "mixed"
+        "type": "mixed",
       });
     }
 
@@ -91,8 +93,8 @@ class ConfigInjectorSingBox extends ConfigInjectorBase {
       String? inet6BindAddress;
       switch (sendThroughBindingStratagy) {
         case SendThroughBindingStratagy.internet:
-          final effectiveNetInterface =
-              await ConnectivityManager().getEffectiveNetInterface();
+          final effectiveNetInterface = await ConnectivityManager()
+              .getEffectiveNetInterface();
           interfaceName = effectiveNetInterface?.name;
         case SendThroughBindingStratagy.ip:
           final ip = prefs.getString('inject.sendThrough.bindingIp')!;
@@ -102,8 +104,9 @@ class ConfigInjectorSingBox extends ConfigInjectorBase {
             inet4BindAddress = ip;
           }
         case SendThroughBindingStratagy.interface:
-          interfaceName =
-              prefs.getString('inject.sendThrough.bindingInterface')!;
+          interfaceName = prefs.getString(
+            'inject.sendThrough.bindingInterface',
+          )!;
       }
       for (var outbound in cfg["outbounds"]) {
         switch (sendThroughBindingStratagy) {
@@ -122,7 +125,10 @@ class ConfigInjectorSingBox extends ConfigInjectorBase {
 
   @override
   Future<String> getInjectedConfigPing(
-      String cfgStr, String coreCfgFmt, int socksPort) async {
+    String cfgStr,
+    String coreCfgFmt,
+    int socksPort,
+  ) async {
     final cfg = jsonDecode(cfgStr) as Map<String, dynamic>;
 
     if (!cfg.containsKey("inbounds")) {
