@@ -37,19 +37,36 @@ class GlobalManager {
   }
 
   Future<void> updateAapplicationDocumentsDirectory() async {
-    applicationDocumentsDirectory = Directory(
-        await (await getApplicationDocumentsDirectory())
-            .resolveSymbolicLinks());
+    final dir = await getApplicationDocumentsDirectory();
+    final directory = Directory(dir.path);
+
+    if (!await directory.exists()) {
+      await directory.create(recursive: true);
+    }
+
+    applicationDocumentsDirectory = directory;
   }
 
   Future<void> updateApplicationSupportDirectory() async {
-    applicationSupportDirectory = Directory(
-        await (await getApplicationSupportDirectory()).resolveSymbolicLinks());
+    final dir = await getApplicationSupportDirectory();
+    final directory = Directory(dir.path);
+
+    if (!await directory.exists()) {
+      await directory.create(recursive: true);
+    }
+
+    applicationSupportDirectory = directory;
   }
 
   Future<void> updateApplicationCacheDirectory() async {
-    applicationCacheDirectory = Directory(
-        await (await getApplicationCacheDirectory()).resolveSymbolicLinks());
+    final dir = await getApplicationCacheDirectory();
+    final directory = Directory(dir.path);
+
+    if (!await directory.exists()) {
+      await directory.create(recursive: true);
+    }
+
+    applicationCacheDirectory = directory;
   }
 
   Future<void> updateIsElevated() async {
