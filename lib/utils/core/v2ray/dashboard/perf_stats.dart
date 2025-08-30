@@ -44,25 +44,29 @@ class _PerfStatsState extends State<PerfStats> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             keyValueRow(
-                context.loc.uptime,
-                dataNotifier.sysStats != null
-                    ? dataNotifier.sysStats!.uptime.toString()
-                    : "0"),
+              context.loc.uptime,
+              dataNotifier.sysStats != null
+                  ? dataNotifier.sysStats!.uptime.toString()
+                  : "0",
+            ),
             keyValueRow(
-                context.loc.memory,
-                dataNotifier.sysStats != null
-                    ? formatBytes(dataNotifier.sysStats!.alloc.toInt())
-                    : formatBytes(0)),
+              context.loc.memory,
+              dataNotifier.sysStats != null
+                  ? formatBytes(dataNotifier.sysStats!.alloc.toInt())
+                  : formatBytes(0),
+            ),
             keyValueRow(
-                context.loc.go_coroutines,
-                dataNotifier.sysStats != null
-                    ? dataNotifier.sysStats!.numGC.toString()
-                    : "0"),
+              context.loc.go_coroutines,
+              dataNotifier.sysStats != null
+                  ? dataNotifier.sysStats!.numGC.toString()
+                  : "0",
+            ),
             keyValueRow(
-                context.loc.live_objects,
-                dataNotifier.sysStats != null
-                    ? dataNotifier.sysStats!.liveObjects.toString()
-                    : "0"),
+              context.loc.live_objects,
+              dataNotifier.sysStats != null
+                  ? dataNotifier.sysStats!.liveObjects.toString()
+                  : "0",
+            ),
           ],
         );
       },

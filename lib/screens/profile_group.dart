@@ -39,12 +39,13 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
       final profileGroupId = widget.profileGroup!.id;
       switch (_profileGroupType) {
         case ProfileGroupType.remote:
-          final profileGroupRemote = await (db.select(db.profileGroupRemote)
-                ..where((p) => p.profileGroupId.equals(profileGroupId)))
-              .getSingle();
+          final profileGroupRemote = await (db.select(
+            db.profileGroupRemote,
+          )..where((p) => p.profileGroupId.equals(profileGroupId))).getSingle();
           _urlController.text = profileGroupRemote.url;
-          _autoUpdateIntervalController.text =
-              profileGroupRemote.autoUpdateInterval.toString();
+          _autoUpdateIntervalController.text = profileGroupRemote
+              .autoUpdateInterval
+              .toString();
         case ProfileGroupType.local:
       }
     }
@@ -111,7 +112,9 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
         ),
         items: ProfileGroupType.values.map((ProfileGroupType t) {
           return DropdownMenuItem<ProfileGroupType>(
-              value: t, child: Text(t.name));
+            value: t,
+            child: Text(t.name),
+          );
         }).toList(),
         onChanged: widget.profileGroup != null
             ? null
@@ -144,7 +147,7 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
         isInProgress: _isSubmitting,
         onPressed: _submitForm,
         child: Text(context.loc.save_and_update),
-      )
+      ),
     ];
 
     return Scaffold(

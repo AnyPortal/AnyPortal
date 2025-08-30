@@ -23,20 +23,21 @@ class LoggerManager {
 
   Future<void> init({
     String? logLevelName,
-    bool overrideExisting=false,
+    bool overrideExisting = false,
   }) async {
     final logLevel = getLevelByName(logLevelName);
 
     if (kIsWeb) {
       logger = Logger(
-          printer: CustomLogPrinter(),
-          output: MultiOutput(
-            [
-              ConsoleOutput(),
-            ],
-          ),
-          level: kDebugMode ? Level.all : logLevel,
-          filter: CustomFilter());
+        printer: CustomLogPrinter(),
+        output: MultiOutput(
+          [
+            ConsoleOutput(),
+          ],
+        ),
+        level: kDebugMode ? Level.all : logLevel,
+        filter: CustomFilter(),
+      );
       _completer.complete();
       logger.d("finished: LoggerManager.init");
       return;
@@ -53,18 +54,19 @@ class LoggerManager {
     await file.create(recursive: true);
     file.create(recursive: true);
     logger = Logger(
-        printer: CustomLogPrinter(),
-        output: MultiOutput(
-          [
-            ConsoleOutput(),
-            FileOutput(
-              file: file,
-              overrideExisting: overrideExisting,
-            ),
-          ],
-        ),
-        level: kDebugMode ? Level.all : logLevel,
-        filter: CustomFilter());
+      printer: CustomLogPrinter(),
+      output: MultiOutput(
+        [
+          ConsoleOutput(),
+          FileOutput(
+            file: file,
+            overrideExisting: overrideExisting,
+          ),
+        ],
+      ),
+      level: kDebugMode ? Level.all : logLevel,
+      filter: CustomFilter(),
+    );
     _completer.complete(); // Signal that initialization is complete
     logger.d("finished: LoggerManager.init");
   }

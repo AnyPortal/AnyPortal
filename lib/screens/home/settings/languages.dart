@@ -26,8 +26,9 @@ class _LanguagesScreenState extends State<LanguagesScreen> {
     supportedLocales = AppLocalizations.supportedLocales.toList();
     supportedLocales.remove(Locale('zh'));
     setState(() {
-      selectedLocale =
-          LocaleManager().fromString(prefs.getString('app.locale')!);
+      selectedLocale = LocaleManager().fromString(
+        prefs.getString('app.locale')!,
+      );
     });
   }
 
@@ -39,23 +40,27 @@ class _LanguagesScreenState extends State<LanguagesScreen> {
         title: Text(context.loc.language),
       ),
       body: ListView.builder(
-          itemCount: supportedLocales.length,
-          itemBuilder: (context, index) {
-            final locale = supportedLocales[index];
-            return ListTile(
-              title: Text(LocaleNamesLocalizationsDelegate
-                      .nativeLocaleNames[locale.toString()] ??
-                  locale.toString()),
-              subtitle: Text(
-                  LocaleNames.of(context)!.nameOf(locale.toString()) ?? ""),
-              trailing: locale == selectedLocale ? Icon(Icons.check) : null,
-              onTap: () {
-                prefs.setString('app.locale', locale.toString());
-                localeManager.update(notify: true);
-                setState(() {});
-              },
-            );
-          }),
+        itemCount: supportedLocales.length,
+        itemBuilder: (context, index) {
+          final locale = supportedLocales[index];
+          return ListTile(
+            title: Text(
+              LocaleNamesLocalizationsDelegate.nativeLocaleNames[locale
+                      .toString()] ??
+                  locale.toString(),
+            ),
+            subtitle: Text(
+              LocaleNames.of(context)!.nameOf(locale.toString()) ?? "",
+            ),
+            trailing: locale == selectedLocale ? Icon(Icons.check) : null,
+            onTap: () {
+              prefs.setString('app.locale', locale.toString());
+              localeManager.update(notify: true);
+              setState(() {});
+            },
+          );
+        },
+      ),
     );
   }
 }

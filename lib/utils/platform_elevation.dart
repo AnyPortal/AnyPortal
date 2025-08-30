@@ -35,7 +35,7 @@ class PlatformElevation {
     } else if (RuntimePlatform.isMacOS) {
       await Process.run('osascript', [
         '-e',
-        'do shell script "sudo ${Platform.resolvedExecutable}" with administrator privileges'
+        'do shell script "sudo ${Platform.resolvedExecutable}" with administrator privileges',
       ]);
     } else if (RuntimePlatform.isLinux) {
       await Process.run(

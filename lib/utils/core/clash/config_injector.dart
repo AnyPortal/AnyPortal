@@ -5,11 +5,10 @@ import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 import 'package:yaml_writer/yaml_writer.dart';
 
-import 'package:anyportal/utils/get_local_ip.dart';
-
 import '../../../models/log_level.dart';
 import '../../../models/send_through_binding_stratagy.dart';
 import '../../connectivity_manager.dart';
+import '../../get_local_ip.dart';
 import '../../global.dart';
 import '../../prefs.dart';
 import '../../yaml_map_converter.dart';

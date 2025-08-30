@@ -6,6 +6,7 @@ import 'package:drift_dev/api/migrations_native.dart';
 import 'package:test/test.dart';
 
 import 'package:anyportal/utils/db.dart';
+
 import 'generated/schema.dart';
 import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
@@ -115,29 +116,49 @@ void main() {
       },
       validateItems: (newDb) async {
         expect(expectedNewAssetData, await newDb.select(newDb.asset).get());
-        expect(expectedNewAssetLocalData,
-            await newDb.select(newDb.assetLocal).get());
-        expect(expectedNewAssetRemoteData,
-            await newDb.select(newDb.assetRemote).get());
         expect(
-            expectedNewCoreTypeData, await newDb.select(newDb.coreType).get());
+          expectedNewAssetLocalData,
+          await newDb.select(newDb.assetLocal).get(),
+        );
+        expect(
+          expectedNewAssetRemoteData,
+          await newDb.select(newDb.assetRemote).get(),
+        );
+        expect(
+          expectedNewCoreTypeData,
+          await newDb.select(newDb.coreType).get(),
+        );
         expect(expectedNewCoreData, await newDb.select(newDb.core).get());
         expect(
-            expectedNewCoreExecData, await newDb.select(newDb.coreExec).get());
+          expectedNewCoreExecData,
+          await newDb.select(newDb.coreExec).get(),
+        );
         expect(expectedNewCoreLibData, await newDb.select(newDb.coreLib).get());
-        expect(expectedNewCoreTypeSelectedData,
-            await newDb.select(newDb.coreTypeSelected).get());
-        expect(expectedNewProfileGroupData,
-            await newDb.select(newDb.profileGroup).get());
+        expect(
+          expectedNewCoreTypeSelectedData,
+          await newDb.select(newDb.coreTypeSelected).get(),
+        );
+        expect(
+          expectedNewProfileGroupData,
+          await newDb.select(newDb.profileGroup).get(),
+        );
         expect(expectedNewProfileData, await newDb.select(newDb.profile).get());
-        expect(expectedNewProfileLocalData,
-            await newDb.select(newDb.profileLocal).get());
-        expect(expectedNewProfileRemoteData,
-            await newDb.select(newDb.profileRemote).get());
-        expect(expectedNewProfileGroupLocalData,
-            await newDb.select(newDb.profileGroupLocal).get());
-        expect(expectedNewProfileGroupRemoteData,
-            await newDb.select(newDb.profileGroupRemote).get());
+        expect(
+          expectedNewProfileLocalData,
+          await newDb.select(newDb.profileLocal).get(),
+        );
+        expect(
+          expectedNewProfileRemoteData,
+          await newDb.select(newDb.profileRemote).get(),
+        );
+        expect(
+          expectedNewProfileGroupLocalData,
+          await newDb.select(newDb.profileGroupLocal).get(),
+        );
+        expect(
+          expectedNewProfileGroupRemoteData,
+          await newDb.select(newDb.profileGroupRemote).get(),
+        );
       },
     );
   });

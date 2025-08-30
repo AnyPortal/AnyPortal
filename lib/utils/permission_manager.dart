@@ -8,7 +8,10 @@ import 'runtime_platform.dart';
 
 class PermissionManager {
   Future<PermissionStatus> requestPermission(
-      BuildContext context, Permission permission, String reason) async {
+    BuildContext context,
+    Permission permission,
+    String reason,
+  ) async {
     return PermissionStatus.granted;
   }
 
@@ -48,29 +51,41 @@ class PermissionManagerAndroid extends PermissionManager {
     await permMan.requestPermission(
       context,
       Permission.notification,
-      context.loc
+      context
+          .loc
           .notification_permission_is_required_for_quick_tiles_to_work_properly,
     );
   }
 
   @override
   Future<PermissionStatus> requestPermission(
-      BuildContext context, Permission permission, String reason) async {
-    return await permission.onDeniedCallback(() {
-      _showPermissionDialog(context, reason);
-    }).onGrantedCallback(() {
-      return;
-    }).onPermanentlyDeniedCallback(() {
-      _showPermissionDialog(context, reason);
-    }).onRestrictedCallback(() {
-      _showPermissionDialog(context, reason);
-    }).onLimitedCallback(() {
-      _showPermissionDialog(context, reason);
-    }).onProvisionalCallback(() {
-      _showPermissionDialog(context, reason);
-    }).request();
+    BuildContext context,
+    Permission permission,
+    String reason,
+  ) async {
+    return await permission
+        .onDeniedCallback(() {
+          _showPermissionDialog(context, reason);
+        })
+        .onGrantedCallback(() {
+          return;
+        })
+        .onPermanentlyDeniedCallback(() {
+          _showPermissionDialog(context, reason);
+        })
+        .onRestrictedCallback(() {
+          _showPermissionDialog(context, reason);
+        })
+        .onLimitedCallback(() {
+          _showPermissionDialog(context, reason);
+        })
+        .onProvisionalCallback(() {
+          _showPermissionDialog(context, reason);
+        })
+        .request();
   }
 }
 
-final permMan =
-    RuntimePlatform.isAndroid ? PermissionManagerAndroid() : PermissionManager();
+final permMan = RuntimePlatform.isAndroid
+    ? PermissionManagerAndroid()
+    : PermissionManager();

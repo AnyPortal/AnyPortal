@@ -5,7 +5,7 @@ class DequeList<T> {
 
   /// Create an empty DequeList.
   DequeList([int initialCapacity = 8])
-      : _buffer = List<T?>.filled(initialCapacity, null);
+    : _buffer = List<T?>.filled(initialCapacity, null);
 
   /// Create a DequeList from an Iterable.
   factory DequeList.from(Iterable<T> items) {

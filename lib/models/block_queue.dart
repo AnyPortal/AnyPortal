@@ -42,8 +42,9 @@ class BlockDeque {
 
   /// Add multiple to the start.
   void addAllFirst(Iterable<double> items) {
-    final list =
-        items is List<double> ? items.reversed : items.toList().reversed;
+    final list = items is List<double>
+        ? items.reversed
+        : items.toList().reversed;
     for (var item in list) {
       addFirst(item);
     }

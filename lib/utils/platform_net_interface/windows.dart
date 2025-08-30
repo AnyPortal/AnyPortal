@@ -34,8 +34,9 @@ class PlatformNetInterfaceWindows implements PlatformNetInterface {
       // final netIPInterface = netIPInterfaceMap[interfaceIndex]!;
       // final interfaceMetricNullable = netIPInterface["InterfaceMetric"];
       final interfaceMetricNullable = route["InterfaceMetric"];
-      final interfaceMetric =
-          interfaceMetricNullable == null ? 0 : interfaceMetricNullable as int;
+      final interfaceMetric = interfaceMetricNullable == null
+          ? 0
+          : interfaceMetricNullable as int;
       effectiveMetrics[interfaceIndex] = routeMetric + interfaceMetric;
     }
 
@@ -88,8 +89,9 @@ class PlatformNetInterfaceWindows implements PlatformNetInterface {
     //     await getWindowsDnsClientServerAddressListOfNetIPInterface(
     //         chosenInterfaceIndex);
     final dnsClientServerAddressList = await dnsClientServerAddressListFuture;
-    final dnsClientServerAddressListMap =
-        getListMapOfInterfaceIndex(dnsClientServerAddressList);
+    final dnsClientServerAddressListMap = getListMapOfInterfaceIndex(
+      dnsClientServerAddressList,
+    );
     final effectiveDnsClientServerAddressList =
         dnsClientServerAddressListMap[chosenInterfaceIndex]!;
     // final netIPInterfaceList = await netIPInterfaceListFuture;
@@ -101,8 +103,9 @@ class PlatformNetInterfaceWindows implements PlatformNetInterface {
     final Set<String> dnsIPv6AddressSet = {};
     for (final e in effectiveDnsClientServerAddressList) {
       if (e["AddressFamily"] == AF_INET) {
-        dnsIPv4AddressSet
-            .addAll((e["ServerAddresses"] as List).cast<String>().toSet());
+        dnsIPv4AddressSet.addAll(
+          (e["ServerAddresses"] as List).cast<String>().toSet(),
+        );
       } else if (e["AddressFamily"] == AF_INET6) {
         final serverAddresses = (e["ServerAddresses"] as List).cast<String>();
         for (final serverAddress in serverAddresses) {
@@ -141,14 +144,16 @@ class PlatformNetInterfaceWindows implements PlatformNetInterface {
   }
 
   Future<List<Map<String, dynamic>>> getWindowsPowerShellResultListMap(
-      String cmd) async {
+    String cmd,
+  ) async {
     final result = await getWindowsPowerShellResult(cmd);
     return getListMap(jsonDecode(result.stdout));
   }
 
   Future<List<Map<String, dynamic>>> getWindowsdefaultNetRouteList() async {
     return await getWindowsPowerShellResultListMap(
-        'Get-NetRoute -DestinationPrefix 0.0.0.0/0 | ConvertTo-Json');
+      'Get-NetRoute -DestinationPrefix 0.0.0.0/0 | ConvertTo-Json',
+    );
   }
 
   Future<List<Map<String, dynamic>>> getWindowsNetIPInterfaceList() async {
@@ -158,15 +163,16 @@ class PlatformNetInterfaceWindows implements PlatformNetInterface {
   }
 
   Future<List<Map<String, dynamic>>>
-      getWindowsDnsClientServerAddressListOfNetIPInterface(
-          int interfaceIndex) async {
+  getWindowsDnsClientServerAddressListOfNetIPInterface(
+    int interfaceIndex,
+  ) async {
     return await getWindowsPowerShellResultListMap(
       'Get-DnsClientServerAddress -InterfaceIndex $interfaceIndex | ConvertTo-Json',
     );
   }
 
   Future<List<Map<String, dynamic>>>
-      getWindowsDnsClientServerAddressList() async {
+  getWindowsDnsClientServerAddressList() async {
     return await getWindowsPowerShellResultListMap(
       'Get-DnsClientServerAddress | ConvertTo-Json',
     );
@@ -185,7 +191,8 @@ class PlatformNetInterfaceWindows implements PlatformNetInterface {
   }
 
   Map<int, Map<String, dynamic>> getMapOfInterfaceIndex(
-      List<Map<String, dynamic>> l) {
+    List<Map<String, dynamic>> l,
+  ) {
     final Map<int, Map<String, dynamic>> res = {};
     for (final e in l) {
       // if (!e.containsKey("InterfaceIndex")) continue;
@@ -196,7 +203,8 @@ class PlatformNetInterfaceWindows implements PlatformNetInterface {
   }
 
   Map<int, List<Map<String, dynamic>>> getListMapOfInterfaceIndex(
-      List<Map<String, dynamic>> l) {
+    List<Map<String, dynamic>> l,
+  ) {
     final Map<int, List<Map<String, dynamic>>> res = {};
     for (final e in l) {
       // if (!e.containsKey("InterfaceIndex")) continue;

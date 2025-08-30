@@ -34,9 +34,10 @@ class LocaleManager with ChangeNotifier {
       locale = Locale(localeParts[0], localeParts[1]); // e.g., "zh_CN"
     } else if (localeParts.length == 3) {
       locale = Locale.fromSubtags(
-          languageCode: localeParts[0],
-          scriptCode: localeParts[1],
-          countryCode: localeParts[2]); // e.g., "zh_Hans_CN"
+        languageCode: localeParts[0],
+        scriptCode: localeParts[1],
+        countryCode: localeParts[2],
+      ); // e.g., "zh_Hans_CN"
     } else {
       logger.w("failed to parse locale $localeString");
       return Locale('en', 'US');

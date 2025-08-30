@@ -56,19 +56,21 @@ class RayToggleState extends State<RayToggle> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-        listenable: vPNMan,
-        builder: (BuildContext context, Widget? child) {
-          return FloatingActionButton(
-              onPressed: vPNMan.isTogglingAll ? null : _toggle,
-              tooltip: vPNMan.isCoreActive ? 'disconnect' : 'connect',
-              child: vPNMan.isTogglingAll
-                  ? Transform.scale(
-                      scale: 0.5,
-                      child: const CircularProgressIndicator(),
-                    )
-                  : vPNMan.isCoreActive
-                      ? const Icon(Icons.stop)
-                      : const Icon(Icons.play_arrow));
-        });
+      listenable: vPNMan,
+      builder: (BuildContext context, Widget? child) {
+        return FloatingActionButton(
+          onPressed: vPNMan.isTogglingAll ? null : _toggle,
+          tooltip: vPNMan.isCoreActive ? 'disconnect' : 'connect',
+          child: vPNMan.isTogglingAll
+              ? Transform.scale(
+                  scale: 0.5,
+                  child: const CircularProgressIndicator(),
+                )
+              : vPNMan.isCoreActive
+              ? const Icon(Icons.stop)
+              : const Icon(Icons.play_arrow),
+        );
+      },
+    );
   }
 }

@@ -46,8 +46,9 @@ class _AssetScreenState extends State<AssetScreen> {
       assetPath = asset.read(db.asset.path)!;
       if (_assetType == AssetType.remote) {
         _urlController.text = asset.read(db.assetRemote.url)!;
-        _autoUpdateIntervalController.text =
-            asset.read(db.assetRemote.autoUpdateInterval).toString();
+        _autoUpdateIntervalController.text = asset
+            .read(db.assetRemote.autoUpdateInterval)
+            .toString();
       }
     }
 
@@ -87,8 +88,9 @@ class _AssetScreenState extends State<AssetScreen> {
         final autoUpdateInterval = _autoUpdateIntervalController.text;
 
         if (_assetType == AssetType.remote) {
-          final assetRemote =
-              AssetRemoteProtocolGithub.fromUrl(_urlController.text);
+          final assetRemote = AssetRemoteProtocolGithub.fromUrl(
+            _urlController.text,
+          );
           await assetRemote.update(
             asset: oldAsset,
             autoUpdateInterval: int.parse(autoUpdateInterval),
@@ -96,20 +98,28 @@ class _AssetScreenState extends State<AssetScreen> {
         } else if (_assetType == AssetType.local) {
           if (oldAsset != null) {
             final assetId = oldAsset.read(db.asset.id)!;
-            await db.into(db.asset).insertOnConflictUpdate(AssetCompanion(
-                  id: Value(assetId),
-                  type: Value(_assetType),
-                  path: Value(assetPath),
-                  updatedAt: Value(DateTime.now()),
-                ));
+            await db
+                .into(db.asset)
+                .insertOnConflictUpdate(
+                  AssetCompanion(
+                    id: Value(assetId),
+                    type: Value(_assetType),
+                    path: Value(assetPath),
+                    updatedAt: Value(DateTime.now()),
+                  ),
+                );
             status = EditStatus.updated;
             id = assetId;
           } else {
-            id = await db.into(db.asset).insertOnConflictUpdate(AssetCompanion(
-                  type: Value(_assetType),
-                  path: Value(assetPath),
-                  updatedAt: Value(DateTime.now()),
-                ));
+            id = await db
+                .into(db.asset)
+                .insertOnConflictUpdate(
+                  AssetCompanion(
+                    type: Value(_assetType),
+                    path: Value(assetPath),
+                    updatedAt: Value(DateTime.now()),
+                  ),
+                );
             status = EditStatus.inserted;
           }
         }
@@ -134,8 +144,9 @@ class _AssetScreenState extends State<AssetScreen> {
   }
 
   Future<void> _selectAssetPath() async {
-    FilePickerResult? result =
-        await FilePicker.platform.pickFiles(allowMultiple: false);
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowMultiple: false,
+    );
     if (result == null) {
       return;
     }
@@ -149,19 +160,20 @@ class _AssetScreenState extends State<AssetScreen> {
   Widget build(BuildContext context) {
     final fields = [
       DropdownButtonFormField<AssetType>(
-          decoration: InputDecoration(
-            labelText: context.loc.asset_type,
-            border: OutlineInputBorder(),
-          ),
-          items: AssetType.values.map((AssetType t) {
-            return DropdownMenuItem<AssetType>(value: t, child: Text(t.name));
-          }).toList(),
-          value: _assetType,
-          onChanged: (value) {
-            setState(() {
-              _assetType = value!;
-            });
-          }),
+        decoration: InputDecoration(
+          labelText: context.loc.asset_type,
+          border: OutlineInputBorder(),
+        ),
+        items: AssetType.values.map((AssetType t) {
+          return DropdownMenuItem<AssetType>(value: t, child: Text(t.name));
+        }).toList(),
+        value: _assetType,
+        onChanged: (value) {
+          setState(() {
+            _assetType = value!;
+          });
+        },
+      ),
       Row(
         children: [
           Expanded(
@@ -185,7 +197,8 @@ class _AssetScreenState extends State<AssetScreen> {
           if (_assetType == AssetType.remote)
             IconButton(
               icon: Icon(
-                  RuntimePlatform.isAndroid ? Icons.copy : Icons.folder_open),
+                RuntimePlatform.isAndroid ? Icons.copy : Icons.folder_open,
+              ),
               onPressed: () {
                 final filePath = _assetPathController.text;
                 if (RuntimePlatform.isAndroid) {
@@ -203,7 +216,8 @@ class _AssetScreenState extends State<AssetScreen> {
           decoration: InputDecoration(
             labelText: context.loc.url,
             hintText: context
-                .loc.e_g_github_v2fly_v2ray_core_v2ray_windows_64_zip_v2ray_exe,
+                .loc
+                .e_g_github_v2fly_v2ray_core_v2ray_windows_64_zip_v2ray_exe,
             border: OutlineInputBorder(),
           ),
         ),
@@ -220,7 +234,7 @@ class _AssetScreenState extends State<AssetScreen> {
         isInProgress: _isSubmitting,
         onPressed: _submitForm,
         child: Text(context.loc.save_and_update),
-      )
+      ),
     ];
 
     return Scaffold(

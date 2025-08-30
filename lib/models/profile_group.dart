@@ -8,14 +8,16 @@ class ProfileGroup extends Table {
 }
 
 class ProfileGroupLocal extends Table {
-  IntColumn get profileGroupId => integer().references(ProfileGroup, #id, onDelete: KeyAction.cascade)();
-  
+  IntColumn get profileGroupId =>
+      integer().references(ProfileGroup, #id, onDelete: KeyAction.cascade)();
+
   @override
   Set<Column<Object>>? get primaryKey => {profileGroupId};
 }
 
 class ProfileGroupRemote extends Table {
-  IntColumn get profileGroupId => integer().references(ProfileGroup, #id, onDelete: KeyAction.cascade)();
+  IntColumn get profileGroupId =>
+      integer().references(ProfileGroup, #id, onDelete: KeyAction.cascade)();
   TextColumn get url => text()();
   IntColumn get format => integer().map(const ProfileGroupFormatConverter())();
   IntColumn get autoUpdateInterval => integer()();
@@ -47,7 +49,8 @@ enum ProfileGroupRemoteFormat {
   anyportalRest,
 }
 
-class ProfileGroupFormatConverter extends TypeConverter<ProfileGroupRemoteFormat, int> {
+class ProfileGroupFormatConverter
+    extends TypeConverter<ProfileGroupRemoteFormat, int> {
   const ProfileGroupFormatConverter();
 
   @override

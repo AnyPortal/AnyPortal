@@ -10,7 +10,8 @@ class ConnectivityBasicScreen extends StatefulWidget {
   });
 
   @override
-  State<ConnectivityBasicScreen> createState() => _ConnectivityBasicScreenState();
+  State<ConnectivityBasicScreen> createState() =>
+      _ConnectivityBasicScreenState();
 }
 
 class _ConnectivityBasicScreenState extends State<ConnectivityBasicScreen> {
@@ -33,14 +34,15 @@ class _ConnectivityBasicScreenState extends State<ConnectivityBasicScreen> {
           showDialog(
             context: context,
             builder: (context) => TextInputPopup(
-                title: context.loc.server_address,
-                initialValue: _serverAddress,
-                onSaved: (String value) {
-                  prefs.setString('app.server.address', value);
-                  setState(() {
-                    _serverAddress = value;
-                  });
-                }),
+              title: context.loc.server_address,
+              initialValue: _serverAddress,
+              onSaved: (String value) {
+                prefs.setString('app.server.address', value);
+                setState(() {
+                  _serverAddress = value;
+                });
+              },
+            ),
           );
         },
       ),
@@ -51,16 +53,19 @@ class _ConnectivityBasicScreenState extends State<ConnectivityBasicScreen> {
           showDialog(
             context: context,
             builder: (context) => TextInputPopup(
-                title: context.loc.socks_port,
-                text: context.loc.you_may_want_to_check_settings_profile_override_inject_socks_inbound,
-                initialValue: _socksPort.toString(),
-                onSaved: (String value) {
-                  final socksPort = int.parse(value);
-                  prefs.setInt('app.socks.port', socksPort);
-                  setState(() {
-                    _socksPort = socksPort;
-                  });
-                }),
+              title: context.loc.socks_port,
+              text: context
+                  .loc
+                  .you_may_want_to_check_settings_profile_override_inject_socks_inbound,
+              initialValue: _socksPort.toString(),
+              onSaved: (String value) {
+                final socksPort = int.parse(value);
+                prefs.setInt('app.socks.port', socksPort);
+                setState(() {
+                  _socksPort = socksPort;
+                });
+              },
+            ),
           );
         },
       ),
@@ -71,16 +76,19 @@ class _ConnectivityBasicScreenState extends State<ConnectivityBasicScreen> {
           showDialog(
             context: context,
             builder: (context) => TextInputPopup(
-                title: context.loc.http_port,
-                text: context.loc.you_may_want_to_check_settings_profile_override_inject_http_inbound,
-                initialValue: _httpPort.toString(),
-                onSaved: (String value) {
-                  final httpPort = int.parse(value);
-                  prefs.setInt('app.http.port', httpPort);
-                  setState(() {
-                    _httpPort = httpPort;
-                  });
-                }),
+              title: context.loc.http_port,
+              text: context
+                  .loc
+                  .you_may_want_to_check_settings_profile_override_inject_http_inbound,
+              initialValue: _httpPort.toString(),
+              onSaved: (String value) {
+                final httpPort = int.parse(value);
+                prefs.setInt('app.http.port', httpPort);
+                setState(() {
+                  _httpPort = httpPort;
+                });
+              },
+            ),
           );
         },
       ),

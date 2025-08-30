@@ -10,7 +10,8 @@ import '../../runtime_platform.dart';
 import '../../vpn_manager.dart';
 
 Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
-    Map<String, dynamic> cfg) async {
+  Map<String, dynamic> cfg,
+) async {
   final tunIpv4 = prefs.getBool('tun.ipv4')!;
   final tunIpv6 = prefs.getBool('tun.ipv6')!;
   final injectLog = prefs.getBool('tun.inject.log')!;
@@ -34,20 +35,22 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
       if (tunIpv6) "fdfe:dcba:9876::1/126",
     ],
     "auto_route": true,
-    "strict_route": true
+    "strict_route": true,
   });
 
   if (injectLog) {
-    final pathLog = File(p.join(
-      global.applicationSupportDirectory.path,
-      'log',
-      'tun2socks.sing_box.log',
-    )).absolute.path;
+    final pathLog = File(
+      p.join(
+        global.applicationSupportDirectory.path,
+        'log',
+        'tun2socks.sing_box.log',
+      ),
+    ).absolute.path;
     cfg["log"] = {
       "disabled": false,
       "level": logLevel.name,
       "timestamp": true,
-      "output": pathLog
+      "output": pathLog,
     };
   }
 
@@ -57,7 +60,7 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
       "type": "http",
       "tag": "ot_http",
       "server": injectServerAddress,
-      "server_port": injectHttpPort
+      "server_port": injectHttpPort,
     });
   }
   if (injectSocks) {
@@ -65,7 +68,7 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
       "type": "socks",
       "tag": "ot_socks",
       "server": injectServerAddress,
-      "server_port": socksPort
+      "server_port": socksPort,
     });
   }
 
@@ -89,25 +92,27 @@ Future<Map<String, dynamic>> getInjectedConfigTunSingBox(
     if (prefs.getBool("tun.perAppProxy")!) {
       if (prefs.getBool("android.tun.perAppProxy.allowed")!) {
         rules.insert(0, {
-          "package_name":
-              json.decode(prefs.getString("android.tun.allowedApplications")!),
-          "outbound": "ot_socks"
+          "package_name": json.decode(
+            prefs.getString("android.tun.allowedApplications")!,
+          ),
+          "outbound": "ot_socks",
         });
         rules.add({
           "network": ["tcp", "udp"],
-          "outbound": "ot_direct"
+          "outbound": "ot_direct",
         });
       } else {
         rules.insert(0, {
-          "package_name": json
-              .decode(prefs.getString("android.tun.disallowedApplications")!),
-          "outbound": "ot_direct"
+          "package_name": json.decode(
+            prefs.getString("android.tun.disallowedApplications")!,
+          ),
+          "outbound": "ot_direct",
         });
       }
     }
     rules.insert(0, {
       "package_name": "com.github.anyportal.anyportal",
-      "outbound": "ot_direct"
+      "outbound": "ot_direct",
     });
   }
 
@@ -118,8 +123,10 @@ List<String> extractIps(String jsonString) {
   final ipRegex = RegExp(r'''\s*"((?:\d{1,3}\.){3}\d{1,3})"''');
 
   final matches = ipRegex.allMatches(jsonString);
-  final ipAddresses =
-      matches.map((m) => m.group(1)).whereType<String>().toList();
+  final ipAddresses = matches
+      .map((m) => m.group(1))
+      .whereType<String>()
+      .toList();
 
   return ipAddresses;
 }

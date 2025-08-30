@@ -35,8 +35,9 @@ enum TunVia {
 
 class _TunScreenState extends State<TunScreen> {
   bool _tun = prefs.getBool('tun')!;
-  TunVia _tunVia =
-      prefs.getBool('tun.useEmbedded')! ? TunVia.platform : TunVia.root;
+  TunVia _tunVia = prefs.getBool('tun.useEmbedded')!
+      ? TunVia.platform
+      : TunVia.root;
 
   /// android
   bool _perAppProxy = prefs.getBool('tun.perAppProxy')!;
@@ -75,34 +76,43 @@ class _TunScreenState extends State<TunScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => InstalledAppScreen(
-              selectedApps: selectedApps,
-              handleSelectedApps: (Set<String> selectedApps) {
-                prefs.setString(prefKey, jsonEncode(selectedApps.toList()));
-              },
-              title: title)),
+        builder: (context) => InstalledAppScreen(
+          selectedApps: selectedApps,
+          handleSelectedApps: (Set<String> selectedApps) {
+            prefs.setString(prefKey, jsonEncode(selectedApps.toList()));
+          },
+          title: title,
+        ),
+      ),
     );
   }
 
   void _editAllowedApplications() {
     _editProxyApplist(
-        'android.tun.allowedApplications', context.loc.allowed_applications);
+      'android.tun.allowedApplications',
+      context.loc.allowed_applications,
+    );
   }
 
   void _editDisallowedApplications() {
-    _editProxyApplist('android.tun.disAllowedApplications',
-        context.loc.disallowed_applications);
+    _editProxyApplist(
+      'android.tun.disAllowedApplications',
+      context.loc.disallowed_applications,
+    );
   }
 
   void writeTProxyConf() async {
     if (RuntimePlatform.isWeb) return;
     final folder = global.applicationSupportDirectory;
     final file = File(
-        p.join(folder.path, 'conf', 'tun2socks.hev_socks5_tunnel.gen.yaml'));
-    final usernameLine =
-        _socksUserName == "" ? "" : "username: $_socksUserName";
-    final passwordLine =
-        _socksPassword == "" ? "" : "password: $_socksPassword";
+      p.join(folder.path, 'conf', 'tun2socks.hev_socks5_tunnel.gen.yaml'),
+    );
+    final usernameLine = _socksUserName == ""
+        ? ""
+        : "username: $_socksUserName";
+    final passwordLine = _socksPassword == ""
+        ? ""
+        : "password: $_socksPassword";
 
     final socksPort = prefs.getInt('app.socks.port')!;
     String socksAddress = prefs.getString('app.server.address')!;
@@ -110,8 +120,9 @@ class _TunScreenState extends State<TunScreen> {
       socksAddress = "127.0.0.1";
     }
 
-    final logFile =
-        File(p.join(folder.path, 'log', 'tun2socks.hev_socks5_tunnel.log'));
+    final logFile = File(
+      p.join(folder.path, 'log', 'tun2socks.hev_socks5_tunnel.log'),
+    );
     String logFileLine = "log-file: ${logFile.path}";
     final logLevel = LogLevel.values[prefs.getInt('tun.inject.log.level')!];
     String logLevelStr = "warn";
@@ -187,10 +198,13 @@ misc:
       ListTile(
         enabled: _perAppProxy,
         title: Text(context.loc.per_app_proxy_mode),
-        subtitle: Text(_perAppProxyAllowed
-            ? context.loc.allowed_all_apps_in_allowed_list_will_be_proxied
-            : context.loc
-                .disallowed_all_apps_not_in_disallowed_list_will_be_proxied),
+        subtitle: Text(
+          _perAppProxyAllowed
+              ? context.loc.allowed_all_apps_in_allowed_list_will_be_proxied
+              : context
+                    .loc
+                    .disallowed_all_apps_not_in_disallowed_list_will_be_proxied,
+        ),
         trailing: Switch(
           value: _perAppProxyAllowed,
           onChanged: _perAppProxy
@@ -212,8 +226,9 @@ misc:
       ListTile(
         enabled: _perAppProxy && !_perAppProxyAllowed,
         title: Text(context.loc.disallowed_applications),
-        subtitle:
-            Text(context.loc.all_apps_not_in_disallowed_list_will_be_proxied),
+        subtitle: Text(
+          context.loc.all_apps_not_in_disallowed_list_will_be_proxied,
+        ),
         onTap: _editDisallowedApplications,
       ),
     ];
@@ -234,14 +249,15 @@ misc:
           showDialog(
             context: context,
             builder: (context) => TextInputPopup(
-                title: context.loc.socks_user_name,
-                initialValue: _socksUserName,
-                onSaved: (value) {
-                  prefs.setString('tun.socks.username', value);
-                  setState(() {
-                    _socksUserName = value;
-                  });
-                }),
+              title: context.loc.socks_user_name,
+              initialValue: _socksUserName,
+              onSaved: (value) {
+                prefs.setString('tun.socks.username', value);
+                setState(() {
+                  _socksUserName = value;
+                });
+              },
+            ),
           );
         },
       ),
@@ -252,14 +268,15 @@ misc:
           showDialog(
             context: context,
             builder: (context) => TextInputPopup(
-                title: context.loc.socks_password,
-                initialValue: _socksPassword,
-                onSaved: (value) {
-                  prefs.setString('tun.socks.password', value);
-                  setState(() {
-                    _socksPassword = value;
-                  });
-                }),
+              title: context.loc.socks_password,
+              initialValue: _socksPassword,
+              onSaved: (value) {
+                prefs.setString('tun.socks.password', value);
+                setState(() {
+                  _socksPassword = value;
+                });
+              },
+            ),
           );
         },
       ),
@@ -270,14 +287,15 @@ misc:
           showDialog(
             context: context,
             builder: (context) => TextInputPopup(
-                title: context.loc.dns_ipv4,
-                initialValue: _dnsIpv4,
-                onSaved: (value) {
-                  prefs.setString('tun.dns.ipv4', value);
-                  setState(() {
-                    _dnsIpv4 = value;
-                  });
-                }),
+              title: context.loc.dns_ipv4,
+              initialValue: _dnsIpv4,
+              onSaved: (value) {
+                prefs.setString('tun.dns.ipv4', value);
+                setState(() {
+                  _dnsIpv4 = value;
+                });
+              },
+            ),
           );
         },
       ),
@@ -288,14 +306,15 @@ misc:
           showDialog(
             context: context,
             builder: (context) => TextInputPopup(
-                title: context.loc.dns_ipv6,
-                initialValue: _dnsIpv6,
-                onSaved: (value) {
-                  prefs.setString('tun.dns.ipv6', value);
-                  setState(() {
-                    _dnsIpv6 = value;
-                  });
-                }),
+              title: context.loc.dns_ipv6,
+              initialValue: _dnsIpv6,
+              onSaved: (value) {
+                prefs.setString('tun.dns.ipv6', value);
+                setState(() {
+                  _dnsIpv6 = value;
+                });
+              },
+            ),
           );
         },
       ),
@@ -312,8 +331,9 @@ misc:
       ),
       ListTile(
         title: Text(context.loc.inject_socks_outbound),
-        subtitle:
-            Text("$injectSocksAddress:${prefs.getInt('app.socks.port')!}"),
+        subtitle: Text(
+          "$injectSocksAddress:${prefs.getInt('app.socks.port')!}",
+        ),
         trailing: Switch(
           value: _injectSocks,
           onChanged: (value) {
@@ -334,8 +354,11 @@ misc:
       ),
       ListTile(
         title: Text(context.loc.inject_rule_to_exclude_core_path),
-        subtitle: Text(context.loc
-            .works_fine_on_windows_will_fail_on_other_systems_with_short_lived_packets_like_dns_),
+        subtitle: Text(
+          context
+              .loc
+              .works_fine_on_windows_will_fail_on_other_systems_with_short_lived_packets_like_dns_,
+        ),
         trailing: Switch(
           value: _injectExcludeCorePath,
           onChanged: (value) {
@@ -357,8 +380,9 @@ misc:
       ListTile(
         title: Text(context.loc.edit_config),
         subtitle: Text(tunSingBoxUserConfigFile.path),
-        trailing:
-            Icon(RuntimePlatform.isAndroid ? Icons.copy : Icons.folder_open),
+        trailing: Icon(
+          RuntimePlatform.isAndroid ? Icons.copy : Icons.folder_open,
+        ),
         onTap: () {
           final filePath = tunSingBoxUserConfigFile.path;
           if (RuntimePlatform.isAndroid) {
@@ -374,7 +398,8 @@ misc:
       ListTile(
         title: Text(context.loc.enable_tun2socks),
         subtitle: Text(
-            context.loc.enable_tun2socks_so_a_socks_proxy_works_like_a_vpn),
+          context.loc.enable_tun2socks_so_a_socks_proxy_works_like_a_vpn,
+        ),
         trailing: Switch(
           value: _tun,
           onChanged: (shouldEnable) {
@@ -399,28 +424,28 @@ misc:
           subtitle: Text(_tunVia.name),
           onTap: () {
             showDialog(
-                context: context,
-                builder: (context) => RadioListSelectionPopup<TunVia>(
-                      title: context.loc.tun_stack,
-                      items: [
-                        if (RuntimePlatform.isAndroid || RuntimePlatform.isIOS)
-                          TunVia.platform,
-                        if (RuntimePlatform.isWindows ||
-                            RuntimePlatform.isLinux ||
-                            RuntimePlatform.isMacOS ||
-                            RuntimePlatform.isAndroid)
-                          TunVia.root,
-                      ],
-                      initialValue: _tunVia,
-                      onSaved: (value) {
-                        prefs.setBool(
-                            'tun.useEmbedded', value == TunVia.platform);
-                        setState(() {
-                          _tunVia = value;
-                        });
-                      },
-                      itemToString: (e) => e.name,
-                    ));
+              context: context,
+              builder: (context) => RadioListSelectionPopup<TunVia>(
+                title: context.loc.tun_stack,
+                items: [
+                  if (RuntimePlatform.isAndroid || RuntimePlatform.isIOS)
+                    TunVia.platform,
+                  if (RuntimePlatform.isWindows ||
+                      RuntimePlatform.isLinux ||
+                      RuntimePlatform.isMacOS ||
+                      RuntimePlatform.isAndroid)
+                    TunVia.root,
+                ],
+                initialValue: _tunVia,
+                onSaved: (value) {
+                  prefs.setBool('tun.useEmbedded', value == TunVia.platform);
+                  setState(() {
+                    _tunVia = value;
+                  });
+                },
+                itemToString: (e) => e.name,
+              ),
+            );
           },
         ),
       ListTile(
@@ -476,19 +501,20 @@ misc:
         subtitle: Text(_logLevel.name),
         onTap: () {
           showDialog(
-              context: context,
-              builder: (context) => RadioListSelectionPopup<LogLevel>(
-                    title: context.loc.log_level,
-                    items: LogLevel.values,
-                    initialValue: _logLevel,
-                    onSaved: (value) {
-                      prefs.setInt('tun.inject.log.level', value.index);
-                      setState(() {
-                        _logLevel = value;
-                      });
-                    },
-                    itemToString: (e) => e.name,
-                  ));
+            context: context,
+            builder: (context) => RadioListSelectionPopup<LogLevel>(
+              title: context.loc.log_level,
+              items: LogLevel.values,
+              initialValue: _logLevel,
+              onSaved: (value) {
+                prefs.setInt('tun.inject.log.level', value.index);
+                setState(() {
+                  _logLevel = value;
+                });
+              },
+              itemToString: (e) => e.name,
+            ),
+          );
         },
       ),
       if (RuntimePlatform.isAndroid) ...androidFields,
@@ -524,8 +550,9 @@ misc:
 
 Future<void> tunHevSocks5TunnelConfInit() async {
   final folder = global.applicationSupportDirectory;
-  final file =
-      File(p.join(folder.path, 'conf', 'tun2socks.hev_socks5_tunnel.gen.yaml'));
+  final file = File(
+    p.join(folder.path, 'conf', 'tun2socks.hev_socks5_tunnel.gen.yaml'),
+  );
   if (!await file.exists()) {
     await file.create(recursive: true);
     _TunScreenState().writeTProxyConf();

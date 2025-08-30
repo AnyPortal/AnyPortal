@@ -69,8 +69,9 @@ class _LogViewerState extends State<LogViewer> {
 
     // Read file backward until N lines are reached
     while (endPosition > 0) {
-      int startPosition =
-          (endPosition > chunkSize) ? endPosition - chunkSize : 0;
+      int startPosition = (endPosition > chunkSize)
+          ? endPosition - chunkSize
+          : 0;
       await file.setPosition(startPosition);
       String chunk = utf8.decode(await file.read(endPosition - startPosition));
       final newLines = chunk.split('\n');
@@ -86,7 +87,8 @@ class _LogViewerState extends State<LogViewer> {
 
           _lines.addAllFirst(newLines);
           _measuredHeights.addAllFirst(
-              List.filled(newLines.length, getEstimatedLineHeight()));
+            List.filled(newLines.length, getEstimatedLineHeight()),
+          );
 
           progressReadingBackward = 1 - startPosition / length;
         });
@@ -141,7 +143,8 @@ class _LogViewerState extends State<LogViewer> {
         setState(() {
           _lines.addAllLast(newLines);
           _measuredHeights.addAllLast(
-              List.filled(newLines.length, getEstimatedLineHeight()));
+            List.filled(newLines.length, getEstimatedLineHeight()),
+          );
         });
 
         _autoSnap();
@@ -161,8 +164,9 @@ class _LogViewerState extends State<LogViewer> {
     if (RuntimePlatform.isWeb) {
       return;
     } else if (RuntimePlatform.isAndroid || RuntimePlatform.isIOS) {
-      mCMan.methodChannel.invokeListMethod(
-          'log.core.startWatching', {"filePath": _logFile.absolute.path});
+      mCMan.methodChannel.invokeListMethod('log.core.startWatching', {
+        "filePath": _logFile.absolute.path,
+      });
       mCMan.addHandler('onFileChange', handleFileChange);
     } else if (RuntimePlatform.isLinux) {
       _streamSubscription = _logFile.watch().listen((e) {
@@ -178,8 +182,9 @@ class _LogViewerState extends State<LogViewer> {
 
   void _stopFileMonitor() {
     if (RuntimePlatform.isAndroid) {
-      mCMan.methodChannel.invokeListMethod(
-          'log.core.stopWatching', {"filePath": _logFile.absolute.path});
+      mCMan.methodChannel.invokeListMethod('log.core.stopWatching', {
+        "filePath": _logFile.absolute.path,
+      });
       mCMan.removeHandler('onFileChange', handleFileChange);
     } else if (RuntimePlatform.isLinux) {
       _streamSubscription?.cancel();
@@ -236,60 +241,65 @@ class _LogViewerState extends State<LogViewer> {
         actions: [
           PopupMenuButton(
             itemBuilder: (context) => LogsAction.values
-                .map((action) => PopupMenuItem(
-                      value: action,
-                      child: Text(action.localized(context)),
-                    ))
+                .map(
+                  (action) => PopupMenuItem(
+                    value: action,
+                    child: Text(action.localized(context)),
+                  ),
+                )
                 .toList(),
             onSelected: (value) => handleLogsAction(value),
           ),
         ],
       ),
-      body: Stack(children: [
-        Container(
-          padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              _viewportHeight = constraints.maxHeight;
+      body: Stack(
+        children: [
+          Container(
+            padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                _viewportHeight = constraints.maxHeight;
 
-              return NotificationListener<ScrollNotification>(
-                onNotification: (scrollNotification) {
-                  if (isReadingBackward) return true;
-                  shouldSnap = scrollNotification.metrics.pixels >=
-                      _getBottomTarget() - _defaultLineHeight;
-                  setState(() {});
-                  return true;
-                },
-                child: Scrollbar(
-                  controller: _scrollController,
-                  interactive: true,
-                  // thickness: 8,
-                  // radius: Radius.circular(4),
-                  child: SingleChildScrollView(
+                return NotificationListener<ScrollNotification>(
+                  onNotification: (scrollNotification) {
+                    if (isReadingBackward) return true;
+                    shouldSnap =
+                        scrollNotification.metrics.pixels >=
+                        _getBottomTarget() - _defaultLineHeight;
+                    setState(() {});
+                    return true;
+                  },
+                  child: Scrollbar(
                     controller: _scrollController,
-                    child: SizedBox(
-                      height: _lines.isEmpty
-                          ? 0
-                          : _measuredHeights.prefixSum(_lines.length - 1) +
-                              _viewportHeight -
-                              _defaultLineHeight,
-                      child: Stack(
-                        children: _buildPreciseVisibleItems(),
+                    interactive: true,
+                    // thickness: 8,
+                    // radius: Radius.circular(4),
+                    child: SingleChildScrollView(
+                      controller: _scrollController,
+                      child: SizedBox(
+                        height: _lines.isEmpty
+                            ? 0
+                            : _measuredHeights.prefixSum(_lines.length - 1) +
+                                  _viewportHeight -
+                                  _defaultLineHeight,
+                        child: Stack(
+                          children: _buildPreciseVisibleItems(),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
-        ),
-        SizedBox(
-          height: 4,
-          child: progressReadingBackward != 0 && progressReadingBackward != 1
-              ? LinearProgressIndicator(value: progressReadingBackward)
-              : null,
-        ),
-      ]),
+          SizedBox(
+            height: 4,
+            child: progressReadingBackward != 0 && progressReadingBackward != 1
+                ? LinearProgressIndicator(value: progressReadingBackward)
+                : null,
+          ),
+        ],
+      ),
     );
   }
 
@@ -317,11 +327,14 @@ class _LogViewerState extends State<LogViewer> {
     if (_lines.isEmpty) {
       return visible;
     }
-    final scrollOffset =
-        _scrollController.hasClients ? _scrollController.offset : 0.0;
+    final scrollOffset = _scrollController.hasClients
+        ? _scrollController.offset
+        : 0.0;
 
-    int firstIndex = findNearestSmallerIndex(_measuredHeights, scrollOffset)
-        .clamp(0, _lines.length - 1);
+    int firstIndex = findNearestSmallerIndex(
+      _measuredHeights,
+      scrollOffset,
+    ).clamp(0, _lines.length - 1);
     int lastIndex = firstIndex;
     // Walk forward to cover viewport + buffer
     double visibleHeight = 0.0;
@@ -366,11 +379,13 @@ class _LogViewerState extends State<LogViewer> {
 
   Future _setLogFile(String name) async {
     if (!RuntimePlatform.isWeb) {
-      _logFile = File(p.join(
-        global.applicationSupportDirectory.path,
-        'log',
-        '$name.log',
-      ));
+      _logFile = File(
+        p.join(
+          global.applicationSupportDirectory.path,
+          'log',
+          '$name.log',
+        ),
+      );
       if (!await _logFile.exists()) {
         await _logFile.create(recursive: true);
       }
@@ -383,26 +398,30 @@ class _LogViewerState extends State<LogViewer> {
   }
 
   Future setLogFile(String name) async {
-    await _setLogFile(name).then((_) {
-      _lines.clear();
-      _measuredHeights.clear();
-      _readBackward();
-    }).then((_) {
-      _autoSnap(force: true);
-      _stopFileMonitor();
-      _startFileMonitor();
-    });
+    await _setLogFile(name)
+        .then((_) {
+          _lines.clear();
+          _measuredHeights.clear();
+          _readBackward();
+        })
+        .then((_) {
+          _autoSnap(force: true);
+          _stopFileMonitor();
+          _startFileMonitor();
+        });
   }
 
   @override
   void initState() {
     super.initState();
 
-    _setLogFile("core").then((_) {
-      _readBackward();
-    }).then((_) {
-      _startFileMonitor();
-    });
+    _setLogFile("core")
+        .then((_) {
+          _readBackward();
+        })
+        .then((_) {
+          _startFileMonitor();
+        });
   }
 
   @override
@@ -455,9 +474,10 @@ class _MeasuredLineState extends State<_MeasuredLine> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        key: _key,
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        child: LogHighlighter(logLine: widget.text));
+      key: _key,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      child: LogHighlighter(logLine: widget.text),
+    );
   }
 }
 

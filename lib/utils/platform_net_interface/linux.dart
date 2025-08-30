@@ -11,8 +11,12 @@ class PlatformNetInterfaceLinux implements PlatformNetInterface {
   }) async {
     try {
       // Get all default IPv4 routes
-      final routeResult =
-          await Process.run('ip', ['-4', 'route', 'show', 'default']);
+      final routeResult = await Process.run('ip', [
+        '-4',
+        'route',
+        'show',
+        'default',
+      ]);
       if (routeResult.exitCode != 0) {
         logger.w('Failed to get default routes: ${routeResult.stderr}');
         return null;
@@ -47,8 +51,9 @@ class PlatformNetInterfaceLinux implements PlatformNetInterface {
       }
 
       // Sort by metric
-      candidates
-          .sort((a, b) => (a['metric'] as int).compareTo(b['metric'] as int));
+      candidates.sort(
+        (a, b) => (a['metric'] as int).compareTo(b['metric'] as int),
+      );
 
       String? chosenInterface;
       final iPv4AddressSet = <String>{};
@@ -57,8 +62,12 @@ class PlatformNetInterfaceLinux implements PlatformNetInterface {
         final dev = cand['interface'] as String;
 
         // Get IPs
-        final addrResult =
-            await Process.run('ip', ['addr', 'show', 'dev', dev]);
+        final addrResult = await Process.run('ip', [
+          'addr',
+          'show',
+          'dev',
+          dev,
+        ]);
         if (addrResult.exitCode != 0) continue;
 
         final addrLines = (addrResult.stdout as String).split('\n');
@@ -88,8 +97,10 @@ class PlatformNetInterfaceLinux implements PlatformNetInterface {
       }
 
       // Get DNS for this interface
-      final resolvectl =
-          await Process.run('resolvectl', ['dns', chosenInterface]);
+      final resolvectl = await Process.run('resolvectl', [
+        'dns',
+        chosenInterface,
+      ]);
       final Set<String> dnsIPv4AddressSet = {};
       final Set<String> dnsIPv6AddressSet = {};
       if (resolvectl.exitCode == 0) {

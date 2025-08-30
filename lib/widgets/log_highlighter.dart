@@ -17,28 +17,35 @@ class LogHighlighter extends StatelessWidget {
   List<TextSpan> _highlightLog(String text) {
     final patterns = <RegExp, TextStyle>{
       // Date: 2025/07/04 or 2025-07-04
-      RegExp(r'\b\d{4}[/-]\d{2}[/-]\d{2}\b'):
-          TextStyle(color: Color(0xff90c4f9)),
+      RegExp(r'\b\d{4}[/-]\d{2}[/-]\d{2}\b'): TextStyle(
+        color: Color(0xff90c4f9),
+      ),
       // Time: 15:56:20 or 15:56:47.240788
-      RegExp(r'\b\d{2}:\d{2}:\d{2}(?:\.\d+)?\b'):
-          TextStyle(color: Color(0xff90c4f9)),
+      RegExp(r'\b\d{2}:\d{2}:\d{2}(?:\.\d+)?\b'): TextStyle(
+        color: Color(0xff90c4f9),
+      ),
 
       // Address: domain:port
-      RegExp(r'([a-zA-Z0-9.-]+\.[a-zA-Z]{2,}):(\d{1,5})'):
-          TextStyle(color: Color(0xfffb9d51)),
+      RegExp(r'([a-zA-Z0-9.-]+\.[a-zA-Z]{2,}):(\d{1,5})'): TextStyle(
+        color: Color(0xfffb9d51),
+      ),
       // Address: ipv4:port
-      RegExp(r'((?:\d{1,3}\.){3}\d{1,3}):(\d{1,5})'):
-          TextStyle(color: Color(0xfffb9d51)),
+      RegExp(r'((?:\d{1,3}\.){3}\d{1,3}):(\d{1,5})'): TextStyle(
+        color: Color(0xfffb9d51),
+      ),
       // Address: domain:port
-      RegExp(r'\[([0-9a-fA-F:]+)\]:(\d{1,5})'):
-          TextStyle(color: Color(0xfffb9d51)),
+      RegExp(r'\[([0-9a-fA-F:]+)\]:(\d{1,5})'): TextStyle(
+        color: Color(0xfffb9d51),
+      ),
       RegExp(r'(tcp:|udp:)', caseSensitive: false): TextStyle(
         color: Color(0xfffb9d51),
       ),
 
       // Log level: ERROR, Warning, debug, info, etc.
-      RegExp(r'\b(error|warning|info|debug)\b', caseSensitive: false):
-          TextStyle(
+      RegExp(
+        r'\b(error|warning|info|debug)\b',
+        caseSensitive: false,
+      ): TextStyle(
         color: Colors.red,
         fontWeight: FontWeight.bold,
       ),
@@ -84,23 +91,29 @@ class LogHighlighter extends StatelessWidget {
 
     for (final m in nonOverlapping) {
       if (m.start > currentIndex) {
-        spans.add(TextSpan(
-          text: text.substring(currentIndex, m.start),
-          // style: TextStyle(color: Colors.black),
-        ));
+        spans.add(
+          TextSpan(
+            text: text.substring(currentIndex, m.start),
+            // style: TextStyle(color: Colors.black),
+          ),
+        );
       }
-      spans.add(TextSpan(
-        text: text.substring(m.start, m.end),
-        style: m.style,
-      ));
+      spans.add(
+        TextSpan(
+          text: text.substring(m.start, m.end),
+          style: m.style,
+        ),
+      );
       currentIndex = m.end;
     }
 
     if (currentIndex < text.length) {
-      spans.add(TextSpan(
-        text: text.substring(currentIndex),
-        // style: TextStyle(color: Colors.black),
-      ));
+      spans.add(
+        TextSpan(
+          text: text.substring(currentIndex),
+          // style: TextStyle(color: Colors.black),
+        ),
+      );
     }
 
     return spans;

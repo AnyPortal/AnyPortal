@@ -46,7 +46,7 @@ class _PerfStatsState extends State<PerfStats> {
             keyValueRow(
               context.loc.memory,
               formatBytes(dataNotifier.memory["inuse"]!).toString(),
-            )
+            ),
           ],
         );
       },

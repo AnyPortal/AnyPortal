@@ -81,7 +81,7 @@ class PlatformProcess {
       command = 'kill';
       arguments = [
         '-9',
-        pid.toString()
+        pid.toString(),
       ]; // -9 forces termination on Unix-based systems
     }
 

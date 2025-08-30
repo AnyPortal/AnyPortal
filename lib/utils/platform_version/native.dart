@@ -4,7 +4,8 @@ import 'package:ffi/ffi.dart';
 import 'package:win32/win32.dart';
 
 int? getPlatformVersionNumber() {
-  final osVersionInfo = calloc<OSVERSIONINFO>()..ref.dwOSVersionInfoSize = sizeOf<OSVERSIONINFO>();
+  final osVersionInfo = calloc<OSVERSIONINFO>()
+    ..ref.dwOSVersionInfoSize = sizeOf<OSVERSIONINFO>();
 
   try {
     if (GetVersionEx(osVersionInfo) != 0) {

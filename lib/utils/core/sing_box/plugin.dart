@@ -1,9 +1,8 @@
-import 'package:anyportal/utils/core/sing_box/data_notifier.dart';
-
 import '../base/plugin.dart';
 import '../clash/dashboard.dart';
 
 import 'config_injector.dart';
+import 'data_notifier.dart';
 
 class CorePluginSingBox extends CorePluginBase {
   CorePluginSingBox() : super() {

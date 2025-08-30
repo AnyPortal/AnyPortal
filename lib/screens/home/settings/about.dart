@@ -82,20 +82,23 @@ class _AboutScreenState extends State<AboutScreen> {
   Widget build(BuildContext context) {
     final fields = [
       Padding(
-          padding: const EdgeInsets.fromLTRB(0, 96, 0, 64),
-          child: SizedBox(
-            width: 128,
-            height: 128,
-            child: Image.asset('assets/icon/icon.png'),
-          )),
+        padding: const EdgeInsets.fromLTRB(0, 96, 0, 64),
+        child: SizedBox(
+          width: 128,
+          height: 128,
+          child: Image.asset('assets/icon/icon.png'),
+        ),
+      ),
       const Padding(
-          padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
-          child: Blockquote(
-              """You take the blue pill, the story ends, you wake up in your bed and believe whatever you want to believe. You take the red pill, you stay in Wonderland and I show you how deep the rabbit hole goes."  
+        padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+        child: Blockquote(
+          """You take the blue pill, the story ends, you wake up in your bed and believe whatever you want to believe. You take the red pill, you stay in Wonderland and I show you how deep the rabbit hole goes."  
 
 — Morpheus, The Matrix (1999)
 
-We hope you choose well between your home world and Wonderlands.""")),
+We hope you choose well between your home world and Wonderlands.""",
+        ),
+      ),
       ListTile(
         title: const Text("AnyPortal"),
         subtitle: Text(version),
@@ -109,11 +112,13 @@ We hope you choose well between your home world and Wonderlands.""")),
         subtitle: Text(
           downloadedBuildNumber != null && downloadedBuildNumber! > buildNumber
               ? context.loc.pending_install_tag_name(
-                  downloadedTagName != null ? downloadedTagName! : "")
+                  downloadedTagName != null ? downloadedTagName! : "",
+                )
               : context.loc.last_checked_datetime(
-                  DateTime.fromMillisecondsSinceEpoch(lastChecked * 1000)
-                      .toLocal()
-                      .toIso8601String()),
+                  DateTime.fromMillisecondsSinceEpoch(
+                    lastChecked * 1000,
+                  ).toLocal().toIso8601String(),
+                ),
         ),
         onTap: () async {
           try {
@@ -152,17 +157,21 @@ We hope you choose well between your home world and Wonderlands.""")),
       if (!RuntimePlatform.isWeb)
         ListTile(
           title: Text(context.loc.app),
-          subtitle: Text(RuntimePlatform.isAndroid
-              ? "com.github.anyportal.anyportal"
-              : Platform.resolvedExecutable),
-          trailing:
-              Icon(RuntimePlatform.isAndroid ? Icons.copy : Icons.folder_open),
+          subtitle: Text(
+            RuntimePlatform.isAndroid
+                ? "com.github.anyportal.anyportal"
+                : Platform.resolvedExecutable,
+          ),
+          trailing: Icon(
+            RuntimePlatform.isAndroid ? Icons.copy : Icons.folder_open,
+          ),
           onTap: () {
             if (RuntimePlatform.isAndroid) {
               copyTextThenNotify("com.github.anyportal.anyportal");
             } else {
               PlatformFileMananger.highlightFileInFolder(
-                  Platform.resolvedExecutable);
+                Platform.resolvedExecutable,
+              );
             }
           },
         ),
@@ -170,12 +179,16 @@ We hope you choose well between your home world and Wonderlands.""")),
         ListTile(
           title: Text(context.loc.user_data),
           subtitle: Text(
-              p.join(global.applicationDocumentsDirectory.path, "AnyPortal")),
-          trailing:
-              Icon(RuntimePlatform.isAndroid ? Icons.copy : Icons.folder_open),
+            p.join(global.applicationDocumentsDirectory.path, "AnyPortal"),
+          ),
+          trailing: Icon(
+            RuntimePlatform.isAndroid ? Icons.copy : Icons.folder_open,
+          ),
           onTap: () {
-            final folderPath =
-                p.join(global.applicationDocumentsDirectory.path, "AnyPortal");
+            final folderPath = p.join(
+              global.applicationDocumentsDirectory.path,
+              "AnyPortal",
+            );
             if (RuntimePlatform.isAndroid) {
               copyTextThenNotify(folderPath);
             } else {
@@ -187,8 +200,9 @@ We hope you choose well between your home world and Wonderlands.""")),
         ListTile(
           title: Text(context.loc.generated_assets),
           subtitle: Text(global.applicationSupportDirectory.path),
-          trailing:
-              Icon(RuntimePlatform.isAndroid ? Icons.copy : Icons.folder_open),
+          trailing: Icon(
+            RuntimePlatform.isAndroid ? Icons.copy : Icons.folder_open,
+          ),
           onTap: () {
             final folderPath = global.applicationSupportDirectory.path;
             if (RuntimePlatform.isAndroid) {
@@ -200,13 +214,14 @@ We hope you choose well between your home world and Wonderlands.""")),
         ),
     ];
     return Scaffold(
-        appBar: AppBar(
-          // Use the selected tab's label for the AppBar title
-          title: Text(context.loc.about),
-        ),
-        body: ListView.builder(
-          itemCount: fields.length,
-          itemBuilder: (context, index) => fields[index],
-        ));
+      appBar: AppBar(
+        // Use the selected tab's label for the AppBar title
+        title: Text(context.loc.about),
+      ),
+      body: ListView.builder(
+        itemCount: fields.length,
+        itemBuilder: (context, index) => fields[index],
+      ),
+    );
   }
 }

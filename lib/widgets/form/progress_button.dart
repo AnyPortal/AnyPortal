@@ -18,14 +18,15 @@ class ProgressButton extends StatelessWidget {
       width: double.infinity,
       height: 48,
       child: ElevatedButton(
-          onPressed: isInProgress ? null : onPressed,
-          child: isInProgress
-              ? SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(),
-                )
-              : child),
+        onPressed: isInProgress ? null : onPressed,
+        child: isInProgress
+            ? SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(),
+              )
+            : child,
+      ),
     );
   }
 }

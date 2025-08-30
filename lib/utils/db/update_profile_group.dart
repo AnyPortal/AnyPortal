@@ -41,9 +41,9 @@ Future<bool> updateProfileGroup({
     profileGroupId = oldProfileGroup.id;
     switch (profileGroupType) {
       case ProfileGroupType.remote:
-        final profileGroupRemote = await (db.select(db.profileGroupRemote)
-              ..where((p) => p.profileGroupId.equals(profileGroupId!)))
-            .getSingle();
+        final profileGroupRemote = await (db.select(
+          db.profileGroupRemote,
+        )..where((p) => p.profileGroupId.equals(profileGroupId!))).getSingle();
         url ??= profileGroupRemote.url;
         autoUpdateInterval ??= profileGroupRemote.autoUpdateInterval;
       case ProfileGroupType.local:
@@ -58,13 +58,14 @@ Future<bool> updateProfileGroup({
       final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
       profileGroupRemoteAnyPortalREST =
           ProfileGroupRemoteAnyPortalREST.fromJson(jsonMap);
-      newNameSet =
-          profileGroupRemoteAnyPortalREST.profiles.map((e) => e.name).toSet();
+      newNameSet = profileGroupRemoteAnyPortalREST.profiles
+          .map((e) => e.name)
+          .toSet();
       if (oldProfileGroup != null) {
         profileGroupId = oldProfileGroup.id;
-        oldProfileList = await (db.select(db.profile)
-              ..where((e) => e.profileGroupId.equals(profileGroupId!)))
-            .get();
+        oldProfileList = await (db.select(
+          db.profile,
+        )..where((e) => e.profileGroupId.equals(profileGroupId!))).get();
         oldNameSet = oldProfileList.map((e) => e.name).toSet();
       }
     } else {
@@ -80,11 +81,15 @@ Future<bool> updateProfileGroup({
     if (oldProfileGroup != null) {
       profileGroupId = oldProfileGroup.id;
     } else {
-      profileGroupId = await db.into(db.profileGroup).insertOnConflictUpdate(
-          ProfileGroupCompanion(
+      profileGroupId = await db
+          .into(db.profileGroup)
+          .insertOnConflictUpdate(
+            ProfileGroupCompanion(
               name: drift.Value(name!),
               updatedAt: drift.Value(DateTime.now()),
-              type: drift.Value(profileGroupType!)));
+              type: drift.Value(profileGroupType!),
+            ),
+          );
     }
 
     switch (profileGroupType!) {
@@ -93,65 +98,87 @@ Future<bool> updateProfileGroup({
         for (var profile in profileGroupRemoteAnyPortalREST!.profiles) {
           // update
           if (oldNameSet.contains(profile.name)) {
-            await (db.update(db.profile)
-                  ..where((e) => (e.profileGroupId.equals(profileGroupId) &
-                      e.name.equals(profile.name))))
-                .write(ProfileCompanion(
-              name: drift.Value(profile.name),
-              coreCfg: drift.Value(jsonEncode(profile.coreConfig)),
-              updatedAt: drift.Value(DateTime.now()),
-              type: const drift.Value(ProfileType.local),
-              profileGroupId: drift.Value(profileGroupId),
-              coreTypeId: drift.Value(coreType2Id[profile.coreType]!),
-            ));
+            await (db.update(db.profile)..where(
+                  (e) =>
+                      (e.profileGroupId.equals(profileGroupId) &
+                      e.name.equals(profile.name)),
+                ))
+                .write(
+                  ProfileCompanion(
+                    name: drift.Value(profile.name),
+                    coreCfg: drift.Value(jsonEncode(profile.coreConfig)),
+                    updatedAt: drift.Value(DateTime.now()),
+                    type: const drift.Value(ProfileType.local),
+                    profileGroupId: drift.Value(profileGroupId),
+                    coreTypeId: drift.Value(coreType2Id[profile.coreType]!),
+                  ),
+                );
           } else {
             // add
-            await db.into(db.profile).insert(ProfileCompanion(
-                  name: drift.Value(profile.name),
-                  coreCfg: drift.Value(jsonEncode(profile.coreConfig)),
-                  updatedAt: drift.Value(DateTime.now()),
-                  type: const drift.Value(ProfileType.local),
-                  profileGroupId: drift.Value(profileGroupId),
-                  coreTypeId: drift.Value(coreType2Id[profile.coreType]!),
-                ));
+            await db
+                .into(db.profile)
+                .insert(
+                  ProfileCompanion(
+                    name: drift.Value(profile.name),
+                    coreCfg: drift.Value(jsonEncode(profile.coreConfig)),
+                    updatedAt: drift.Value(DateTime.now()),
+                    type: const drift.Value(ProfileType.local),
+                    profileGroupId: drift.Value(profileGroupId),
+                    coreTypeId: drift.Value(coreType2Id[profile.coreType]!),
+                  ),
+                );
           }
         }
         for (var profile in oldProfileList) {
           if (!newNameSet.contains(profile.name)) {
             // delete
-            await (db.delete(db.profile)..where((e) => e.id.equals(profile.id)))
-                .go();
+            await (db.delete(
+              db.profile,
+            )..where((e) => e.id.equals(profile.id))).go();
           }
         }
 
         // update profile group
         await db
             .into(db.profileGroup)
-            .insertOnConflictUpdate(ProfileGroupCompanion(
-              id: drift.Value(profileGroupId),
-              name: drift.Value(name!),
-              updatedAt: drift.Value(DateTime.now()),
-              type: drift.Value(profileGroupType),
-            ));
-        await db.into(db.profileGroupRemote).insertOnConflictUpdate(
-            ProfileGroupRemoteCompanion(
+            .insertOnConflictUpdate(
+              ProfileGroupCompanion(
+                id: drift.Value(profileGroupId),
+                name: drift.Value(name!),
+                updatedAt: drift.Value(DateTime.now()),
+                type: drift.Value(profileGroupType),
+              ),
+            );
+        await db
+            .into(db.profileGroupRemote)
+            .insertOnConflictUpdate(
+              ProfileGroupRemoteCompanion(
                 profileGroupId: drift.Value(profileGroupId),
                 url: drift.Value(url!),
                 autoUpdateInterval: drift.Value(autoUpdateInterval!),
-                format:
-                    const drift.Value(ProfileGroupRemoteFormat.anyportalRest)));
+                format: const drift.Value(
+                  ProfileGroupRemoteFormat.anyportalRest,
+                ),
+              ),
+            );
       case ProfileGroupType.local:
         await db
             .into(db.profileGroup)
-            .insertOnConflictUpdate(ProfileGroupCompanion(
-              id: drift.Value(profileGroupId),
-              name: drift.Value(name!),
-              updatedAt: drift.Value(DateTime.now()),
-              type: drift.Value(profileGroupType),
-            ));
-        await db.into(db.profileGroupLocal).insertOnConflictUpdate(
-            ProfileGroupLocalCompanion(
-                profileGroupId: drift.Value(profileGroupId)));
+            .insertOnConflictUpdate(
+              ProfileGroupCompanion(
+                id: drift.Value(profileGroupId),
+                name: drift.Value(name!),
+                updatedAt: drift.Value(DateTime.now()),
+                type: drift.Value(profileGroupType),
+              ),
+            );
+        await db
+            .into(db.profileGroupLocal)
+            .insertOnConflictUpdate(
+              ProfileGroupLocalCompanion(
+                profileGroupId: drift.Value(profileGroupId),
+              ),
+            );
     }
   });
   return true;

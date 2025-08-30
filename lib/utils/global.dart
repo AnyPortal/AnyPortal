@@ -6,10 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart'
     if (dart.library.html) 'path_provider/web.dart';
 
-import 'package:anyportal/utils/runtime_platform.dart';
-
 import 'logger.dart';
 import 'platform_elevation.dart';
+import 'runtime_platform.dart';
 
 class GlobalManager {
   late Directory applicationDocumentsDirectory;
@@ -43,7 +42,9 @@ class GlobalManager {
       await directory.create(recursive: true);
     }
 
-    applicationDocumentsDirectory = Directory(await directory.resolveSymbolicLinks());
+    applicationDocumentsDirectory = Directory(
+      await directory.resolveSymbolicLinks(),
+    );
   }
 
   Future<void> updateApplicationSupportDirectory() async {
@@ -53,7 +54,9 @@ class GlobalManager {
       await directory.create(recursive: true);
     }
 
-    applicationSupportDirectory = Directory(await directory.resolveSymbolicLinks());
+    applicationSupportDirectory = Directory(
+      await directory.resolveSymbolicLinks(),
+    );
   }
 
   Future<void> updateApplicationCacheDirectory() async {
@@ -63,7 +66,9 @@ class GlobalManager {
       await directory.create(recursive: true);
     }
 
-    applicationCacheDirectory = Directory(await directory.resolveSymbolicLinks());
+    applicationCacheDirectory = Directory(
+      await directory.resolveSymbolicLinks(),
+    );
   }
 
   Future<void> updateIsElevated() async {

@@ -27,9 +27,9 @@ Future<bool> updateProfile({
     final profileId = oldProfile.id;
     switch (profileType) {
       case ProfileType.remote:
-        final profileRemote = await (db.select(db.profileRemote)
-              ..where((p) => p.profileId.equals(profileId)))
-            .getSingle();
+        final profileRemote = await (db.select(
+          db.profileRemote,
+        )..where((p) => p.profileId.equals(profileId))).getSingle();
         url ??= profileRemote.url;
       case ProfileType.local:
     }
@@ -40,16 +40,19 @@ Future<bool> updateProfile({
     if (oldProfile != null) {
       profileId = oldProfile.id;
     } else {
-      profileId =
-          await db.into(db.profile).insertOnConflictUpdate(ProfileCompanion(
-                name: drift.Value(name!),
-                updatedAt: drift.Value(DateTime.now()),
-                type: drift.Value(profileType!),
-                coreTypeId: drift.Value(coreTypeId!),
-                coreCfg: drift.Value(coreCfg!),
-                coreCfgFmt: drift.Value(coreCfgFmt!),
-                profileGroupId: drift.Value(profileGroupId!),
-              ));
+      profileId = await db
+          .into(db.profile)
+          .insertOnConflictUpdate(
+            ProfileCompanion(
+              name: drift.Value(name!),
+              updatedAt: drift.Value(DateTime.now()),
+              type: drift.Value(profileType!),
+              coreTypeId: drift.Value(coreTypeId!),
+              coreCfg: drift.Value(coreCfg!),
+              coreCfgFmt: drift.Value(coreCfgFmt!),
+              profileGroupId: drift.Value(profileGroupId!),
+            ),
+          );
     }
 
     switch (profileType!) {
@@ -65,36 +68,49 @@ Future<bool> updateProfile({
           throw Exception("failed to fetch: $url");
         }
 
-        await db.into(db.profile).insertOnConflictUpdate(ProfileCompanion(
-              id: drift.Value(profileId),
-              name: drift.Value(name!),
-              updatedAt: drift.Value(DateTime.now()),
-              coreCfg: drift.Value(coreCfg),
-              type: drift.Value(profileType),
-              coreTypeId: drift.Value(coreTypeId!),
-              coreCfgFmt: drift.Value(coreCfgFmt!),
-              profileGroupId: drift.Value(profileGroupId!),
-            ));
+        await db
+            .into(db.profile)
+            .insertOnConflictUpdate(
+              ProfileCompanion(
+                id: drift.Value(profileId),
+                name: drift.Value(name!),
+                updatedAt: drift.Value(DateTime.now()),
+                coreCfg: drift.Value(coreCfg),
+                type: drift.Value(profileType),
+                coreTypeId: drift.Value(coreTypeId!),
+                coreCfgFmt: drift.Value(coreCfgFmt!),
+                profileGroupId: drift.Value(profileGroupId!),
+              ),
+            );
         await db
             .into(db.profileRemote)
-            .insertOnConflictUpdate(ProfileRemoteCompanion(
-              profileId: drift.Value(profileId),
-              url: drift.Value(url),
-              autoUpdateInterval: drift.Value(autoUpdateInterval!),
-            ));
+            .insertOnConflictUpdate(
+              ProfileRemoteCompanion(
+                profileId: drift.Value(profileId),
+                url: drift.Value(url),
+                autoUpdateInterval: drift.Value(autoUpdateInterval!),
+              ),
+            );
       case ProfileType.local:
-        await db.into(db.profile).insertOnConflictUpdate(ProfileCompanion(
-              id: drift.Value(profileId),
-              name: drift.Value(name!),
-              updatedAt: drift.Value(DateTime.now()),
-              coreCfg: drift.Value(coreCfg!),
-              type: drift.Value(profileType),
-              coreTypeId: drift.Value(coreTypeId!),
-              coreCfgFmt: drift.Value(coreCfgFmt!),
-              profileGroupId: drift.Value(profileGroupId!),
-            ));
-        await db.into(db.profileLocal).insertOnConflictUpdate(
-            ProfileLocalCompanion(profileId: drift.Value(profileId)));
+        await db
+            .into(db.profile)
+            .insertOnConflictUpdate(
+              ProfileCompanion(
+                id: drift.Value(profileId),
+                name: drift.Value(name!),
+                updatedAt: drift.Value(DateTime.now()),
+                coreCfg: drift.Value(coreCfg!),
+                type: drift.Value(profileType),
+                coreTypeId: drift.Value(coreTypeId!),
+                coreCfgFmt: drift.Value(coreCfgFmt!),
+                profileGroupId: drift.Value(profileGroupId!),
+              ),
+            );
+        await db
+            .into(db.profileLocal)
+            .insertOnConflictUpdate(
+              ProfileLocalCompanion(profileId: drift.Value(profileId)),
+            );
     }
   });
   return true;

@@ -101,7 +101,8 @@ class _CoresScreenState extends State<CoresScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => CoreScreen(coreTypeId: coreTypeId)),
+        builder: (context) => CoreScreen(coreTypeId: coreTypeId),
+      ),
     ).then((res) {
       if (res != null) {
         if (res['ok'] == true) {
@@ -131,9 +132,10 @@ class _CoresScreenState extends State<CoresScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => CoreScreen(
-                core: core,
-              )),
+        builder: (context) => CoreScreen(
+          core: core,
+        ),
+      ),
     ).then((res) {
       if (res != null && res['ok'] == true) {
         _loadCores();
@@ -142,16 +144,17 @@ class _CoresScreenState extends State<CoresScreen> {
   }
 
   void _editCoreType(int coreTypeId) async {
-    final coreType = await (db.select(db.coreType)
-          ..where((p) => p.id.equals(coreTypeId)))
-        .getSingle();
+    final coreType = await (db.select(
+      db.coreType,
+    )..where((p) => p.id.equals(coreTypeId))).getSingle();
     if (mounted) {
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => CoreTypeScreen(
-                  coreType: coreType,
-                )),
+          builder: (context) => CoreTypeScreen(
+            coreType: coreType,
+          ),
+        ),
       ).then((res) {
         if (res != null && res['ok'] == true) {
           _loadCores();
@@ -171,19 +174,23 @@ class _CoresScreenState extends State<CoresScreen> {
     final cores = await db.select(db.core).join([
       leftOuterJoin(db.coreExec, db.core.id.equalsExp(db.coreExec.coreId)),
       leftOuterJoin(db.coreLib, db.core.id.equalsExp(db.coreLib.coreId)),
-      leftOuterJoin(db.coreTypeSelected,
-          db.core.id.equalsExp(db.coreTypeSelected.coreId)),
+      leftOuterJoin(
+        db.coreTypeSelected,
+        db.core.id.equalsExp(db.coreTypeSelected.coreId),
+      ),
       leftOuterJoin(db.coreType, db.core.coreTypeId.equalsExp(db.coreType.id)),
       leftOuterJoin(db.asset, db.coreExec.assetId.equalsExp(db.asset.id)),
       leftOuterJoin(
-          db.assetRemote, db.assetRemote.assetId.equalsExp(db.asset.id)),
+        db.assetRemote,
+        db.assetRemote.assetId.equalsExp(db.asset.id),
+      ),
     ]).get();
     final coreTypes = await (db.select(db.coreType).join([
-      leftOuterJoin(db.coreTypeSelected,
-          db.coreTypeSelected.coreTypeId.equalsExp(db.coreType.id)),
-    ])
-          ..orderBy([OrderingTerm.asc(db.coreType.name)]))
-        .get();
+      leftOuterJoin(
+        db.coreTypeSelected,
+        db.coreTypeSelected.coreTypeId.equalsExp(db.coreType.id),
+      ),
+    ])..orderBy([OrderingTerm.asc(db.coreType.name)])).get();
 
     _groupedCores = {};
     _cores = {};
@@ -211,13 +218,19 @@ class _CoresScreenState extends State<CoresScreen> {
     for (var coreTypeId in _coreTypes.keys) {
       final cores = _groupedCores[coreTypeId];
       if (cores != null) {
-        _root.add(TreeNode(
-          data: coreTypeId,
-          key: "coreTypeId-$coreTypeId",
-        )..addAll(cores.map((core) {
-            return TreeNode(
-                data: core, key: "coreId-${core.read(db.core.id)!}");
-          }).toList()));
+        _root.add(
+          TreeNode(
+            data: coreTypeId,
+            key: "coreTypeId-$coreTypeId",
+          )..addAll(
+            cores.map((core) {
+              return TreeNode(
+                data: core,
+                key: "coreId-${core.read(db.core.id)!}",
+              );
+            }).toList(),
+          ),
+        );
       }
     }
 
@@ -235,9 +248,9 @@ class _CoresScreenState extends State<CoresScreen> {
   void handleCoreAction(TypedResult core, CoreAction action) async {
     switch (action) {
       case CoreAction.delete:
-        await (db.delete(db.core)
-              ..where((e) => e.id.equals(core.read(db.core.id)!)))
-            .go();
+        await (db.delete(
+          db.core,
+        )..where((e) => e.id.equals(core.read(db.core.id)!))).go();
         _loadCores();
       case CoreAction.edit:
         _editCore(core);
@@ -250,12 +263,14 @@ class _CoresScreenState extends State<CoresScreen> {
         _addCore(coreTypeId: coreTypeId);
       case CoreTypeAction.delete:
         await db.transaction(() async {
-          (db.delete(db.core)..where((e) => e.coreTypeId.equals(coreTypeId)))
-              .go();
+          (db.delete(
+            db.core,
+          )..where((e) => e.coreTypeId.equals(coreTypeId))).go();
           // do not delete the default local group
           if (coreTypeId > 2) {
-            (db.delete(db.coreType)..where((e) => e.id.equals(coreTypeId)))
-                .go();
+            (db.delete(
+              db.coreType,
+            )..where((e) => e.id.equals(coreTypeId))).go();
           }
         });
         _loadCores();
@@ -311,10 +326,12 @@ class _CoresScreenState extends State<CoresScreen> {
   void setCoreTypeIdCoreId(int coreTypeId, int coreId) {
     db
         .into(db.coreTypeSelected)
-        .insertOnConflictUpdate(CoreTypeSelectedCompanion(
-          coreTypeId: Value(coreTypeId),
-          coreId: Value(coreId),
-        ));
+        .insertOnConflictUpdate(
+          CoreTypeSelectedCompanion(
+            coreTypeId: Value(coreTypeId),
+            coreId: Value(coreId),
+          ),
+        );
     setState(() {
       _coreTypeSeclectedId[coreTypeId] = coreId;
     });
@@ -323,88 +340,101 @@ class _CoresScreenState extends State<CoresScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(context.loc.cores),
-          actions: [
-            SmoothHighlight(
-              enabled: _highlightCoresPopupMenuButton,
-              color: Colors.grey,
-              child: PopupMenuButton(
-                itemBuilder: (context) => CoresAction.values
-                    .map((action) => PopupMenuItem(
-                          value: action,
-                          child: Text(action.localized(context)),
-                        ))
-                    .toList(),
-                onSelected: (value) => handleCoresAction(value),
-              ),
+      appBar: AppBar(
+        title: Text(context.loc.cores),
+        actions: [
+          SmoothHighlight(
+            enabled: _highlightCoresPopupMenuButton,
+            color: Colors.grey,
+            child: PopupMenuButton(
+              itemBuilder: (context) => CoresAction.values
+                  .map(
+                    (action) => PopupMenuItem(
+                      value: action,
+                      child: Text(action.localized(context)),
+                    ),
+                  )
+                  .toList(),
+              onSelected: (value) => handleCoresAction(value),
+            ),
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
+        child: CustomScrollView(
+          slivers: [
+            SliverTreeView.simple(
+              tree: _root,
+              showRootNode: false,
+              expansionIndicatorBuilder: (context, node) =>
+                  ChevronIndicator.rightDown(
+                    alignment: Alignment.centerLeft,
+                    tree: node,
+                  ),
+              indentation: const Indentation(style: IndentStyle.squareJoint),
+              // onTreeReady: (controller) {
+              //   if (true) controller.expandAllChildren(_root);
+              // },
+              builder: (context, node) {
+                if (node.level == 2) {
+                  final core = node.data as TypedResult;
+                  final coreId = core.read(db.core.id)!;
+                  final coreTypeId = core.read(db.coreType.id)!;
+                  return RadioListTile(
+                    value: coreId,
+                    groupValue: _coreTypeSeclectedId[coreTypeId],
+                    onChanged: (_) {
+                      // prefs.setInt('app.selectedCoreId', value!);
+                      setCoreTypeIdCoreId(coreTypeId, coreId);
+                    },
+                    title: Text(getCoreTitle(core)),
+                    subtitle: Text('${core.read(db.core.updatedAt)}'),
+                    dense: true,
+                    secondary: PopupMenuButton<CoreAction>(
+                      onSelected: (value) => handleCoreAction(core, value),
+                      itemBuilder: (context) => CoreAction.values
+                          .map(
+                            (action) => PopupMenuItem(
+                              value: action,
+                              child: Text(action.localized(context)),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  );
+                } else {
+                  final coreTypeId = node.data as int;
+                  final coreTypeTitle = getCoreTypeTitle(
+                    _coreTypes[coreTypeId]!,
+                  );
+                  final coreTypeSubTitle = getCoreTypeSubTitle(
+                    _coreTypes[coreTypeId]!,
+                  );
+                  return ListTile(
+                    title: Text(coreTypeTitle),
+                    subtitle: Text(coreTypeSubTitle),
+                    // leading: node.isExpanded ? Icon(Icons.folder_open) : Icon(Icons.folder),
+                    leading: const Icon(null),
+                    trailing: PopupMenuButton<CoreTypeAction>(
+                      onSelected: (value) =>
+                          handleCoreTypeAction(coreTypeId, value),
+                      itemBuilder: (context) => CoreTypeAction.values
+                          .map(
+                            (action) => PopupMenuItem(
+                              value: action,
+                              child: Text(action.localized(context)),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  );
+                }
+              },
             ),
           ],
         ),
-        body: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
-            child: CustomScrollView(slivers: [
-              SliverTreeView.simple(
-                tree: _root,
-                showRootNode: false,
-                expansionIndicatorBuilder: (context, node) =>
-                    ChevronIndicator.rightDown(
-                  alignment: Alignment.centerLeft,
-                  tree: node,
-                ),
-                indentation: const Indentation(style: IndentStyle.squareJoint),
-                // onTreeReady: (controller) {
-                //   if (true) controller.expandAllChildren(_root);
-                // },
-                builder: (context, node) {
-                  if (node.level == 2) {
-                    final core = node.data as TypedResult;
-                    final coreId = core.read(db.core.id)!;
-                    final coreTypeId = core.read(db.coreType.id)!;
-                    return RadioListTile(
-                        value: coreId,
-                        groupValue: _coreTypeSeclectedId[coreTypeId],
-                        onChanged: (_) {
-                          // prefs.setInt('app.selectedCoreId', value!);
-                          setCoreTypeIdCoreId(coreTypeId, coreId);
-                        },
-                        title: Text(getCoreTitle(core)),
-                        subtitle: Text('${core.read(db.core.updatedAt)}'),
-                        dense: true,
-                        secondary: PopupMenuButton<CoreAction>(
-                          onSelected: (value) => handleCoreAction(core, value),
-                          itemBuilder: (context) => CoreAction.values
-                              .map((action) => PopupMenuItem(
-                                    value: action,
-                                    child: Text(action.localized(context)),
-                                  ))
-                              .toList(),
-                        ));
-                  } else {
-                    final coreTypeId = node.data as int;
-                    final coreTypeTitle =
-                        getCoreTypeTitle(_coreTypes[coreTypeId]!);
-                    final coreTypeSubTitle =
-                        getCoreTypeSubTitle(_coreTypes[coreTypeId]!);
-                    return ListTile(
-                      title: Text(coreTypeTitle),
-                      subtitle: Text(coreTypeSubTitle),
-                      // leading: node.isExpanded ? Icon(Icons.folder_open) : Icon(Icons.folder),
-                      leading: const Icon(null),
-                      trailing: PopupMenuButton<CoreTypeAction>(
-                        onSelected: (value) =>
-                            handleCoreTypeAction(coreTypeId, value),
-                        itemBuilder: (context) => CoreTypeAction.values
-                            .map((action) => PopupMenuItem(
-                                  value: action,
-                                  child: Text(action.localized(context)),
-                                ))
-                            .toList(),
-                      ),
-                    );
-                  }
-                },
-              ),
-            ])));
+      ),
+    );
   }
 }

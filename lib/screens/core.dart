@@ -46,8 +46,9 @@ class _CoreScreenState extends State<CoreScreen> {
   String _envs = "{}";
 
   final _workingDirController = TextEditingController(text: '');
-  final _argsController =
-      TextEditingController(text: '["run", "-c", "{config.path}"}]');
+  final _argsController = TextEditingController(
+    text: '["run", "-c", "{config.path}"}]',
+  );
   final _envsController = TextEditingController(text: '{}');
 
   Future<void> _loadCoreTypes() async {
@@ -62,10 +63,10 @@ class _CoreScreenState extends State<CoreScreen> {
   Future<void> _loadAssets() async {
     _assets = await (db.select(db.asset).join([
       leftOuterJoin(
-          db.assetRemote, db.asset.id.equalsExp(db.assetRemote.assetId)),
-    ])
-          ..orderBy([OrderingTerm.asc(db.asset.path)]))
-        .get();
+        db.assetRemote,
+        db.asset.id.equalsExp(db.assetRemote.assetId),
+      ),
+    ])..orderBy([OrderingTerm.asc(db.asset.path)])).get();
     if (mounted) {
       setState(() {
         _assets = _assets;
@@ -120,15 +121,17 @@ class _CoreScreenState extends State<CoreScreen> {
       if (context.mounted) {
         await permMan
             .requestPermission(
-          context,
-          Permission.storage,
-          context.loc.storage_permission_is_required_for_cores_to_load_assets_,
-        )
+              context,
+              Permission.storage,
+              context
+                  .loc
+                  .storage_permission_is_required_for_cores_to_load_assets_,
+            )
             .then((status) {
-          if (status != PermissionStatus.granted) {
-            permitted = false;
-          }
-        });
+              if (status != PermissionStatus.granted) {
+                permitted = false;
+              }
+            });
       }
     }
 
@@ -141,32 +144,44 @@ class _CoreScreenState extends State<CoreScreen> {
         await db.transaction(() async {
           if (oldCore != null) {
             coreId = oldCore.read(db.core.id)!;
-            await db.into(db.core).insertOnConflictUpdate(CoreCompanion(
-                  id: Value(coreId!),
-                  coreTypeId: Value(_coreTypeId),
-                  updatedAt: Value(DateTime.now()),
-                  isExec: Value(_coreIsExec),
-                  workingDir: Value(workingDir),
-                  envs: Value(envs),
-                ));
+            await db
+                .into(db.core)
+                .insertOnConflictUpdate(
+                  CoreCompanion(
+                    id: Value(coreId!),
+                    coreTypeId: Value(_coreTypeId),
+                    updatedAt: Value(DateTime.now()),
+                    isExec: Value(_coreIsExec),
+                    workingDir: Value(workingDir),
+                    envs: Value(envs),
+                  ),
+                );
             status = EditStatus.updated;
           } else {
-            coreId = await db.into(db.core).insert(CoreCompanion(
-                  coreTypeId: Value(_coreTypeId),
-                  updatedAt: Value(DateTime.now()),
-                  isExec: Value(_coreIsExec),
-                  workingDir: Value(workingDir),
-                  envs: Value(envs),
-                ));
+            coreId = await db
+                .into(db.core)
+                .insert(
+                  CoreCompanion(
+                    coreTypeId: Value(_coreTypeId),
+                    updatedAt: Value(DateTime.now()),
+                    isExec: Value(_coreIsExec),
+                    workingDir: Value(workingDir),
+                    envs: Value(envs),
+                  ),
+                );
             status = EditStatus.inserted;
           }
 
           if (_coreIsExec) {
-            await db.into(db.coreExec).insertOnConflictUpdate(CoreExecCompanion(
-                  args: Value(args),
-                  coreId: Value(coreId!),
-                  assetId: Value(_assetId!),
-                ));
+            await db
+                .into(db.coreExec)
+                .insertOnConflictUpdate(
+                  CoreExecCompanion(
+                    args: Value(args),
+                    coreId: Value(coreId!),
+                    assetId: Value(_assetId!),
+                  ),
+                );
           }
         });
         ok = true;
@@ -226,10 +241,12 @@ class _CoreScreenState extends State<CoreScreen> {
       }
     }
     if (!isAssetIdValid) {
-      dropdownMenuItems.add(DropdownMenuItem<int>(
-        value: _assetId,
-        child: Text(context.loc.warning_invalid_asset),
-      ));
+      dropdownMenuItems.add(
+        DropdownMenuItem<int>(
+          value: _assetId,
+          child: Text(context.loc.warning_invalid_asset),
+        ),
+      );
     }
 
     return dropdownMenuItems;
@@ -357,7 +374,7 @@ class _CoreScreenState extends State<CoreScreen> {
         isInProgress: _isSubmitting,
         onPressed: _submitForm,
         child: Text(context.loc.save_and_update),
-      )
+      ),
     ];
 
     return Scaffold(

@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:drift/drift.dart';
 
-import 'package:anyportal/utils/show_snack_bar_now.dart';
-
 import '../extensions/localization.dart';
 import '../utils/db.dart';
 import '../utils/logger.dart';
+import '../utils/show_snack_bar_now.dart';
 import '../widgets/form/progress_button.dart';
 
 class CoreTypeScreen extends StatefulWidget {
@@ -52,14 +51,22 @@ class _CoreTypeScreenState extends State<CoreTypeScreen> {
     try {
       if (_formKey.currentState?.validate() ?? false) {
         if (widget.coreType != null) {
-          await db.into(db.coreType).insertOnConflictUpdate(CoreTypeCompanion(
-                id: Value(widget.coreType!.id),
-                name: Value(_typeController.text),
-              ));
+          await db
+              .into(db.coreType)
+              .insertOnConflictUpdate(
+                CoreTypeCompanion(
+                  id: Value(widget.coreType!.id),
+                  name: Value(_typeController.text),
+                ),
+              );
         } else {
-          await db.into(db.coreType).insert(CoreTypeCompanion(
-                name: Value(_typeController.text),
-              ));
+          await db
+              .into(db.coreType)
+              .insert(
+                CoreTypeCompanion(
+                  name: Value(_typeController.text),
+                ),
+              );
         }
       }
       ok = true;
@@ -75,7 +82,8 @@ class _CoreTypeScreenState extends State<CoreTypeScreen> {
     }
 
     if (ok) {
-      if (mounted && Navigator.canPop(context)) Navigator.pop(context, {'ok': true});
+      if (mounted && Navigator.canPop(context))
+        Navigator.pop(context, {'ok': true});
     }
   }
 
@@ -94,7 +102,7 @@ class _CoreTypeScreenState extends State<CoreTypeScreen> {
         isInProgress: _isSubmitting,
         onPressed: _submitForm,
         child: Text(context.loc.save_and_update),
-      )
+      ),
     ];
 
     return Scaffold(

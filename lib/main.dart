@@ -174,24 +174,25 @@ class AnyPortal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-        listenable: Listenable.merge([themeManager, localeManager]),
-        builder: (BuildContext context, Widget? child) {
-          return MaterialApp(
+      listenable: Listenable.merge([themeManager, localeManager]),
+      builder: (BuildContext context, Widget? child) {
+        return MaterialApp(
+          title: 'AnyPortal',
+          navigatorKey: global.navigatorKey,
+          theme: getPlatformThemeData(),
+          locale: localeManager.locale,
+          darkTheme: getPlatformDarkThemeData(),
+          themeMode: themeManager.isDark ? ThemeMode.dark : ThemeMode.light,
+          home: HomePage(
             title: 'AnyPortal',
-            navigatorKey: global.navigatorKey,
-            theme: getPlatformThemeData(),
-            locale: localeManager.locale,
-            darkTheme: getPlatformDarkThemeData(),
-            themeMode: themeManager.isDark ? ThemeMode.dark : ThemeMode.light,
-            home: HomePage(
-              title: 'AnyPortal',
-            ),
-            localizationsDelegates: [
-              LocaleNamesLocalizationsDelegate(),
-              ...AppLocalizations.localizationsDelegates,
-            ],
-            supportedLocales: AppLocalizations.supportedLocales,
-          );
-        });
+          ),
+          localizationsDelegates: [
+            LocaleNamesLocalizationsDelegate(),
+            ...AppLocalizations.localizationsDelegates,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+        );
+      },
+    );
   }
 }

@@ -17,31 +17,42 @@ class V2RayAPI {
       port: port,
       options: ChannelOptions(
         credentials: const ChannelCredentials.insecure(),
-        codecRegistry:
-            CodecRegistry(codecs: const [GzipCodec(), IdentityCodec()]),
+        codecRegistry: CodecRegistry(
+          codecs: const [GzipCodec(), IdentityCodec()],
+        ),
       ),
     );
     statsServiceClient = StatsServiceClient(channel);
   }
 
-  Future<int> getUserTraffic(String email, TrafficType trafficType,
-      {bool reset = false}) async {
+  Future<int> getUserTraffic(
+    String email,
+    TrafficType trafficType, {
+    bool reset = false,
+  }) async {
     final response = await statsServiceClient.getStats(
       GetStatsRequest(
-          name: "user>>>$email>>>traffic>>>${trafficType.name}", reset: reset),
+        name: "user>>>$email>>>traffic>>>${trafficType.name}",
+        reset: reset,
+      ),
       // options: CallOptions(compression: const GzipCodec()),
     );
     return response.stat.value.toInt();
   }
 
-  Future<List<Stat>> queryStats(
-      {String? pattern,
-      List<String>? patterns,
-      bool? reset,
-      bool? regexp}) async {
+  Future<List<Stat>> queryStats({
+    String? pattern,
+    List<String>? patterns,
+    bool? reset,
+    bool? regexp,
+  }) async {
     final response = await statsServiceClient.queryStats(
       QueryStatsRequest(
-          pattern: pattern, patterns: patterns, reset: reset, regexp: regexp),
+        pattern: pattern,
+        patterns: patterns,
+        reset: reset,
+        regexp: regexp,
+      ),
     );
     return response.stat;
   }

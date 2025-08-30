@@ -13,6 +13,6 @@ Future<void> initLaunchAtStartup() async {
     packageName: 'anyportal',
     args: [
       "--minimized",
-    ]
+    ],
   );
 }

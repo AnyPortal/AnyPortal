@@ -50,7 +50,7 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
           "iconPath",
           "firstInstallTime",
           "lastUpdateTime",
-        ]
+        ],
       },
     );
     _allApps = apps?.map((e) => InstalledApp.fromMap(e)).toList() ?? [];
@@ -71,16 +71,19 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
       } else {
         final queryLowerCase = textEditingController.text.toLowerCase();
         _filteredApps = _allApps!
-            .where((e) =>
-                e.applicationLabel.toLowerCase().contains(queryLowerCase) ==
-                    true ||
-                e.packageName.toLowerCase().contains(queryLowerCase))
+            .where(
+              (e) =>
+                  e.applicationLabel.toLowerCase().contains(queryLowerCase) ==
+                      true ||
+                  e.packageName.toLowerCase().contains(queryLowerCase),
+            )
             .toList();
       }
 
       if (!isToShowSystemApps) {
-        _filteredApps =
-            _filteredApps!.where((e) => e.flagSystem == false).toList();
+        _filteredApps = _filteredApps!
+            .where((e) => e.flagSystem == false)
+            .toList();
       }
 
       _filteredApps!.sort((a, b) {
@@ -168,7 +171,7 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
           isToShowSystemApps = !isToShowSystemApps;
           updateFilteredAppList();
         },
-      )
+      ),
     ];
   }
 
@@ -202,12 +205,14 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
                   controller: textEditingController,
                   focusNode: focusNode,
                   decoration: InputDecoration(
-                      focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
                         color: Theme.of(context).hintColor,
                         width: 0.1,
-                      )),
-                      isDense: true),
+                      ),
+                    ),
+                    isDense: true,
+                  ),
                   onChanged: (_) {
                     updateFilteredAppList();
                   },
@@ -228,7 +233,7 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
             ),
             PopupMenuButton(
               itemBuilder: getPopupMenuItems,
-            )
+            ),
           ],
         ),
         body: Scrollbar(
@@ -264,14 +269,16 @@ class _InstalledAppScreenState extends State<InstalledAppScreen> {
                 final iconPath = app.iconPath;
                 return CheckboxListTile(
                   secondary: SizedBox(
-                      width: 56,
-                      height: 56,
-                      child: (iconPath != null)
-                          ? Image.file(File(iconPath))
-                          : Skeletonizer.zone(
-                              child: Bone.square(
+                    width: 56,
+                    height: 56,
+                    child: (iconPath != null)
+                        ? Image.file(File(iconPath))
+                        : Skeletonizer.zone(
+                            child: Bone.square(
                               size: 56,
-                            ))),
+                            ),
+                          ),
+                  ),
                   title: Text(app.applicationLabel),
                   subtitle: Text(app.packageName),
                   value: widget.selectedApps.contains(app.packageName),

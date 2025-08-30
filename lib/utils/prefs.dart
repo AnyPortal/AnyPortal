@@ -20,7 +20,8 @@ class PrefsManager {
     'app.dashboard.floatingActionButton': true,
     'app.locale.followSystem': true,
     'app.locale': "en_US",
-    'app.connectAtLaunch': RuntimePlatform.isWindows ||
+    'app.connectAtLaunch':
+        RuntimePlatform.isWindows ||
         RuntimePlatform.isLinux ||
         RuntimePlatform.isMacOS,
     'app.connectAtStartup': false,
@@ -35,7 +36,8 @@ class PrefsManager {
     'app.window.size.width': 1280.0,
     'app.window.size.height': 720.0,
     'app.window.isMaximized': false,
-    'app.window.closeToTray': RuntimePlatform.isWindows ||
+    'app.window.closeToTray':
+        RuntimePlatform.isWindows ||
         RuntimePlatform.isLinux ||
         RuntimePlatform.isMacOS,
     'app.runElevated': false,
@@ -44,7 +46,8 @@ class PrefsManager {
     'inject.api': true,
     'inject.api.port': 15490,
     'inject.dns.fakedns': true,
-    'inject.dns.local': RuntimePlatform.isWindows ||
+    'inject.dns.local':
+        RuntimePlatform.isWindows ||
         RuntimePlatform.isLinux ||
         RuntimePlatform.isMacOS,
     'inject.log': true,

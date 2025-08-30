@@ -32,8 +32,11 @@ class ClashAPI {
     shouldWatch = false;
   }
 
-  Future<void> watchHttpGetStream(Uri uri, void Function(String) onData,
-      {int retryCount = 0}) async {
+  Future<void> watchHttpGetStream(
+    Uri uri,
+    void Function(String) onData, {
+    int retryCount = 0,
+  }) async {
     final request = http.Request('GET', uri);
     try {
       final response = await request.send();
@@ -49,7 +52,8 @@ class ClashAPI {
             onData(line);
           } catch (e) {
             logger.w(
-                'watchHttpGetStream: failed to decode line: $line\nError: $e');
+              'watchHttpGetStream: failed to decode line: $line\nError: $e',
+            );
           }
         }
       } else {

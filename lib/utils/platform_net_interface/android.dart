@@ -1,5 +1,4 @@
-import 'package:anyportal/utils/method_channel.dart';
-
+import '../method_channel.dart';
 import '../platform_net_interface.dart';
 
 class PlatformNetInterfaceAndroid implements PlatformNetInterface {
@@ -8,8 +7,9 @@ class PlatformNetInterfaceAndroid implements PlatformNetInterface {
     Set<String> excludeIPv4Set = const {},
     Set<String> excludeIPv6Set = const {},
   }) async {
-    final linkPropertiesMap = await mCMan.methodChannel
-        .invokeMapMethod("os.getEffectiveLinkProperties");
+    final linkPropertiesMap = await mCMan.methodChannel.invokeMapMethod(
+      "os.getEffectiveLinkProperties",
+    );
     if (linkPropertiesMap == null) return null;
     final linkProperties = LinkProperties.fromMap(linkPropertiesMap);
     final iPv4AddressSet = <String>{};
@@ -45,10 +45,11 @@ class LinkProperties {
   final List<String> dnsServers;
   final List<String> linkAddresses;
 
-  LinkProperties(
-      {required this.interfaceName,
-      required this.dnsServers,
-      required this.linkAddresses});
+  LinkProperties({
+    required this.interfaceName,
+    required this.dnsServers,
+    required this.linkAddresses,
+  });
 
   factory LinkProperties.fromMap(Map map) {
     return LinkProperties(

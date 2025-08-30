@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:anyportal/utils/show_snack_bar_now.dart';
-
 import '../extensions/localization.dart';
 import '../models/core.dart';
 import '../models/profile.dart';
@@ -9,6 +7,7 @@ import '../utils/db.dart';
 import '../utils/db/update_profile.dart';
 import '../utils/json.dart';
 import '../utils/logger.dart';
+import '../utils/show_snack_bar_now.dart';
 import '../widgets/form/progress_button.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -69,12 +68,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final profileId = widget.profile!.id;
       switch (_profileType) {
         case ProfileType.remote:
-          final profileRemote = await (db.select(db.profileRemote)
-                ..where((p) => p.profileId.equals(profileId)))
-              .getSingle();
+          final profileRemote = await (db.select(
+            db.profileRemote,
+          )..where((p) => p.profileId.equals(profileId))).getSingle();
           _urlController.text = profileRemote.url;
-          _autoUpdateIntervalController.text =
-              profileRemote.autoUpdateInterval.toString();
+          _autoUpdateIntervalController.text = profileRemote.autoUpdateInterval
+              .toString();
         case ProfileType.local:
       }
     }
@@ -136,8 +135,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           border: OutlineInputBorder(),
         ),
         items: _profileGroupDataList.map((ProfileGroupData t) {
-          final name =
-              t.id == 1 && t.name == "" ? context.loc.standalone : t.name;
+          final name = t.id == 1 && t.name == ""
+              ? context.loc.standalone
+              : t.name;
           return DropdownMenuItem<int>(value: t.id, child: Text(name));
         }).toList(),
         onChanged: (value) {
@@ -224,7 +224,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         isInProgress: _isSubmitting,
         onPressed: _submitForm,
         child: Text(context.loc.save_and_update),
-      )
+      ),
     ];
 
     return Scaffold(

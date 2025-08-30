@@ -104,79 +104,87 @@ class VPNTogglesState extends State<VPNToggles> {
         ListTile(
           dense: widget.isDense,
           title: ListenableBuilder(
-              listenable: prefs,
-              builder: (BuildContext context, Widget? child) {
-                final slectedProfileName =
-                    prefs.getString("cache.app.selectedProfileName") ??
-                        context.loc.please_select_a_profile;
-                return Text(slectedProfileName);
-              }),
+            listenable: prefs,
+            builder: (BuildContext context, Widget? child) {
+              final slectedProfileName =
+                  prefs.getString("cache.app.selectedProfileName") ??
+                  context.loc.please_select_a_profile;
+              return Text(slectedProfileName);
+            },
+          ),
           trailing: Transform.scale(
-              scale: switchScale,
-              origin: const Offset(32, 0),
-              child: ListenableBuilder(
-                  listenable: vPNMan,
-                  builder: (BuildContext context, Widget? child) {
-                    return Switch(
-                      value: vPNMan.isCoreActive,
-                      onChanged: vPNMan.isTogglingAll ? null : toggleAll,
-                    );
-                  })),
+            scale: switchScale,
+            origin: const Offset(32, 0),
+            child: ListenableBuilder(
+              listenable: vPNMan,
+              builder: (BuildContext context, Widget? child) {
+                return Switch(
+                  value: vPNMan.isCoreActive,
+                  onChanged: vPNMan.isTogglingAll ? null : toggleAll,
+                );
+              },
+            ),
+          ),
         ),
         if (RuntimePlatform.isWindows ||
             RuntimePlatform.isLinux ||
             RuntimePlatform.isMacOS ||
             (RuntimePlatform.isAndroid && global.isElevated))
           ListTile(
-              dense: widget.isDense,
-              title: Text(context.loc.system_proxy),
-              trailing: Transform.scale(
-                scale: switchScale,
-                origin: const Offset(32, 0),
-                child: ListenableBuilder(
-                    listenable: Listenable.merge([vPNMan, prefs]),
-                    builder: (BuildContext context, Widget? child) {
-                      final shouldOn = prefs.getBool('systemProxy')!;
-                      final isOn = vPNMan.isSystemProxyActive == true;
-                      return Switch(
-                        value: shouldOn,
-                        onChanged: _systemProxyIsEnabled == null ||
-                                vPNMan.isTogglingSystemProxy
-                            ? null
-                            : toggleSystemProxy,
-                        thumbIcon: WidgetStateProperty.resolveWith<Icon?>(
-                            (Set<WidgetState> states) {
-                          return !vPNMan.isTogglingSystemProxy &&
-                                  shouldOn &&
-                                  !isOn
-                              ? Icon(Icons.priority_high)
-                              : null;
-                        }),
-                      );
+            dense: widget.isDense,
+            title: Text(context.loc.system_proxy),
+            trailing: Transform.scale(
+              scale: switchScale,
+              origin: const Offset(32, 0),
+              child: ListenableBuilder(
+                listenable: Listenable.merge([vPNMan, prefs]),
+                builder: (BuildContext context, Widget? child) {
+                  final shouldOn = prefs.getBool('systemProxy')!;
+                  final isOn = vPNMan.isSystemProxyActive == true;
+                  return Switch(
+                    value: shouldOn,
+                    onChanged:
+                        _systemProxyIsEnabled == null ||
+                            vPNMan.isTogglingSystemProxy
+                        ? null
+                        : toggleSystemProxy,
+                    thumbIcon: WidgetStateProperty.resolveWith<Icon?>((
+                      Set<WidgetState> states,
+                    ) {
+                      return !vPNMan.isTogglingSystemProxy && shouldOn && !isOn
+                          ? Icon(Icons.priority_high)
+                          : null;
                     }),
-              )),
+                  );
+                },
+              ),
+            ),
+          ),
         ListTile(
           dense: widget.isDense,
           title: Text("Tun2socks"),
           trailing: Transform.scale(
-              scale: switchScale,
-              origin: const Offset(32, 0),
-              child: ListenableBuilder(
-                  listenable: Listenable.merge([vPNMan, prefs]),
-                  builder: (BuildContext context, Widget? child) {
-                    final shouldOn = prefs.getBool('tun')!;
-                    final isOn = vPNMan.isTunActive;
-                    return Switch(
-                      value: tun,
-                      onChanged: vPNMan.isTogglingTun ? null : toggleTun,
-                      thumbIcon: WidgetStateProperty.resolveWith<Icon?>(
-                          (Set<WidgetState> states) {
-                        return !vPNMan.isTogglingTun && shouldOn && !isOn
-                            ? Icon(Icons.priority_high)
-                            : null;
-                      }),
-                    );
-                  })),
+            scale: switchScale,
+            origin: const Offset(32, 0),
+            child: ListenableBuilder(
+              listenable: Listenable.merge([vPNMan, prefs]),
+              builder: (BuildContext context, Widget? child) {
+                final shouldOn = prefs.getBool('tun')!;
+                final isOn = vPNMan.isTunActive;
+                return Switch(
+                  value: tun,
+                  onChanged: vPNMan.isTogglingTun ? null : toggleTun,
+                  thumbIcon: WidgetStateProperty.resolveWith<Icon?>((
+                    Set<WidgetState> states,
+                  ) {
+                    return !vPNMan.isTogglingTun && shouldOn && !isOn
+                        ? Icon(Icons.priority_high)
+                        : null;
+                  }),
+                );
+              },
+            ),
+          ),
         ),
       ],
     );

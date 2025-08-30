@@ -12,7 +12,9 @@ class Blockquote extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
       decoration: BoxDecoration(
-        border: Border(left: BorderSide(color: theme.colorScheme.primary, width: 4)),
+        border: Border(
+          left: BorderSide(color: theme.colorScheme.primary, width: 4),
+        ),
         color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.9),
       ),
       child: Text(

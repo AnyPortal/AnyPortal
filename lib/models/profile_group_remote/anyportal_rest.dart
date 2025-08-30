@@ -11,7 +11,8 @@ class Profile {
 
   Profile(this.name, this.coreType, this.format, this.coreConfig);
 
-  factory Profile.fromJson(Map<String, dynamic> json) => _$ProfileFromJson(json);
+  factory Profile.fromJson(Map<String, dynamic> json) =>
+      _$ProfileFromJson(json);
 
   Map<String, dynamic> toJson() => _$ProfileToJson(this);
 }
@@ -23,7 +24,9 @@ class ProfileGroupRemoteAnyPortalREST {
 
   ProfileGroupRemoteAnyPortalREST(this.version, this.profiles);
 
-  factory ProfileGroupRemoteAnyPortalREST.fromJson(Map<String, dynamic> json) => _$ProfileGroupRemoteAnyPortalRESTFromJson(json);
+  factory ProfileGroupRemoteAnyPortalREST.fromJson(Map<String, dynamic> json) =>
+      _$ProfileGroupRemoteAnyPortalRESTFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ProfileGroupRemoteAnyPortalRESTToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$ProfileGroupRemoteAnyPortalRESTToJson(this);
 }

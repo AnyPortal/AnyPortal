@@ -26,14 +26,16 @@ class TrayMenuManager {
     }
 
     /// without initial value, Linux tray menu crashes
-    await trayManager.setContextMenu(Menu(
-      items: [
-        MenuItem(
-          key: 'exit',
-          label: 'Exit',
-        ),
-      ],
-    ));
+    await trayManager.setContextMenu(
+      Menu(
+        items: [
+          MenuItem(
+            key: 'exit',
+            label: 'Exit',
+          ),
+        ],
+      ),
+    );
 
     trayManager.setToolTip("AnyPortal");
 

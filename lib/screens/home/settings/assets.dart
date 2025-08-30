@@ -6,14 +6,13 @@ import 'package:drift/drift.dart';
 import 'package:path/path.dart' as p;
 import 'package:smooth_highlight/smooth_highlight.dart';
 
-import 'package:anyportal/utils/asset_remote/github.dart';
-import 'package:anyportal/utils/runtime_platform.dart';
-
 import '../../../extensions/localization.dart';
 import '../../../models/asset.dart';
 import '../../../screens/asset.dart';
+import '../../../utils/asset_remote/github.dart';
 import '../../../utils/db.dart';
 import '../../../utils/logger.dart';
+import '../../../utils/runtime_platform.dart';
 
 class AssetsScreen extends StatefulWidget {
   const AssetsScreen({
@@ -74,10 +73,10 @@ class _AssetsScreenState extends State<AssetsScreen> {
   Future<void> _loadAssets() async {
     final assets = await (db.select(db.asset).join([
       leftOuterJoin(
-          db.assetRemote, db.asset.id.equalsExp(db.assetRemote.assetId)),
-    ])
-          ..orderBy([OrderingTerm.asc(db.asset.path)]))
-        .get();
+        db.assetRemote,
+        db.asset.id.equalsExp(db.assetRemote.assetId),
+      ),
+    ])..orderBy([OrderingTerm.asc(db.asset.path)])).get();
 
     if (assets.isEmpty) {
       setHighlightAssetsPopupMenuButton();
@@ -105,9 +104,10 @@ class _AssetsScreenState extends State<AssetsScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => AssetScreen(
-                asset: asset,
-              )),
+        builder: (context) => AssetScreen(
+          asset: asset,
+        ),
+      ),
     ).then((res) {
       if (res != null && res['ok'] == true) {
         _loadAssets();
@@ -132,8 +132,9 @@ class _AssetsScreenState extends State<AssetsScreen> {
     }
 
     final fileDir = file.parent;
-    final filePickerDirName =
-        fileDir.parent.path.split(Platform.pathSeparator).last;
+    final filePickerDirName = fileDir.parent.path
+        .split(Platform.pathSeparator)
+        .last;
 
     /// Ensure it's inside the file_picker cache directory and matches expected structure
     if (filePickerDirName != 'file_picker') {
@@ -211,9 +212,9 @@ class _AssetsScreenState extends State<AssetsScreen> {
         if (asset.readWithConverter(db.asset.type) == AssetType.remote) {
           await deleteAssetRemoteProtocolGithub(asset);
         }
-        await (db.delete(db.asset)
-              ..where((e) => e.id.equals(asset.read(db.asset.id)!)))
-            .go();
+        await (db.delete(
+          db.asset,
+        )..where((e) => e.id.equals(asset.read(db.asset.id)!))).go();
         _loadAssets();
       case AssetAction.edit:
         _editAsset(asset);
@@ -231,42 +232,47 @@ class _AssetsScreenState extends State<AssetsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(context.loc.assets),
-          actions: [
-            SmoothHighlight(
-              enabled: _highlightAssetsPopupMenuButton,
-              color: Colors.grey,
-              child: PopupMenuButton(
-                itemBuilder: (context) => AssetsAction.values
-                    .map((action) => PopupMenuItem(
-                          value: action,
-                          child: Text(action.localized(context)),
-                        ))
-                    .toList(),
-                onSelected: (value) => handleAssetsAction(value),
-              ),
+      appBar: AppBar(
+        title: Text(context.loc.assets),
+        actions: [
+          SmoothHighlight(
+            enabled: _highlightAssetsPopupMenuButton,
+            color: Colors.grey,
+            child: PopupMenuButton(
+              itemBuilder: (context) => AssetsAction.values
+                  .map(
+                    (action) => PopupMenuItem(
+                      value: action,
+                      child: Text(action.localized(context)),
+                    ),
+                  )
+                  .toList(),
+              onSelected: (value) => handleAssetsAction(value),
             ),
-          ],
-        ),
-        body: ListView.builder(
-          itemCount: _assets.length,
-          itemBuilder: (context, index) {
-            final asset = _assets[index];
-            return ListTile(
-              title: Text(getAssetTitle(asset)),
-              subtitle: Text(asset.read(db.asset.updatedAt).toString()),
-              trailing: PopupMenuButton<AssetAction>(
-                onSelected: (value) => handleAssetAction(asset, value),
-                itemBuilder: (context) => AssetAction.values
-                    .map((action) => PopupMenuItem(
-                          value: action,
-                          child: Text(action.localized(context)),
-                        ))
-                    .toList(),
-              ),
-            );
-          },
-        ));
+          ),
+        ],
+      ),
+      body: ListView.builder(
+        itemCount: _assets.length,
+        itemBuilder: (context, index) {
+          final asset = _assets[index];
+          return ListTile(
+            title: Text(getAssetTitle(asset)),
+            subtitle: Text(asset.read(db.asset.updatedAt).toString()),
+            trailing: PopupMenuButton<AssetAction>(
+              onSelected: (value) => handleAssetAction(asset, value),
+              itemBuilder: (context) => AssetAction.values
+                  .map(
+                    (action) => PopupMenuItem(
+                      value: action,
+                      child: Text(action.localized(context)),
+                    ),
+                  )
+                  .toList(),
+            ),
+          );
+        },
+      ),
+    );
   }
 }

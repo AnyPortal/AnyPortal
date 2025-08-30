@@ -28,7 +28,8 @@ class PlatformLaunchAtLoginWindows extends PlatformLaunchAtLogin {
     final runLevel = isElevated ? "-RunLevel Highest" : "";
 
     /// schtasks does not allow to set ExecutionTimeLimit
-    final script = """
+    final script =
+        """
       \$currentUserId = [Security.Principal.WindowsIdentity]::GetCurrent().User.Value
       \$action = New-ScheduledTaskAction -Execute '${Platform.resolvedExecutable}' -Argument '--minimized'
       \$trigger = New-ScheduledTaskTrigger -AtLogOn -User \$currentUserId
@@ -53,8 +54,10 @@ class PlatformLaunchAtLoginWindows extends PlatformLaunchAtLogin {
   }
 
   Future<bool> _runPowerShellScript(String script) async {
-    ProcessResult result =
-        await Process.run('C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe', ['-noprofile', '-Command', script]);
+    ProcessResult result = await Process.run(
+      'C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe',
+      ['-noprofile', '-Command', script],
+    );
 
     return result.exitCode == 0;
   }

@@ -11,8 +11,12 @@ import 'logger.dart';
 Future<void> copyAssetsToDefaultLocation() async {
   // For default location, you can use path_provider to get a suitable directory
   String src = "assets/conf/tun2socks.sing_box.example.json";
-  String dst = p.join(global.applicationDocumentsDirectory.path, "AnyPortal",
-      "conf", "tun2socks.sing_box.example.json");
+  String dst = p.join(
+    global.applicationDocumentsDirectory.path,
+    "AnyPortal",
+    "conf",
+    "tun2socks.sing_box.example.json",
+  );
 
   await copyAssetIfDifferent(src, dst);
 }

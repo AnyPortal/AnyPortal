@@ -28,11 +28,13 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
 
   bool _injectSendThrough = prefs.getBool('inject.sendThrough')!;
   String _bindingIp = prefs.getString('inject.sendThrough.bindingIp')!;
-  String _bindingInterface =
-      prefs.getString('inject.sendThrough.bindingInterface')!;
+  String _bindingInterface = prefs.getString(
+    'inject.sendThrough.bindingInterface',
+  )!;
   SendThroughBindingStratagy _sendThroughBindingStratagy =
-      SendThroughBindingStratagy
-          .values[prefs.getInt('inject.sendThrough.bindingStratagy')!];
+      SendThroughBindingStratagy.values[prefs.getInt(
+        'inject.sendThrough.bindingStratagy',
+      )!];
 
   bool _injectDnsLocal = prefs.getBool('inject.dns.local')!;
 
@@ -66,15 +68,16 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
           showDialog(
             context: context,
             builder: (context) => TextInputPopup(
-                title: context.loc.api_port,
-                initialValue: _apiPort.toString(),
-                onSaved: (String value) {
-                  final apiPort = int.parse(value);
-                  setState(() {
-                    _apiPort = apiPort;
-                  });
-                  prefs.setInt('inject.api.port', apiPort);
-                }),
+              title: context.loc.api_port,
+              initialValue: _apiPort.toString(),
+              onSaved: (String value) {
+                final apiPort = int.parse(value);
+                setState(() {
+                  _apiPort = apiPort;
+                });
+                prefs.setInt('inject.api.port', apiPort);
+              },
+            ),
           );
         },
         enabled: _injectApi,
@@ -106,19 +109,20 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
         subtitle: Text(_logLevel.name),
         onTap: () {
           showDialog(
-              context: context,
-              builder: (context) => RadioListSelectionPopup<LogLevel>(
-                    title: context.loc.log_level,
-                    items: LogLevel.values,
-                    initialValue: _logLevel,
-                    onSaved: (value) {
-                      prefs.setInt('inject.log.level', value.index);
-                      setState(() {
-                        _logLevel = value;
-                      });
-                    },
-                    itemToString: (e) => e.name,
-                  ));
+            context: context,
+            builder: (context) => RadioListSelectionPopup<LogLevel>(
+              title: context.loc.log_level,
+              items: LogLevel.values,
+              initialValue: _logLevel,
+              onSaved: (value) {
+                prefs.setInt('inject.log.level', value.index);
+                setState(() {
+                  _logLevel = value;
+                });
+              },
+              itemToString: (e) => e.name,
+            ),
+          );
         },
       ),
       const Divider(),
@@ -131,8 +135,9 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
       ),
       ListTile(
         title: Text(context.loc.inject_local_dns),
-        subtitle: Text(context
-            .loc.replace_local_dns_with_explicit_ip_useful_when_using_tun),
+        subtitle: Text(
+          context.loc.replace_local_dns_with_explicit_ip_useful_when_using_tun,
+        ),
         trailing: Switch(
           value: _injectDnsLocal,
           onChanged: (bool value) {
@@ -154,7 +159,8 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
       ListTile(
         title: Text(context.loc.inject_socks_inbound),
         subtitle: Text(
-            "${prefs.getString('app.server.address')!}:${prefs.getInt('app.socks.port')!}, ${context.loc.see_settings_connectivity}"),
+          "${prefs.getString('app.server.address')!}:${prefs.getInt('app.socks.port')!}, ${context.loc.see_settings_connectivity}",
+        ),
         trailing: Switch(
           value: _injectSocks,
           onChanged: (value) {
@@ -168,7 +174,8 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
       ListTile(
         title: Text(context.loc.inject_http_inbound),
         subtitle: Text(
-            "${prefs.getString('app.server.address')!}:${prefs.getInt('app.http.port')!}, ${context.loc.see_settings_connectivity}"),
+          "${prefs.getString('app.server.address')!}:${prefs.getInt('app.http.port')!}, ${context.loc.see_settings_connectivity}",
+        ),
         trailing: Switch(
           value: _injectHttp,
           onChanged: (value) {
@@ -189,8 +196,11 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
       ),
       ListTile(
         title: Text(context.loc.inject_send_through),
-        subtitle: Text(context.loc
-            .bind_all_outbounds_to_ip_address_useful_when_using_with_some_tun_tools),
+        subtitle: Text(
+          context
+              .loc
+              .bind_all_outbounds_to_ip_address_useful_when_using_with_some_tun_tools,
+        ),
         trailing: Switch(
           value: _injectSendThrough,
           onChanged: (bool value) {
@@ -207,21 +217,24 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
         subtitle: Text(_sendThroughBindingStratagy.name),
         onTap: () {
           showDialog(
-              context: context,
-              builder: (context) =>
-                  RadioListSelectionPopup<SendThroughBindingStratagy>(
-                    title: context.loc.send_through_binding_stratagy,
-                    items: SendThroughBindingStratagy.values,
-                    initialValue: _sendThroughBindingStratagy,
-                    onSaved: (value) {
-                      prefs.setInt(
-                          'inject.sendThrough.bindingStratagy', value.index);
-                      setState(() {
-                        _sendThroughBindingStratagy = value;
-                      });
-                    },
-                    itemToString: (e) => e.name,
-                  ));
+            context: context,
+            builder: (context) =>
+                RadioListSelectionPopup<SendThroughBindingStratagy>(
+                  title: context.loc.send_through_binding_stratagy,
+                  items: SendThroughBindingStratagy.values,
+                  initialValue: _sendThroughBindingStratagy,
+                  onSaved: (value) {
+                    prefs.setInt(
+                      'inject.sendThrough.bindingStratagy',
+                      value.index,
+                    );
+                    setState(() {
+                      _sendThroughBindingStratagy = value;
+                    });
+                  },
+                  itemToString: (e) => e.name,
+                ),
+          );
         },
       ),
       if (_sendThroughBindingStratagy == SendThroughBindingStratagy.interface)
@@ -233,15 +246,15 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
             showDialog(
               context: context,
               builder: (context) => TextInputPopup(
-                  title: context.loc.binding_interface,
-                  initialValue: _bindingInterface,
-                  onSaved: (String value) {
-                    prefs.setString(
-                        'inject.sendThrough.bindingInterface', value);
-                    setState(() {
-                      _bindingInterface = value;
-                    });
-                  }),
+                title: context.loc.binding_interface,
+                initialValue: _bindingInterface,
+                onSaved: (String value) {
+                  prefs.setString('inject.sendThrough.bindingInterface', value);
+                  setState(() {
+                    _bindingInterface = value;
+                  });
+                },
+              ),
             );
           },
         ),
@@ -254,14 +267,15 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
             showDialog(
               context: context,
               builder: (context) => TextInputPopup(
-                  title: context.loc.binding_ip,
-                  initialValue: _bindingIp,
-                  onSaved: (value) {
-                    prefs.setString('inject.sendThrough.bindingIp', value);
-                    setState(() {
-                      _bindingIp = value;
-                    });
-                  }),
+                title: context.loc.binding_ip,
+                initialValue: _bindingIp,
+                onSaved: (value) {
+                  prefs.setString('inject.sendThrough.bindingIp', value);
+                  setState(() {
+                    _bindingIp = value;
+                  });
+                },
+              ),
             );
           },
         ),

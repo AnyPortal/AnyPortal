@@ -18,7 +18,8 @@ class MethodChannelManager {
     logger.d("finished: MethodChannelManager.init");
   }
 
-  static final MethodChannelManager _instance = MethodChannelManager._internal();
+  static final MethodChannelManager _instance =
+      MethodChannelManager._internal();
   final Completer<void> _completer = Completer<void>();
 
   // Private constructor
@@ -29,25 +30,25 @@ class MethodChannelManager {
     return _instance;
   }
 
-  void addHandler(String method, Function(MethodCall) callback){
-    if (!handlers.containsKey(method)){
+  void addHandler(String method, Function(MethodCall) callback) {
+    if (!handlers.containsKey(method)) {
       handlers[method] = {};
     }
     handlers[method]!.add(callback);
   }
 
-  void removeHandler(String method, Function(MethodCall) callback){
+  void removeHandler(String method, Function(MethodCall) callback) {
     if (!handlers.containsKey(method)) return;
     handlers[method]!.remove(callback);
-    if (handlers[method]!.isEmpty){
+    if (handlers[method]!.isEmpty) {
       handlers.remove(method);
     }
   }
 
   Future<dynamic> methodCallHandler(MethodCall call) async {
     // logger.d("methodCallHandler: ${call.method}");
-    if (handlers.containsKey(call.method)){
-      for (final callback in handlers[call.method]!){
+    if (handlers.containsKey(call.method)) {
+      for (final callback in handlers[call.method]!) {
         callback(call);
       }
     }

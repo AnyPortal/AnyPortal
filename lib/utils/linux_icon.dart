@@ -6,9 +6,12 @@ import 'logger.dart';
 
 Future<void> updateLinuxIcon() async {
   final execPath = Platform.resolvedExecutable;
-  final iconPath = p.join(Platform.resolvedExecutable,
-      "../data/flutter_assets/assets/icon/icon.png");
-  final desktopStr = """[Desktop Entry]
+  final iconPath = p.join(
+    Platform.resolvedExecutable,
+    "../data/flutter_assets/assets/icon/icon.png",
+  );
+  final desktopStr =
+      """[Desktop Entry]
 Version=1.0
 Type=Application
 Name=anyportal

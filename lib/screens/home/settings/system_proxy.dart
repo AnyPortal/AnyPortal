@@ -40,9 +40,12 @@ class _SystemProxyScreenState extends State<SystemProxyScreen> {
         enabled: _systemProxyIsEnabled != null,
         title: Text(context.loc.enable_system_proxy),
         subtitle: Text(
-            context.loc.provided_by_os_not_all_apps_respect_this_setting),
+          context.loc.provided_by_os_not_all_apps_respect_this_setting,
+        ),
         trailing: Switch(
-          value: _systemProxyIsEnabled == null ? false : _systemProxyShouldEnable,
+          value: _systemProxyIsEnabled == null
+              ? false
+              : _systemProxyShouldEnable,
           onChanged: (bool shouldEnable) {
             setState(() {
               _systemProxyShouldEnable = shouldEnable;
@@ -63,13 +66,14 @@ class _SystemProxyScreenState extends State<SystemProxyScreen> {
       ),
     ];
     return Scaffold(
-        appBar: AppBar(
-          // Use the selected tab's label for the AppBar title
-          title: Text(context.loc.system_proxy),
-        ),
-        body: ListView.builder(
-          itemCount: fields.length,
-          itemBuilder: (context, index) => fields[index],
-        ));
+      appBar: AppBar(
+        // Use the selected tab's label for the AppBar title
+        title: Text(context.loc.system_proxy),
+      ),
+      body: ListView.builder(
+        itemCount: fields.length,
+        itemBuilder: (context, index) => fields[index],
+      ),
+    );
   }
 }

@@ -2,10 +2,9 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 
-import 'package:anyportal/utils/prefs.dart';
-
 import 'logger.dart';
 import 'platform_net_interface.dart';
+import 'prefs.dart';
 import 'vpn_manager.dart';
 
 class ConnectivityManager {
@@ -41,8 +40,9 @@ class ConnectivityManager {
     return _getFirstAddressStr(effectiveNetInterface?.ip);
   }
 
-  Future<NetInterface?> getEffectiveNetInterface(
-      {bool ignoreCache = false}) async {
+  Future<NetInterface?> getEffectiveNetInterface({
+    bool ignoreCache = false,
+  }) async {
     if (ignoreCache) {
       _updateEffectiveNetInterface();
     }
@@ -51,21 +51,23 @@ class ConnectivityManager {
 
   Future<void> _updateEffectiveNetInterface() async {
     _preEffectiveNetInterfaceFutureCache = _effectiveNetInterfaceFutureCache;
-    _effectiveNetInterfaceFutureCache =
-        PlatformNetInterface().getEffectiveNetInterface(
-      excludeIPv4Set: {"172.19.0.1"},
-      excludeIPv6Set: {"fdfe:dcba:9876::1"},
-    );
+    _effectiveNetInterfaceFutureCache = PlatformNetInterface()
+        .getEffectiveNetInterface(
+          excludeIPv4Set: {"172.19.0.1"},
+          excludeIPv6Set: {"fdfe:dcba:9876::1"},
+        );
     await _effectiveNetInterfaceFutureCache;
     return;
   }
 
   Future<bool> getHasEffectiveDnsChanged() async {
-    final preEffectiveDnsStr =
-        _getEffectiveDnsStr(await _preEffectiveNetInterfaceFutureCache);
+    final preEffectiveDnsStr = _getEffectiveDnsStr(
+      await _preEffectiveNetInterfaceFutureCache,
+    );
 
-    final effectiveDnsStr =
-        _getEffectiveDnsStr(await _effectiveNetInterfaceFutureCache);
+    final effectiveDnsStr = _getEffectiveDnsStr(
+      await _effectiveNetInterfaceFutureCache,
+    );
 
     final res = effectiveDnsStr != preEffectiveDnsStr;
     if (res) {
@@ -77,11 +79,13 @@ class ConnectivityManager {
   }
 
   Future<bool> getHasEffectiveIpChanged() async {
-    final preEffectiveIpStr =
-        _getEffectiveIpStr(await _preEffectiveNetInterfaceFutureCache);
+    final preEffectiveIpStr = _getEffectiveIpStr(
+      await _preEffectiveNetInterfaceFutureCache,
+    );
 
-    final effectiveIpStr =
-        _getEffectiveIpStr(await _effectiveNetInterfaceFutureCache);
+    final effectiveIpStr = _getEffectiveIpStr(
+      await _effectiveNetInterfaceFutureCache,
+    );
 
     final res = effectiveIpStr != preEffectiveIpStr;
     if (res) {
@@ -106,16 +110,16 @@ class ConnectivityManager {
 
   Future<void> init() async {
     logger.d("starting: ConnectivityManager.init");
-    _effectiveNetInterfaceFutureCache =
-        PlatformNetInterface().getEffectiveNetInterface(
-      excludeIPv4Set: {"172.19.0.1"},
-      excludeIPv6Set: {"fdfe:dcba:9876::1"},
-    );
+    _effectiveNetInterfaceFutureCache = PlatformNetInterface()
+        .getEffectiveNetInterface(
+          excludeIPv4Set: {"172.19.0.1"},
+          excludeIPv6Set: {"fdfe:dcba:9876::1"},
+        );
     _preEffectiveNetInterfaceFutureCache = _effectiveNetInterfaceFutureCache;
 
-    Connectivity()
-        .onConnectivityChanged
-        .listen((List<ConnectivityResult> result) {
+    Connectivity().onConnectivityChanged.listen((
+      List<ConnectivityResult> result,
+    ) {
       logger.i("onConnectivityChanged: $result");
 
       getEffectiveNetInterface(ignoreCache: true).then((value) async {
