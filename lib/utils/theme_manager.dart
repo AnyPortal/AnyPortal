@@ -35,6 +35,7 @@ class ThemeManager with ChangeNotifier {
       final sudoUser = Platform.environment["SUDO_USER"];
       if (sudoUser == null) {
         logger.w("failed to get SUDO_USER");
+        platformBrightnessIsDark = getPlatformBrightness() == Brightness.dark;
       } else {
         // logger.d("SUDO_USER: $sudoUser");
         final result = await Process.run(
@@ -52,9 +53,7 @@ class ThemeManager with ChangeNotifier {
         platformBrightnessIsDark = result.stdout == 'Dark\n';
       }
     } else {
-      final dispatcher = SchedulerBinding.instance.platformDispatcher;
-      platformBrightnessIsDark =
-          dispatcher.platformBrightness == Brightness.dark;
+      platformBrightnessIsDark = getPlatformBrightness() == Brightness.dark;
     }
 
     isDark = prefs.getBool('app.brightness.followSystem')!
@@ -69,6 +68,10 @@ class ThemeManager with ChangeNotifier {
     if (notify) {
       notifyListeners();
     }
+  }
+
+  Brightness getPlatformBrightness() {
+    return SchedulerBinding.instance.platformDispatcher.platformBrightness;
   }
 }
 
