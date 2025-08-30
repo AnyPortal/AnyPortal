@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'package:system_theme/system_theme.dart';
@@ -13,7 +14,7 @@ bool getIsTransparentBG() {
     isTransparentBG =
         windowsVersionNumber != null && windowsVersionNumber >= 22000;
   } else if (RuntimePlatform.isMacOS) {
-    isTransparentBG = true;
+    isTransparentBG = Process.runSync('id', ['-u']).stdout.trim() != '0';
   }
   return isTransparentBG;
 }

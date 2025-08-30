@@ -61,12 +61,12 @@ class TrayMenuManager {
     }
 
     final systemProxyIsEnabled = vPNMan.isSystemProxyActive;
-    final systemProxyShouldEnable = prefs.getBool('systemProxy')!;
+    final systemProxyShouldEnable = prefs.getBool('systemProxy') ?? false;
     final systemProxyErr =
         systemProxyShouldEnable && systemProxyIsEnabled == false;
 
     final tunIsEnabled = vPNMan.isTunActive;
-    final tunShouldEnable = prefs.getBool('tun')!;
+    final tunShouldEnable = prefs.getBool('tun') ?? false;
     final tunErr = tunShouldEnable && !tunIsEnabled;
 
     final context = global.navigatorKey.currentContext;
