@@ -110,80 +110,86 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
 
     // Layout for landscape mode with custom drawer
     Widget landscapeLayout = Scaffold(
-        body: Row(
-      children: [
-        // Custom Drawer in landscape mode
-        SizedBox(
+      body: Row(
+        children: [
+          // Custom Drawer in landscape mode
+          SizedBox(
             width: 250,
             child: Column(
               children: [
                 Expanded(
                   child: ListView(
-                      padding: const EdgeInsets.all(12),
-                      children: screens.asMap().entries.map<Widget>((entry) {
-                        final index = entry.key;
-                        final screen = entry.value;
-                        return Card(
-                          // color: _selectedIndex == index
-                          //     ? Theme.of(context).colorScheme.surfaceContainerLowest
-                          //     : Theme.of(context).colorScheme.surfaceContainer,
-                          // shadowColor: _selectedIndex == index
-                          //     ? Theme.of(context).colorScheme.shadow
-                          //     : Colors.transparent,
-                          color: _selectedIndex == index
-                              ? Theme.of(context).cardTheme.color
-                              : Colors.transparent,
-                          shadowColor: _selectedIndex == index
-                              ? Theme.of(context).cardTheme.shadowColor
-                              : Colors.transparent,
-                          child: ListTile(
-                            leading: screen.icon,
-                            title: Text(screen.title),
-                            selected: _selectedIndex == index,
-                            selectedColor:
-                                Theme.of(context).textTheme.titleMedium!.color,
-                            onTap: () {
-                              setState(() {
-                                _selectedIndex = index;
-                              });
-                            },
-                          ),
-                        );
-                      }).toList()),
+                    padding: const EdgeInsets.all(12),
+                    children: screens.asMap().entries.map<Widget>((entry) {
+                      final index = entry.key;
+                      final screen = entry.value;
+                      return Card(
+                        // color: _selectedIndex == index
+                        //     ? Theme.of(context).colorScheme.surfaceContainerLowest
+                        //     : Theme.of(context).colorScheme.surfaceContainer,
+                        // shadowColor: _selectedIndex == index
+                        //     ? Theme.of(context).colorScheme.shadow
+                        //     : Colors.transparent,
+                        color: _selectedIndex == index
+                            ? Theme.of(context).cardTheme.color
+                            : Colors.transparent,
+                        shadowColor: _selectedIndex == index
+                            ? Theme.of(context).cardTheme.shadowColor
+                            : Colors.transparent,
+                        child: ListTile(
+                          leading: screen.icon,
+                          title: Text(screen.title),
+                          selected: _selectedIndex == index,
+                          selectedColor: Theme.of(
+                            context,
+                          ).textTheme.titleMedium!.color,
+                          onTap: () {
+                            setState(() {
+                              _selectedIndex = index;
+                            });
+                          },
+                        ),
+                      );
+                    }).toList(),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
                   child: VPNToggles(isDense: true),
                 ),
               ],
-            )),
-        // Body of the app
-        Expanded(
-          child: Center(
-            child: screens.elementAt(_selectedIndex).widget,
+            ),
           ),
-        ),
-      ],
-    ));
+          // Body of the app
+          Expanded(
+            child: Center(
+              child: screens.elementAt(_selectedIndex).widget,
+            ),
+          ),
+        ],
+      ),
+    );
 
     // Layout for portrait mode with bottom navigation bar
     Widget portraitLayout = Scaffold(
-        body: Center(
-          child: screens.elementAt(_selectedIndex).widget,
-        ),
-        bottomNavigationBar: NavigationBar(
-            onDestinationSelected: (int index) {
-              setState(() {
-                _selectedIndex = index;
-              });
-            },
-            selectedIndex: _selectedIndex,
-            destinations: screens.map((screen) {
-              return NavigationDestination(
-                icon: screen.icon,
-                label: screen.title,
-              );
-            }).toList()));
+      body: Center(
+        child: screens.elementAt(_selectedIndex).widget,
+      ),
+      bottomNavigationBar: NavigationBar(
+        onDestinationSelected: (int index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        selectedIndex: _selectedIndex,
+        destinations: screens.map((screen) {
+          return NavigationDestination(
+            icon: screen.icon,
+            label: screen.title,
+          );
+        }).toList(),
+      ),
+    );
 
     // Switch between portrait and landscape layouts
     return isLandscapeLayout ? landscapeLayout : portraitLayout;
@@ -194,10 +200,12 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
   //   logger.d('[WindowManager] onWindowEvent: $eventName');
   // }
 
-  static final pendingInstallerExitFlagFile = File(p.join(
-    global.applicationSupportDirectory.path,
-    "pending_installer_exit.flag",
-  ));
+  static final pendingInstallerExitFlagFile = File(
+    p.join(
+      global.applicationSupportDirectory.path,
+      "pending_installer_exit.flag",
+    ),
+  );
 
   @override
   void onWindowClose() async {
@@ -297,15 +305,16 @@ class _HomePageState extends State<HomePage> with WindowListener, TrayListener {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    themeManager.update();
-    if (RuntimePlatform.isWindows || RuntimePlatform.isMacOS) {
-      var isDark = themeManager.isDark;
-      Window.setEffect(
-        effect: RuntimePlatform.isLinux || RuntimePlatform.isMacOS
-            ? WindowEffect.disabled
-            : WindowEffect.mica,
-        dark: isDark,
-      );
-    }
+    themeManager.update().then((_) {
+      if (RuntimePlatform.isWindows || RuntimePlatform.isMacOS) {
+        var isDark = themeManager.isDark;
+        Window.setEffect(
+          effect: RuntimePlatform.isLinux || RuntimePlatform.isMacOS
+              ? WindowEffect.disabled
+              : WindowEffect.mica,
+          dark: isDark,
+        );
+      }
+    });
   }
 }

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:system_theme/system_theme.dart';
 
-import 'global.dart';
 import 'platform_version.dart';
 import 'prefs.dart';
 import 'runtime_platform.dart';
+import 'theme_manager.dart';
 
 bool getIsTransparentBG() {
   bool isTransparentBG = false;
@@ -14,13 +14,15 @@ bool getIsTransparentBG() {
     isTransparentBG =
         windowsVersionNumber != null && windowsVersionNumber >= 22000;
   } else if (RuntimePlatform.isMacOS) {
-    isTransparentBG = !global.isElevated;
+    /// macos window theme can not be controlled by app
+    isTransparentBG =
+        ThemeManager().platformBrightnessIsDark == ThemeManager().isDark;
   }
   return isTransparentBG;
 }
 
 Color getColorSchemeSeed() {
-  if (RuntimePlatform.isWeb){
+  if (RuntimePlatform.isWeb) {
     return const Color.fromARGB(82, 0, 140, 255);
   }
   return SystemTheme.accentColor.accent;
@@ -46,11 +48,13 @@ ThemeData getPlatformThemeData() {
         backgroundColor: isTransparentBG ? Colors.transparent : null,
         indicatorColor: const Color.fromARGB(240, 255, 255, 255),
       ),
-      pageTransitionsTheme: const PageTransitionsTheme(builders: {
-        TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
-        TargetPlatform.linux: CupertinoPageTransitionsBuilder(),
-        TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-      }),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.linux: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
     );
   } else {
     return ThemeData(
@@ -74,8 +78,8 @@ ThemeData getPlatformDarkThemeData() {
       scaffoldBackgroundColor: isBlackDark
           ? Colors.black
           : isTransparentBG
-              ? Colors.transparent
-              : null,
+          ? Colors.transparent
+          : null,
       cardTheme: const CardThemeData(
         color: Color.fromARGB(16, 255, 255, 255),
         shadowColor: Color.fromARGB(64, 0, 0, 0),
@@ -84,22 +88,24 @@ ThemeData getPlatformDarkThemeData() {
         backgroundColor: isBlackDark
             ? Colors.black
             : isTransparentBG
-                ? Colors.transparent
-                : null,
+            ? Colors.transparent
+            : null,
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: isBlackDark
             ? Colors.black
             : isTransparentBG
-                ? Colors.transparent
-                : null,
+            ? Colors.transparent
+            : null,
         indicatorColor: const Color.fromARGB(16, 255, 255, 255),
       ),
-      pageTransitionsTheme: const PageTransitionsTheme(builders: {
-        TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
-        TargetPlatform.linux: CupertinoPageTransitionsBuilder(),
-        TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
-      }),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.linux: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
     );
   } else {
     return ThemeData(
@@ -111,8 +117,9 @@ ThemeData getPlatformDarkThemeData() {
         backgroundColor: isBlackDark ? Colors.black : null,
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor:
-            isBlackDark ? const Color.fromARGB(16, 255, 255, 255) : null,
+        backgroundColor: isBlackDark
+            ? const Color.fromARGB(16, 255, 255, 255)
+            : null,
       ),
     );
   }

@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 
 import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:flutter_localized_locales/flutter_localized_locales.dart';
@@ -103,10 +102,9 @@ void main(List<String> args) async {
     /// transparent background
     if (RuntimePlatform.isWindows || RuntimePlatform.isMacOS) {
       await Window.initialize();
-      var dispatcher = SchedulerBinding.instance.platformDispatcher;
       await Window.setEffect(
         effect: getIsTransparentBG() ? WindowEffect.mica : WindowEffect.solid,
-        dark: dispatcher.platformBrightness == Brightness.dark,
+        dark: ThemeManager().isDark,
       );
     }
   }
