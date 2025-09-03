@@ -106,7 +106,7 @@ class Database extends _$Database {
       );
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -176,6 +176,17 @@ class Database extends _$Database {
       },
       from6To7: (m, schema) async {
         await m.addColumn(schema.profile, schema.profile.httping);
+      },
+      from7To8: (m, schema) async {
+        await m.alterTable(
+          TableMigration(
+            schema.profile,
+            columnTransformer: {
+              schema.profile.key: schema.profile.name,
+            },
+            newColumns: [schema.profile.key],
+          ),
+        );
       },
     ),
     beforeOpen: (details) async {

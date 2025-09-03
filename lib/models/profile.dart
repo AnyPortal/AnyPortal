@@ -6,6 +6,7 @@ import 'profile_group.dart';
 class Profile extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
+  TextColumn get key => text()();
   IntColumn get coreTypeId =>
       integer().references(CoreType, #id, onDelete: KeyAction.cascade)();
   TextColumn get coreCfg => text().withDefault(const Constant("{}"))();

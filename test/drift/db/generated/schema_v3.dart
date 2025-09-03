@@ -9,24 +9,44 @@ class Asset extends Table with TableInfo<Asset, AssetData> {
   final String? _alias;
   Asset(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   late final GeneratedColumn<int> type = GeneratedColumn<int>(
-      'type', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
   late final GeneratedColumn<String> path = GeneratedColumn<String>(
-      'path', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-      'updated_at', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
   @override
   List<GeneratedColumn> get $columns => [id, name, type, path, updatedAt];
   @override
@@ -40,16 +60,26 @@ class Asset extends Table with TableInfo<Asset, AssetData> {
   AssetData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return AssetData(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name']),
-      type: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}type'])!,
-      path: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}path'])!,
-      updatedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      ),
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}type'],
+      )!,
+      path: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}path'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
     );
   }
 
@@ -65,12 +95,13 @@ class AssetData extends DataClass implements Insertable<AssetData> {
   final int type;
   final String path;
   final DateTime updatedAt;
-  const AssetData(
-      {required this.id,
-      this.name,
-      required this.type,
-      required this.path,
-      required this.updatedAt});
+  const AssetData({
+    required this.id,
+    this.name,
+    required this.type,
+    required this.path,
+    required this.updatedAt,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -94,8 +125,10 @@ class AssetData extends DataClass implements Insertable<AssetData> {
     );
   }
 
-  factory AssetData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory AssetData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return AssetData(
       id: serializer.fromJson<int>(json['id']),
@@ -117,19 +150,19 @@ class AssetData extends DataClass implements Insertable<AssetData> {
     };
   }
 
-  AssetData copyWith(
-          {int? id,
-          Value<String?> name = const Value.absent(),
-          int? type,
-          String? path,
-          DateTime? updatedAt}) =>
-      AssetData(
-        id: id ?? this.id,
-        name: name.present ? name.value : this.name,
-        type: type ?? this.type,
-        path: path ?? this.path,
-        updatedAt: updatedAt ?? this.updatedAt,
-      );
+  AssetData copyWith({
+    int? id,
+    Value<String?> name = const Value.absent(),
+    int? type,
+    String? path,
+    DateTime? updatedAt,
+  }) => AssetData(
+    id: id ?? this.id,
+    name: name.present ? name.value : this.name,
+    type: type ?? this.type,
+    path: path ?? this.path,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
   AssetData copyWithCompanion(AssetCompanion data) {
     return AssetData(
       id: data.id.present ? data.id.value : this.id,
@@ -184,9 +217,9 @@ class AssetCompanion extends UpdateCompanion<AssetData> {
     required int type,
     required String path,
     required DateTime updatedAt,
-  })  : type = Value(type),
-        path = Value(path),
-        updatedAt = Value(updatedAt);
+  }) : type = Value(type),
+       path = Value(path),
+       updatedAt = Value(updatedAt);
   static Insertable<AssetData> custom({
     Expression<int>? id,
     Expression<String>? name,
@@ -203,12 +236,13 @@ class AssetCompanion extends UpdateCompanion<AssetData> {
     });
   }
 
-  AssetCompanion copyWith(
-      {Value<int>? id,
-      Value<String?>? name,
-      Value<int>? type,
-      Value<String>? path,
-      Value<DateTime>? updatedAt}) {
+  AssetCompanion copyWith({
+    Value<int>? id,
+    Value<String?>? name,
+    Value<int>? type,
+    Value<String>? path,
+    Value<DateTime>? updatedAt,
+  }) {
     return AssetCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -258,11 +292,15 @@ class AssetLocal extends Table with TableInfo<AssetLocal, AssetLocalData> {
   final String? _alias;
   AssetLocal(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<int> assetId = GeneratedColumn<int>(
-      'asset_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES asset (id) ON DELETE CASCADE'));
+    'asset_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES asset (id) ON DELETE CASCADE',
+    ),
+  );
   @override
   List<GeneratedColumn> get $columns => [assetId];
   @override
@@ -276,8 +314,10 @@ class AssetLocal extends Table with TableInfo<AssetLocal, AssetLocalData> {
   AssetLocalData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return AssetLocalData(
-      assetId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}asset_id'])!,
+      assetId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}asset_id'],
+      )!,
     );
   }
 
@@ -298,29 +338,24 @@ class AssetLocalData extends DataClass implements Insertable<AssetLocalData> {
   }
 
   AssetLocalCompanion toCompanion(bool nullToAbsent) {
-    return AssetLocalCompanion(
-      assetId: Value(assetId),
-    );
+    return AssetLocalCompanion(assetId: Value(assetId));
   }
 
-  factory AssetLocalData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory AssetLocalData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return AssetLocalData(
-      assetId: serializer.fromJson<int>(json['assetId']),
-    );
+    return AssetLocalData(assetId: serializer.fromJson<int>(json['assetId']));
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'assetId': serializer.toJson<int>(assetId),
-    };
+    return <String, dynamic>{'assetId': serializer.toJson<int>(assetId)};
   }
 
-  AssetLocalData copyWith({int? assetId}) => AssetLocalData(
-        assetId: assetId ?? this.assetId,
-      );
+  AssetLocalData copyWith({int? assetId}) =>
+      AssetLocalData(assetId: assetId ?? this.assetId);
   AssetLocalData copyWithCompanion(AssetLocalCompanion data) {
     return AssetLocalData(
       assetId: data.assetId.present ? data.assetId.value : this.assetId,
@@ -345,24 +380,14 @@ class AssetLocalData extends DataClass implements Insertable<AssetLocalData> {
 
 class AssetLocalCompanion extends UpdateCompanion<AssetLocalData> {
   final Value<int> assetId;
-  const AssetLocalCompanion({
-    this.assetId = const Value.absent(),
-  });
-  AssetLocalCompanion.insert({
-    this.assetId = const Value.absent(),
-  });
-  static Insertable<AssetLocalData> custom({
-    Expression<int>? assetId,
-  }) {
-    return RawValuesInsertable({
-      if (assetId != null) 'asset_id': assetId,
-    });
+  const AssetLocalCompanion({this.assetId = const Value.absent()});
+  AssetLocalCompanion.insert({this.assetId = const Value.absent()});
+  static Insertable<AssetLocalData> custom({Expression<int>? assetId}) {
+    return RawValuesInsertable({if (assetId != null) 'asset_id': assetId});
   }
 
   AssetLocalCompanion copyWith({Value<int>? assetId}) {
-    return AssetLocalCompanion(
-      assetId: assetId ?? this.assetId,
-    );
+    return AssetLocalCompanion(assetId: assetId ?? this.assetId);
   }
 
   @override
@@ -389,28 +414,53 @@ class AssetRemote extends Table with TableInfo<AssetRemote, AssetRemoteData> {
   final String? _alias;
   AssetRemote(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<int> assetId = GeneratedColumn<int>(
-      'asset_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES asset (id) ON DELETE CASCADE'));
+    'asset_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES asset (id) ON DELETE CASCADE',
+    ),
+  );
   late final GeneratedColumn<String> url = GeneratedColumn<String>(
-      'url', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'url',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   late final GeneratedColumn<String> meta = GeneratedColumn<String>(
-      'meta', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const CustomExpression('\'{}\''));
+    'meta',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const CustomExpression('\'{}\''),
+  );
   late final GeneratedColumn<int> autoUpdateInterval = GeneratedColumn<int>(
-      'auto_update_interval', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+    'auto_update_interval',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
   late final GeneratedColumn<String> downloadedFilePath =
-      GeneratedColumn<String>('downloaded_file_path', aliasedName, true,
-          type: DriftSqlType.string, requiredDuringInsert: false);
+      GeneratedColumn<String>(
+        'downloaded_file_path',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   @override
-  List<GeneratedColumn> get $columns =>
-      [assetId, url, meta, autoUpdateInterval, downloadedFilePath];
+  List<GeneratedColumn> get $columns => [
+    assetId,
+    url,
+    meta,
+    autoUpdateInterval,
+    downloadedFilePath,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -422,16 +472,26 @@ class AssetRemote extends Table with TableInfo<AssetRemote, AssetRemoteData> {
   AssetRemoteData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return AssetRemoteData(
-      assetId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}asset_id'])!,
-      url: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}url'])!,
-      meta: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}meta'])!,
+      assetId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}asset_id'],
+      )!,
+      url: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}url'],
+      )!,
+      meta: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}meta'],
+      )!,
       autoUpdateInterval: attachedDatabase.typeMapping.read(
-          DriftSqlType.int, data['${effectivePrefix}auto_update_interval'])!,
+        DriftSqlType.int,
+        data['${effectivePrefix}auto_update_interval'],
+      )!,
       downloadedFilePath: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}downloaded_file_path']),
+        DriftSqlType.string,
+        data['${effectivePrefix}downloaded_file_path'],
+      ),
     );
   }
 
@@ -447,12 +507,13 @@ class AssetRemoteData extends DataClass implements Insertable<AssetRemoteData> {
   final String meta;
   final int autoUpdateInterval;
   final String? downloadedFilePath;
-  const AssetRemoteData(
-      {required this.assetId,
-      required this.url,
-      required this.meta,
-      required this.autoUpdateInterval,
-      this.downloadedFilePath});
+  const AssetRemoteData({
+    required this.assetId,
+    required this.url,
+    required this.meta,
+    required this.autoUpdateInterval,
+    this.downloadedFilePath,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -478,16 +539,19 @@ class AssetRemoteData extends DataClass implements Insertable<AssetRemoteData> {
     );
   }
 
-  factory AssetRemoteData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory AssetRemoteData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return AssetRemoteData(
       assetId: serializer.fromJson<int>(json['assetId']),
       url: serializer.fromJson<String>(json['url']),
       meta: serializer.fromJson<String>(json['meta']),
       autoUpdateInterval: serializer.fromJson<int>(json['autoUpdateInterval']),
-      downloadedFilePath:
-          serializer.fromJson<String?>(json['downloadedFilePath']),
+      downloadedFilePath: serializer.fromJson<String?>(
+        json['downloadedFilePath'],
+      ),
     );
   }
   @override
@@ -502,21 +566,21 @@ class AssetRemoteData extends DataClass implements Insertable<AssetRemoteData> {
     };
   }
 
-  AssetRemoteData copyWith(
-          {int? assetId,
-          String? url,
-          String? meta,
-          int? autoUpdateInterval,
-          Value<String?> downloadedFilePath = const Value.absent()}) =>
-      AssetRemoteData(
-        assetId: assetId ?? this.assetId,
-        url: url ?? this.url,
-        meta: meta ?? this.meta,
-        autoUpdateInterval: autoUpdateInterval ?? this.autoUpdateInterval,
-        downloadedFilePath: downloadedFilePath.present
-            ? downloadedFilePath.value
-            : this.downloadedFilePath,
-      );
+  AssetRemoteData copyWith({
+    int? assetId,
+    String? url,
+    String? meta,
+    int? autoUpdateInterval,
+    Value<String?> downloadedFilePath = const Value.absent(),
+  }) => AssetRemoteData(
+    assetId: assetId ?? this.assetId,
+    url: url ?? this.url,
+    meta: meta ?? this.meta,
+    autoUpdateInterval: autoUpdateInterval ?? this.autoUpdateInterval,
+    downloadedFilePath: downloadedFilePath.present
+        ? downloadedFilePath.value
+        : this.downloadedFilePath,
+  );
   AssetRemoteData copyWithCompanion(AssetRemoteCompanion data) {
     return AssetRemoteData(
       assetId: data.assetId.present ? data.assetId.value : this.assetId,
@@ -576,8 +640,8 @@ class AssetRemoteCompanion extends UpdateCompanion<AssetRemoteData> {
     this.meta = const Value.absent(),
     required int autoUpdateInterval,
     this.downloadedFilePath = const Value.absent(),
-  })  : url = Value(url),
-        autoUpdateInterval = Value(autoUpdateInterval);
+  }) : url = Value(url),
+       autoUpdateInterval = Value(autoUpdateInterval);
   static Insertable<AssetRemoteData> custom({
     Expression<int>? assetId,
     Expression<String>? url,
@@ -596,12 +660,13 @@ class AssetRemoteCompanion extends UpdateCompanion<AssetRemoteData> {
     });
   }
 
-  AssetRemoteCompanion copyWith(
-      {Value<int>? assetId,
-      Value<String>? url,
-      Value<String>? meta,
-      Value<int>? autoUpdateInterval,
-      Value<String?>? downloadedFilePath}) {
+  AssetRemoteCompanion copyWith({
+    Value<int>? assetId,
+    Value<String>? url,
+    Value<String>? meta,
+    Value<int>? autoUpdateInterval,
+    Value<String?>? downloadedFilePath,
+  }) {
     return AssetRemoteCompanion(
       assetId: assetId ?? this.assetId,
       url: url ?? this.url,
@@ -651,17 +716,24 @@ class CoreType extends Table with TableInfo<CoreType, CoreTypeData> {
   final String? _alias;
   CoreType(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'));
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
   @override
   List<GeneratedColumn> get $columns => [id, name];
   @override
@@ -675,10 +747,14 @@ class CoreType extends Table with TableInfo<CoreType, CoreTypeData> {
   CoreTypeData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return CoreTypeData(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
     );
   }
 
@@ -701,14 +777,13 @@ class CoreTypeData extends DataClass implements Insertable<CoreTypeData> {
   }
 
   CoreTypeCompanion toCompanion(bool nullToAbsent) {
-    return CoreTypeCompanion(
-      id: Value(id),
-      name: Value(name),
-    );
+    return CoreTypeCompanion(id: Value(id), name: Value(name));
   }
 
-  factory CoreTypeData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory CoreTypeData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return CoreTypeData(
       id: serializer.fromJson<int>(json['id']),
@@ -724,10 +799,8 @@ class CoreTypeData extends DataClass implements Insertable<CoreTypeData> {
     };
   }
 
-  CoreTypeData copyWith({int? id, String? name}) => CoreTypeData(
-        id: id ?? this.id,
-        name: name ?? this.name,
-      );
+  CoreTypeData copyWith({int? id, String? name}) =>
+      CoreTypeData(id: id ?? this.id, name: name ?? this.name);
   CoreTypeData copyWithCompanion(CoreTypeCompanion data) {
     return CoreTypeData(
       id: data.id.present ? data.id.value : this.id,
@@ -774,10 +847,7 @@ class CoreTypeCompanion extends UpdateCompanion<CoreTypeData> {
   }
 
   CoreTypeCompanion copyWith({Value<int>? id, Value<String>? name}) {
-    return CoreTypeCompanion(
-      id: id ?? this.id,
-      name: name ?? this.name,
-    );
+    return CoreTypeCompanion(id: id ?? this.id, name: name ?? this.name);
   }
 
   @override
@@ -808,42 +878,76 @@ class Core extends Table with TableInfo<Core, CoreData> {
   final String? _alias;
   Core(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
   late final GeneratedColumn<int> coreTypeId = GeneratedColumn<int>(
-      'core_type_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES core_type (id) ON DELETE CASCADE'));
+    'core_type_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES core_type (id) ON DELETE CASCADE',
+    ),
+  );
   late final GeneratedColumn<String> version = GeneratedColumn<String>(
-      'version', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'version',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-      'updated_at', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
   late final GeneratedColumn<bool> isExec = GeneratedColumn<bool>(
-      'is_exec', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('CHECK ("is_exec" IN (0, 1))'),
-      defaultValue: const CustomExpression('1'));
+    'is_exec',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_exec" IN (0, 1))',
+    ),
+    defaultValue: const CustomExpression('1'),
+  );
   late final GeneratedColumn<String> workingDir = GeneratedColumn<String>(
-      'working_dir', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+    'working_dir',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   late final GeneratedColumn<String> envs = GeneratedColumn<String>(
-      'envs', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const CustomExpression('\'{}\''));
+    'envs',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const CustomExpression('\'{}\''),
+  );
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, coreTypeId, version, updatedAt, isExec, workingDir, envs];
+  List<GeneratedColumn> get $columns => [
+    id,
+    coreTypeId,
+    version,
+    updatedAt,
+    isExec,
+    workingDir,
+    envs,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -855,20 +959,34 @@ class Core extends Table with TableInfo<Core, CoreData> {
   CoreData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return CoreData(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      coreTypeId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}core_type_id'])!,
-      version: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}version']),
-      updatedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
-      isExec: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_exec'])!,
-      workingDir: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}working_dir']),
-      envs: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}envs'])!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      coreTypeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}core_type_id'],
+      )!,
+      version: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}version'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      isExec: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_exec'],
+      )!,
+      workingDir: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}working_dir'],
+      ),
+      envs: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}envs'],
+      )!,
     );
   }
 
@@ -886,14 +1004,15 @@ class CoreData extends DataClass implements Insertable<CoreData> {
   final bool isExec;
   final String? workingDir;
   final String envs;
-  const CoreData(
-      {required this.id,
-      required this.coreTypeId,
-      this.version,
-      required this.updatedAt,
-      required this.isExec,
-      this.workingDir,
-      required this.envs});
+  const CoreData({
+    required this.id,
+    required this.coreTypeId,
+    this.version,
+    required this.updatedAt,
+    required this.isExec,
+    this.workingDir,
+    required this.envs,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -927,8 +1046,10 @@ class CoreData extends DataClass implements Insertable<CoreData> {
     );
   }
 
-  factory CoreData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory CoreData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return CoreData(
       id: serializer.fromJson<int>(json['id']),
@@ -954,33 +1075,35 @@ class CoreData extends DataClass implements Insertable<CoreData> {
     };
   }
 
-  CoreData copyWith(
-          {int? id,
-          int? coreTypeId,
-          Value<String?> version = const Value.absent(),
-          DateTime? updatedAt,
-          bool? isExec,
-          Value<String?> workingDir = const Value.absent(),
-          String? envs}) =>
-      CoreData(
-        id: id ?? this.id,
-        coreTypeId: coreTypeId ?? this.coreTypeId,
-        version: version.present ? version.value : this.version,
-        updatedAt: updatedAt ?? this.updatedAt,
-        isExec: isExec ?? this.isExec,
-        workingDir: workingDir.present ? workingDir.value : this.workingDir,
-        envs: envs ?? this.envs,
-      );
+  CoreData copyWith({
+    int? id,
+    int? coreTypeId,
+    Value<String?> version = const Value.absent(),
+    DateTime? updatedAt,
+    bool? isExec,
+    Value<String?> workingDir = const Value.absent(),
+    String? envs,
+  }) => CoreData(
+    id: id ?? this.id,
+    coreTypeId: coreTypeId ?? this.coreTypeId,
+    version: version.present ? version.value : this.version,
+    updatedAt: updatedAt ?? this.updatedAt,
+    isExec: isExec ?? this.isExec,
+    workingDir: workingDir.present ? workingDir.value : this.workingDir,
+    envs: envs ?? this.envs,
+  );
   CoreData copyWithCompanion(CoreCompanion data) {
     return CoreData(
       id: data.id.present ? data.id.value : this.id,
-      coreTypeId:
-          data.coreTypeId.present ? data.coreTypeId.value : this.coreTypeId,
+      coreTypeId: data.coreTypeId.present
+          ? data.coreTypeId.value
+          : this.coreTypeId,
       version: data.version.present ? data.version.value : this.version,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       isExec: data.isExec.present ? data.isExec.value : this.isExec,
-      workingDir:
-          data.workingDir.present ? data.workingDir.value : this.workingDir,
+      workingDir: data.workingDir.present
+          ? data.workingDir.value
+          : this.workingDir,
       envs: data.envs.present ? data.envs.value : this.envs,
     );
   }
@@ -1040,8 +1163,8 @@ class CoreCompanion extends UpdateCompanion<CoreData> {
     this.isExec = const Value.absent(),
     this.workingDir = const Value.absent(),
     this.envs = const Value.absent(),
-  })  : coreTypeId = Value(coreTypeId),
-        updatedAt = Value(updatedAt);
+  }) : coreTypeId = Value(coreTypeId),
+       updatedAt = Value(updatedAt);
   static Insertable<CoreData> custom({
     Expression<int>? id,
     Expression<int>? coreTypeId,
@@ -1062,14 +1185,15 @@ class CoreCompanion extends UpdateCompanion<CoreData> {
     });
   }
 
-  CoreCompanion copyWith(
-      {Value<int>? id,
-      Value<int>? coreTypeId,
-      Value<String?>? version,
-      Value<DateTime>? updatedAt,
-      Value<bool>? isExec,
-      Value<String?>? workingDir,
-      Value<String>? envs}) {
+  CoreCompanion copyWith({
+    Value<int>? id,
+    Value<int>? coreTypeId,
+    Value<String?>? version,
+    Value<DateTime>? updatedAt,
+    Value<bool>? isExec,
+    Value<String?>? workingDir,
+    Value<String>? envs,
+  }) {
     return CoreCompanion(
       id: id ?? this.id,
       coreTypeId: coreTypeId ?? this.coreTypeId,
@@ -1129,22 +1253,33 @@ class CoreExec extends Table with TableInfo<CoreExec, CoreExecData> {
   final String? _alias;
   CoreExec(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<int> coreId = GeneratedColumn<int>(
-      'core_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES core (id) ON DELETE CASCADE'));
+    'core_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES core (id) ON DELETE CASCADE',
+    ),
+  );
   late final GeneratedColumn<String> args = GeneratedColumn<String>(
-      'args', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const CustomExpression('\'[]\''));
+    'args',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const CustomExpression('\'[]\''),
+  );
   late final GeneratedColumn<int> assetId = GeneratedColumn<int>(
-      'asset_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES asset (id) ON DELETE CASCADE'));
+    'asset_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES asset (id) ON DELETE CASCADE',
+    ),
+  );
   @override
   List<GeneratedColumn> get $columns => [coreId, args, assetId];
   @override
@@ -1158,12 +1293,18 @@ class CoreExec extends Table with TableInfo<CoreExec, CoreExecData> {
   CoreExecData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return CoreExecData(
-      coreId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}core_id'])!,
-      args: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}args'])!,
-      assetId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}asset_id'])!,
+      coreId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}core_id'],
+      )!,
+      args: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}args'],
+      )!,
+      assetId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}asset_id'],
+      )!,
     );
   }
 
@@ -1177,8 +1318,11 @@ class CoreExecData extends DataClass implements Insertable<CoreExecData> {
   final int coreId;
   final String args;
   final int assetId;
-  const CoreExecData(
-      {required this.coreId, required this.args, required this.assetId});
+  const CoreExecData({
+    required this.coreId,
+    required this.args,
+    required this.assetId,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1196,8 +1340,10 @@ class CoreExecData extends DataClass implements Insertable<CoreExecData> {
     );
   }
 
-  factory CoreExecData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory CoreExecData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return CoreExecData(
       coreId: serializer.fromJson<int>(json['coreId']),
@@ -1276,8 +1422,11 @@ class CoreExecCompanion extends UpdateCompanion<CoreExecData> {
     });
   }
 
-  CoreExecCompanion copyWith(
-      {Value<int>? coreId, Value<String>? args, Value<int>? assetId}) {
+  CoreExecCompanion copyWith({
+    Value<int>? coreId,
+    Value<String>? args,
+    Value<int>? assetId,
+  }) {
     return CoreExecCompanion(
       coreId: coreId ?? this.coreId,
       args: args ?? this.args,
@@ -1317,11 +1466,15 @@ class CoreLib extends Table with TableInfo<CoreLib, CoreLibData> {
   final String? _alias;
   CoreLib(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<int> coreId = GeneratedColumn<int>(
-      'core_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES core (id) ON DELETE CASCADE'));
+    'core_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES core (id) ON DELETE CASCADE',
+    ),
+  );
   @override
   List<GeneratedColumn> get $columns => [coreId];
   @override
@@ -1335,8 +1488,10 @@ class CoreLib extends Table with TableInfo<CoreLib, CoreLibData> {
   CoreLibData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return CoreLibData(
-      coreId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}core_id'])!,
+      coreId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}core_id'],
+      )!,
     );
   }
 
@@ -1357,29 +1512,24 @@ class CoreLibData extends DataClass implements Insertable<CoreLibData> {
   }
 
   CoreLibCompanion toCompanion(bool nullToAbsent) {
-    return CoreLibCompanion(
-      coreId: Value(coreId),
-    );
+    return CoreLibCompanion(coreId: Value(coreId));
   }
 
-  factory CoreLibData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory CoreLibData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return CoreLibData(
-      coreId: serializer.fromJson<int>(json['coreId']),
-    );
+    return CoreLibData(coreId: serializer.fromJson<int>(json['coreId']));
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'coreId': serializer.toJson<int>(coreId),
-    };
+    return <String, dynamic>{'coreId': serializer.toJson<int>(coreId)};
   }
 
-  CoreLibData copyWith({int? coreId}) => CoreLibData(
-        coreId: coreId ?? this.coreId,
-      );
+  CoreLibData copyWith({int? coreId}) =>
+      CoreLibData(coreId: coreId ?? this.coreId);
   CoreLibData copyWithCompanion(CoreLibCompanion data) {
     return CoreLibData(
       coreId: data.coreId.present ? data.coreId.value : this.coreId,
@@ -1404,24 +1554,14 @@ class CoreLibData extends DataClass implements Insertable<CoreLibData> {
 
 class CoreLibCompanion extends UpdateCompanion<CoreLibData> {
   final Value<int> coreId;
-  const CoreLibCompanion({
-    this.coreId = const Value.absent(),
-  });
-  CoreLibCompanion.insert({
-    this.coreId = const Value.absent(),
-  });
-  static Insertable<CoreLibData> custom({
-    Expression<int>? coreId,
-  }) {
-    return RawValuesInsertable({
-      if (coreId != null) 'core_id': coreId,
-    });
+  const CoreLibCompanion({this.coreId = const Value.absent()});
+  CoreLibCompanion.insert({this.coreId = const Value.absent()});
+  static Insertable<CoreLibData> custom({Expression<int>? coreId}) {
+    return RawValuesInsertable({if (coreId != null) 'core_id': coreId});
   }
 
   CoreLibCompanion copyWith({Value<int>? coreId}) {
-    return CoreLibCompanion(
-      coreId: coreId ?? this.coreId,
-    );
+    return CoreLibCompanion(coreId: coreId ?? this.coreId);
   }
 
   @override
@@ -1449,17 +1589,25 @@ class CoreTypeSelected extends Table
   final String? _alias;
   CoreTypeSelected(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<int> coreTypeId = GeneratedColumn<int>(
-      'core_type_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES core_type (id) ON DELETE CASCADE'));
+    'core_type_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES core_type (id) ON DELETE CASCADE',
+    ),
+  );
   late final GeneratedColumn<int> coreId = GeneratedColumn<int>(
-      'core_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES core (id) ON DELETE CASCADE'));
+    'core_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES core (id) ON DELETE CASCADE',
+    ),
+  );
   @override
   List<GeneratedColumn> get $columns => [coreTypeId, coreId];
   @override
@@ -1473,10 +1621,14 @@ class CoreTypeSelected extends Table
   CoreTypeSelectedData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return CoreTypeSelectedData(
-      coreTypeId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}core_type_id'])!,
-      coreId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}core_id'])!,
+      coreTypeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}core_type_id'],
+      )!,
+      coreId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}core_id'],
+      )!,
     );
   }
 
@@ -1506,8 +1658,10 @@ class CoreTypeSelectedData extends DataClass
     );
   }
 
-  factory CoreTypeSelectedData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory CoreTypeSelectedData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return CoreTypeSelectedData(
       coreTypeId: serializer.fromJson<int>(json['coreTypeId']),
@@ -1530,8 +1684,9 @@ class CoreTypeSelectedData extends DataClass
       );
   CoreTypeSelectedData copyWithCompanion(CoreTypeSelectedCompanion data) {
     return CoreTypeSelectedData(
-      coreTypeId:
-          data.coreTypeId.present ? data.coreTypeId.value : this.coreTypeId,
+      coreTypeId: data.coreTypeId.present
+          ? data.coreTypeId.value
+          : this.coreTypeId,
       coreId: data.coreId.present ? data.coreId.value : this.coreId,
     );
   }
@@ -1576,8 +1731,10 @@ class CoreTypeSelectedCompanion extends UpdateCompanion<CoreTypeSelectedData> {
     });
   }
 
-  CoreTypeSelectedCompanion copyWith(
-      {Value<int>? coreTypeId, Value<int>? coreId}) {
+  CoreTypeSelectedCompanion copyWith({
+    Value<int>? coreTypeId,
+    Value<int>? coreId,
+  }) {
     return CoreTypeSelectedCompanion(
       coreTypeId: coreTypeId ?? this.coreTypeId,
       coreId: coreId ?? this.coreId,
@@ -1613,21 +1770,37 @@ class ProfileGroup extends Table
   final String? _alias;
   ProfileGroup(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-      'updated_at', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
   late final GeneratedColumn<int> type = GeneratedColumn<int>(
-      'type', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
   @override
   List<GeneratedColumn> get $columns => [id, name, updatedAt, type];
   @override
@@ -1641,14 +1814,22 @@ class ProfileGroup extends Table
   ProfileGroupData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return ProfileGroupData(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      updatedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
-      type: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}type'])!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}type'],
+      )!,
     );
   }
 
@@ -1664,11 +1845,12 @@ class ProfileGroupData extends DataClass
   final String name;
   final DateTime updatedAt;
   final int type;
-  const ProfileGroupData(
-      {required this.id,
-      required this.name,
-      required this.updatedAt,
-      required this.type});
+  const ProfileGroupData({
+    required this.id,
+    required this.name,
+    required this.updatedAt,
+    required this.type,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1688,8 +1870,10 @@ class ProfileGroupData extends DataClass
     );
   }
 
-  factory ProfileGroupData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory ProfileGroupData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ProfileGroupData(
       id: serializer.fromJson<int>(json['id']),
@@ -1709,14 +1893,17 @@ class ProfileGroupData extends DataClass
     };
   }
 
-  ProfileGroupData copyWith(
-          {int? id, String? name, DateTime? updatedAt, int? type}) =>
-      ProfileGroupData(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        updatedAt: updatedAt ?? this.updatedAt,
-        type: type ?? this.type,
-      );
+  ProfileGroupData copyWith({
+    int? id,
+    String? name,
+    DateTime? updatedAt,
+    int? type,
+  }) => ProfileGroupData(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    updatedAt: updatedAt ?? this.updatedAt,
+    type: type ?? this.type,
+  );
   ProfileGroupData copyWithCompanion(ProfileGroupCompanion data) {
     return ProfileGroupData(
       id: data.id.present ? data.id.value : this.id,
@@ -1765,9 +1952,9 @@ class ProfileGroupCompanion extends UpdateCompanion<ProfileGroupData> {
     required String name,
     required DateTime updatedAt,
     required int type,
-  })  : name = Value(name),
-        updatedAt = Value(updatedAt),
-        type = Value(type);
+  }) : name = Value(name),
+       updatedAt = Value(updatedAt),
+       type = Value(type);
   static Insertable<ProfileGroupData> custom({
     Expression<int>? id,
     Expression<String>? name,
@@ -1782,11 +1969,12 @@ class ProfileGroupCompanion extends UpdateCompanion<ProfileGroupData> {
     });
   }
 
-  ProfileGroupCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? name,
-      Value<DateTime>? updatedAt,
-      Value<int>? type}) {
+  ProfileGroupCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<DateTime>? updatedAt,
+    Value<int>? type,
+  }) {
     return ProfileGroupCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -1831,42 +2019,76 @@ class Profile extends Table with TableInfo<Profile, ProfileData> {
   final String? _alias;
   Profile(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   late final GeneratedColumn<int> coreTypeId = GeneratedColumn<int>(
-      'core_type_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES core_type (id) ON DELETE CASCADE'));
+    'core_type_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES core_type (id) ON DELETE CASCADE',
+    ),
+  );
   late final GeneratedColumn<String> coreCfg = GeneratedColumn<String>(
-      'core_cfg', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const CustomExpression('\'{}\''));
+    'core_cfg',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const CustomExpression('\'{}\''),
+  );
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-      'updated_at', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
   late final GeneratedColumn<int> type = GeneratedColumn<int>(
-      'type', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
   late final GeneratedColumn<int> profileGroupId = GeneratedColumn<int>(
-      'profile_group_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('REFERENCES profile_group (id)'),
-      defaultValue: const CustomExpression('1'));
+    'profile_group_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES profile_group (id)',
+    ),
+    defaultValue: const CustomExpression('1'),
+  );
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, name, coreTypeId, coreCfg, updatedAt, type, profileGroupId];
+  List<GeneratedColumn> get $columns => [
+    id,
+    name,
+    coreTypeId,
+    coreCfg,
+    updatedAt,
+    type,
+    profileGroupId,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1878,20 +2100,34 @@ class Profile extends Table with TableInfo<Profile, ProfileData> {
   ProfileData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return ProfileData(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      coreTypeId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}core_type_id'])!,
-      coreCfg: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}core_cfg'])!,
-      updatedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
-      type: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}type'])!,
-      profileGroupId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}profile_group_id'])!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      coreTypeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}core_type_id'],
+      )!,
+      coreCfg: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}core_cfg'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}type'],
+      )!,
+      profileGroupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}profile_group_id'],
+      )!,
     );
   }
 
@@ -1909,14 +2145,15 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
   final DateTime updatedAt;
   final int type;
   final int profileGroupId;
-  const ProfileData(
-      {required this.id,
-      required this.name,
-      required this.coreTypeId,
-      required this.coreCfg,
-      required this.updatedAt,
-      required this.type,
-      required this.profileGroupId});
+  const ProfileData({
+    required this.id,
+    required this.name,
+    required this.coreTypeId,
+    required this.coreCfg,
+    required this.updatedAt,
+    required this.type,
+    required this.profileGroupId,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1942,8 +2179,10 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
     );
   }
 
-  factory ProfileData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory ProfileData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ProfileData(
       id: serializer.fromJson<int>(json['id']),
@@ -1969,29 +2208,30 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
     };
   }
 
-  ProfileData copyWith(
-          {int? id,
-          String? name,
-          int? coreTypeId,
-          String? coreCfg,
-          DateTime? updatedAt,
-          int? type,
-          int? profileGroupId}) =>
-      ProfileData(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        coreTypeId: coreTypeId ?? this.coreTypeId,
-        coreCfg: coreCfg ?? this.coreCfg,
-        updatedAt: updatedAt ?? this.updatedAt,
-        type: type ?? this.type,
-        profileGroupId: profileGroupId ?? this.profileGroupId,
-      );
+  ProfileData copyWith({
+    int? id,
+    String? name,
+    int? coreTypeId,
+    String? coreCfg,
+    DateTime? updatedAt,
+    int? type,
+    int? profileGroupId,
+  }) => ProfileData(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    coreTypeId: coreTypeId ?? this.coreTypeId,
+    coreCfg: coreCfg ?? this.coreCfg,
+    updatedAt: updatedAt ?? this.updatedAt,
+    type: type ?? this.type,
+    profileGroupId: profileGroupId ?? this.profileGroupId,
+  );
   ProfileData copyWithCompanion(ProfileCompanion data) {
     return ProfileData(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
-      coreTypeId:
-          data.coreTypeId.present ? data.coreTypeId.value : this.coreTypeId,
+      coreTypeId: data.coreTypeId.present
+          ? data.coreTypeId.value
+          : this.coreTypeId,
       coreCfg: data.coreCfg.present ? data.coreCfg.value : this.coreCfg,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       type: data.type.present ? data.type.value : this.type,
@@ -2017,7 +2257,14 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
 
   @override
   int get hashCode => Object.hash(
-      id, name, coreTypeId, coreCfg, updatedAt, type, profileGroupId);
+    id,
+    name,
+    coreTypeId,
+    coreCfg,
+    updatedAt,
+    type,
+    profileGroupId,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2056,10 +2303,10 @@ class ProfileCompanion extends UpdateCompanion<ProfileData> {
     required DateTime updatedAt,
     required int type,
     this.profileGroupId = const Value.absent(),
-  })  : name = Value(name),
-        coreTypeId = Value(coreTypeId),
-        updatedAt = Value(updatedAt),
-        type = Value(type);
+  }) : name = Value(name),
+       coreTypeId = Value(coreTypeId),
+       updatedAt = Value(updatedAt),
+       type = Value(type);
   static Insertable<ProfileData> custom({
     Expression<int>? id,
     Expression<String>? name,
@@ -2080,14 +2327,15 @@ class ProfileCompanion extends UpdateCompanion<ProfileData> {
     });
   }
 
-  ProfileCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? name,
-      Value<int>? coreTypeId,
-      Value<String>? coreCfg,
-      Value<DateTime>? updatedAt,
-      Value<int>? type,
-      Value<int>? profileGroupId}) {
+  ProfileCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<int>? coreTypeId,
+    Value<String>? coreCfg,
+    Value<DateTime>? updatedAt,
+    Value<int>? type,
+    Value<int>? profileGroupId,
+  }) {
     return ProfileCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -2148,11 +2396,15 @@ class ProfileLocal extends Table
   final String? _alias;
   ProfileLocal(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<int> profileId = GeneratedColumn<int>(
-      'profile_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES profile (id) ON DELETE CASCADE'));
+    'profile_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES profile (id) ON DELETE CASCADE',
+    ),
+  );
   @override
   List<GeneratedColumn> get $columns => [profileId];
   @override
@@ -2166,8 +2418,10 @@ class ProfileLocal extends Table
   ProfileLocalData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return ProfileLocalData(
-      profileId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}profile_id'])!,
+      profileId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}profile_id'],
+      )!,
     );
   }
 
@@ -2189,13 +2443,13 @@ class ProfileLocalData extends DataClass
   }
 
   ProfileLocalCompanion toCompanion(bool nullToAbsent) {
-    return ProfileLocalCompanion(
-      profileId: Value(profileId),
-    );
+    return ProfileLocalCompanion(profileId: Value(profileId));
   }
 
-  factory ProfileLocalData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory ProfileLocalData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ProfileLocalData(
       profileId: serializer.fromJson<int>(json['profileId']),
@@ -2204,14 +2458,11 @@ class ProfileLocalData extends DataClass
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'profileId': serializer.toJson<int>(profileId),
-    };
+    return <String, dynamic>{'profileId': serializer.toJson<int>(profileId)};
   }
 
-  ProfileLocalData copyWith({int? profileId}) => ProfileLocalData(
-        profileId: profileId ?? this.profileId,
-      );
+  ProfileLocalData copyWith({int? profileId}) =>
+      ProfileLocalData(profileId: profileId ?? this.profileId);
   ProfileLocalData copyWithCompanion(ProfileLocalCompanion data) {
     return ProfileLocalData(
       profileId: data.profileId.present ? data.profileId.value : this.profileId,
@@ -2236,24 +2487,16 @@ class ProfileLocalData extends DataClass
 
 class ProfileLocalCompanion extends UpdateCompanion<ProfileLocalData> {
   final Value<int> profileId;
-  const ProfileLocalCompanion({
-    this.profileId = const Value.absent(),
-  });
-  ProfileLocalCompanion.insert({
-    this.profileId = const Value.absent(),
-  });
-  static Insertable<ProfileLocalData> custom({
-    Expression<int>? profileId,
-  }) {
+  const ProfileLocalCompanion({this.profileId = const Value.absent()});
+  ProfileLocalCompanion.insert({this.profileId = const Value.absent()});
+  static Insertable<ProfileLocalData> custom({Expression<int>? profileId}) {
     return RawValuesInsertable({
       if (profileId != null) 'profile_id': profileId,
     });
   }
 
   ProfileLocalCompanion copyWith({Value<int>? profileId}) {
-    return ProfileLocalCompanion(
-      profileId: profileId ?? this.profileId,
-    );
+    return ProfileLocalCompanion(profileId: profileId ?? this.profileId);
   }
 
   @override
@@ -2281,17 +2524,29 @@ class ProfileRemote extends Table
   final String? _alias;
   ProfileRemote(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<int> profileId = GeneratedColumn<int>(
-      'profile_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES profile (id) ON DELETE CASCADE'));
+    'profile_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES profile (id) ON DELETE CASCADE',
+    ),
+  );
   late final GeneratedColumn<String> url = GeneratedColumn<String>(
-      'url', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'url',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   late final GeneratedColumn<int> autoUpdateInterval = GeneratedColumn<int>(
-      'auto_update_interval', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+    'auto_update_interval',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
   @override
   List<GeneratedColumn> get $columns => [profileId, url, autoUpdateInterval];
   @override
@@ -2305,12 +2560,18 @@ class ProfileRemote extends Table
   ProfileRemoteData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return ProfileRemoteData(
-      profileId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}profile_id'])!,
-      url: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}url'])!,
+      profileId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}profile_id'],
+      )!,
+      url: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}url'],
+      )!,
       autoUpdateInterval: attachedDatabase.typeMapping.read(
-          DriftSqlType.int, data['${effectivePrefix}auto_update_interval'])!,
+        DriftSqlType.int,
+        data['${effectivePrefix}auto_update_interval'],
+      )!,
     );
   }
 
@@ -2325,10 +2586,11 @@ class ProfileRemoteData extends DataClass
   final int profileId;
   final String url;
   final int autoUpdateInterval;
-  const ProfileRemoteData(
-      {required this.profileId,
-      required this.url,
-      required this.autoUpdateInterval});
+  const ProfileRemoteData({
+    required this.profileId,
+    required this.url,
+    required this.autoUpdateInterval,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2346,8 +2608,10 @@ class ProfileRemoteData extends DataClass
     );
   }
 
-  factory ProfileRemoteData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory ProfileRemoteData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ProfileRemoteData(
       profileId: serializer.fromJson<int>(json['profileId']),
@@ -2365,13 +2629,15 @@ class ProfileRemoteData extends DataClass
     };
   }
 
-  ProfileRemoteData copyWith(
-          {int? profileId, String? url, int? autoUpdateInterval}) =>
-      ProfileRemoteData(
-        profileId: profileId ?? this.profileId,
-        url: url ?? this.url,
-        autoUpdateInterval: autoUpdateInterval ?? this.autoUpdateInterval,
-      );
+  ProfileRemoteData copyWith({
+    int? profileId,
+    String? url,
+    int? autoUpdateInterval,
+  }) => ProfileRemoteData(
+    profileId: profileId ?? this.profileId,
+    url: url ?? this.url,
+    autoUpdateInterval: autoUpdateInterval ?? this.autoUpdateInterval,
+  );
   ProfileRemoteData copyWithCompanion(ProfileRemoteCompanion data) {
     return ProfileRemoteData(
       profileId: data.profileId.present ? data.profileId.value : this.profileId,
@@ -2416,8 +2682,8 @@ class ProfileRemoteCompanion extends UpdateCompanion<ProfileRemoteData> {
     this.profileId = const Value.absent(),
     required String url,
     required int autoUpdateInterval,
-  })  : url = Value(url),
-        autoUpdateInterval = Value(autoUpdateInterval);
+  }) : url = Value(url),
+       autoUpdateInterval = Value(autoUpdateInterval);
   static Insertable<ProfileRemoteData> custom({
     Expression<int>? profileId,
     Expression<String>? url,
@@ -2431,10 +2697,11 @@ class ProfileRemoteCompanion extends UpdateCompanion<ProfileRemoteData> {
     });
   }
 
-  ProfileRemoteCompanion copyWith(
-      {Value<int>? profileId,
-      Value<String>? url,
-      Value<int>? autoUpdateInterval}) {
+  ProfileRemoteCompanion copyWith({
+    Value<int>? profileId,
+    Value<String>? url,
+    Value<int>? autoUpdateInterval,
+  }) {
     return ProfileRemoteCompanion(
       profileId: profileId ?? this.profileId,
       url: url ?? this.url,
@@ -2475,11 +2742,15 @@ class ProfileGroupLocal extends Table
   final String? _alias;
   ProfileGroupLocal(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<int> profileGroupId = GeneratedColumn<int>(
-      'profile_group_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES profile_group (id) ON DELETE CASCADE'));
+    'profile_group_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES profile_group (id) ON DELETE CASCADE',
+    ),
+  );
   @override
   List<GeneratedColumn> get $columns => [profileGroupId];
   @override
@@ -2493,8 +2764,10 @@ class ProfileGroupLocal extends Table
   ProfileGroupLocalData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return ProfileGroupLocalData(
-      profileGroupId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}profile_group_id'])!,
+      profileGroupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}profile_group_id'],
+      )!,
     );
   }
 
@@ -2516,13 +2789,13 @@ class ProfileGroupLocalData extends DataClass
   }
 
   ProfileGroupLocalCompanion toCompanion(bool nullToAbsent) {
-    return ProfileGroupLocalCompanion(
-      profileGroupId: Value(profileGroupId),
-    );
+    return ProfileGroupLocalCompanion(profileGroupId: Value(profileGroupId));
   }
 
-  factory ProfileGroupLocalData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory ProfileGroupLocalData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ProfileGroupLocalData(
       profileGroupId: serializer.fromJson<int>(json['profileGroupId']),
@@ -2613,23 +2886,43 @@ class ProfileGroupRemote extends Table
   final String? _alias;
   ProfileGroupRemote(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<int> profileGroupId = GeneratedColumn<int>(
-      'profile_group_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES profile_group (id) ON DELETE CASCADE'));
+    'profile_group_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES profile_group (id) ON DELETE CASCADE',
+    ),
+  );
   late final GeneratedColumn<String> url = GeneratedColumn<String>(
-      'url', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+    'url',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   late final GeneratedColumn<int> format = GeneratedColumn<int>(
-      'format', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+    'format',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
   late final GeneratedColumn<int> autoUpdateInterval = GeneratedColumn<int>(
-      'auto_update_interval', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+    'auto_update_interval',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
   @override
-  List<GeneratedColumn> get $columns =>
-      [profileGroupId, url, format, autoUpdateInterval];
+  List<GeneratedColumn> get $columns => [
+    profileGroupId,
+    url,
+    format,
+    autoUpdateInterval,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -2641,14 +2934,22 @@ class ProfileGroupRemote extends Table
   ProfileGroupRemoteData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return ProfileGroupRemoteData(
-      profileGroupId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}profile_group_id'])!,
-      url: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}url'])!,
-      format: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}format'])!,
+      profileGroupId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}profile_group_id'],
+      )!,
+      url: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}url'],
+      )!,
+      format: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}format'],
+      )!,
       autoUpdateInterval: attachedDatabase.typeMapping.read(
-          DriftSqlType.int, data['${effectivePrefix}auto_update_interval'])!,
+        DriftSqlType.int,
+        data['${effectivePrefix}auto_update_interval'],
+      )!,
     );
   }
 
@@ -2664,11 +2965,12 @@ class ProfileGroupRemoteData extends DataClass
   final String url;
   final int format;
   final int autoUpdateInterval;
-  const ProfileGroupRemoteData(
-      {required this.profileGroupId,
-      required this.url,
-      required this.format,
-      required this.autoUpdateInterval});
+  const ProfileGroupRemoteData({
+    required this.profileGroupId,
+    required this.url,
+    required this.format,
+    required this.autoUpdateInterval,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2688,8 +2990,10 @@ class ProfileGroupRemoteData extends DataClass
     );
   }
 
-  factory ProfileGroupRemoteData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
+  factory ProfileGroupRemoteData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ProfileGroupRemoteData(
       profileGroupId: serializer.fromJson<int>(json['profileGroupId']),
@@ -2709,17 +3013,17 @@ class ProfileGroupRemoteData extends DataClass
     };
   }
 
-  ProfileGroupRemoteData copyWith(
-          {int? profileGroupId,
-          String? url,
-          int? format,
-          int? autoUpdateInterval}) =>
-      ProfileGroupRemoteData(
-        profileGroupId: profileGroupId ?? this.profileGroupId,
-        url: url ?? this.url,
-        format: format ?? this.format,
-        autoUpdateInterval: autoUpdateInterval ?? this.autoUpdateInterval,
-      );
+  ProfileGroupRemoteData copyWith({
+    int? profileGroupId,
+    String? url,
+    int? format,
+    int? autoUpdateInterval,
+  }) => ProfileGroupRemoteData(
+    profileGroupId: profileGroupId ?? this.profileGroupId,
+    url: url ?? this.url,
+    format: format ?? this.format,
+    autoUpdateInterval: autoUpdateInterval ?? this.autoUpdateInterval,
+  );
   ProfileGroupRemoteData copyWithCompanion(ProfileGroupRemoteCompanion data) {
     return ProfileGroupRemoteData(
       profileGroupId: data.profileGroupId.present
@@ -2774,9 +3078,9 @@ class ProfileGroupRemoteCompanion
     required String url,
     required int format,
     required int autoUpdateInterval,
-  })  : url = Value(url),
-        format = Value(format),
-        autoUpdateInterval = Value(autoUpdateInterval);
+  }) : url = Value(url),
+       format = Value(format),
+       autoUpdateInterval = Value(autoUpdateInterval);
   static Insertable<ProfileGroupRemoteData> custom({
     Expression<int>? profileGroupId,
     Expression<String>? url,
@@ -2792,11 +3096,12 @@ class ProfileGroupRemoteCompanion
     });
   }
 
-  ProfileGroupRemoteCompanion copyWith(
-      {Value<int>? profileGroupId,
-      Value<String>? url,
-      Value<int>? format,
-      Value<int>? autoUpdateInterval}) {
+  ProfileGroupRemoteCompanion copyWith({
+    Value<int>? profileGroupId,
+    Value<String>? url,
+    Value<int>? format,
+    Value<int>? autoUpdateInterval,
+  }) {
     return ProfileGroupRemoteCompanion(
       profileGroupId: profileGroupId ?? this.profileGroupId,
       url: url ?? this.url,
@@ -2856,21 +3161,21 @@ class DatabaseAtV3 extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
-        asset,
-        assetLocal,
-        assetRemote,
-        coreType,
-        core,
-        coreExec,
-        coreLib,
-        coreTypeSelected,
-        profileGroup,
-        profile,
-        profileLocal,
-        profileRemote,
-        profileGroupLocal,
-        profileGroupRemote
-      ];
+    asset,
+    assetLocal,
+    assetRemote,
+    coreType,
+    core,
+    coreExec,
+    coreLib,
+    coreTypeSelected,
+    profileGroup,
+    profile,
+    profileLocal,
+    profileRemote,
+    profileGroupLocal,
+    profileGroupRemote,
+  ];
   @override
   int get schemaVersion => 3;
 }

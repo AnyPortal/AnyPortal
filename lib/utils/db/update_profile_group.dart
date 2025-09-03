@@ -22,8 +22,8 @@ Future<bool> updateProfileGroup({
 }) async {
   // for profile group remote update
   ProfileGroupRemoteAnyPortalREST? profileGroupRemoteAnyPortalREST;
-  Set<String> newNameSet = {};
-  Set<String> oldNameSet = {};
+  Set<String> newKeySet = {};
+  Set<String> oldKeySet = {};
   List<ProfileData> oldProfileList = [];
   int? profileGroupId;
 
@@ -58,15 +58,15 @@ Future<bool> updateProfileGroup({
       final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
       profileGroupRemoteAnyPortalREST =
           ProfileGroupRemoteAnyPortalREST.fromJson(jsonMap);
-      newNameSet = profileGroupRemoteAnyPortalREST.profiles
-          .map((e) => e.name)
+      newKeySet = profileGroupRemoteAnyPortalREST.profiles
+          .map((e) => e.key)
           .toSet();
       if (oldProfileGroup != null) {
         profileGroupId = oldProfileGroup.id;
         oldProfileList = await (db.select(
           db.profile,
         )..where((e) => e.profileGroupId.equals(profileGroupId!))).get();
-        oldNameSet = oldProfileList.map((e) => e.name).toSet();
+        oldKeySet = oldProfileList.map((e) => e.key).toSet();
       }
     } else {
       withContext((context) {
@@ -97,15 +97,16 @@ Future<bool> updateProfileGroup({
         // update profiles
         for (var profile in profileGroupRemoteAnyPortalREST!.profiles) {
           // update
-          if (oldNameSet.contains(profile.name)) {
+          if (oldKeySet.contains(profile.key)) {
             await (db.update(db.profile)..where(
                   (e) =>
                       (e.profileGroupId.equals(profileGroupId) &
-                      e.name.equals(profile.name)),
+                      e.key.equals(profile.key)),
                 ))
                 .write(
                   ProfileCompanion(
                     name: drift.Value(profile.name),
+                    key: drift.Value(profile.key),
                     coreCfg: drift.Value(jsonEncode(profile.coreConfig)),
                     updatedAt: drift.Value(DateTime.now()),
                     type: const drift.Value(ProfileType.local),
@@ -120,6 +121,7 @@ Future<bool> updateProfileGroup({
                 .insert(
                   ProfileCompanion(
                     name: drift.Value(profile.name),
+                    key: drift.Value(profile.key),
                     coreCfg: drift.Value(jsonEncode(profile.coreConfig)),
                     updatedAt: drift.Value(DateTime.now()),
                     type: const drift.Value(ProfileType.local),
@@ -130,7 +132,7 @@ Future<bool> updateProfileGroup({
           }
         }
         for (var profile in oldProfileList) {
-          if (!newNameSet.contains(profile.name)) {
+          if (!newKeySet.contains(profile.key)) {
             // delete
             await (db.delete(
               db.profile,

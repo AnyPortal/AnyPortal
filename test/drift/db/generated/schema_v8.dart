@@ -2080,6 +2080,13 @@ class Profile extends Table with TableInfo<Profile, ProfileData> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  late final GeneratedColumn<String> key = GeneratedColumn<String>(
+    'key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
   late final GeneratedColumn<int> coreTypeId = GeneratedColumn<int>(
     'core_type_id',
     aliasedName,
@@ -2131,16 +2138,25 @@ class Profile extends Table with TableInfo<Profile, ProfileData> {
     ),
     defaultValue: const CustomExpression('1'),
   );
+  late final GeneratedColumn<int> httping = GeneratedColumn<int>(
+    'httping',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     name,
+    key,
     coreTypeId,
     coreCfg,
     coreCfgFmt,
     updatedAt,
     type,
     profileGroupId,
+    httping,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2160,6 +2176,10 @@ class Profile extends Table with TableInfo<Profile, ProfileData> {
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}name'],
+      )!,
+      key: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}key'],
       )!,
       coreTypeId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -2185,6 +2205,10 @@ class Profile extends Table with TableInfo<Profile, ProfileData> {
         DriftSqlType.int,
         data['${effectivePrefix}profile_group_id'],
       )!,
+      httping: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}httping'],
+      ),
     );
   }
 
@@ -2197,33 +2221,41 @@ class Profile extends Table with TableInfo<Profile, ProfileData> {
 class ProfileData extends DataClass implements Insertable<ProfileData> {
   final int id;
   final String name;
+  final String key;
   final int coreTypeId;
   final String coreCfg;
   final String coreCfgFmt;
   final DateTime updatedAt;
   final int type;
   final int profileGroupId;
+  final int? httping;
   const ProfileData({
     required this.id,
     required this.name,
+    required this.key,
     required this.coreTypeId,
     required this.coreCfg,
     required this.coreCfgFmt,
     required this.updatedAt,
     required this.type,
     required this.profileGroupId,
+    this.httping,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
+    map['key'] = Variable<String>(key);
     map['core_type_id'] = Variable<int>(coreTypeId);
     map['core_cfg'] = Variable<String>(coreCfg);
     map['core_cfg_fmt'] = Variable<String>(coreCfgFmt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     map['type'] = Variable<int>(type);
     map['profile_group_id'] = Variable<int>(profileGroupId);
+    if (!nullToAbsent || httping != null) {
+      map['httping'] = Variable<int>(httping);
+    }
     return map;
   }
 
@@ -2231,12 +2263,16 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
     return ProfileCompanion(
       id: Value(id),
       name: Value(name),
+      key: Value(key),
       coreTypeId: Value(coreTypeId),
       coreCfg: Value(coreCfg),
       coreCfgFmt: Value(coreCfgFmt),
       updatedAt: Value(updatedAt),
       type: Value(type),
       profileGroupId: Value(profileGroupId),
+      httping: httping == null && nullToAbsent
+          ? const Value.absent()
+          : Value(httping),
     );
   }
 
@@ -2248,12 +2284,14 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
     return ProfileData(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      key: serializer.fromJson<String>(json['key']),
       coreTypeId: serializer.fromJson<int>(json['coreTypeId']),
       coreCfg: serializer.fromJson<String>(json['coreCfg']),
       coreCfgFmt: serializer.fromJson<String>(json['coreCfgFmt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       type: serializer.fromJson<int>(json['type']),
       profileGroupId: serializer.fromJson<int>(json['profileGroupId']),
+      httping: serializer.fromJson<int?>(json['httping']),
     );
   }
   @override
@@ -2262,38 +2300,45 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
+      'key': serializer.toJson<String>(key),
       'coreTypeId': serializer.toJson<int>(coreTypeId),
       'coreCfg': serializer.toJson<String>(coreCfg),
       'coreCfgFmt': serializer.toJson<String>(coreCfgFmt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'type': serializer.toJson<int>(type),
       'profileGroupId': serializer.toJson<int>(profileGroupId),
+      'httping': serializer.toJson<int?>(httping),
     };
   }
 
   ProfileData copyWith({
     int? id,
     String? name,
+    String? key,
     int? coreTypeId,
     String? coreCfg,
     String? coreCfgFmt,
     DateTime? updatedAt,
     int? type,
     int? profileGroupId,
+    Value<int?> httping = const Value.absent(),
   }) => ProfileData(
     id: id ?? this.id,
     name: name ?? this.name,
+    key: key ?? this.key,
     coreTypeId: coreTypeId ?? this.coreTypeId,
     coreCfg: coreCfg ?? this.coreCfg,
     coreCfgFmt: coreCfgFmt ?? this.coreCfgFmt,
     updatedAt: updatedAt ?? this.updatedAt,
     type: type ?? this.type,
     profileGroupId: profileGroupId ?? this.profileGroupId,
+    httping: httping.present ? httping.value : this.httping,
   );
   ProfileData copyWithCompanion(ProfileCompanion data) {
     return ProfileData(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
+      key: data.key.present ? data.key.value : this.key,
       coreTypeId: data.coreTypeId.present
           ? data.coreTypeId.value
           : this.coreTypeId,
@@ -2306,6 +2351,7 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
       profileGroupId: data.profileGroupId.present
           ? data.profileGroupId.value
           : this.profileGroupId,
+      httping: data.httping.present ? data.httping.value : this.httping,
     );
   }
 
@@ -2314,12 +2360,14 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
     return (StringBuffer('ProfileData(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('key: $key, ')
           ..write('coreTypeId: $coreTypeId, ')
           ..write('coreCfg: $coreCfg, ')
           ..write('coreCfgFmt: $coreCfgFmt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('type: $type, ')
-          ..write('profileGroupId: $profileGroupId')
+          ..write('profileGroupId: $profileGroupId, ')
+          ..write('httping: $httping')
           ..write(')'))
         .toString();
   }
@@ -2328,12 +2376,14 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
   int get hashCode => Object.hash(
     id,
     name,
+    key,
     coreTypeId,
     coreCfg,
     coreCfgFmt,
     updatedAt,
     type,
     profileGroupId,
+    httping,
   );
   @override
   bool operator ==(Object other) =>
@@ -2341,87 +2391,104 @@ class ProfileData extends DataClass implements Insertable<ProfileData> {
       (other is ProfileData &&
           other.id == this.id &&
           other.name == this.name &&
+          other.key == this.key &&
           other.coreTypeId == this.coreTypeId &&
           other.coreCfg == this.coreCfg &&
           other.coreCfgFmt == this.coreCfgFmt &&
           other.updatedAt == this.updatedAt &&
           other.type == this.type &&
-          other.profileGroupId == this.profileGroupId);
+          other.profileGroupId == this.profileGroupId &&
+          other.httping == this.httping);
 }
 
 class ProfileCompanion extends UpdateCompanion<ProfileData> {
   final Value<int> id;
   final Value<String> name;
+  final Value<String> key;
   final Value<int> coreTypeId;
   final Value<String> coreCfg;
   final Value<String> coreCfgFmt;
   final Value<DateTime> updatedAt;
   final Value<int> type;
   final Value<int> profileGroupId;
+  final Value<int?> httping;
   const ProfileCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.key = const Value.absent(),
     this.coreTypeId = const Value.absent(),
     this.coreCfg = const Value.absent(),
     this.coreCfgFmt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.type = const Value.absent(),
     this.profileGroupId = const Value.absent(),
+    this.httping = const Value.absent(),
   });
   ProfileCompanion.insert({
     this.id = const Value.absent(),
     required String name,
+    required String key,
     required int coreTypeId,
     this.coreCfg = const Value.absent(),
     this.coreCfgFmt = const Value.absent(),
     required DateTime updatedAt,
     required int type,
     this.profileGroupId = const Value.absent(),
+    this.httping = const Value.absent(),
   }) : name = Value(name),
+       key = Value(key),
        coreTypeId = Value(coreTypeId),
        updatedAt = Value(updatedAt),
        type = Value(type);
   static Insertable<ProfileData> custom({
     Expression<int>? id,
     Expression<String>? name,
+    Expression<String>? key,
     Expression<int>? coreTypeId,
     Expression<String>? coreCfg,
     Expression<String>? coreCfgFmt,
     Expression<DateTime>? updatedAt,
     Expression<int>? type,
     Expression<int>? profileGroupId,
+    Expression<int>? httping,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (key != null) 'key': key,
       if (coreTypeId != null) 'core_type_id': coreTypeId,
       if (coreCfg != null) 'core_cfg': coreCfg,
       if (coreCfgFmt != null) 'core_cfg_fmt': coreCfgFmt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (type != null) 'type': type,
       if (profileGroupId != null) 'profile_group_id': profileGroupId,
+      if (httping != null) 'httping': httping,
     });
   }
 
   ProfileCompanion copyWith({
     Value<int>? id,
     Value<String>? name,
+    Value<String>? key,
     Value<int>? coreTypeId,
     Value<String>? coreCfg,
     Value<String>? coreCfgFmt,
     Value<DateTime>? updatedAt,
     Value<int>? type,
     Value<int>? profileGroupId,
+    Value<int?>? httping,
   }) {
     return ProfileCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
+      key: key ?? this.key,
       coreTypeId: coreTypeId ?? this.coreTypeId,
       coreCfg: coreCfg ?? this.coreCfg,
       coreCfgFmt: coreCfgFmt ?? this.coreCfgFmt,
       updatedAt: updatedAt ?? this.updatedAt,
       type: type ?? this.type,
       profileGroupId: profileGroupId ?? this.profileGroupId,
+      httping: httping ?? this.httping,
     );
   }
 
@@ -2433,6 +2500,9 @@ class ProfileCompanion extends UpdateCompanion<ProfileData> {
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
+    }
+    if (key.present) {
+      map['key'] = Variable<String>(key.value);
     }
     if (coreTypeId.present) {
       map['core_type_id'] = Variable<int>(coreTypeId.value);
@@ -2452,6 +2522,9 @@ class ProfileCompanion extends UpdateCompanion<ProfileData> {
     if (profileGroupId.present) {
       map['profile_group_id'] = Variable<int>(profileGroupId.value);
     }
+    if (httping.present) {
+      map['httping'] = Variable<int>(httping.value);
+    }
     return map;
   }
 
@@ -2460,12 +2533,14 @@ class ProfileCompanion extends UpdateCompanion<ProfileData> {
     return (StringBuffer('ProfileCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('key: $key, ')
           ..write('coreTypeId: $coreTypeId, ')
           ..write('coreCfg: $coreCfg, ')
           ..write('coreCfgFmt: $coreCfgFmt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('type: $type, ')
-          ..write('profileGroupId: $profileGroupId')
+          ..write('profileGroupId: $profileGroupId, ')
+          ..write('httping: $httping')
           ..write(')'))
         .toString();
   }
@@ -3222,8 +3297,8 @@ class ProfileGroupRemoteCompanion
   }
 }
 
-class DatabaseAtV6 extends GeneratedDatabase {
-  DatabaseAtV6(QueryExecutor e) : super(e);
+class DatabaseAtV8 extends GeneratedDatabase {
+  DatabaseAtV8(QueryExecutor e) : super(e);
   late final Asset asset = Asset(this);
   late final AssetLocal assetLocal = AssetLocal(this);
   late final AssetRemote assetRemote = AssetRemote(this);
@@ -3259,5 +3334,5 @@ class DatabaseAtV6 extends GeneratedDatabase {
     profileGroupRemote,
   ];
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 8;
 }

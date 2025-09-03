@@ -11,6 +11,7 @@ import '../with_context.dart';
 Future<bool> updateProfile({
   ProfileData? oldProfile,
   String? name,
+  String? key,
   ProfileType? profileType,
   String? url = "",
   int? autoUpdateInterval = 0,
@@ -21,6 +22,7 @@ Future<bool> updateProfile({
 }) async {
   if (oldProfile != null) {
     name ??= oldProfile.name;
+    key ??= oldProfile.key;
     profileType ??= oldProfile.type;
     coreTypeId ??= oldProfile.coreTypeId;
     coreCfg ??= oldProfile.coreCfg;
@@ -33,6 +35,8 @@ Future<bool> updateProfile({
         url ??= profileRemote.url;
       case ProfileType.local:
     }
+  } else {
+    key = name;
   }
 
   await db.transaction(() async {
@@ -45,6 +49,7 @@ Future<bool> updateProfile({
           .insertOnConflictUpdate(
             ProfileCompanion(
               name: drift.Value(name!),
+              key: drift.Value(key!),
               updatedAt: drift.Value(DateTime.now()),
               type: drift.Value(profileType!),
               coreTypeId: drift.Value(coreTypeId!),
@@ -74,6 +79,7 @@ Future<bool> updateProfile({
               ProfileCompanion(
                 id: drift.Value(profileId),
                 name: drift.Value(name!),
+                key: drift.Value(key!),
                 updatedAt: drift.Value(DateTime.now()),
                 coreCfg: drift.Value(coreCfg),
                 type: drift.Value(profileType),
@@ -98,6 +104,7 @@ Future<bool> updateProfile({
               ProfileCompanion(
                 id: drift.Value(profileId),
                 name: drift.Value(name!),
+                key: drift.Value(key!),
                 updatedAt: drift.Value(DateTime.now()),
                 coreCfg: drift.Value(coreCfg!),
                 type: drift.Value(profileType),
