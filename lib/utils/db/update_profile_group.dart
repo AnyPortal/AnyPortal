@@ -96,6 +96,11 @@ Future<bool> updateProfileGroup({
       case ProfileGroupType.remote:
         // update profiles
         for (var profile in profileGroupRemoteAnyPortalREST!.profiles) {
+          final coreConfigStr =
+              profile.format == "json" && profile.coreConfig is Map
+              ? jsonEncode(profile.coreConfig)
+              : profile.coreConfig;
+
           // update
           if (oldKeySet.contains(profile.key)) {
             await (db.update(db.profile)..where(
@@ -107,7 +112,8 @@ Future<bool> updateProfileGroup({
                   ProfileCompanion(
                     name: drift.Value(profile.name),
                     key: drift.Value(profile.key),
-                    coreCfg: drift.Value(jsonEncode(profile.coreConfig)),
+                    coreCfg: drift.Value(coreConfigStr),
+                    coreCfgFmt: drift.Value(profile.format),
                     updatedAt: drift.Value(DateTime.now()),
                     type: const drift.Value(ProfileType.local),
                     profileGroupId: drift.Value(profileGroupId),
@@ -122,7 +128,8 @@ Future<bool> updateProfileGroup({
                   ProfileCompanion(
                     name: drift.Value(profile.name),
                     key: drift.Value(profile.key),
-                    coreCfg: drift.Value(jsonEncode(profile.coreConfig)),
+                    coreCfg: drift.Value(profile.coreConfig),
+                    coreCfgFmt: drift.Value(profile.format),
                     updatedAt: drift.Value(DateTime.now()),
                     type: const drift.Value(ProfileType.local),
                     profileGroupId: drift.Value(profileGroupId),
