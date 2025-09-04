@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/widgets.dart';
 
 import 'package:drift/drift.dart' as drift;
@@ -62,15 +64,38 @@ Future<bool> updateProfile({
 
     switch (profileType!) {
       case ProfileType.remote:
-        final response = await http.get(Uri.parse(url!));
         String coreCfg = "{}";
-        if (response.statusCode == 200) {
-          coreCfg = response.body;
-        } else {
-          withContext((context) {
-            showSnackBarNow(context, Text("failed to fetch: $url"));
-          });
-          throw Exception("failed to fetch: $url");
+
+        final uri = Uri.parse(url!);
+        switch (uri.scheme) {
+          case "http":
+          case "https":
+            final response = await http.get(uri);
+            if (response.statusCode == 200) {
+              coreCfg = response.body;
+            } else {
+              withContext((context) {
+                showSnackBarNow(context, Text("failed to fetch: $url"));
+              });
+              throw Exception("failed to fetch: $url");
+            }
+          case "file":
+            try {
+              coreCfg = await File.fromUri(uri).readAsString();
+            } catch (e) {
+              withContext((context) {
+                showSnackBarNow(context, Text("failed to read file: $e"));
+              });
+              throw Exception("failed to read file: $e");
+            }
+          case _:
+            withContext((context) {
+              showSnackBarNow(
+                context,
+                Text("unsupported scheme: ${uri.scheme}"),
+              );
+            });
+            throw Exception("unsupported scheme: ${uri.scheme}");
         }
 
         await db
