@@ -65,6 +65,7 @@ Future<bool> updateProfile({
     switch (profileType!) {
       case ProfileType.remote:
         String coreCfg = "{}";
+        DateTime? updatedAt;
 
         final uri = Uri.parse(url!);
         switch (uri.scheme) {
@@ -81,7 +82,9 @@ Future<bool> updateProfile({
             }
           case "file":
             try {
-              coreCfg = await File.fromUri(uri).readAsString();
+              final f = File.fromUri(uri);
+              coreCfg = await f.readAsString();
+              updatedAt = (await f.stat()).modified;
             } catch (e) {
               withContext((context) {
                 showSnackBarNow(context, Text("failed to read file: $e"));
@@ -105,7 +108,7 @@ Future<bool> updateProfile({
                 id: drift.Value(profileId),
                 name: drift.Value(name!),
                 key: drift.Value(key!),
-                updatedAt: drift.Value(DateTime.now()),
+                updatedAt: drift.Value(updatedAt ?? DateTime.now()),
                 coreCfg: drift.Value(coreCfg),
                 type: drift.Value(profileType),
                 coreTypeId: drift.Value(coreTypeId!),

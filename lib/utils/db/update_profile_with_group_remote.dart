@@ -1,20 +1,39 @@
 import 'dart:async';
+import 'dart:io';
 
-import 'update_profile.dart';
-import 'update_profile_group.dart';
 import '../../models/profile.dart';
 import '../../models/profile_group.dart';
 import '../db.dart';
+
+import 'update_profile.dart';
+import 'update_profile_group.dart';
 
 Future<bool> updateProfileWithGroupRemote(ProfileData profile) async {
   if (profile.type == ProfileType.remote) {
     final profileRemote = await (db.select(
       db.profileRemote,
     )..where((p) => p.profileId.equals(profile.id))).getSingleOrNull();
-    if (profileRemote!.autoUpdateInterval != 0 &&
-        profile.updatedAt
-            .add(Duration(seconds: profileRemote.autoUpdateInterval))
-            .isBefore(DateTime.now())) {
+    if (profileRemote == null) return false;
+
+    bool shouldUpdate = false;
+    final uri = Uri.parse(profileRemote.url);
+    switch (uri.scheme) {
+      case "http":
+      case "https":
+        shouldUpdate =
+            profileRemote.autoUpdateInterval != 0 &&
+            profile.updatedAt
+                .add(Duration(seconds: profileRemote.autoUpdateInterval))
+                .isBefore(DateTime.now());
+      case "file":
+        final f = File.fromUri(uri);
+        final updatedAt = (await f.stat()).modified;
+        if (profile.updatedAt != updatedAt) {
+          shouldUpdate = true;
+        }
+    }
+
+    if (shouldUpdate) {
       await updateProfile(
         oldProfile: profile,
       );
@@ -33,10 +52,11 @@ Future<bool> updateProfileWithGroupRemote(ProfileData profile) async {
                 db.profileGroupRemote,
               )..where((p) => p.profileGroupId.equals(selectedProfileGroup.id)))
               .getSingleOrNull();
-      if (profileGroupRemote!.autoUpdateInterval != 0 &&
-          selectedProfileGroup.updatedAt
-              .add(Duration(seconds: profileGroupRemote.autoUpdateInterval))
-              .isBefore(DateTime.now())) {
+      if (profileGroupRemote!.protocol == ProfileGroupRemoteProtocol.file ||
+          (profileGroupRemote.autoUpdateInterval != 0 &&
+              selectedProfileGroup.updatedAt
+                  .add(Duration(seconds: profileGroupRemote.autoUpdateInterval))
+                  .isBefore(DateTime.now()))) {
         await updateProfileGroup(
           oldProfileGroup: selectedProfileGroup,
         );

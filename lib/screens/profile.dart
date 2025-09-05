@@ -136,7 +136,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         items: _profileGroupDataList.map((ProfileGroupData t) {
           final name = t.id == 1 && t.name == ""
-              ? context.loc.standalone
+              ? context.loc.default_
               : t.name;
           return DropdownMenuItem<int>(value: t.id, child: Text(name));
         }).toList(),
@@ -198,7 +198,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           controller: _urlController,
           decoration: InputDecoration(
             labelText: context.loc.url,
-            hintText: 'https://url/to/config/json/',
+            hintText: 'https://example.org/config/, file:///path/config.ext',
             border: OutlineInputBorder(),
           ),
         ),

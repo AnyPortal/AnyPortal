@@ -1821,13 +1821,13 @@ final class Schema8 extends i0.VersionedSchema {
     ),
     alias: null,
   );
-  late final Shape13 profileGroupRemote = Shape13(
+  late final Shape18 profileGroupRemote = Shape18(
     source: i0.VersionedTable(
       entityName: 'profile_group_remote',
       withoutRowId: false,
       isStrict: false,
       tableConstraints: ['PRIMARY KEY(profile_group_id)'],
-      columns: [_column_22, _column_6, _column_23, _column_8],
+      columns: [_column_22, _column_6, _column_29, _column_8, _column_30],
       attachedDatabase: database,
     ),
     alias: null,
@@ -1864,6 +1864,39 @@ i1.GeneratedColumn<String> _column_28(String aliasedName) =>
       aliasedName,
       false,
       type: i1.DriftSqlType.string,
+    );
+
+class Shape18 extends i0.VersionedTable {
+  Shape18({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get profileGroupId =>
+      columnsByName['profile_group_id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get url =>
+      columnsByName['url']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get protocol =>
+      columnsByName['protocol']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get autoUpdateInterval =>
+      columnsByName['auto_update_interval']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get coreTypeId =>
+      columnsByName['core_type_id']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<int> _column_29(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'protocol',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+    );
+i1.GeneratedColumn<int> _column_30(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'core_type_id',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      defaultConstraints: i1.GeneratedColumn.constraintIsAlways(
+        'REFERENCES core_type (id) ON DELETE CASCADE',
+      ),
+      defaultValue: const CustomExpression('0'),
     );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,

@@ -120,7 +120,9 @@ See planning [here](https://github.com/users/anyportal/projects/1/views/1).
     - better server-side functions (gRPC interface etc.), so we choose it also as client to reduce maintenance
   - why sing-box over v2ray/xray?
     - integrated tun makes things easier
-- remote profile has only one required field, a REST URL pointing to a v2ray config
+- a remote profile can be
+  - a https url to a full profile, e.g. `https://url/to/config/`
+  - a file url to a file, e.g. `file:///path/to/file.ext`
 - for v2ray to work properly on Android and iOS, Tun2socks is necessary
   - v2ray native tun inbound is only half finished for now
   - Tun2socks with best performance so far: hev-socks5-tunnel, followed by sing-box

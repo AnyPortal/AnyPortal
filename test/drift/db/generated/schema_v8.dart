@@ -3059,8 +3059,8 @@ class ProfileGroupRemote extends Table
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  late final GeneratedColumn<int> format = GeneratedColumn<int>(
-    'format',
+  late final GeneratedColumn<int> protocol = GeneratedColumn<int>(
+    'protocol',
     aliasedName,
     false,
     type: DriftSqlType.int,
@@ -3073,12 +3073,24 @@ class ProfileGroupRemote extends Table
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  late final GeneratedColumn<int> coreTypeId = GeneratedColumn<int>(
+    'core_type_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES core_type (id) ON DELETE CASCADE',
+    ),
+    defaultValue: const CustomExpression('0'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     profileGroupId,
     url,
-    format,
+    protocol,
     autoUpdateInterval,
+    coreTypeId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3099,13 +3111,17 @@ class ProfileGroupRemote extends Table
         DriftSqlType.string,
         data['${effectivePrefix}url'],
       )!,
-      format: attachedDatabase.typeMapping.read(
+      protocol: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}format'],
+        data['${effectivePrefix}protocol'],
       )!,
       autoUpdateInterval: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}auto_update_interval'],
+      )!,
+      coreTypeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}core_type_id'],
       )!,
     );
   }
@@ -3120,21 +3136,24 @@ class ProfileGroupRemoteData extends DataClass
     implements Insertable<ProfileGroupRemoteData> {
   final int profileGroupId;
   final String url;
-  final int format;
+  final int protocol;
   final int autoUpdateInterval;
+  final int coreTypeId;
   const ProfileGroupRemoteData({
     required this.profileGroupId,
     required this.url,
-    required this.format,
+    required this.protocol,
     required this.autoUpdateInterval,
+    required this.coreTypeId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['profile_group_id'] = Variable<int>(profileGroupId);
     map['url'] = Variable<String>(url);
-    map['format'] = Variable<int>(format);
+    map['protocol'] = Variable<int>(protocol);
     map['auto_update_interval'] = Variable<int>(autoUpdateInterval);
+    map['core_type_id'] = Variable<int>(coreTypeId);
     return map;
   }
 
@@ -3142,8 +3161,9 @@ class ProfileGroupRemoteData extends DataClass
     return ProfileGroupRemoteCompanion(
       profileGroupId: Value(profileGroupId),
       url: Value(url),
-      format: Value(format),
+      protocol: Value(protocol),
       autoUpdateInterval: Value(autoUpdateInterval),
+      coreTypeId: Value(coreTypeId),
     );
   }
 
@@ -3155,8 +3175,9 @@ class ProfileGroupRemoteData extends DataClass
     return ProfileGroupRemoteData(
       profileGroupId: serializer.fromJson<int>(json['profileGroupId']),
       url: serializer.fromJson<String>(json['url']),
-      format: serializer.fromJson<int>(json['format']),
+      protocol: serializer.fromJson<int>(json['protocol']),
       autoUpdateInterval: serializer.fromJson<int>(json['autoUpdateInterval']),
+      coreTypeId: serializer.fromJson<int>(json['coreTypeId']),
     );
   }
   @override
@@ -3165,21 +3186,24 @@ class ProfileGroupRemoteData extends DataClass
     return <String, dynamic>{
       'profileGroupId': serializer.toJson<int>(profileGroupId),
       'url': serializer.toJson<String>(url),
-      'format': serializer.toJson<int>(format),
+      'protocol': serializer.toJson<int>(protocol),
       'autoUpdateInterval': serializer.toJson<int>(autoUpdateInterval),
+      'coreTypeId': serializer.toJson<int>(coreTypeId),
     };
   }
 
   ProfileGroupRemoteData copyWith({
     int? profileGroupId,
     String? url,
-    int? format,
+    int? protocol,
     int? autoUpdateInterval,
+    int? coreTypeId,
   }) => ProfileGroupRemoteData(
     profileGroupId: profileGroupId ?? this.profileGroupId,
     url: url ?? this.url,
-    format: format ?? this.format,
+    protocol: protocol ?? this.protocol,
     autoUpdateInterval: autoUpdateInterval ?? this.autoUpdateInterval,
+    coreTypeId: coreTypeId ?? this.coreTypeId,
   );
   ProfileGroupRemoteData copyWithCompanion(ProfileGroupRemoteCompanion data) {
     return ProfileGroupRemoteData(
@@ -3187,10 +3211,13 @@ class ProfileGroupRemoteData extends DataClass
           ? data.profileGroupId.value
           : this.profileGroupId,
       url: data.url.present ? data.url.value : this.url,
-      format: data.format.present ? data.format.value : this.format,
+      protocol: data.protocol.present ? data.protocol.value : this.protocol,
       autoUpdateInterval: data.autoUpdateInterval.present
           ? data.autoUpdateInterval.value
           : this.autoUpdateInterval,
+      coreTypeId: data.coreTypeId.present
+          ? data.coreTypeId.value
+          : this.coreTypeId,
     );
   }
 
@@ -3199,71 +3226,85 @@ class ProfileGroupRemoteData extends DataClass
     return (StringBuffer('ProfileGroupRemoteData(')
           ..write('profileGroupId: $profileGroupId, ')
           ..write('url: $url, ')
-          ..write('format: $format, ')
-          ..write('autoUpdateInterval: $autoUpdateInterval')
+          ..write('protocol: $protocol, ')
+          ..write('autoUpdateInterval: $autoUpdateInterval, ')
+          ..write('coreTypeId: $coreTypeId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(profileGroupId, url, format, autoUpdateInterval);
+  int get hashCode => Object.hash(
+    profileGroupId,
+    url,
+    protocol,
+    autoUpdateInterval,
+    coreTypeId,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is ProfileGroupRemoteData &&
           other.profileGroupId == this.profileGroupId &&
           other.url == this.url &&
-          other.format == this.format &&
-          other.autoUpdateInterval == this.autoUpdateInterval);
+          other.protocol == this.protocol &&
+          other.autoUpdateInterval == this.autoUpdateInterval &&
+          other.coreTypeId == this.coreTypeId);
 }
 
 class ProfileGroupRemoteCompanion
     extends UpdateCompanion<ProfileGroupRemoteData> {
   final Value<int> profileGroupId;
   final Value<String> url;
-  final Value<int> format;
+  final Value<int> protocol;
   final Value<int> autoUpdateInterval;
+  final Value<int> coreTypeId;
   const ProfileGroupRemoteCompanion({
     this.profileGroupId = const Value.absent(),
     this.url = const Value.absent(),
-    this.format = const Value.absent(),
+    this.protocol = const Value.absent(),
     this.autoUpdateInterval = const Value.absent(),
+    this.coreTypeId = const Value.absent(),
   });
   ProfileGroupRemoteCompanion.insert({
     this.profileGroupId = const Value.absent(),
     required String url,
-    required int format,
+    required int protocol,
     required int autoUpdateInterval,
+    this.coreTypeId = const Value.absent(),
   }) : url = Value(url),
-       format = Value(format),
+       protocol = Value(protocol),
        autoUpdateInterval = Value(autoUpdateInterval);
   static Insertable<ProfileGroupRemoteData> custom({
     Expression<int>? profileGroupId,
     Expression<String>? url,
-    Expression<int>? format,
+    Expression<int>? protocol,
     Expression<int>? autoUpdateInterval,
+    Expression<int>? coreTypeId,
   }) {
     return RawValuesInsertable({
       if (profileGroupId != null) 'profile_group_id': profileGroupId,
       if (url != null) 'url': url,
-      if (format != null) 'format': format,
+      if (protocol != null) 'protocol': protocol,
       if (autoUpdateInterval != null)
         'auto_update_interval': autoUpdateInterval,
+      if (coreTypeId != null) 'core_type_id': coreTypeId,
     });
   }
 
   ProfileGroupRemoteCompanion copyWith({
     Value<int>? profileGroupId,
     Value<String>? url,
-    Value<int>? format,
+    Value<int>? protocol,
     Value<int>? autoUpdateInterval,
+    Value<int>? coreTypeId,
   }) {
     return ProfileGroupRemoteCompanion(
       profileGroupId: profileGroupId ?? this.profileGroupId,
       url: url ?? this.url,
-      format: format ?? this.format,
+      protocol: protocol ?? this.protocol,
       autoUpdateInterval: autoUpdateInterval ?? this.autoUpdateInterval,
+      coreTypeId: coreTypeId ?? this.coreTypeId,
     );
   }
 
@@ -3276,11 +3317,14 @@ class ProfileGroupRemoteCompanion
     if (url.present) {
       map['url'] = Variable<String>(url.value);
     }
-    if (format.present) {
-      map['format'] = Variable<int>(format.value);
+    if (protocol.present) {
+      map['protocol'] = Variable<int>(protocol.value);
     }
     if (autoUpdateInterval.present) {
       map['auto_update_interval'] = Variable<int>(autoUpdateInterval.value);
+    }
+    if (coreTypeId.present) {
+      map['core_type_id'] = Variable<int>(coreTypeId.value);
     }
     return map;
   }
@@ -3290,8 +3334,9 @@ class ProfileGroupRemoteCompanion
     return (StringBuffer('ProfileGroupRemoteCompanion(')
           ..write('profileGroupId: $profileGroupId, ')
           ..write('url: $url, ')
-          ..write('format: $format, ')
-          ..write('autoUpdateInterval: $autoUpdateInterval')
+          ..write('protocol: $protocol, ')
+          ..write('autoUpdateInterval: $autoUpdateInterval, ')
+          ..write('coreTypeId: $coreTypeId')
           ..write(')'))
         .toString();
   }

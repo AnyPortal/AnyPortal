@@ -1,5 +1,7 @@
 import 'package:drift/drift.dart';
 
+import 'core.dart';
+
 class ProfileGroup extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
@@ -19,8 +21,12 @@ class ProfileGroupRemote extends Table {
   IntColumn get profileGroupId =>
       integer().references(ProfileGroup, #id, onDelete: KeyAction.cascade)();
   TextColumn get url => text()();
-  IntColumn get format => integer().map(const ProfileGroupFormatConverter())();
+  IntColumn get protocol =>
+      integer().map(const ProfileGroupRemoteProtocolConverter())();
   IntColumn get autoUpdateInterval => integer()();
+  IntColumn get coreTypeId => integer()
+      .references(CoreType, #id, onDelete: KeyAction.cascade)
+      .withDefault(const Constant(0))();
 
   @override
   Set<Column<Object>>? get primaryKey => {profileGroupId};
@@ -45,21 +51,22 @@ class ProfileGroupTypeConverter extends TypeConverter<ProfileGroupType, int> {
   }
 }
 
-enum ProfileGroupRemoteFormat {
+enum ProfileGroupRemoteProtocol {
   anyportalRest,
+  file,
 }
 
-class ProfileGroupFormatConverter
-    extends TypeConverter<ProfileGroupRemoteFormat, int> {
-  const ProfileGroupFormatConverter();
+class ProfileGroupRemoteProtocolConverter
+    extends TypeConverter<ProfileGroupRemoteProtocol, int> {
+  const ProfileGroupRemoteProtocolConverter();
 
   @override
-  ProfileGroupRemoteFormat fromSql(int fromDb) {
-    return ProfileGroupRemoteFormat.values[fromDb];
+  ProfileGroupRemoteProtocol fromSql(int fromDb) {
+    return ProfileGroupRemoteProtocol.values[fromDb];
   }
 
   @override
-  int toSql(ProfileGroupRemoteFormat value) {
+  int toSql(ProfileGroupRemoteProtocol value) {
     return value.index;
   }
 }

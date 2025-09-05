@@ -287,7 +287,7 @@ class _ProfileListState extends State<ProfileList> {
 
   String getProfileGroupTitle(ProfileGroupData profileGroup) {
     if (profileGroup.id == 1) {
-      return context.loc.standalone;
+      return context.loc.default_;
     }
     return profileGroup.name;
   }

@@ -187,6 +187,15 @@ class Database extends _$Database {
             newColumns: [schema.profile.key],
           ),
         );
+        await m.addColumn(
+          schema.profileGroupRemote,
+          schema.profileGroupRemote.coreTypeId,
+        );
+        await m.renameColumn(
+          schema.profileGroupRemote,
+          'format',
+          schema.profileGroupRemote.protocol,
+        );
       },
     ),
     beforeOpen: (details) async {

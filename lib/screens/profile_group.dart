@@ -31,6 +31,11 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
 
   // ignore: prefer_final_fields
   ProfileGroupType _profileGroupType = ProfileGroupType.remote;
+  // ignore: prefer_final_fields
+  ProfileGroupRemoteProtocol _profileGroupRemoteProtocol =
+      ProfileGroupRemoteProtocol.anyportalRest;
+  List<CoreTypeData> _coreTypeDataList = [];
+  int _coreTypeId = 0;
 
   Future<void> _loadProfileGroup() async {
     if (widget.profileGroup != null) {
@@ -46,8 +51,19 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
           _autoUpdateIntervalController.text = profileGroupRemote
               .autoUpdateInterval
               .toString();
+          _profileGroupRemoteProtocol = profileGroupRemote.protocol;
+          _coreTypeId = profileGroupRemote.coreTypeId;
         case ProfileGroupType.local:
       }
+    }
+  }
+
+  Future<void> _loadCoreTypes() async {
+    _coreTypeDataList = await (db.select(db.coreType).get());
+    if (mounted) {
+      setState(() {
+        _coreTypeDataList = _coreTypeDataList;
+      });
     }
   }
 
@@ -55,6 +71,7 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
   void initState() {
     super.initState();
     _loadProfileGroup();
+    _loadCoreTypes();
   }
 
   // Method to handle form submission
@@ -71,9 +88,11 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
         await updateProfileGroup(
           name: _nameController.text,
           profileGroupType: _profileGroupType,
+          profileGroupRemoteProtocol: _profileGroupRemoteProtocol,
           url: _urlController.text,
           autoUpdateInterval: int.parse(_autoUpdateIntervalController.text),
           oldProfileGroup: widget.profileGroup,
+          coreTypeId: _coreTypeId,
         );
       }
       ok = true;
@@ -97,6 +116,15 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String urlHintText = "";
+    switch (_profileGroupRemoteProtocol) {
+      case ProfileGroupRemoteProtocol.file:
+        urlHintText = 'file:///path/to/folder/';
+
+      case _:
+        urlHintText = 'https://url/to/config/json/';
+    }
+
     final fields = [
       TextFormField(
         controller: _nameController,
@@ -126,15 +154,55 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
         value: _profileGroupType,
       ),
       if (_profileGroupType == ProfileGroupType.remote)
+        DropdownButtonFormField<ProfileGroupRemoteProtocol>(
+          decoration: InputDecoration(
+            labelText: context.loc.protocol,
+            border: OutlineInputBorder(),
+          ),
+          items: ProfileGroupRemoteProtocol.values.map((
+            ProfileGroupRemoteProtocol t,
+          ) {
+            return DropdownMenuItem<ProfileGroupRemoteProtocol>(
+              value: t,
+              child: Text(t.name),
+            );
+          }).toList(),
+          onChanged: widget.profileGroup != null
+              ? null
+              : (value) {
+                  setState(() {
+                    _profileGroupRemoteProtocol = value!;
+                  });
+                },
+          value: _profileGroupRemoteProtocol,
+        ),
+      if (_profileGroupType == ProfileGroupType.remote)
         TextFormField(
           controller: _urlController,
           decoration: InputDecoration(
             labelText: context.loc.url,
-            hintText: 'https://url/to/config/json/',
+            hintText: urlHintText,
             border: OutlineInputBorder(),
           ),
         ),
-      if (_profileGroupType == ProfileGroupType.remote)
+      if (_profileGroupRemoteProtocol == ProfileGroupRemoteProtocol.file)
+        DropdownButtonFormField<int>(
+          decoration: InputDecoration(
+            labelText: context.loc.core_type,
+            border: OutlineInputBorder(),
+          ),
+          items: _coreTypeDataList.map((e) {
+            return DropdownMenuItem<int>(value: e.id, child: Text(e.name));
+          }).toList(),
+          onChanged: (value) {
+            setState(() {
+              _coreTypeId = value!;
+            });
+          },
+          value: _coreTypeId,
+        ),
+      if (_profileGroupType == ProfileGroupType.remote &&
+          _profileGroupRemoteProtocol != ProfileGroupRemoteProtocol.file)
         TextFormField(
           controller: _autoUpdateIntervalController,
           decoration: InputDecoration(
