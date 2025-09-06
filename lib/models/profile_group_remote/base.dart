@@ -31,12 +31,34 @@ class Profile {
   Map<String, dynamic> toJson() => _$ProfileToJson(this);
 }
 
+@JsonSerializable()
+class SubscriptionUserInfo {
+  num? expire;
+  num? total;
+  num? upload;
+  num? download;
+
+  SubscriptionUserInfo(this.expire, this.total, this.upload, this.download);
+
+  factory SubscriptionUserInfo.fromJson(Map<String, dynamic> json) {
+    return _$SubscriptionUserInfoFromJson(json);
+  }
+}
+
 class ProfileGroupRemoteBase {
   final List<Profile> profiles;
-  // String? name;
-  // String? autoUpdateInterval;
-  // String? supportUrl;
-  // String? subscriptionUserinfo;
+  String? name;
+  int? autoUpdateInterval;
+  SubscriptionUserInfo? subscriptionUserInfo;
+  String? supportUrl;
+  String? profileWebPageUrl;
 
-  ProfileGroupRemoteBase(this.profiles);
+  ProfileGroupRemoteBase(
+    this.profiles, {
+    this.name,
+    this.autoUpdateInterval,
+    this.subscriptionUserInfo,
+    this.supportUrl,
+    this.profileWebPageUrl,
+  });
 }

@@ -12,18 +12,51 @@ A subscription is a remote profile group.
 
 It's a REST url expecting the following content.
 
+#### root
+
 ```json
 {
-  "version": 1.1,
-  "profiles": [
-    {
-      "name": "",
-      "key": "",
-      "coreType": "",
-      "coreConfig": "",
-      "format": "json",
-    }
-  ]
+  "version": 1.2,
+  "profiles": [],
+  "name": "",
+  "autoUpdateInterval": 86400,
+  "subscriptionUserInfo": {
+    "expire": 0,
+    "total": 0,
+    "upload": 0,
+    "download": 0,
+  },
+  "supportUrl": "",
+  "profileWebPageUrl": "",
+}
+```
+
+- `profiles`: list of [Profile](#profile)
+- [optional] `name`: name of the profile group
+- [optional] `autoUpdateInterval`: time in seconds
+- [optional] `subscriptionUserInfo`
+  - [optional] `expire`: unix timestamp
+  - [optional] `total`: total allowance
+  - [optional] `upload`: upload usage
+  - [optional] `download`: download usage
+- [optional] `supportUrl`: support url
+- [optional] `profileWebPageUrl`: profile web page url
+
+| AnyPortalREST | AnyPortal   |
+| ------------- | ----------- |
+| v1            | v0.2.0+11   |
+| v1.1          | v0.6.27+101 |
+| v1.2          | v0.6.28+102 |
+
+#### Profile
+
+```json
+{
+  "name": "",
+  "key": "",
+  "coreType": "",
+  "coreConfig": "",
+  "format": "json",
 }
 ```
 
@@ -32,11 +65,6 @@ It's a REST url expecting the following content.
 - `coreType`: "v2ray" | "xray" | "sing-box" | ...
 - `coreConfig`: complete config of the profile, see examples below
 - `format`: "json" | "yaml" | ...
-
-| AnyPortalREST | AnyPortal   |
-| ------------- | ----------- |
-| v1            | v0.2.0+11   |
-| v1.1          | v0.6.27+101 |
 
 #### Example minimal coreConfig
 
@@ -59,14 +87,19 @@ AnyPortal uses complete config of corrsponding cores with injections. Some field
 
 ### file
 
-a folder, like `file:///path/to/folder`
+a folder, like `file:///path/to/folder/`
 
 ### generic
 
 a https url, with text content like
 
 ```plain
-vmess://99c80931-f3f1-4f84-bffd-6eed6030f53d@qv2ray.net:31415?encryption=none#VMessTCPNaked
+#profile-title: base64:cHJvZmlsZS10aXRsZQ==
+#profile-update-interval: 86400
+#subscription-userinfo: upload=0; download=0; total=0; expire=0
+#support-url: https://example.org/
+#profile-web-page-url: https://example.org/
+vmess://99c80931-f3f1-4f84-bffd-6eed6030f53d@example.org:31415?encryption=none#VMessTCPNaked
 vless://eyJ2IjoiMiIsInBzIjoiIiwiYWRkIjoiZXhhbXBsZS5vcmciLCJwb3J0IjoiNDQzIiwidHlwZSI6Im5vbmUiLCJpZCI6Ijc2YmRhZjJmLTdkZWMtNGJlOS1iYzZjLWM2ZThlMmE5ZWJiNSIsImFpZCI6IjAiLCJuZXQiOiJ3cyIsInBhdGgiOiIvIiwiaG9zdCI6ImV4YW1wbGUub3JnIiwidGxzIjoiIn0=
 ```
 

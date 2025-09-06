@@ -6,7 +6,14 @@ import 'package:logger/logger.dart';
 import 'base.dart';
 
 class ProfileGroupRemoteGeneric extends ProfileGroupRemoteBase {
-  ProfileGroupRemoteGeneric(super.profiles);
+  ProfileGroupRemoteGeneric(
+    super.profiles, {
+    super.name,
+    super.autoUpdateInterval,
+    super.subscriptionUserInfo,
+    super.supportUrl,
+    super.profileWebPageUrl,
+  });
   static final logger = GetIt.I<Logger>();
 
   factory ProfileGroupRemoteGeneric.fromString(String s, String coreTypeName) {
@@ -50,7 +57,41 @@ class ProfileGroupRemoteGeneric extends ProfileGroupRemoteBase {
       continue;
     }
 
-    return ProfileGroupRemoteGeneric(profiles);
+    Map<String, dynamic> parseKeyValueString(String? input) {
+      if (input == null) return {};
+      final Map<String, dynamic> result = {};
+
+      /// Split by semicolon
+      final parts = input.split(';');
+      for (var part in parts) {
+        part = part.trim();
+        if (part.isEmpty) continue;
+
+        /// Split each "key=value"
+        final kv = part.split('=');
+        if (kv.length == 2) {
+          final key = kv[0].trim();
+          final value = kv[1].trim();
+
+          /// Try parsing as int if possible, otherwise leave as string
+          final intValue = int.tryParse(value);
+          result[key] = intValue ?? value;
+        }
+      }
+
+      return result;
+    }
+
+    return ProfileGroupRemoteGeneric(
+      profiles,
+      name: meta["profile-title"],
+      autoUpdateInterval: int.tryParse(meta["profile-update-interval"] ?? ""),
+      subscriptionUserInfo: SubscriptionUserInfo.fromJson(
+        parseKeyValueString(meta["subscription-userinfo"]),
+      ),
+      supportUrl: meta["support-url"],
+      profileWebPageUrl: meta["profile-web-page-url"],
+    );
   }
 }
 

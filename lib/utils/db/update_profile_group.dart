@@ -81,10 +81,12 @@ Future<bool> updateProfileGroup({
         if (response.statusCode == 200) {
           final jsonString = response.body;
           final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
-          ProfileGroupRemoteAnyPortalREST profileGroupRemoteAnyPortalREST =
+          ProfileGroupRemoteAnyPortalREST pg =
               ProfileGroupRemoteAnyPortalREST.fromJson(jsonMap);
-          newProfiles = profileGroupRemoteAnyPortalREST.profiles;
+          newProfiles = pg.profiles;
           newKeySet = newProfiles.map((e) => e.key).toSet();
+          name = name == "" ? (pg.name ?? "") : name;
+          autoUpdateInterval ??= pg.autoUpdateInterval;
         } else {
           withContext((context) {
             showSnackBarNow(
@@ -98,6 +100,7 @@ Future<bool> updateProfileGroup({
       case ProfileGroupRemoteProtocol.file:
         try {
           final dir = Directory.fromUri(uri);
+          name = name == "" ? uri.path : name;
           await for (final e in dir.list(
             recursive: false,
             followLinks: false,
@@ -116,13 +119,14 @@ Future<bool> updateProfileGroup({
         final response = await http.get(uri);
         if (response.statusCode == 200) {
           final s = response.body;
-          ProfileGroupRemoteGeneric profileGroupRemoteGeneric =
-              ProfileGroupRemoteGeneric.fromString(
-                s,
-                coreTypeId2Name[coreTypeId]!,
-              );
-          newProfiles = profileGroupRemoteGeneric.profiles;
+          ProfileGroupRemoteGeneric pg = ProfileGroupRemoteGeneric.fromString(
+            s,
+            coreTypeId2Name[coreTypeId]!,
+          );
+          newProfiles = pg.profiles;
           newKeySet = newProfiles.map((e) => e.key).toSet();
+          name = name == "" ? (pg.name ?? "") : name;
+          autoUpdateInterval ??= pg.autoUpdateInterval;
         } else {
           withContext((context) {
             showSnackBarNow(
@@ -225,7 +229,7 @@ Future<bool> updateProfileGroup({
               final coreConfigStr =
                   profile.format == "json" && profile.coreConfig is Map
                   ? jsonEncode(profile.coreConfig)
-                  : profile.coreConfig;
+                  : profile.coreConfig.toString();
 
               /// update
               if (oldKeySet.contains(profile.key)) {
@@ -254,7 +258,7 @@ Future<bool> updateProfileGroup({
                       ProfileCompanion(
                         name: drift.Value(profile.name),
                         key: drift.Value(profile.key),
-                        coreCfg: drift.Value(profile.coreConfig),
+                        coreCfg: drift.Value(coreConfigStr),
                         coreCfgFmt: drift.Value(profile.format),
                         updatedAt: drift.Value(DateTime.now()),
                         type: const drift.Value(ProfileType.local),

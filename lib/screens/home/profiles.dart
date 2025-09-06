@@ -647,6 +647,10 @@ class _ProfileListState extends State<ProfileList> {
                   );
                 } else {
                   final profileGroupId = node.data as int;
+                  if (!_profileGroups.containsKey(profileGroupId)) {
+                    /// deleting
+                    return ListTile();
+                  }
                   final profileGroupTitle = getProfileGroupTitle(
                     _profileGroups[profileGroupId]!,
                   );
