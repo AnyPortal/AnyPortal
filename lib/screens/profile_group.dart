@@ -120,9 +120,8 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
     switch (_profileGroupRemoteProtocol) {
       case ProfileGroupRemoteProtocol.file:
         urlHintText = 'file:///path/to/folder/';
-
       case _:
-        urlHintText = 'https://url/to/config/json/';
+        urlHintText = 'https://url/to/config/';
     }
 
     final fields = [
@@ -176,16 +175,8 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
                 },
           value: _profileGroupRemoteProtocol,
         ),
-      if (_profileGroupType == ProfileGroupType.remote)
-        TextFormField(
-          controller: _urlController,
-          decoration: InputDecoration(
-            labelText: context.loc.url,
-            hintText: urlHintText,
-            border: OutlineInputBorder(),
-          ),
-        ),
-      if (_profileGroupRemoteProtocol == ProfileGroupRemoteProtocol.file)
+      if (_profileGroupRemoteProtocol !=
+          ProfileGroupRemoteProtocol.anyportalRest)
         DropdownButtonFormField<int>(
           decoration: InputDecoration(
             labelText: context.loc.core_type,
@@ -200,6 +191,15 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
             });
           },
           value: _coreTypeId,
+        ),
+      if (_profileGroupType == ProfileGroupType.remote)
+        TextFormField(
+          controller: _urlController,
+          decoration: InputDecoration(
+            labelText: context.loc.url,
+            hintText: urlHintText,
+            border: OutlineInputBorder(),
+          ),
         ),
       if (_profileGroupType == ProfileGroupType.remote &&
           _profileGroupRemoteProtocol != ProfileGroupRemoteProtocol.file)

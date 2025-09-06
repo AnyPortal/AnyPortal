@@ -12,6 +12,8 @@ import '../../../../models/profile_group_remote/anyportal_rest.dart';
 import '../../../../utils/db.dart';
 import '../../extensions/localization.dart';
 import '../../models/profile.dart' hide Profile;
+import '../../models/profile_group_remote/base.dart';
+import '../../models/profile_group_remote/generic.dart';
 import '../show_snack_bar_now.dart';
 import '../with_context.dart';
 
@@ -108,6 +110,24 @@ Future<bool> updateProfileGroup({
           throw Exception("failed to process $url: $e");
         }
         break;
+      case ProfileGroupRemoteProtocol.generic:
+        final response = await http.get(uri);
+        if (response.statusCode == 200) {
+          final s = response.body;
+          ProfileGroupRemoteGeneric profileGroupRemoteGeneric =
+              ProfileGroupRemoteGeneric.fromString(s);
+          newProfiles = profileGroupRemoteGeneric.profiles;
+          newKeySet = newProfiles.map((e) => e.key).toSet();
+        } else {
+          withContext((context) {
+            showSnackBarNow(
+              context,
+              Text(context.loc.failed_to_fetch_url(url!)),
+            );
+          });
+          throw Exception("failed to fetch: $url");
+        }
+        break;
       case _:
         withContext((context) {
           showSnackBarNow(context, Text("scheme not supported: $scheme"));
@@ -195,6 +215,7 @@ Future<bool> updateProfileGroup({
               }
             }
           case ProfileGroupRemoteProtocol.anyportalRest:
+          case ProfileGroupRemoteProtocol.generic:
             for (final profile in newProfiles) {
               final coreConfigStr =
                   profile.format == "json" && profile.coreConfig is Map

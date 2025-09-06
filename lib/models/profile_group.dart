@@ -54,6 +54,7 @@ class ProfileGroupTypeConverter extends TypeConverter<ProfileGroupType, int> {
 enum ProfileGroupRemoteProtocol {
   anyportalRest,
   file,
+  generic,
 }
 
 class ProfileGroupRemoteProtocolConverter

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
+import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart'
@@ -67,6 +68,8 @@ class LoggerManager {
       level: kDebugMode ? Level.all : logLevel,
       filter: CustomFilter(),
     );
+    GetIt.I.registerLazySingleton<Logger>(() => logger);
+
     _completer.complete(); // Signal that initialization is complete
     logger.d("finished: LoggerManager.init");
   }
