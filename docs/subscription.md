@@ -4,7 +4,9 @@ A subscription is a remote profile group.
 
 ## Protocol
 
-Currently only AnyPortalREST is implemented.
+- AnyPortalREST
+- file
+- generic
 
 ### AnyPortalREST
 
@@ -54,3 +56,32 @@ AnyPortal uses complete config of corrsponding cores with injections. Some field
   ]
 }
 ```
+
+### file
+
+a folder, like `file:///path/to/folder`
+
+### generic
+
+a https url, with text content like
+
+```plain
+vmess://99c80931-f3f1-4f84-bffd-6eed6030f53d@qv2ray.net:31415?encryption=none#VMessTCPNaked
+vless://eyJ2IjoiMiIsInBzIjoiIiwiYWRkIjoiZXhhbXBsZS5vcmciLCJwb3J0IjoiNDQzIiwidHlwZSI6Im5vbmUiLCJpZCI6Ijc2YmRhZjJmLTdkZWMtNGJlOS1iYzZjLWM2ZThlMmE5ZWJiNSIsImFpZCI6IjAiLCJuZXQiOiJ3cyIsInBhdGgiOiIvIiwiaG9zdCI6ImV4YW1wbGUub3JnIiwidGxzIjoiIn0=
+```
+
+Only following proxy protocols are supported for now.
+
+- trojan
+- ss
+- vmess
+- vless
+
+Only following cores are supported for now.
+
+- v2ray/xray
+- sing-box
+
+Due to lack of specification, it is NOT guaranteed to decode all parameters.
+
+PR welcomed.
