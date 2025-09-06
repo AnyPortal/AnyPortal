@@ -39,8 +39,10 @@ Future<bool> updateProfileGroup({
 
   final coreTypeDataList = await (db.select(db.coreType).get());
   Map<String, int> coreType2Id = {};
+  Map<int, String> coreTypeId2Name = {};
   for (var coreTypeData in coreTypeDataList) {
     coreType2Id[coreTypeData.name] = coreTypeData.id;
+    coreTypeId2Name[coreTypeData.id] = coreTypeData.name;
   }
 
   if (oldProfileGroup != null) {
@@ -115,7 +117,10 @@ Future<bool> updateProfileGroup({
         if (response.statusCode == 200) {
           final s = response.body;
           ProfileGroupRemoteGeneric profileGroupRemoteGeneric =
-              ProfileGroupRemoteGeneric.fromString(s);
+              ProfileGroupRemoteGeneric.fromString(
+                s,
+                coreTypeId2Name[coreTypeId]!,
+              );
           newProfiles = profileGroupRemoteGeneric.profiles;
           newKeySet = newProfiles.map((e) => e.key).toSet();
         } else {
@@ -298,7 +303,7 @@ Future<bool> updateProfileGroup({
               ProfileGroupRemoteCompanion(
                 profileGroupId: drift.Value(profileGroupId),
                 url: drift.Value(url!),
-                autoUpdateInterval: drift.Value(autoUpdateInterval!),
+                autoUpdateInterval: drift.Value(autoUpdateInterval ?? 0),
                 protocol: drift.Value(
                   profileGroupRemoteProtocol!,
                 ),

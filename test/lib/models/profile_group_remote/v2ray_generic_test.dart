@@ -27,13 +27,13 @@ vmess://44efe52b-e143-46b5-a9e7-aadbfd77eb9c@qv2ray.net:6939?type=ws&security=tl
 """;
   test("ProfileGroupRemotegeneric", () {
     final length = LineSplitter().convert(s).length;
-    final pg = ProfileGroupRemoteGeneric.fromString(s);
-    assert(pg.profiles.length == length);
+    final pg = ProfileGroupRemoteGeneric.fromString(s, "xray");
+    expect(pg.profiles.length, equals(length));
     // print(pg.profiles[0].coreConfig);
 
     final sBase64 = base64.encode(utf8.encode(s));
-    final pgBase64 = ProfileGroupRemoteGeneric.fromString(sBase64);
-    assert(pgBase64.profiles.length == length);
+    final pgBase64 = ProfileGroupRemoteGeneric.fromString(sBase64, "sing-box");
+    expect(pgBase64.profiles.length, equals(1));
     // for (final p in pgBase64.profiles) {
     //   print(p.coreConfig);
     // }

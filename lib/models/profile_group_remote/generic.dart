@@ -9,7 +9,7 @@ class ProfileGroupRemoteGeneric extends ProfileGroupRemoteBase {
   ProfileGroupRemoteGeneric(super.profiles);
   static final logger = GetIt.I<Logger>();
 
-  factory ProfileGroupRemoteGeneric.fromString(String s) {
+  factory ProfileGroupRemoteGeneric.fromString(String s, String coreTypeName) {
     final List<Profile> profiles = [];
 
     String decoded = "";
@@ -37,12 +37,17 @@ class ProfileGroupRemoteGeneric extends ProfileGroupRemoteBase {
         continue;
       }
 
-      final profile = ProfileRemoteGeneric.fromString(line);
-      if (profile != null) {
-        profiles.add(profile);
-      } else {
-        logger.w("failed to decode profile: $line");
+      try {
+        final profile = ProfileRemoteGeneric.fromString(line, coreTypeName);
+        if (profile != null) {
+          profiles.add(profile);
+        } else {
+          logger.w("failed to decode profile: $line");
+        }
+      } catch (e) {
+        logger.w(e);
       }
+      continue;
     }
 
     return ProfileGroupRemoteGeneric(profiles);
@@ -87,7 +92,7 @@ class ProfileRemoteGeneric extends Profile {
 
   static final logger = GetIt.I<Logger>();
 
-  static Profile? fromString(String s) {
+  static Profile? fromString(String s, String coreTypeName) {
     Uri uri;
     try {
       uri = Uri.parse(s);
@@ -129,50 +134,92 @@ class ProfileRemoteGeneric extends Profile {
       fragment = Uri.decodeComponent(uri.fragment);
     }
 
-    final key = uri.toString();
+    final key = uri.removeFragment().toString();
     final name = fragment.isNotEmpty ? fragment : "$host:$port";
-    final coreType = "xray";
-    final format = "json";
 
-    final settings = getSettings(
-      proxyProtocol,
-      host,
-      port,
-      userInfo,
-      queryParameters,
-    );
-    if (settings == null) return null;
+    switch (coreTypeName) {
+      case "v2ray":
+      case "xray":
+        final format = "json";
 
-    final streamSettings = getStreamSettings(
-      queryParameters,
-    );
+        final settings = getV2rayOutboundSettings(
+          proxyProtocol,
+          host,
+          port,
+          userInfo,
+          queryParameters,
+        );
+        if (settings == null) return null;
 
-    final coreConfigMap = <String, dynamic>{
-      "outbounds": [
-        {
-          "protocol": proxyProtocol.name,
-          "settings": settings,
-          "streamSettings": streamSettings,
-        },
-      ],
-    };
+        final streamSettings = getV2rayOutboundStreamSettings(
+          queryParameters,
+        );
 
-    return Profile(
-      name,
-      key,
-      coreType,
-      format,
-      json.encode(coreConfigMap),
-    );
+        /// https://xtls.github.io/config/outbound.html
+        final coreConfigMap = <String, dynamic>{
+          "outbounds": [
+            {
+              "protocol": proxyProtocol.name,
+              "settings": settings,
+              "streamSettings": streamSettings,
+            },
+          ],
+        };
+
+        return Profile(
+          name,
+          key,
+          coreTypeName,
+          format,
+          json.encode(coreConfigMap),
+        );
+      case "sing-box":
+        final format = "json";
+
+        final fields = getSingBoxOutboundFields(
+          proxyProtocol,
+          host,
+          port,
+          userInfo,
+          queryParameters,
+        );
+        if (fields == null) return null;
+
+        /// https://sing-box.sagernet.org/configuration/outbound/
+        final coreConfigMap = <String, dynamic>{
+          "outbounds": [
+            {
+              "type": proxyProtocol.name,
+              ...fields,
+            },
+          ],
+        };
+
+        return Profile(
+          name,
+          key,
+          coreTypeName,
+          format,
+          json.encode(coreConfigMap),
+        );
+      case _:
+        logger.w(
+          "coreType not supported: $coreTypeName",
+        );
+        return null;
+    }
   }
 
   /// put if not null
-  static void pinn(Map<String, dynamic> m, k, v) {
+  static void pinn(Map<String, dynamic> m, String k, dynamic v) {
     if (v == null) return;
     m[k] = v;
   }
 
-  static Map<String, dynamic> getStreamSettings(Map<String, String> m) {
+  /// https://xtls.github.io/config/transport.html#streamsettingsobject
+  static Map<String, dynamic> getV2rayOutboundStreamSettings(
+    Map<String, String> m,
+  ) {
     final streamSettings = <String, dynamic>{};
 
     final security = m["security"];
@@ -191,7 +238,7 @@ class ProfileRemoteGeneric extends Profile {
         pinn(networkSettings, "key", m['key']);
         pinn(networkSettings, "quicSecurity", m['quicSecurity']);
         if (headerType != null) {
-          pinn(networkSettings, "header", {"type": headerType});
+          networkSettings["header"] = {"type": headerType};
         }
       case "splithttp":
       case "xhttp":
@@ -199,7 +246,7 @@ class ProfileRemoteGeneric extends Profile {
         pinn(networkSettings, "host", m['host']);
         pinn(networkSettings, "mode", m['mode']);
         if (m["extra"] != null) {
-          pinn(networkSettings, "extra", json.decode(m["extra"]!));
+          networkSettings["extra"] = json.decode(m["extra"]!);
         }
       case "ws":
         pinn(networkSettings, "path", m['path']);
@@ -209,14 +256,14 @@ class ProfileRemoteGeneric extends Profile {
         pinn(networkSettings, "seed", m['path']);
         pinn(networkSettings, "host", m['host']);
         if (headerType != null) {
-          pinn(networkSettings, "header", {"type": headerType});
+          networkSettings["header"] = {"type": headerType};
         }
       case "raw":
       case "tcp":
         pinn(networkSettings, "path", m['path']);
         pinn(networkSettings, "host", m['host']);
         if (headerType != null) {
-          pinn(networkSettings, "header", {"type": headerType});
+          networkSettings["header"] = {"type": headerType};
         }
       case _:
         pinn(networkSettings, "path", m['path']);
@@ -250,7 +297,8 @@ class ProfileRemoteGeneric extends Profile {
     return streamSettings;
   }
 
-  static Map<String, dynamic>? getSettings(
+  /// https://xtls.github.io/config/outbounds/
+  static Map<String, dynamic>? getV2rayOutboundSettings(
     ProxyProtocol proxyProtocol,
     String host,
     int port,
@@ -291,7 +339,7 @@ class ProfileRemoteGeneric extends Profile {
         final methodPassword = decoded.split(":");
         if (methodPassword.length != 2) {
           logger.w(
-            "getSettings: failed to parse methodPassword: $methodPassword",
+            "getV2rayOutboundSettings: failed to parse methodPassword: $methodPassword",
           );
           return null;
         }
@@ -307,9 +355,127 @@ class ProfileRemoteGeneric extends Profile {
         };
       // ignore: unreachable_switch_case
       case _:
-        logger.w("getSettings: unknown proxyProtocol: $proxyProtocol");
+        logger.w(
+          "getV2rayOutboundSettings: unknown proxyProtocol: $proxyProtocol",
+        );
         return null;
     }
+  }
+
+  /// https://sing-box.sagernet.org/configuration/outbound/
+  static Map<String, dynamic>? getSingBoxOutboundFields(
+    ProxyProtocol proxyProtocol,
+    String host,
+    int port,
+    String userInfo,
+    Map<String, String> m,
+  ) {
+    switch (proxyProtocol) {
+      case ProxyProtocol.trojan:
+        final fields = {
+          "server": host,
+          "server_port": port,
+          "password": userInfo,
+        };
+        pinn(fields, "tls", getSingBoxTLS(m));
+        pinn(fields, "transport", getSingBoxTransport(m));
+        return fields;
+      case ProxyProtocol.vless:
+      case ProxyProtocol.vmess:
+        final fields = {
+          "server": host,
+          "server_port": port,
+          "uuid": userInfo,
+          if (m["flow"] != null) "flow": m["flow"],
+        };
+        pinn(fields, "tls", getSingBoxTLS(m));
+        pinn(fields, "transport", getSingBoxTransport(m));
+        return fields;
+      case ProxyProtocol.shadowsocks:
+        final decoded = utf8.decode(base64.decode(normalizeBase64(userInfo)));
+        final methodPassword = decoded.split(":");
+        if (methodPassword.length != 2) {
+          logger.w(
+            "getSingBoxOutboundFields: failed to parse methodPassword: $methodPassword",
+          );
+          return null;
+        }
+        return {
+          "server": host,
+          "server_port": port,
+          "method": methodPassword[0],
+          "password": methodPassword[1],
+        };
+      // ignore: unreachable_switch_case
+      case _:
+        logger.w(
+          "getSingBoxOutboundFields: unknown proxyProtocol: $proxyProtocol",
+        );
+        return null;
+    }
+  }
+
+  /// https://sing-box.sagernet.org/configuration/shared/v2ray-transport/
+  static Map<String, dynamic>? getSingBoxTransport(
+    Map<String, String> m,
+  ) {
+    final transport = <String, dynamic>{};
+
+    final network = m["type"] ?? "tcp";
+    pinn(transport, "type", network);
+    // final headerType = m["headerType"];
+
+    switch (network) {
+      case "http":
+        pinn(transport, "path", m['path']);
+        pinn(transport, "host", m['host']?.split(','));
+      case "ws":
+        pinn(transport, "path", m['path']);
+      case "quic":
+        break;
+      case "grpc":
+        pinn(transport, "service_name", m['serviceName']);
+      case "httpupgrade":
+        pinn(transport, "path", m['path']);
+        pinn(transport, "host", m['host']);
+      case _:
+        logger.w("getSingBoxTransport: unsupported: $network");
+        throw Exception("getSingBoxTransport: unsupported: $network");
+    }
+
+    return transport.isEmpty ? null : transport;
+  }
+
+  /// https://sing-box.sagernet.org/configuration/shared/tls/
+  static Map<String, dynamic>? getSingBoxTLS(
+    Map<String, String> m,
+  ) {
+    final tls = <String, dynamic>{};
+
+    final security = m["security"];
+    if (!["tls", "reality"].contains(security)) {
+      tls["enabled"] = false;
+    }
+    pinn(tls, "server_name", m['sni']);
+    if (m['fp'] != null) {
+      tls["utls"] = {"enabled": false, "fingerprint": m['fp']};
+    }
+    pinn(tls, "alpn", m["alpn"]?.split(','));
+    pinn(
+      tls,
+      "insecure",
+      ["true", "True", "1"].contains(m['allowInsecure']) ? true : null,
+    );
+
+    if (security == "reality") {
+      final reality = <String, dynamic>{};
+      pinn(reality, "enabled", true);
+      pinn(reality, "public_key", m['pbk']);
+      pinn(reality, "short_id", m['sid']);
+      tls["reality"] = reality;
+    }
+
+    return tls.isEmpty ? null : tls;
   }
 
   static String normalizeBase64(String input) {

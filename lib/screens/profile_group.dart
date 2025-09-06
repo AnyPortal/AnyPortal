@@ -27,7 +27,7 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
   // Controllers for each text field
   final _nameController = TextEditingController();
   final _urlController = TextEditingController();
-  final _autoUpdateIntervalController = TextEditingController(text: '0');
+  final _autoUpdateIntervalController = TextEditingController();
 
   // ignore: prefer_final_fields
   ProfileGroupType _profileGroupType = ProfileGroupType.remote;
@@ -90,7 +90,7 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
           profileGroupType: _profileGroupType,
           profileGroupRemoteProtocol: _profileGroupRemoteProtocol,
           url: _urlController.text,
-          autoUpdateInterval: int.parse(_autoUpdateIntervalController.text),
+          autoUpdateInterval: int.tryParse(_autoUpdateIntervalController.text),
           oldProfileGroup: widget.profileGroup,
           coreTypeId: _coreTypeId,
         );
@@ -125,13 +125,6 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
     }
 
     final fields = [
-      TextFormField(
-        controller: _nameController,
-        decoration: InputDecoration(
-          labelText: context.loc.name,
-          border: OutlineInputBorder(),
-        ),
-      ),
       DropdownButtonFormField<ProfileGroupType>(
         decoration: InputDecoration(
           labelText: context.loc.type,
@@ -201,6 +194,13 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
             border: OutlineInputBorder(),
           ),
         ),
+      TextFormField(
+        controller: _nameController,
+        decoration: InputDecoration(
+          labelText: context.loc.name,
+          border: OutlineInputBorder(),
+        ),
+      ),
       if (_profileGroupType == ProfileGroupType.remote &&
           _profileGroupRemoteProtocol != ProfileGroupRemoteProtocol.file)
         TextFormField(
