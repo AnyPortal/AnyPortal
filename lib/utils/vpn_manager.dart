@@ -99,12 +99,12 @@ abstract class VPNManager with ChangeNotifier {
   Future<void> notifyCoreDataNotifier() async {
     final dataNotifier = CorePluginManager().instance.dataNotifier;
     if (isCoreActive && !dataNotifier.on) {
-      try {
-        dataNotifier.init(cfgStr: vPNMan.coreCfgRaw);
-        dataNotifier.start();
-      } catch (e) {
-        logger.e("notifyCoreDataNotifier: $e");
-      }
+      // try {
+      dataNotifier.init(cfgStr: vPNMan.coreCfgRaw);
+      dataNotifier.start();
+      // } catch (e) {
+      //   logger.e("notifyCoreDataNotifier: $e");
+      // }
     } else if (!isCoreActive && dataNotifier.on) {
       dataNotifier.stop();
     } else {
@@ -540,6 +540,18 @@ abstract class VPNManager with ChangeNotifier {
     });
   }
 
+  void promptInvalidProfile() {
+    withContext((context) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProfileScreen(profile: _selectedProfile),
+        ),
+      );
+      showSnackBarNow(context, Text("Inbalid profile"));
+    });
+  }
+
   Future<bool> initCore() async {
     logger.d("starting: initCore");
     // get selectedProfile
@@ -645,6 +657,32 @@ abstract class VPNManager with ChangeNotifier {
     // gen config.json
     coreCfgRaw = _selectedProfile!.coreCfg;
     coreCfgFmt = _selectedProfile!.coreCfgFmt;
+
+    if (coreCfgFmt == "GENERIC_SUBSCRIPTION_URI") {
+      CorePluginManager().ensureLoaded(coreTypeName);
+      switch (coreTypeName) {
+        case "v2ray":
+        case "xray":
+        case "sing-box":
+          coreCfgFmt = "json";
+          final decoded = CorePluginManager.instances[coreTypeName]!.format
+              .fromRemoteGeneric(
+                coreCfgRaw,
+                coreCfgFmt,
+              );
+          if (decoded == null) {
+            promptInvalidProfile();
+          } else {
+            coreCfgRaw = decoded;
+          }
+        case _:
+          logger.w(
+            "coreType not supported: $coreTypeName",
+          );
+          promptInvalidCoreType();
+      }
+    }
+
     CorePluginManager().switchTo(coreTypeName);
     String coreCfg = await CorePluginManager().instance.configInjector
         .getInjectedConfig(coreCfgRaw, coreCfgFmt);

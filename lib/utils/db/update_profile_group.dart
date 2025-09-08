@@ -120,7 +120,6 @@ Future<bool> updateProfileGroup({
           final s = response.body;
           ProfileGroupRemoteGeneric pg = ProfileGroupRemoteGeneric.fromString(
             s,
-            coreTypeId2Name[coreTypeId]!,
           );
           newProfiles = pg.profiles;
           newKeySet = newProfiles.map((e) => e.key).toSet();

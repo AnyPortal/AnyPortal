@@ -59,6 +59,7 @@ Future<bool> updateProfileWithGroupRemote(ProfileData profile) async {
                   .isBefore(DateTime.now()))) {
         await updateProfileGroup(
           oldProfileGroup: selectedProfileGroup,
+          coreTypeId: selectedProfileGroup.coreTypeId,
         );
         profile = (await (db.select(
           db.profile,

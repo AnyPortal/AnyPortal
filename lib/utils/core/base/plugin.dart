@@ -10,6 +10,7 @@ import '../v2ray/plugin.dart';
 import 'config_injector.dart';
 import 'dashboard.dart';
 import 'data_notifier.dart';
+import 'format.dart';
 
 class CorePluginBase {
   String? coreTypeName;
@@ -19,6 +20,7 @@ class CorePluginBase {
   CoreDataNotifierBase dataNotifier = CoreDataNotifierBase();
   ConfigInjectorBase configInjector = ConfigInjectorBase();
   DashboardWidgetsBase dashboardWidgets = DashboardWidgetsBase();
+  FormatBase format = FormatBase();
 }
 
 class CorePluginManager {

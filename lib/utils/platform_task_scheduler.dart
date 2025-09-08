@@ -92,8 +92,10 @@ Future<bool> checkAllProfileGroupRemotes() async {
             .read(db.profileGroup.updatedAt)!
             .add(Duration(seconds: autoUpdateInterval))
             .isBefore(DateTime.now())) {
+      final oldProfileGroup = profileGroupRemote.readTable(db.profileGroup);
       await updateProfileGroup(
-        oldProfileGroup: profileGroupRemote.readTable(db.profileGroup),
+        oldProfileGroup: oldProfileGroup,
+        coreTypeId: oldProfileGroup.coreTypeId,
       );
     }
   }

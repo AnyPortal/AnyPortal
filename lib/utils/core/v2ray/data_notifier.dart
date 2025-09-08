@@ -75,7 +75,7 @@ class CoreDataNotifierV2Ray extends CoreDataNotifierBase {
     timer?.cancel();
   }
 
-  late Map<String, String> outboundProtocol;
+  late Map<dynamic, String> outboundProtocol;
   late Map<String, TrafficStatType> apiItemTrafficStatType;
   SysStatsResponse? sysStats;
 

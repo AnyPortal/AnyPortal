@@ -1,10 +1,9 @@
-import 'dart:convert';
-
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 import 'package:test/test.dart';
 
 import 'package:anyportal/models/profile_group_remote/generic.dart';
+import 'package:anyportal/utils/core/v2ray/format.dart';
 
 void main() {
   setUp(() {
@@ -25,17 +24,15 @@ vless://399ce595-894d-4d40-add1-7d87f1a3bd10@qv2ray.net:50288?type=kcp&seed=69f0
 vless://399ce595-894d-4d40-add1-7d87f1a3bd10@qv2ray.net:41971?type=kcp&headerType=wireguard&seed=69f04be3-d64e-45a3-8550-af3172c63055#VLESSmKCPSeedWG
 vmess://44efe52b-e143-46b5-a9e7-aadbfd77eb9c@qv2ray.net:6939?type=ws&security=tls&host=qv2ray.net&path=%2Fsomewhere#VMessWebSocketTLS
 """;
-  test("ProfileGroupRemotegeneric", () {
-    final length = LineSplitter().convert(s).length;
-    final pg = ProfileGroupRemoteGeneric.fromString(s, "xray");
-    expect(pg.profiles.length, equals(length));
-    // print(pg.profiles[0].coreConfig);
+  test("FormatV2ray", () {
+    final pg = ProfileGroupRemoteGeneric.fromString(s);
 
-    final sBase64 = base64.encode(utf8.encode(s));
-    final pgBase64 = ProfileGroupRemoteGeneric.fromString(sBase64, "sing-box");
-    expect(pgBase64.profiles.length, equals(1));
-    // for (final p in pgBase64.profiles) {
-    //   print(p.coreConfig);
-    // }
+    final profiles = [];
+    for (final p in pg.profiles) {
+      final s = FormatV2ray().fromRemoteGeneric(p.coreConfig, "json");
+      // print(s);
+      profiles.add(s);
+    }
+    expect(pg.profiles.length, equals(profiles.length));
   });
 }

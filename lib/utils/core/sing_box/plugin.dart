@@ -3,6 +3,7 @@ import '../clash/dashboard.dart';
 
 import 'config_injector.dart';
 import 'data_notifier.dart';
+import 'format.dart';
 
 class CorePluginSingBox extends CorePluginBase {
   CorePluginSingBox() : super() {
@@ -10,5 +11,6 @@ class CorePluginSingBox extends CorePluginBase {
     dataNotifier = CoreDataNotifierSingBox();
     configInjector = ConfigInjectorSingBox();
     dashboardWidgets = DashboardWidgetsClash();
+    format = FormatSingBox();
   }
 }

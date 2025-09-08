@@ -3,6 +3,7 @@ import '../base/plugin.dart';
 import 'config_injector.dart';
 import 'dashboard.dart';
 import 'data_notifier.dart';
+import 'format.dart';
 
 class CorePluginV2Ray extends CorePluginBase {
   CorePluginV2Ray() : super() {
@@ -11,5 +12,6 @@ class CorePluginV2Ray extends CorePluginBase {
     configInjector = ConfigInjectorV2Ray();
     dashboardWidgets = DashboardWidgetsV2Ray();
     isToLogStdout = false;
+    format = FormatV2ray();
   }
 }

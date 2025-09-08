@@ -307,15 +307,8 @@ class _ProfileListState extends State<ProfileList> {
   Future<void> _httpingProfile(ProfileData profile) async {
     final serverSocket = await getFreeServerSocket();
 
-    final coreCfgRaw = profile.coreCfg;
-    final coreCfgFmt = profile.coreCfgFmt;
-    final coreCfgFile = File(
-      p.join(
-        global.applicationCacheDirectory.path,
-        'ping',
-        '${profile.id}.$coreCfgFmt',
-      ),
-    );
+    String coreCfgRaw = profile.coreCfg;
+    String coreCfgFmt = profile.coreCfgFmt;
 
     /// find core
     String? coreTypeName;
@@ -348,6 +341,41 @@ class _ProfileListState extends State<ProfileList> {
       return;
     }
     coreTypeName = coreTypeData.name;
+
+    /// GENERIC_SUBSCRIPTION_URI
+    if (coreCfgFmt == "GENERIC_SUBSCRIPTION_URI") {
+      CorePluginManager().ensureLoaded(coreTypeName);
+      switch (coreTypeName) {
+        case "v2ray":
+        case "xray":
+        case "sing-box":
+          coreCfgFmt = "json";
+          final decoded = CorePluginManager.instances[coreTypeName]!.format
+              .fromRemoteGeneric(
+                coreCfgRaw,
+                coreCfgFmt,
+              );
+          if (decoded == null) {
+            return;
+          } else {
+            coreCfgRaw = decoded;
+          }
+        case _:
+          logger.w(
+            "coreType not supported: $coreTypeName",
+          );
+          return;
+      }
+    }
+
+    final coreCfgFile = File(
+      p.join(
+        global.applicationCacheDirectory.path,
+        'ping',
+        '${profile.id}.$coreCfgFmt',
+      ),
+    );
+
     final core =
         await (db.select(db.coreTypeSelected).join([
               leftOuterJoin(
