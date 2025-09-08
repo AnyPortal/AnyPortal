@@ -318,7 +318,6 @@ class ProfileRemoteGeneric extends Profile {
         pinn(securitySettings, "sni", m['sni']);
         pinn(securitySettings, "fingerprint", m['fp'] ?? "random");
         pinn(securitySettings, "alpn", m["alpn"]?.split(','));
-        pinn(securitySettings, "fragment", m['fragment']);
         pinn(
           securitySettings,
           "allowInsecure",
