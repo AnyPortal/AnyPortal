@@ -1898,6 +1898,245 @@ i1.GeneratedColumn<int> _column_30(String aliasedName) =>
       ),
       defaultValue: const CustomExpression('0'),
     );
+
+final class Schema9 extends i0.VersionedSchema {
+  Schema9({required super.database}) : super(version: 9);
+  @override
+  late final List<i1.DatabaseSchemaEntity> entities = [
+    asset,
+    assetLocal,
+    assetRemote,
+    coreType,
+    core,
+    coreExec,
+    coreLib,
+    coreTypeSelected,
+    profileGroup,
+    profile,
+    profileLocal,
+    profileRemote,
+    profileGroupLocal,
+    profileGroupRemote,
+  ];
+  late final Shape0 asset = Shape0(
+    source: i0.VersionedTable(
+      entityName: 'asset',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_0, _column_1, _column_2, _column_3, _column_4],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape1 assetLocal = Shape1(
+    source: i0.VersionedTable(
+      entityName: 'asset_local',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(asset_id)'],
+      columns: [_column_5],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape14 assetRemote = Shape14(
+    source: i0.VersionedTable(
+      entityName: 'asset_remote',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(asset_id)'],
+      columns: [
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_8,
+        _column_9,
+        _column_24,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape3 coreType = Shape3(
+    source: i0.VersionedTable(
+      entityName: 'core_type',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_0, _column_10],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape4 core = Shape4(
+    source: i0.VersionedTable(
+      entityName: 'core',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_11,
+        _column_12,
+        _column_4,
+        _column_13,
+        _column_14,
+        _column_15,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape5 coreExec = Shape5(
+    source: i0.VersionedTable(
+      entityName: 'core_exec',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(core_id)'],
+      columns: [_column_16, _column_26, _column_5],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape6 coreLib = Shape6(
+    source: i0.VersionedTable(
+      entityName: 'core_lib',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(core_id)'],
+      columns: [_column_16],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape7 coreTypeSelected = Shape7(
+    source: i0.VersionedTable(
+      entityName: 'core_type_selected',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(core_type_id)'],
+      columns: [_column_11, _column_16],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape19 profileGroup = Shape19(
+    source: i0.VersionedTable(
+      entityName: 'profile_group',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_0, _column_18, _column_4, _column_2, _column_31],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape17 profile = Shape17(
+    source: i0.VersionedTable(
+      entityName: 'profile',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_18,
+        _column_28,
+        _column_31,
+        _column_19,
+        _column_25,
+        _column_4,
+        _column_2,
+        _column_20,
+        _column_27,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape10 profileLocal = Shape10(
+    source: i0.VersionedTable(
+      entityName: 'profile_local',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(profile_id)'],
+      columns: [_column_21],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape11 profileRemote = Shape11(
+    source: i0.VersionedTable(
+      entityName: 'profile_remote',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(profile_id)'],
+      columns: [_column_21, _column_6, _column_8],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape12 profileGroupLocal = Shape12(
+    source: i0.VersionedTable(
+      entityName: 'profile_group_local',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(profile_group_id)'],
+      columns: [_column_22],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape20 profileGroupRemote = Shape20(
+    source: i0.VersionedTable(
+      entityName: 'profile_group_remote',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(profile_group_id)'],
+      columns: [_column_22, _column_6, _column_29, _column_8],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+}
+
+class Shape19 extends i0.VersionedTable {
+  Shape19({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get name =>
+      columnsByName['name']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<DateTime> get updatedAt =>
+      columnsByName['updated_at']! as i1.GeneratedColumn<DateTime>;
+  i1.GeneratedColumn<int> get type =>
+      columnsByName['type']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get coreTypeId =>
+      columnsByName['core_type_id']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<int> _column_31(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'core_type_id',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.int,
+      defaultConstraints: i1.GeneratedColumn.constraintIsAlways(
+        'REFERENCES core_type (id) ON DELETE CASCADE',
+      ),
+    );
+
+class Shape20 extends i0.VersionedTable {
+  Shape20({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get profileGroupId =>
+      columnsByName['profile_group_id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get url =>
+      columnsByName['url']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get protocol =>
+      columnsByName['protocol']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get autoUpdateInterval =>
+      columnsByName['auto_update_interval']! as i1.GeneratedColumn<int>;
+}
+
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
@@ -1906,6 +2145,7 @@ i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema6 schema) from5To6,
   required Future<void> Function(i1.Migrator m, Schema7 schema) from6To7,
   required Future<void> Function(i1.Migrator m, Schema8 schema) from7To8,
+  required Future<void> Function(i1.Migrator m, Schema9 schema) from8To9,
 }) {
   return (currentVersion, database) async {
     switch (currentVersion) {
@@ -1944,6 +2184,11 @@ i0.MigrationStepWithVersion migrationSteps({
         final migrator = i1.Migrator(database, schema);
         await from7To8(migrator, schema);
         return 8;
+      case 8:
+        final schema = Schema9(database: database);
+        final migrator = i1.Migrator(database, schema);
+        await from8To9(migrator, schema);
+        return 9;
       default:
         throw ArgumentError.value('Unknown migration from $currentVersion');
     }
@@ -1958,6 +2203,7 @@ i1.OnUpgrade stepByStep({
   required Future<void> Function(i1.Migrator m, Schema6 schema) from5To6,
   required Future<void> Function(i1.Migrator m, Schema7 schema) from6To7,
   required Future<void> Function(i1.Migrator m, Schema8 schema) from7To8,
+  required Future<void> Function(i1.Migrator m, Schema9 schema) from8To9,
 }) => i0.VersionedSchema.stepByStepHelper(
   step: migrationSteps(
     from1To2: from1To2,
@@ -1967,5 +2213,6 @@ i1.OnUpgrade stepByStep({
     from5To6: from5To6,
     from6To7: from6To7,
     from7To8: from7To8,
+    from8To9: from8To9,
   ),
 );

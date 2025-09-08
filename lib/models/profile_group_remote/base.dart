@@ -6,7 +6,7 @@ part 'base.g.dart';
 class Profile {
   final String name;
   final String key;
-  final String coreType;
+  final String? coreType;
   final String format;
   final dynamic coreConfig;
 

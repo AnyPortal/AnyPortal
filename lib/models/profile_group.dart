@@ -7,6 +7,11 @@ class ProfileGroup extends Table {
   TextColumn get name => text()();
   DateTimeColumn get updatedAt => dateTime()();
   IntColumn get type => integer().map(const ProfileGroupTypeConverter())();
+  IntColumn get coreTypeId => integer().nullable().references(
+    CoreType,
+    #id,
+    onDelete: KeyAction.cascade,
+  )();
 }
 
 class ProfileGroupLocal extends Table {
@@ -24,9 +29,6 @@ class ProfileGroupRemote extends Table {
   IntColumn get protocol =>
       integer().map(const ProfileGroupRemoteProtocolConverter())();
   IntColumn get autoUpdateInterval => integer()();
-  IntColumn get coreTypeId => integer()
-      .references(CoreType, #id, onDelete: KeyAction.cascade)
-      .withDefault(const Constant(0))();
 
   @override
   Set<Column<Object>>? get primaryKey => {profileGroupId};

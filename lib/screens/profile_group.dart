@@ -35,13 +35,15 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
   ProfileGroupRemoteProtocol _profileGroupRemoteProtocol =
       ProfileGroupRemoteProtocol.anyportalRest;
   List<CoreTypeData> _coreTypeDataList = [];
-  int _coreTypeId = 0;
+  int? _coreTypeId;
 
   Future<void> _loadProfileGroup() async {
     if (widget.profileGroup != null) {
       _nameController.text = widget.profileGroup!.name;
       _profileGroupType = widget.profileGroup!.type;
       final profileGroupId = widget.profileGroup!.id;
+      _coreTypeId = widget.profileGroup!.coreTypeId;
+
       switch (_profileGroupType) {
         case ProfileGroupType.remote:
           final profileGroupRemote = await (db.select(
@@ -52,7 +54,6 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
               .autoUpdateInterval
               .toString();
           _profileGroupRemoteProtocol = profileGroupRemote.protocol;
-          _coreTypeId = profileGroupRemote.coreTypeId;
         case ProfileGroupType.local:
       }
     }
@@ -123,6 +124,13 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
       case _:
         urlHintText = 'https://url/to/config/';
     }
+    final coreTypeList = _coreTypeDataList.map((e) {
+      return DropdownMenuItem<int?>(value: e.id, child: Text(e.name));
+    }).toList();
+    coreTypeList.insert(
+      0,
+      DropdownMenuItem<int?>(value: null, child: Text("[null]")),
+    );
 
     final fields = [
       DropdownButtonFormField<ProfileGroupType>(
@@ -168,23 +176,21 @@ class _ProfileGroupScreenState extends State<ProfileGroupScreen> {
                 },
           value: _profileGroupRemoteProtocol,
         ),
-      if (_profileGroupRemoteProtocol !=
-          ProfileGroupRemoteProtocol.anyportalRest)
-        DropdownButtonFormField<int>(
-          decoration: InputDecoration(
-            labelText: context.loc.core_type,
-            border: OutlineInputBorder(),
-          ),
-          items: _coreTypeDataList.map((e) {
-            return DropdownMenuItem<int>(value: e.id, child: Text(e.name));
-          }).toList(),
-          onChanged: (value) {
-            setState(() {
-              _coreTypeId = value!;
-            });
-          },
-          value: _coreTypeId,
+      DropdownButtonFormField<int?>(
+        decoration: InputDecoration(
+          labelText: context.loc.core_type,
+          border: OutlineInputBorder(),
         ),
+        items: coreTypeList,
+        onChanged: (value) {
+          setState(() {
+            _coreTypeId = value;
+          });
+        },
+        value: coreTypeList.map((e) => e.value).contains(_coreTypeId)
+            ? _coreTypeId
+            : null,
+      ),
       if (_profileGroupType == ProfileGroupType.remote)
         TextFormField(
           controller: _urlController,

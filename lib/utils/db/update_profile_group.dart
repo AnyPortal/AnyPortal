@@ -38,7 +38,7 @@ Future<bool> updateProfileGroup({
   Set<FileSystemEntity> newFileSystemEntitySet = {};
 
   final coreTypeDataList = await (db.select(db.coreType).get());
-  Map<String, int> coreType2Id = {};
+  Map<dynamic, int?> coreType2Id = {null: null};
   Map<int, String> coreTypeId2Name = {};
   for (var coreTypeData in coreTypeDataList) {
     coreType2Id[coreTypeData.name] = coreTypeData.id;
@@ -59,7 +59,6 @@ Future<bool> updateProfileGroup({
         url ??= profileGroupRemote.url;
         autoUpdateInterval ??= profileGroupRemote.autoUpdateInterval;
         profileGroupRemoteProtocol ??= profileGroupRemote.protocol;
-        coreTypeId = profileGroupRemote.coreTypeId;
       case ProfileGroupType.local:
     }
   }
@@ -194,7 +193,6 @@ Future<bool> updateProfileGroup({
                         updatedAt: drift.Value(eStat.modified),
                         type: const drift.Value(ProfileType.local),
                         profileGroupId: drift.Value(profileGroupId),
-                        coreTypeId: drift.Value(coreTypeId!),
                       ),
                     );
               } else {
@@ -210,7 +208,6 @@ Future<bool> updateProfileGroup({
                         updatedAt: drift.Value(eStat.modified),
                         type: const drift.Value(ProfileType.local),
                         profileGroupId: drift.Value(profileGroupId),
-                        coreTypeId: drift.Value(coreTypeId!),
                       ),
                     );
               }
@@ -247,7 +244,7 @@ Future<bool> updateProfileGroup({
                         updatedAt: drift.Value(DateTime.now()),
                         type: const drift.Value(ProfileType.local),
                         profileGroupId: drift.Value(profileGroupId),
-                        coreTypeId: drift.Value(coreType2Id[profile.coreType]!),
+                        coreTypeId: drift.Value(coreType2Id[profile.coreType]),
                       ),
                     );
               } else {
@@ -263,7 +260,7 @@ Future<bool> updateProfileGroup({
                         updatedAt: drift.Value(DateTime.now()),
                         type: const drift.Value(ProfileType.local),
                         profileGroupId: drift.Value(profileGroupId),
-                        coreTypeId: drift.Value(coreType2Id[profile.coreType]!),
+                        coreTypeId: drift.Value(coreType2Id[profile.coreType]),
                       ),
                     );
               }
@@ -299,6 +296,7 @@ Future<bool> updateProfileGroup({
                 name: drift.Value(name!),
                 updatedAt: drift.Value(DateTime.now()),
                 type: drift.Value(profileGroupType),
+                coreTypeId: drift.Value(coreTypeId),
               ),
             );
         await db
@@ -311,7 +309,6 @@ Future<bool> updateProfileGroup({
                 protocol: drift.Value(
                   profileGroupRemoteProtocol!,
                 ),
-                coreTypeId: drift.Value(coreTypeId ?? 0),
               ),
             );
       case ProfileGroupType.local:

@@ -210,7 +210,7 @@ class ProfileRemoteGeneric extends Profile {
         return Profile(
           name,
           key,
-          coreTypeName,
+          null,
           format,
           json.encode(coreConfigMap),
         );

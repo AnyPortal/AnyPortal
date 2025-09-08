@@ -324,10 +324,26 @@ class _ProfileListState extends State<ProfileList> {
     String? coreWorkingDir;
     Map<String, String> coreEnvs = {};
 
-    final coreTypeId = profile.coreTypeId;
+    int? coreTypeId = profile.coreTypeId;
+
+    /// get profile group core type id
+    if (coreTypeId == null) {
+      final selectedProfileGroup = await (db.select(
+        db.profileGroup,
+      )..where((p) => p.id.equals(profile.profileGroupId))).getSingleOrNull();
+      if (selectedProfileGroup != null) {
+        coreTypeId = selectedProfileGroup.coreTypeId;
+      }
+    }
+
+    if (coreTypeId == null) {
+      return;
+    }
+
     final coreTypeData = await (db.select(
       db.coreType,
-    )..where((coreType) => coreType.id.equals(coreTypeId))).getSingleOrNull();
+    )..where((coreType) => coreType.id.equals(coreTypeId!))).getSingleOrNull();
+
     if (coreTypeData == null) {
       return;
     }

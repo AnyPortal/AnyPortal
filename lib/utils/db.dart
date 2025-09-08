@@ -106,7 +106,7 @@ class Database extends _$Database {
       );
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -196,6 +196,14 @@ class Database extends _$Database {
           'format',
           schema.profileGroupRemote.protocol,
         );
+      },
+      from8To9: (m, schema) async {
+        await m.addColumn(
+          schema.profileGroup,
+          schema.profileGroup.coreTypeId,
+        );
+        await m.alterTable(TableMigration(schema.profileGroupRemote));
+        await m.alterTable(TableMigration(schema.profile));
       },
     ),
     beforeOpen: (details) async {

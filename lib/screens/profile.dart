@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../extensions/localization.dart';
-import '../models/core.dart';
 import '../models/profile.dart';
 import '../utils/db.dart';
 import '../utils/db/update_profile.dart';
@@ -37,7 +36,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   List<CoreTypeData> _coreTypeDataList = [];
   List<ProfileGroupData> _profileGroupDataList = [];
   ProfileType _profileType = ProfileType.remote;
-  int _coreTypeId = CoreTypeDefault.v2ray.index;
+  int? _coreTypeId;
   int _profileGroupId = 1;
 
   Future<void> _loadField() async {
@@ -128,6 +127,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final coreTypeList = _coreTypeDataList.map((e) {
+      return DropdownMenuItem<int?>(value: e.id, child: Text(e.name));
+    }).toList();
+    coreTypeList.insert(
+      0,
+      DropdownMenuItem<int?>(value: null, child: Text("[use group setting]")),
+    );
     final fields = [
       DropdownButtonFormField<int>(
         decoration: InputDecoration(
@@ -154,20 +160,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
           border: OutlineInputBorder(),
         ),
       ),
-      DropdownButtonFormField<int>(
+      DropdownButtonFormField<int?>(
         decoration: InputDecoration(
           labelText: context.loc.core_type,
           border: OutlineInputBorder(),
         ),
-        items: _coreTypeDataList.map((e) {
-          return DropdownMenuItem<int>(value: e.id, child: Text(e.name));
-        }).toList(),
+        items: coreTypeList,
         onChanged: (value) {
           setState(() {
-            _coreTypeId = value!;
+            _coreTypeId = value;
           });
         },
-        value: _coreTypeId,
+        value: coreTypeList.map((e) => e.value).contains(_coreTypeId)
+            ? _coreTypeId
+            : null,
       ),
       DropdownButtonFormField<ProfileType>(
         decoration: InputDecoration(

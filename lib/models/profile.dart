@@ -7,8 +7,11 @@ class Profile extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
   TextColumn get key => text()();
-  IntColumn get coreTypeId =>
-      integer().references(CoreType, #id, onDelete: KeyAction.cascade)();
+  IntColumn get coreTypeId => integer().nullable().references(
+    CoreType,
+    #id,
+    onDelete: KeyAction.cascade,
+  )();
   TextColumn get coreCfg => text().withDefault(const Constant("{}"))();
   TextColumn get coreCfgFmt => text().withDefault(const Constant("json"))();
   DateTimeColumn get updatedAt => dateTime()();

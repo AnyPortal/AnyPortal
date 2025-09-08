@@ -513,7 +513,7 @@ abstract class VPNManager with ChangeNotifier {
   ProfileData? _selectedProfile;
   late bool _isExec;
 
-  late int coreTypeId;
+  int? coreTypeId;
   late String coreTypeName;
   String? corePath;
   List<String> _coreArgList = [];
@@ -527,6 +527,18 @@ abstract class VPNManager with ChangeNotifier {
 
   late String coreCfgRaw;
   late String coreCfgFmt;
+
+  void promptInvalidCoreType() {
+    withContext((context) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProfileScreen(profile: _selectedProfile),
+        ),
+      );
+      showSnackBarNow(context, Text("Inbalid core type"));
+    });
+  }
 
   Future<bool> initCore() async {
     logger.d("starting: initCore");
@@ -560,24 +572,36 @@ abstract class VPNManager with ChangeNotifier {
     updateProfileWithGroupRemote(_selectedProfile!);
     checkAllAssetRemotes(shouldCheckRemote: false);
 
+    /// get profile core type id
     coreTypeId = _selectedProfile!.coreTypeId;
+
+    /// get profile group core type id
+    if (coreTypeId == null) {
+      final selectedProfileGroup =
+          await (db.select(
+                db.profileGroup,
+              )..where((p) => p.id.equals(_selectedProfile!.profileGroupId)))
+              .getSingleOrNull();
+      if (selectedProfileGroup != null) {
+        coreTypeId = selectedProfileGroup.coreTypeId;
+      }
+    }
+
+    if (coreTypeId == null) {
+      promptInvalidCoreType();
+      return false;
+    }
 
     /// check core type exists
     final coreTypeData = await (db.select(
       db.coreType,
-    )..where((coreType) => coreType.id.equals(coreTypeId))).getSingleOrNull();
+    )..where((coreType) => coreType.id.equals(coreTypeId!))).getSingleOrNull();
+
     if (coreTypeData == null) {
-      withContext((context) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ProfileScreen(profile: _selectedProfile),
-          ),
-        );
-        showSnackBarNow(context, Text("Inbalid core type"));
-      });
+      promptInvalidCoreType();
+      return false;
     }
-    coreTypeName = coreTypeData!.name;
+    coreTypeName = coreTypeData.name;
 
     // check core path
     final core =
@@ -602,7 +626,7 @@ abstract class VPNManager with ChangeNotifier {
                 db.asset,
                 db.coreExec.assetId.equalsExp(db.asset.id),
               ),
-            ])..where(db.coreTypeSelected.coreTypeId.equals(coreTypeId)))
+            ])..where(db.coreTypeSelected.coreTypeId.equals(coreTypeId!)))
             .getSingleOrNull();
     if (core == null) {
       withContext((context) {

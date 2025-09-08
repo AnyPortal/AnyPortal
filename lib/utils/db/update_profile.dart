@@ -17,7 +17,7 @@ Future<bool> updateProfile({
   ProfileType? profileType,
   String? url = "",
   int? autoUpdateInterval = 0,
-  int? coreTypeId = 0,
+  int? coreTypeId,
   String? coreCfg = "",
   String? coreCfgFmt = "json",
   int? profileGroupId = 0,
@@ -26,7 +26,6 @@ Future<bool> updateProfile({
     name ??= oldProfile.name;
     key ??= oldProfile.key;
     profileType ??= oldProfile.type;
-    coreTypeId ??= oldProfile.coreTypeId;
     coreCfg ??= oldProfile.coreCfg;
     final profileId = oldProfile.id;
     switch (profileType) {
@@ -54,7 +53,7 @@ Future<bool> updateProfile({
               key: drift.Value(key!),
               updatedAt: drift.Value(DateTime.now()),
               type: drift.Value(profileType!),
-              coreTypeId: drift.Value(coreTypeId!),
+              coreTypeId: drift.Value(coreTypeId),
               coreCfg: drift.Value(coreCfg!),
               coreCfgFmt: drift.Value(coreCfgFmt!),
               profileGroupId: drift.Value(profileGroupId!),
@@ -111,7 +110,7 @@ Future<bool> updateProfile({
                 updatedAt: drift.Value(updatedAt ?? DateTime.now()),
                 coreCfg: drift.Value(coreCfg),
                 type: drift.Value(profileType),
-                coreTypeId: drift.Value(coreTypeId!),
+                coreTypeId: drift.Value(coreTypeId),
                 coreCfgFmt: drift.Value(coreCfgFmt!),
                 profileGroupId: drift.Value(profileGroupId!),
               ),
@@ -136,7 +135,7 @@ Future<bool> updateProfile({
                 updatedAt: drift.Value(DateTime.now()),
                 coreCfg: drift.Value(coreCfg!),
                 type: drift.Value(profileType),
-                coreTypeId: drift.Value(coreTypeId!),
+                coreTypeId: drift.Value(coreTypeId),
                 coreCfgFmt: drift.Value(coreCfgFmt!),
                 profileGroupId: drift.Value(profileGroupId!),
               ),
