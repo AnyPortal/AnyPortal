@@ -186,6 +186,12 @@ jobs:
       - name: Decode android/key.properties
         run: echo "${{ secrets.KEY_PROPERTIES_PROD }}" | base64 --decode > android/key.properties
 
+      - uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r27
+          link-to-sdk: true
+
       - name: Build Android APK apilatest
         run: flutter build apk --release --split-per-abi --flavor apilatest
 
