@@ -37,6 +37,7 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
       )!];
 
   bool _injectDnsLocal = prefs.getBool('inject.dns.local')!;
+  bool _injectFakeDns = prefs.getBool('inject.dns.fakedns')!;
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +137,9 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
       ListTile(
         title: Text(context.loc.inject_local_dns),
         subtitle: Text(
-          context.loc.replace_local_dns_with_explicit_ip_useful_when_using_tun,
+          context
+              .loc
+              .replace_local_dns_with_explicit_ip_and_bind_proxy_server_domain_names_to_it_useful_when_using_tun,
         ),
         trailing: Switch(
           value: _injectDnsLocal,
@@ -144,6 +147,23 @@ class _ProfileOverrideScreenState extends State<ProfileOverrideScreen> {
             prefs.setBool('inject.dns.local', value);
             setState(() {
               _injectDnsLocal = value;
+            });
+          },
+        ),
+      ),
+      ListTile(
+        title: Text(context.loc.inject_fake_dns),
+        subtitle: Text(
+          context
+              .loc
+              .append_a_fake_dns_server_so_unresolved_domains_will_be_resolved_by_proxy_server_this_will_disable_dns_fallback_and_may_contaminate_the_local_dns_cache,
+        ),
+        trailing: Switch(
+          value: _injectFakeDns,
+          onChanged: (bool value) {
+            prefs.setBool('inject.dns.fakedns', value);
+            setState(() {
+              _injectFakeDns = value;
             });
           },
         ),

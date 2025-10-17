@@ -14,6 +14,7 @@ LANG_FILES = glob.glob(f"*.arb", root_dir=ARB_DIR)
 TARGET_LANGS = [LANG_FILE[4:-4] for LANG_FILE in LANG_FILES]
 print(TARGET_LANGS)
 
+
 # %%
 def format_arb(jsonObj: dict[str, Any]):
     file_meta = {}
@@ -61,6 +62,7 @@ def translate_text(text, target_lang):
     )
     return result.stdout.strip()
 
+
 # update each target ARB file
 for lang in TARGET_LANGS:
     arb_path = os.path.join(ARB_DIR, f"app_{lang}.arb")
@@ -71,7 +73,7 @@ for lang in TARGET_LANGS:
             translated_data = json.load(f)
     else:
         translated_data = {}
-    
+
     cnt = 0
     for key, value in base_data.items():
         key: str
@@ -86,6 +88,14 @@ for lang in TARGET_LANGS:
         ):
             translated_data[key] = None
             cnt += 1
+
+    keys_to_del = set()
+    for key, value in translated_data.items():
+        if key not in base_data:
+            keys_to_del.add(key)
+
+    for key in keys_to_del:
+        translated_data.pop(key)
 
     translated_data["@@locale"] = lang
 
@@ -105,8 +115,8 @@ from scripts.arb_translate.config import *
 
 client = OpenAI(
     base_url=OPENAI_BASE_URL,
-    api_key='ollama',
-    http_client=httpx.Client(proxy=HTTP_CLIENT_PROXY)
+    api_key="ollama",
+    http_client=httpx.Client(proxy=HTTP_CLIENT_PROXY),
 )
 
 # %%
@@ -115,11 +125,13 @@ with open(os.path.join(ARB_DIR, f"app_{REFERENCE_LANG}.arb"), encoding="utf-8") 
 
 arb_en_dict = json.loads(arb_en_str)
 
+
 def get_arb_lang_str(lang):
     arb_path = os.path.join(ARB_DIR, f"app_{lang}.arb")
     assert os.path.exists(arb_path)
     with open(arb_path, encoding="utf-8") as f:
         return f.read()
+
 
 def get_missing_keys(base_data, translated_data):
     keys = set()
@@ -135,11 +147,16 @@ def get_missing_keys(base_data, translated_data):
             keys.add(key)
     return keys
 
+
 def get_prompt_messages(lang, arb_en_str, arb_lang_str, arb_missing_str):
     return [
-        {"role": "system", "content": "The user will provide with arb files which need translation. One file will be in English, another file in a different language where some of the keys may have already been translated which you can use as a reference, and the final file showing you keys you need to translate. Answer with only the newly translated items."},
-        {"role": "user", "content": 
-f"""English arb:
+        {
+            "role": "system",
+            "content": "The user will provide with arb files which need translation. One file will be in English, another file in a different language where some of the keys may have already been translated which you can use as a reference, and the final file showing you keys you need to translate. Answer with only the newly translated items.",
+        },
+        {
+            "role": "user",
+            "content": f"""English arb:
 ```
 {arb_en_str}
 ```
@@ -154,8 +171,10 @@ arb in English that needs translation to {lang}:
 {arb_missing_str}
 ```
 
-"""},
+""",
+        },
     ]
+
 
 for lang in TARGET_LANGS:
     print(f"{lang}: starting")
@@ -169,7 +188,7 @@ for lang in TARGET_LANGS:
     expected_keys = get_missing_keys(arb_en_dict, arb_lang_dict)
     if not expected_keys:
         continue
-    expected_dict = {k:arb_en_dict[k] for k in expected_keys}
+    expected_dict = {k: arb_en_dict[k] for k in expected_keys}
     arb_missing_str = json.dumps(expected_dict, ensure_ascii=False, indent=2)
 
     rsp = client.chat.completions.create(
@@ -192,7 +211,7 @@ for lang in TARGET_LANGS:
             cnt += 1
         else:
             print(f"{lang}: missing key: {key}")
-    
+
     with open(arb_path, "w", encoding="utf-8") as f:
         json.dump(format_arb(arb_lang_dict), f, ensure_ascii=False, indent=2)
 

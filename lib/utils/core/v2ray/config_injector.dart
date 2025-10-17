@@ -201,30 +201,37 @@ class ConfigInjectorV2Ray extends ConfigInjectorBase {
       dnsServers.add("fakedns");
     }
 
-    /// all outbound domains should be resolved by system dns
-    /// find outbound domains and add them to dns "localhost"
-    /// not to confuse with "localhost" like 127.0.0.1
-    /// "localhost" in v2ray/xray dns config means system dns
-    /// no side effect
-    final outboundsDomains = extractDomains(outbounds);
-    if (outboundsDomains.isNotEmpty) {
-      /// add as the first dns server with domains
-      int i = 0;
-      for (i = 0; i < dnsServers.length; ++i) {
-        dynamic server = dnsServers[i];
-        if (server is! Map) {
-          continue;
+    /// bind proxy server domain to local dns server
+    /// crutial when using tun
+    /// meaningful only when dns "localhost" is replaced with explict ip
+    if (injectDnsLocal) {
+      /// all outbound domains should be resolved by system dns
+      /// find outbound domains and add them to dns "localhost"
+      /// not to confuse with "localhost" like 127.0.0.1
+      /// "localhost" in v2ray/xray dns config means system dns
+      /// should have no side effect
+      final outboundsDomains = extractDomains(outbounds);
+      if (outboundsDomains.isNotEmpty) {
+        /// add as the first dns server with domains
+        int i = 0;
+        for (i = 0; i < dnsServers.length; ++i) {
+          dynamic server = dnsServers[i];
+          if (server is! Map) {
+            continue;
+          }
+          if (server.containsKey("domains")) {
+            break;
+          }
         }
-        if (server.containsKey("domains")) {
-          break;
-        }
+        dnsServers.insert(i, {
+          "address": "localhost",
+          "domains": outboundsDomains,
+          "skipFallback": true,
+        });
       }
-      dnsServers.insert(i, {
-        "address": "localhost",
-        "domains": outboundsDomains,
-      });
     }
 
+    /// replace dns "localhost" with explict ip
     /// currently only one dns record is used!
     /// maybe duplicate those records to use alternatives
     if (injectDnsLocal) {
